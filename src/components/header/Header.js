@@ -895,7 +895,6 @@ const Header = () => {
 
 
 
-
                 <div className="modal fade location" id="locationModal" data-bs-backdrop="static" aria-labelledby="locationModalLabel" aria-hidden="true">
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content" style={{ borderRadius: "10px" }}>

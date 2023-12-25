@@ -315,6 +315,25 @@ const api = {
         return fetch(url, requestOptions);
 
     },
+    getCartSeller(token, latitude, longitude, checkout = 1) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+
+        var params = { latitude: latitude, longitude: longitude, is_checkout: checkout };
+        var url = new URL(appUrl + appSubUrl + "/cart");
+        for (let k in params) {
+            url.searchParams.append(k, params[k]);
+        };
+        return fetch(url, requestOptions);
+
+    },
     removeCart(token) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);

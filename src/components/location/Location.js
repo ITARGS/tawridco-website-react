@@ -327,7 +327,7 @@ const Location = (props) => {
           }));
           setisloading(false);
           props.setisLocationPresent(true);
-          props.setShowModal(false);
+          // props.setShowModal(false);
           closeModalRef.current.click();
         }
         else {

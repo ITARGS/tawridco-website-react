@@ -51,14 +51,15 @@ const Checkout = () => {
     const setting = useSelector(state => (state.setting));
     const [paymentUrl, setpaymentUrl] = useState(null);
 
+    const [codAllow, setCodAllow] = useState([])
+
+
     const paypalStatus = useRef(false);
 
     const cookies = new Cookies();
     const navigate = useNavigate();
 
     const stripePromise = loadStripe(setting.payment_setting && setting.payment_setting.stripe_publishable_key);
-
-
 
 
     const [IsOrderPlaced, setIsOrderPlaced] = useState(false);
@@ -70,6 +71,15 @@ const Checkout = () => {
                     dispatch(setCartCheckout({ data: result.data }));
                     // dispatch({ type: ActionTypes.SET_CART_CHECKOUT, payload: result.data });
                 }
+
+            })
+            .catch(error => console.log(error));
+
+        api.getCartSeller(cookies.get('jwt_token'), city.city.latitude, city.city.longitude, 1)
+            .then(res => res.json())
+            .then(result => {
+            //    console.log(result.data.cod_allowed,'result')
+               setCodAllow(result.data.cod_allowed)
 
             })
             .catch(error => console.log(error));
@@ -664,7 +674,7 @@ const Checkout = () => {
                                         <div className='payment-wrapper checkout-component'>
                                             <span className='heading'>{t("payment_method")}</span>
 
-                                            {setting.payment_setting.cod_payment_method === "1"
+                                            {setting.payment_setting.cod_payment_method === "1" && codAllow == '1'
                                                 ? (
                                                     <label className="form-check-label" htmlFor='cod'>
                                                         <div className='payment-selector'>
