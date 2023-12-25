@@ -114,8 +114,8 @@ function App() {
     await api.getSettings().then(response => response.json())
       .then(result => {
         if (result.status === 1) {
-          // dispatch({ type: ActionTypes.SET_SETTING, payload: result.data });
-          dispatch(setSetting({ data: result.data }));
+          dispatch({ type: ActionTypes.SET_SETTING, payload: result.data });
+          // dispatch(setSetting({ data: result.data }));
         }
       })
       .catch(error => console.log(error));

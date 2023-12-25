@@ -62,6 +62,17 @@ const ProductList2 = () => {
     const location = useLocation();
     // console.log(location);
 
+    useEffect(() => {
+        dispatch(setFilterBrands({ data: [] }));
+        dispatch(setFilterCategory({ data: null }));
+        dispatch(setFilterSearch({ data: "" }));
+        dispatch(setFilterSection({ data: null }));
+        dispatch(setFilterMinMaxPrice({ data: null }));
+        dispatch(setFilterProductSizes({ data: [] }));
+        dispatch(setFilterSort({ data: "new" }));
+    }, [])
+    
+
 
     const fetchBrands = () => {
         api.getBrands()
@@ -100,13 +111,13 @@ const ProductList2 = () => {
             .then(result => {
                 if (result.status === 1) {
                     // console.log("Filter Product From Api ->", result);
-                    setMinPrice(result.min_price);
-                    if (result.min_price === result.max_price) {
-                        setMaxPrice(result.max_price + 100);
-                        setValues([result.min_price, result.max_price + 100]);
+                    setMinPrice(result.total_min_price);
+                    if (result.total_min_price === result.total_max_price) {
+                        setMaxPrice(result.total_max_price + 100);
+                        setValues([result.total_min_price, result.total_max_price + 100]);
                     } else {
-                        setMaxPrice(result.max_price);
-                        setValues([result.min_price, result.max_price]);
+                        setMaxPrice(result.total_max_price);
+                        setValues([result.total_min_price, result.total_max_price]);
                     }
                     setproductresult(result.data);
                     setSizes(result.sizes);

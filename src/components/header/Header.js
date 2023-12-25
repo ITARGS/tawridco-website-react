@@ -155,8 +155,8 @@ const Header = () => {
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    // dispatch({ type: ActionTypes.SET_PAYMENT_SETTING, payload: JSON.parse(atob(result.data)) });
-                    dispatch(setPaymentSetting({ data: result.data }));
+                    dispatch({ type: ActionTypes.SET_PAYMENT_SETTING, payload: JSON.parse(atob(result.data)) });
+                    // dispatch(setPaymentSetting({ data: result.data }));
                 }
             })
             .catch(error => console.log(error));
@@ -211,29 +211,28 @@ const Header = () => {
                     </div>
                     <div className="canvas-main">
                         <div className='site-location'>
-                            <button whileTap={{ scale: 0.8 }} type='button' >
+                            <button whileTap={{ scale: 0.8 }} type='buton' data-bs-toggle="modal" data-bs-target="#locationModal" ref={locationModalTrigger}>
                                 <div className='d-flex flex-row gap-2'>
                                     <div className='icon location p-1 m-auto'>
                                         <GoLocation />
                                     </div>
                                     <div className='d-flex flex-column flex-grow-1'>
                                         <span className='location-description'>{t("deliver_to")} <IoMdArrowDropdown /></span>
-                                        <span className='current-location' onClick={() => { setisLocationPresent(true); setShowModal(true); }}>
-                                            {isLocationPresent
-                                                ? (
-                                                    <>
-                                                        {city.status === 'fulfill'
-                                                            ? city.city.formatted_address
-                                                            : (
-                                                                <div className="d-flex justify-content-center">
-                                                                    <div className="spinner-border" role="status">
-                                                                        <span className="visually-hidden">Loading...</span>
-                                                                    </div>
+                                        <span className='current-location'>{isLocationPresent
+                                            ? (
+                                                <>
+                                                    {city.status === 'fulfill'
+                                                        ? city.city.formatted_address
+                                                        : (
+                                                            <div className="d-flex justify-content-center">
+                                                                <div className="spinner-border" role="status">
+                                                                    <span className="visually-hidden">Loading...</span>
                                                                 </div>
-                                                            )}
-                                                    </>)
-                                                : t("select_location")
-                                            }</span>
+                                                            </div>
+                                                        )}
+                                                </>)
+                                            : t("select_location")
+                                        }</span>
                                     </div>
                                 </div>
                             </button>
@@ -449,7 +448,7 @@ const Header = () => {
                             <div className='d-flex  w-lg-100 col-md-6 order-2 justify-content-center align-items-center '>
 
                                 {/* location modal trigger button */}
-                                <button whileTap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile'
+                                {/* <button whileTap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile'
                                 >
                                     <div className='d-flex flex-row gap-2'>
                                         <div className='icon location p-1 m-auto'>
@@ -458,6 +457,25 @@ const Header = () => {
                                         <div className='d-flex flex-column flex-grow-1 align-items-start' >
                                             <span className='location-description'>{t('deliver_to')} <IoMdArrowDropdown /></span>
                                             <span className='current-location' onClick={() => { setisLocationPresent(true); setShowModal(true); }}>
+                                                <>
+                                                    {city.status === 'fulfill'
+                                                        ? city.city.formatted_address
+                                                        : (
+                                                            t("select_location")
+                                                        )}
+                                                </>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </button> */}
+                                <button whileTap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile' data-bs-toggle="modal" data-bs-target="#locationModal" ref={locationModalTrigger}>
+                                    <div className='d-flex flex-row gap-2'>
+                                        <div className='icon location p-1 m-auto'>
+                                            <GoLocation />
+                                        </div>
+                                        <div className='d-flex flex-column flex-grow-1 align-items-start' >
+                                            <span className='location-description'>{t('deliver_to')} <IoMdArrowDropdown /></span>
+                                            <span className='current-location'>
                                                 <>
                                                     {city.status === 'fulfill'
                                                         ? city.city.formatted_address
@@ -860,7 +878,7 @@ const Header = () => {
 
                 {/* location modal */}
 
-                <Modal
+                {/* <Modal
                     id="locationModal"
                     size='md'
                     centered
@@ -873,17 +891,19 @@ const Header = () => {
                     >
                         <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent} showModal={showModal} setShowModal={setShowModal} />
                     </Modal.Body>
-                </Modal>
+                </Modal> */}
 
 
 
-                {/* <div className="modal fade location" id="locationModal" data-bs-backdrop="static" aria-labelledby="locationModalLabel" aria-hidden="true">
+
+                <div className="modal fade location" id="locationModal" data-bs-backdrop="static" aria-labelledby="locationModalLabel" aria-hidden="true">
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content" style={{ borderRadius: "10px" }}>
-                            <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent} />
+                            <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
+                                showModal={showModal} setShowModal={setShowModal} />
                         </div>
                     </div>
-                </div> */}
+                </div>
 
 
                 {/* Cart Sidebar */}

@@ -38,6 +38,7 @@ import { RiCoupon2Fill } from 'react-icons/ri';
 import Promo from '../cart/Promo';
 import { useTranslation } from 'react-i18next';
 import { setCart, setCartCheckout } from '../../model/reducer/cartReducer';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
 
 
 
@@ -830,6 +831,13 @@ const Checkout = () => {
             </section >
 
             <Modal id="stripeModal" size='lg' centered show={stripeModalShow}>
+                <Modal.Header onClick={() => setStripeModalShow(false)} className='header justify-content-between'>
+                    <span style={{ color: '#33a36b', fontSize: '18px', fontWeight: 'bolder' }}>Egrocers Payment</span>
+                    <span style={{ cursor: 'pointer' }}>
+                        <AiOutlineCloseCircle size={20} />
+                    </span>
+
+                </Modal.Header>
                 <Modal.Body>
 
                     {stripeOrderId === null || stripeClientSecret === null || stripeTransactionId === null

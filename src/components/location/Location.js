@@ -98,8 +98,8 @@ const Location = (props) => {
                 }
               }));
               setisloading(false);
-              props.setShowModal(false);
-              // closeModalRef.current.click();
+              // props.setShowModal(false);
+              closeModalRef.current.click();
             }
             else {
               setisloading(false);
@@ -328,7 +328,7 @@ const Location = (props) => {
           setisloading(false);
           props.setisLocationPresent(true);
           props.setShowModal(false);
-          // closeModalRef.current.click();
+          closeModalRef.current.click();
         }
         else {
           seterrorMsg(result.message);
@@ -350,7 +350,7 @@ const Location = (props) => {
           <div className="d-flex flex-row justify-content-between align-items-center header">
             <h5>{t("select_location")}</h5>
             {setting.setting && setting.setting.default_city || props.isLocationPresent ?
-              <button type="button" className="" onClick={() => {
+              <button type="button" className="" data-bs-dismiss="modal" aria-label="Close" ref={closeModalRef} onClick={() => {
                 if (!props.isLocationPresent) {
 
                   const name = setting.setting.default_city.name;
