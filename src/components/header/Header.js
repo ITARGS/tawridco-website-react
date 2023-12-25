@@ -54,6 +54,7 @@ const Header = () => {
     const [isSticky, setIsSticky] = useState(false);
     const languages = useSelector((state) => (state.language));
     const [showModal, setShowModal] = useState(false);
+    const [bodyScroll, setBodyScroll] = useState(false)
 
     const { t } = useTranslation();
 
@@ -61,6 +62,39 @@ const Header = () => {
     const cookies = new Cookies();
 
     const curr_url = useLocation();
+
+    // useEffect(() => {
+    //     if (bodyScroll) {
+    //         document.body.style.overflow = 'hidden';
+    //         document.body.style.height = '100vh'
+    //     } else {
+    //         document.body.style.overflow = 'auto';
+    //         document.body.style.height = 'auto'
+
+    //     }
+    // }, [bodyScroll]);
+
+    useEffect(() => {
+        const handleBodyScroll = (e) => {
+            e.preventDefault();
+            if (bodyScroll) {
+                document.body.style.overflow = 'hidden';
+                document.body.style.height = '100vh'
+            } else {
+                document.body.style.overflow = 'auto';
+                document.body.style.height = 'auto'
+            }
+        };
+
+        window.addEventListener('scroll', handleBodyScroll);
+
+        // Cleanup the event listener when the component unmounts
+        return () => {
+            window.removeEventListener('scroll', handleBodyScroll);
+        };
+    }, [bodyScroll]);
+
+
 
 
     useEffect(() => {
@@ -468,7 +502,7 @@ const Header = () => {
                                         </div>
                                     </div>
                                 </button> */}
-                                <button whileTap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile' data-bs-toggle="modal" data-bs-target="#locationModal" ref={locationModalTrigger}>
+                                <button whileTap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile' data-bs-toggle="modal" data-bs-target="#locationModal" ref={locationModalTrigger} onClick={() => setBodyScroll(true)}>
                                     <div className='d-flex flex-row gap-2'>
                                         <div className='icon location p-1 m-auto'>
                                             <GoLocation />
@@ -893,16 +927,27 @@ const Header = () => {
                     </Modal.Body>
                 </Modal> */}
 
+                {
+                    bodyScroll ?
+                        <div className="modal fade location" id="locationModal" data-bs-backdrop="static" aria-labelledby="locationModalLabel" aria-hidden="true">
+                            <div className="modal-dialog modal-dialog-centered">
+                                <div className="modal-content" style={{ borderRadius: "10px" }}>
+                                    <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
+                                showModal={showModal} setShowModal={setShowModal} bodyScroll={setBodyScroll}/>
+                                </div>
+                            </div>
+                        </div> : ''
+                }
 
 
-                <div className="modal fade location" id="locationModal" data-bs-backdrop="static" aria-labelledby="locationModalLabel" aria-hidden="true">
+                {/* <div className="modal fade location" id="locationModal" data-bs-backdrop="static" aria-labelledby="locationModalLabel" aria-hidden="true">
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content" style={{ borderRadius: "10px" }}>
                             <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
                                 showModal={showModal} setShowModal={setShowModal} />
                         </div>
                     </div>
-                </div>
+                </div> */}
 
 
                 {/* Cart Sidebar */}

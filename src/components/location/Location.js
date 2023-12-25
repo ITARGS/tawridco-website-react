@@ -99,6 +99,7 @@ const Location = (props) => {
               }));
               setisloading(false);
               // props.setShowModal(false);
+              props.bodyScroll(false)
               closeModalRef.current.click();
             }
             else {
@@ -328,6 +329,7 @@ const Location = (props) => {
           setisloading(false);
           props.setisLocationPresent(true);
           // props.setShowModal(false);
+          props.bodyScroll(false)
           closeModalRef.current.click();
         }
         else {
@@ -380,6 +382,7 @@ const Location = (props) => {
                   setisInputFields(false);
                   setisAddressLoading(false);
                   props.setShowModal(false);
+                  props.bodyScroll(false)
                 }
               }}><AiOutlineCloseCircle /></button>
               : <></>}
