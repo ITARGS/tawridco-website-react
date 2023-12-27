@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setCity } from '../../model/reducer/locationReducer';
-import { Modal } from 'react-bootstrap';
+// import { Modal } from 'react-bootstrap';
 
 const libraries = ["places"];
 
@@ -43,9 +43,9 @@ const Location = (props) => {
   const inputRef = useRef();
   const closeModalRef = useRef();
 
-  useEffect(() => {
+  // useEffect(() => {
 
-  }, [props.setShowModal]);
+  // }, [props.setLocModal]);
 
   // By Selecting place from input field
 
@@ -98,9 +98,9 @@ const Location = (props) => {
                 }
               }));
               setisloading(false);
-              // props.setShowModal(false);
+              props.setLocModal(false);
               props.bodyScroll(false)
-              closeModalRef.current.click();
+              // closeModalRef.current.click();
             }
             else {
               setisloading(false);
@@ -328,9 +328,9 @@ const Location = (props) => {
           }));
           setisloading(false);
           props.setisLocationPresent(true);
-          // props.setShowModal(false);
+          props.setLocModal(false);
           props.bodyScroll(false)
-          closeModalRef.current.click();
+          // closeModalRef.current.click();
         }
         else {
           seterrorMsg(result.message);
@@ -352,7 +352,7 @@ const Location = (props) => {
           <div className="d-flex flex-row justify-content-between align-items-center header">
             <h5>{t("select_location")}</h5>
             {setting.setting && setting.setting.default_city || props.isLocationPresent ?
-              <button type="button" className="" data-bs-dismiss="modal" aria-label="Close" ref={closeModalRef} onClick={() => {
+              <button type="button" className="" onClick={() => {
                 if (!props.isLocationPresent) {
 
                   const name = setting.setting.default_city.name;
@@ -366,7 +366,9 @@ const Location = (props) => {
                         dispatch(setCity({ data: result.data }));
                         // dispatch({ type: ActionTypes.SET_CITY, payload: result.data });
                         props.setisLocationPresent(true);
-                        props.setShowModal(false);
+                        props.setLocModal(false);
+                        props.bodyScroll(false)
+
                       }
                       else {
                         console.log(result.message);
@@ -381,7 +383,7 @@ const Location = (props) => {
                   setcurrLocationClick(false);
                   setisInputFields(false);
                   setisAddressLoading(false);
-                  props.setShowModal(false);
+                  props.setLocModal(false);
                   props.bodyScroll(false)
                 }
               }}><AiOutlineCloseCircle /></button>

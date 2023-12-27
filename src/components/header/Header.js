@@ -1,3 +1,4 @@
+import "../location/location.css";
 import React, { useState, useEffect, useRef } from 'react';
 import './header.css';
 import { BsShopWindow } from 'react-icons/bs';
@@ -28,8 +29,7 @@ import { setLanguage, setLanguageList } from "../../model/reducer/languageReduce
 import { setNotification } from "../../model/reducer/notificationReducer";
 import { setFavourite } from "../../model/reducer/favouriteReducer";
 import { setFilterBrands, setFilterCategory, setFilterMinMaxPrice, setFilterSearch } from "../../model/reducer/productFilterReducer";
-import { Modal } from 'react-bootstrap';
-import "../location/location.css";
+import { Button, Modal } from 'antd';
 
 const Header = () => {
 
@@ -55,6 +55,7 @@ const Header = () => {
     const languages = useSelector((state) => (state.language));
     const [showModal, setShowModal] = useState(false);
     const [bodyScroll, setBodyScroll] = useState(false)
+    const [locModal, setLocModal] = useState(false)
 
     const { t } = useTranslation();
 
@@ -63,36 +64,32 @@ const Header = () => {
 
     const curr_url = useLocation();
 
-    // useEffect(() => {
-    //     if (bodyScroll) {
-    //         document.body.style.overflow = 'hidden';
-    //         document.body.style.height = '100vh'
-    //     } else {
-    //         document.body.style.overflow = 'auto';
-    //         document.body.style.height = 'auto'
-
-    //     }
-    // }, [bodyScroll]);
+    // Inside your component where the modal is defined
+    const openModal = () => {
+        const link = document.createElement('link');
+        link.href = '../location/location.css';
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+        // Open your modal logic here
+        handleModal();
+    };
 
     useEffect(() => {
-        const handleBodyScroll = (e) => {
-            e.preventDefault();
-            if (bodyScroll) {
-                document.body.style.overflow = 'hidden';
-                document.body.style.height = '100vh'
-            } else {
-                document.body.style.overflow = 'auto';
-                document.body.style.height = 'auto'
-            }
-        };
+        if (bodyScroll) {
+            document.body.style.overflow = 'hidden';
+            document.body.style.height = '100vh'
+        } else {
+            document.body.style.overflow = 'auto';
+            document.body.style.height = 'auto'
 
-        window.addEventListener('scroll', handleBodyScroll);
-
-        // Cleanup the event listener when the component unmounts
-        return () => {
-            window.removeEventListener('scroll', handleBodyScroll);
-        };
+        }
     }, [bodyScroll]);
+
+
+    const handleModal = () => {
+        setBodyScroll(true)
+        setLocModal(true)
+    }
 
 
 
@@ -126,6 +123,7 @@ const Header = () => {
                 dispatch(setLanguageList({ data: result.data }));
             });
     }, []);
+
     const fetchCart = async (token, latitude, longitude) => {
         await api.getCart(token, latitude, longitude)
             .then(response => response.json())
@@ -212,10 +210,10 @@ const Header = () => {
     useEffect(() => {
         fetchPaymentSetting();
         dispatch(setFilterSearch({ data: null }));
-        window.addEventListener("scroll", handleScroll);
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        };
+        // window.addEventListener("scroll", handleScroll);
+        // return () => {
+        //     window.removeEventListener("scroll", handleScroll);
+        // };
 
 
     }, []);
@@ -502,7 +500,7 @@ const Header = () => {
                                         </div>
                                     </div>
                                 </button> */}
-                                <button whileTap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile' data-bs-toggle="modal" data-bs-target="#locationModal" ref={locationModalTrigger} onClick={() => setBodyScroll(true)}>
+                                <button whileTap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile' onClick={openModal}>
                                     <div className='d-flex flex-row gap-2'>
                                         <div className='icon location p-1 m-auto'>
                                             <GoLocation />
@@ -912,32 +910,31 @@ const Header = () => {
 
                 {/* location modal */}
 
-                {/* <Modal
-                    id="locationModal"
-                    size='md'
-                    centered
-                    show={showModal}
-                    onHide={() => setShowModal(false)}
-                    backdrop="static"
-                    className='location'
-                >
-                    <Modal.Body style={{ borderRadius: "10px" }} className='location'
-                    >
-                        <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent} showModal={showModal} setShowModal={setShowModal} />
-                    </Modal.Body>
-                </Modal> */}
-
                 {
+                    bodyScroll && bodyScroll ? <Modal
+                        className='location'
+                        id="locationModal"
+                        centered
+                        open={locModal}
+                    >
+                        <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
+                            showModal={locModal} setLocModal={setLocModal} bodyScroll={setBodyScroll} />
+                    </Modal> : ''
+                }
+
+
+
+                {/* {
                     bodyScroll ?
                         <div className="modal fade location" id="locationModal" data-bs-backdrop="static" aria-labelledby="locationModalLabel" aria-hidden="true">
                             <div className="modal-dialog modal-dialog-centered">
                                 <div className="modal-content" style={{ borderRadius: "10px" }}>
                                     <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
-                                showModal={showModal} setShowModal={setShowModal} bodyScroll={setBodyScroll}/>
+                                        showModal={showModal} setShowModal={setShowModal} bodyScroll={setBodyScroll} />
                                 </div>
                             </div>
                         </div> : ''
-                }
+                } */}
 
 
                 {/* <div className="modal fade location" id="locationModal" data-bs-backdrop="static" aria-labelledby="locationModalLabel" aria-hidden="true">

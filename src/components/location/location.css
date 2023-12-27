@@ -1,7 +1,7 @@
 .location h5 {
     font-size: 2.2rem;
     font-weight: bolder;
-    
+
 }
 
 .location .header button {
@@ -32,9 +32,9 @@
     font-size: 1.845rem;
 }
 
-.location .body button.gm-svpc {
-    /* display: none; */
-}
+/* .location .body button.gm-svpc {
+    display: none;
+} */
 
 .location .body button:hover {
     background: var(--secondary-color);
@@ -84,7 +84,8 @@
     font-style: normal;
     line-height: normal;
     letter-spacing: normal;
-    color: #000;;
+    color: #000;
+    ;
     text-align: center;
 }
 
@@ -121,7 +122,8 @@
     width: 100%;
 }
 
-.location .map-content-p,.location .map-content button {
+.location .map-content-p,
+.location .map-content button {
     font-size: 2rem;
 }
 
@@ -129,4 +131,12 @@
 /* z-index problem of munualy text select location */
 .pac-container {
     z-index: 1055 !important;
+}
+
+.ant-modal .ant-modal-footer {
+    display: none !important;
+}
+
+.ant-modal .ant-modal-close-x {
+    display: none !important;
 }

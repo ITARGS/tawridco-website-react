@@ -43,6 +43,8 @@ import { setSetting } from './model/reducer/settingReducer';
 import { setCartPromo } from './model/reducer/cartReducer';
 import { setShop } from "./model/reducer/shopReducer";
 import CategoryChild from './components/category/CategoryChild';
+import "./components/location/location.css";
+
 
 
 function App() {
