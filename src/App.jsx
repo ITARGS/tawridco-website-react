@@ -188,7 +188,7 @@ function App() {
   `;
 
   useEffect(() => {
-    dispatch(setCartPromo({ data: null }));
+    // dispatch(setCartPromo({ data: null }));
     // dispatch({ type: ActionTypes.SET_CART_PROMO, payload: null });
   }, [cart.cart]);
 

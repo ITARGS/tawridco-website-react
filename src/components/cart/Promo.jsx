@@ -28,7 +28,7 @@ function Promo(props) {
 
     const [promo_detail, setPromoDetail] = useState(null);
     const [loading, setLoading] = useState(false);
-
+    const [isapplied, setIsapplied] = useState(false)
     const amount = cart.checkout && cart.checkout.sub_total;
 
     const fetchpromo_codes = async () => {
@@ -46,13 +46,20 @@ function Promo(props) {
             setLoading(false);
             if (result.status) {
                 dispatch(setCartPromo({ data: result.data }));
+                console.log(result.data, "resultData")
                 // dispatch({ type: ActionTypes.SET_CART_PROMO, payload: result.data });
                 toast.success("Coupon Applied Successfully");
+                setIsapplied(true)
                 // cart.promo_code && (cart.checkout.total_amount =Number(cart.promo_code.discounted_amount));
                 closeCanvas.current?.click();
             }
         });
     };
+
+    useEffect(() => {
+
+    }, [isapplied])
+
 
     useEffect(() => {
         if (props.show) {
@@ -87,7 +94,7 @@ function Promo(props) {
                         <div className="row-reverse">
                             {promo_detail && promo_detail.map((promo, index) => (
                                 <>
-
+                                    {console.log(promo, 'promo')}
                                     <div className="col-12 promo-card" key={index}>
                                         <div className="promo-card-e1">
                                             <div className="promo-details">
@@ -100,12 +107,36 @@ function Promo(props) {
                                                 </div>
                                             </div>
                                             <div className="promo-apply">
-                                                <span className={`btn ${!promo.is_applicable && 'disabled'}`}
+                                                {/* {
+                                                    isapplied?<span className={`btn ${!promo.is_applicable && 'disabled'}`}
                                                     onClick={() => {
                                                         if (promo.is_applicable) {
                                                             applyPromoCode(promo);
                                                         }
-                                                    }}>{t("apply")}</span>
+                                                    }}> {t('applied')}</span>:
+                                                    <span className={`btn ${!promo.is_applicable && 'disabled'}`}
+                                                    onClick={() => {
+                                                        if (promo.is_applicable) {
+                                                            applyPromoCode(promo);
+                                                        }
+                                                    }}>{t('apply')}</span>
+                                                } */}
+                                                <span
+                                                    className={`btn ${!promo.is_applicable && 'disabled'} ${promo.is_applied && 'applied'}`}
+                                                    onClick={() => {
+                                                        if (promo.is_applicable && !promo.is_applied) {
+                                                            applyPromoCode(promo);
+                                                            // Update the applied state for the current promo code
+                                                            promo_detail[index].is_applied = true;
+                                                        }
+                                                    }}
+                                                >
+                                                    {promo.is_applied ? t('applied') : t('apply')}
+                                                </span> 
+                                                
+
+
+
                                             </div>
                                         </div>
                                         <div className="promo-card-e2">

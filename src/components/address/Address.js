@@ -14,9 +14,6 @@ import { confirmAlert } from 'react-confirm-alert';
 import { ActionTypes } from '../../model/action-type';
 import { setAddress, setSelectedAddress } from "../../model/reducer/addressReducer";
 
-
-
-
 const Address = () => {
 
     //initialize cookies

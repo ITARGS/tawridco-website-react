@@ -44,8 +44,10 @@ const Location = (props) => {
   const closeModalRef = useRef();
 
   // useEffect(() => {
-
-  // }, [props.setLocModal]);
+  //   setTimeout(() => {
+  //     props.openModal()
+  //   }, 1000);
+  // }, []);
 
   // By Selecting place from input field
 
@@ -284,7 +286,6 @@ const Location = (props) => {
       });
   };
 
-
   //handle Confirm current location
   const confirmCurrentLocation = () => {
     setisloading(true);
@@ -343,6 +344,43 @@ const Location = (props) => {
       // closeModalRef.current?.click()
     }
   }, [setting]);
+
+  const defaultLocationSet = (e) => {
+    e.preventDefault();
+    if (!props.isLocationPresent) {
+
+      const name = setting.setting.default_city.name;
+      const lat = setting.setting.default_city.latitude;
+      const lng = setting.setting.default_city.longitude;
+
+
+      fetchCity(name, lat, lng)
+        .then(result => {
+          if (result.status === 1) {
+            dispatch(setCity({ data: result.data }));
+            // dispatch({ type: ActionTypes.SET_CITY, payload: result.data });
+            props.setisLocationPresent(true);
+            props.setLocModal(false);
+            props.bodyScroll(false)
+
+          }
+          else {
+            console.log(result.message);
+          }
+        }).catch(error => console.log("error ", error));
+      toast.info('Default Delivery Location is Selected!!');
+
+    }
+    else {
+      seterrorMsg("");
+      setisloading(false);
+      setcurrLocationClick(false);
+      setisInputFields(false);
+      setisAddressLoading(false);
+      props.setLocModal(false);
+      props.bodyScroll(false)
+    }
+  }
   return (
     <>
       {
@@ -352,41 +390,8 @@ const Location = (props) => {
           <div className="d-flex flex-row justify-content-between align-items-center header">
             <h5>{t("select_location")}</h5>
             {setting.setting && setting.setting.default_city || props.isLocationPresent ?
-              <button type="button" className="" onClick={() => {
-                if (!props.isLocationPresent) {
-
-                  const name = setting.setting.default_city.name;
-                  const lat = setting.setting.default_city.latitude;
-                  const lng = setting.setting.default_city.longitude;
-
-
-                  fetchCity(name, lat, lng)
-                    .then(result => {
-                      if (result.status === 1) {
-                        dispatch(setCity({ data: result.data }));
-                        // dispatch({ type: ActionTypes.SET_CITY, payload: result.data });
-                        props.setisLocationPresent(true);
-                        props.setLocModal(false);
-                        props.bodyScroll(false)
-
-                      }
-                      else {
-                        console.log(result.message);
-                      }
-                    }).catch(error => console.log("error ", error));
-                  toast.info('Default Delivery Location is Selected!!');
-
-                }
-                else {
-                  seterrorMsg("");
-                  setisloading(false);
-                  setcurrLocationClick(false);
-                  setisInputFields(false);
-                  setisAddressLoading(false);
-                  props.setLocModal(false);
-                  props.bodyScroll(false)
-                }
-              }}><AiOutlineCloseCircle /></button>
+              <button type="button" className="" onClick={(e) => defaultLocationSet(e)  
+              }><AiOutlineCloseCircle /></button>
               : <></>}
           </div>
 

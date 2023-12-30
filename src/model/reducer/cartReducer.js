@@ -24,6 +24,10 @@ export const cartReducer = createSlice({
         setCartPromo: (state, action) => {
             state.status = "fulfill";
             state.promo_code = action.payload.data;
+        },
+        clearCartPromo:(state) => {
+            state.cart.promo_code = null
+            state.promo_code = null
         }
     }
     // switch (type) {
@@ -50,5 +54,5 @@ export const cartReducer = createSlice({
     // }
 });
 
-export const { setCart, setCartCheckout, setCartPromo } = cartReducer.actions;
+export const { setCart, setCartCheckout, setCartPromo, clearCartPromo } = cartReducer.actions;
 export default cartReducer.reducer;

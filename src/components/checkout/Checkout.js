@@ -37,7 +37,7 @@ import { ActionTypes } from '../../model/action-type';
 import { RiCoupon2Fill } from 'react-icons/ri';
 import Promo from '../cart/Promo';
 import { useTranslation } from 'react-i18next';
-import { setCart, setCartCheckout } from '../../model/reducer/cartReducer';
+import { clearCartPromo, setCart, setCartCheckout, setCartPromo } from '../../model/reducer/cartReducer';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 
 
@@ -78,8 +78,8 @@ const Checkout = () => {
         api.getCartSeller(cookies.get('jwt_token'), city.city.latitude, city.city.longitude, 1)
             .then(res => res.json())
             .then(result => {
-            //    console.log(result.data.cod_allowed,'result')
-               setCodAllow(result.data.cod_allowed)
+                //    console.log(result.data.cod_allowed,'result')
+                setCodAllow(result.data.cod_allowed)
 
             })
             .catch(error => console.log(error));
@@ -146,6 +146,7 @@ const Checkout = () => {
     const [show, setShow] = useState(false);
     const [showPromoOffcanvas, setShowPromoOffcanvas] = useState(false);
     const [stripeModalShow, setStripeModalShow] = useState(false);
+
     // const [paymentSettings, setpaymentSettings] = useState(null)
     const [isLoader, setisLoader] = useState(false);
     const fetchTimeSlot = () => {
@@ -499,6 +500,12 @@ const Checkout = () => {
     };
 
 
+    const removeCoupon = () => {
+        dispatch(clearCartPromo());
+        toast.info("Coupon Removed");
+    }
+
+
     useEffect(() => {
         if (IsOrderPlaced) {
             setShow(true);
@@ -659,16 +666,16 @@ const Checkout = () => {
                                                                 </div>
                                                                 <div className="d-flex flex-column">
                                                                     <span>{setting.setting && setting.setting.currency} {cart.promo_code.discount}</span>
-                                                                    <span className='promo-remove' onClick={() => {
-                                                                        dispatch({ type: ActionTypes.SET_CART_PROMO, payload: null });
-                                                                        toast.info("Coupon Removed");
-                                                                    }}> {t("remove")}</span>
+                                                                    <span className='promo-remove' onClick={removeCoupon}> {t("remove")}</span>
                                                                 </div>
                                                             </div>
                                                         </>
                                                         : <></>}
                                                 </div>
                                             </div>
+
+
+
 
                                         </div>
                                         <div className='payment-wrapper checkout-component'>
@@ -814,13 +821,24 @@ const Checkout = () => {
                                                                     ?
                                                                     <Loader screen='full' background='none' />
                                                                     : <>
-                                                                        <div className='button-container'>
+                                                                        {
+                                                                            setting.payment_setting.cod_payment_method === "1" && codAllow == '1' ||
+                                                                                setting.payment_setting.razorpay_payment_method === "1" ||
+                                                                                setting.payment_setting.paystack_payment_method === "1" ||
+                                                                                setting.payment_setting.stripe_payment_method === "1" ||
+                                                                                setting.payment_setting.paypal_payment_method === "1" ? (
 
-                                                                            {paymentMethod === "Stripe"
-                                                                                ? <motion.button whileTap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
-                                                                                : <motion.button whileTap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
-                                                                            }
-                                                                        </div>
+                                                                                <div className='button-container'>
+
+
+
+                                                                                    {paymentMethod === "Stripe" && setting
+                                                                                        ? <motion.button whileTap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
+                                                                                        : <motion.button whileTap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
+                                                                                    }
+                                                                                </div>
+                                                                            ) : null
+                                                                        }
                                                                     </>
                                                                 }
 

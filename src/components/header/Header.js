@@ -29,7 +29,7 @@ import { setLanguage, setLanguageList } from "../../model/reducer/languageReduce
 import { setNotification } from "../../model/reducer/notificationReducer";
 import { setFavourite } from "../../model/reducer/favouriteReducer";
 import { setFilterBrands, setFilterCategory, setFilterMinMaxPrice, setFilterSearch } from "../../model/reducer/productFilterReducer";
-import { Button, Modal } from 'antd';
+import { Modal } from 'antd';
 
 const Header = () => {
 
@@ -66,11 +66,6 @@ const Header = () => {
 
     // Inside your component where the modal is defined
     const openModal = () => {
-        const link = document.createElement('link');
-        link.href = '../location/location.css';
-        link.rel = 'stylesheet';
-        document.head.appendChild(link);
-        // Open your modal logic here
         handleModal();
     };
 
@@ -87,12 +82,18 @@ const Header = () => {
 
 
     const handleModal = () => {
-        setBodyScroll(true)
         setLocModal(true)
+        setBodyScroll(true)
     }
 
-
-
+    useEffect(() => {
+        // console.log('status',city)
+        setLocModal(true)
+        setLocModal(false)
+        if (!city.status === "fulfill") {
+            handleModal()
+        }
+    }, []);    
 
     useEffect(() => {
 
@@ -911,15 +912,16 @@ const Header = () => {
                 {/* location modal */}
 
                 {
-                    bodyScroll && bodyScroll ? <Modal
+
+                    <Modal
                         className='location'
                         id="locationModal"
                         centered
                         open={locModal}
                     >
                         <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
-                            showModal={locModal} setLocModal={setLocModal} bodyScroll={setBodyScroll} />
-                    </Modal> : ''
+                            showModal={locModal} setLocModal={setLocModal} bodyScroll={setBodyScroll} openModal={openModal} />
+                    </Modal>
                 }
 
 
