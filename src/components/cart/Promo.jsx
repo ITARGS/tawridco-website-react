@@ -8,11 +8,7 @@ import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import Loader from '../loader/Loader';
 import { Offcanvas } from 'react-bootstrap';
-import { setCartPromo } from '../../model/reducer/cartReducer';
-
-
-
-
+import { setCartPromo, setPromoCodeApplied } from '../../model/reducer/cartReducer';
 
 
 function Promo(props) {
@@ -46,7 +42,8 @@ function Promo(props) {
             setLoading(false);
             if (result.status) {
                 dispatch(setCartPromo({ data: result.data }));
-                console.log(result.data, "resultData")
+                dispatch(setPromoCodeApplied({ data: 1 }));
+                // console.log(result.data, "resultData")
                 // dispatch({ type: ActionTypes.SET_CART_PROMO, payload: result.data });
                 toast.success("Coupon Applied Successfully");
                 setIsapplied(true)

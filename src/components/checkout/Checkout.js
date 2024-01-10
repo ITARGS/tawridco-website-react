@@ -37,8 +37,10 @@ import { ActionTypes } from '../../model/action-type';
 import { RiCoupon2Fill } from 'react-icons/ri';
 import Promo from '../cart/Promo';
 import { useTranslation } from 'react-i18next';
-import { clearCartPromo, setCart, setCartCheckout, setCartPromo } from '../../model/reducer/cartReducer';
+import { clearCartPromo, setCart, setCartCheckout, setWallet } from '../../model/reducer/cartReducer';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { PiWallet } from "react-icons/pi";
+import { deductUserBalance } from '../../model/reducer/authReducer';
 
 
 
@@ -50,8 +52,12 @@ const Checkout = () => {
     const user = useSelector(state => (state.user));
     const setting = useSelector(state => (state.setting));
     const [paymentUrl, setpaymentUrl] = useState(null);
-
     const [codAllow, setCodAllow] = useState([])
+    const [totalPayment, setTotalPayment] = useState(null);
+    const [walletDeductionAmt, setWalletDeductionAmt] = useState(null);
+    const [order, setOrder] = useState(false);
+    const [walletAmount, setWalletAmount] = useState(user?.user?.balance);
+    const [isPromoApplied, setIsPromoApplied] = useState(false);
 
 
     const paypalStatus = useRef(false);
@@ -69,6 +75,13 @@ const Checkout = () => {
             .then(result => {
                 if (result.status === 1) {
                     dispatch(setCartCheckout({ data: result.data }));
+                    dispatch(setWallet({ data: 0 }));
+                    if (cart?.promo_code) {
+                        setTotalPayment(result.data.total_amount - cart?.promo_code?.discount);
+                    } else {
+                        setTotalPayment(result.data.total_amount);
+                    }
+                    setWalletAmount(user?.user?.balance);
                     // dispatch({ type: ActionTypes.SET_CART_CHECKOUT, payload: result.data });
                 }
 
@@ -269,14 +282,30 @@ const Checkout = () => {
         handler.openIframe();
     };
 
+    useEffect(() => {
+        if (cart?.is_wallet_checked && totalPayment >= walletAmount) {
+            setWalletDeductionAmt(walletAmount);
+            setWalletAmount(0);
+            setTotalPayment(totalPayment - walletAmount);
+        } else if (cart?.is_wallet_checked && totalPayment < walletAmount) {
+            const remainingwalletBalance = walletAmount - totalPayment;
+            setWalletDeductionAmt(totalPayment);
+            setWalletAmount(remainingwalletBalance);
+            setTotalPayment(0);
+        } else if (!cart?.is_wallet_checked && cart?.promo_code) {
+            setTotalPayment(cart?.checkout?.total_amount - cart?.promo_code?.discount);
+            setWalletAmount(user.user.balance);
+            setWalletDeductionAmt(0);
+        } else {
+            setTotalPayment(cart?.checkout?.total_amount);
+            setWalletAmount(user.user.balance);
+            setWalletDeductionAmt(0);
+        }
+    }, [cart?.is_wallet_checked]);
+
 
     const HandlePlaceOrder = async (e) => {
         // e.preventDefault();
-
-
-
-
-
         //place order
         if (!expectedDate) {
             toast.error(t('please_select_date'));
@@ -297,16 +326,16 @@ const Checkout = () => {
             }
             else if (paymentMethod === 'COD') {
                 // place order
-
-
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async (result) => {
                         setisLoader(false);
                         if (result.status === 1) {
+                            // console.log(result);
                             toast.success("Order Successfully Placed!");
                             setloadingPlaceOrder(false);
-
+                            dispatch(setWallet({ data: 0 }));
+                            dispatch(deductUserBalance({ data: walletDeductionAmt }));
                             setIsOrderPlaced(true);
                             setShow(true);
                         }
@@ -322,7 +351,7 @@ const Checkout = () => {
                     });
             }
             else if (paymentMethod === 'Razorpay') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
 
@@ -335,6 +364,7 @@ const Checkout = () => {
 
                                     if (res.status === 1) {
                                         setloadingPlaceOrder(false);
+                                        dispatch(deductUserBalance({ data: walletDeductionAmt }));
                                         handleRozarpayPayment(result.data.order_id, res.data.transaction_id, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, user.user.name, user.user.email, user.user.mobile, setting.setting?.app_name);
                                     }
                                     else {
@@ -356,11 +386,12 @@ const Checkout = () => {
                     .catch(error => console.log(error));
             }
             else if (paymentMethod === 'Paystack') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(result => {
                         // fetchOrders();
                         if (result.status === 1) {
+                            dispatch(deductUserBalance({ data: walletDeductionAmt }));
                             setloadingPlaceOrder(false);
                             setOrderID(result.data.order_id);
                             handlePayStackPayment(user.user.email, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, setting.payment_setting.paystack_currency_code, setting.setting.support_email, result.data.order_id);
@@ -376,7 +407,7 @@ const Checkout = () => {
             }
             else if (paymentMethod === "Stripe") {
                 setStripeModalShow(true);
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
                         if (result.status === 1) {
@@ -386,7 +417,7 @@ const Checkout = () => {
                                 .then(resp => resp.json())
                                 .then(res => {
                                     if (res.status) {
-
+                                        dispatch(deductUserBalance({ data: walletDeductionAmt }));
                                         setstripeOrderId(result.data.order_id);
                                         setstripeClientSecret(res.data.client_secret);
                                         setstripeTransactionId(res.data.id);
@@ -414,7 +445,7 @@ const Checkout = () => {
                 setloadingPlaceOrder(false);
             }
             else if (paymentMethod === 'Paypal') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
                         setOrderID(result.data.order_id);
@@ -429,6 +460,7 @@ const Checkout = () => {
                                     if (res.status === 1) {
                                         setloadingPlaceOrder(false);
                                         setpaymentUrl(res.data.paypal_redirect_url);
+                                        dispatch(deductUserBalance({ data: walletDeductionAmt }));
                                         // window.open(res.data.paypal_redirect_url, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes')
                                         // document.getElementById("iframe_id").contentWindow.location.href
                                         // handleRozarpayyPayment(result.data.order_id, res.data.transaction_id, cart.checkout.total_amount, user.user.name, user.user.email, user.user.mobile, setting.setting.app_name);
@@ -640,10 +672,10 @@ const Checkout = () => {
                                             : <></>}
 
 
-                                    </div >
+                                    </div>
 
                                     <div className='order-container'>
-                                        <div className="promo-section">
+                                        {/* <div className="promo-section">
 
                                             <div className="heading">
                                                 <span>{t("coupon")}</span>
@@ -673,15 +705,41 @@ const Checkout = () => {
                                                         : <></>}
                                                 </div>
                                             </div>
+                                        </div> */}
 
+                                        <div className="promo-section">
+                                            <div className="heading">
+                                                <span>{t("Wallet")}</span>
+                                            </div>
+                                            <div className='promo-wrapper'>
+                                                <div className='promo-container'>
+                                                    <div className='d-flex justify-content-between align-items-center'>
+                                                        <div className='image-container d-flex align-items-center' style={{ gap: "15px" }}>
+                                                            <PiWallet size={35} fill={'var(--secondary-color)'} />
+                                                            <span style={{ fontSize: "14px" }}>
+                                                                {t("Wallet Balance")}
+                                                            </span>
+                                                            <p style={{ color: 'var(--secondary-color', fontSize: "14px" }} className='mb-0'>
+                                                                {setting?.setting?.currency}
+                                                                {/* {t(parseFloat(user?.user?.balance).toFixed(setting?.setting && setting?.setting?.decimal_point))} */}
 
+                                                                {t(parseFloat(walletAmount).toFixed(setting?.setting && setting?.setting?.decimal_point))}
+                                                            </p>
 
-
+                                                        </div>
+                                                        <div>
+                                                            <input type='checkbox' disabled={IsOrderPlaced ? true : false} checked={cart.is_wallet_checked ? true : false} onClick={() => {
+                                                                cart.is_wallet_checked ? dispatch(setWallet({ data: 0 })) : dispatch(setWallet({ data: 1 }));
+                                                            }} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div className='payment-wrapper checkout-component'>
                                             <span className='heading'>{t("payment_method")}</span>
 
-                                            {setting.payment_setting.cod_payment_method === "1" && codAllow == '1'
+                                            {setting?.payment_setting.cod_payment_method === "1" && codAllow == '1'
                                                 ? (
                                                     <label className="form-check-label" htmlFor='cod'>
                                                         <div className='payment-selector'>
@@ -802,15 +860,87 @@ const Checkout = () => {
                                                                         </div>
                                                                     </div>
                                                                 </>}
+                                                                {walletDeductionAmt ? <>
+                                                                    <div className='d-flex justify-content-between'>
+                                                                        <span>{t("Wallet")}</span>
+                                                                        <div className='d-flex align-items-center'>
+
+                                                                            <span>- {setting.setting && setting.setting.currency}    {Number(walletDeductionAmt).toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </> : <></>}
+
+                                                                {/* {cart.is_promocode_applied && cart.is_wallet_checked ? <>
+                                                                    <div className='d-flex justify-content-between'>
+                                                                        <span>{t("Wallet")}</span>
+                                                                        <div className='d-flex align-items-center'>
+
+                                                                            <span>- {setting.setting && setting.setting.currency}    {Number(cart.checkout?.total_amount - cart.promo_code?.discount).toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </> : !cart.is_promocode_applied && cart.is_wallet_checked ?
+                                                                    (cart.checkout.user_balance < cart.checkout.total_amount) ? <>
+                                                                        <div className='d-flex justify-content-between'>
+                                                                            <span>{t("Wallet")}</span>
+                                                                            <div className='d-flex align-items-center'>
+
+                                                                                <span>- {setting.setting && setting.setting.currency}    {Number(cart.checkout.user_balance).toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </> :
+                                                                        <>
+                                                                            <div className='d-flex justify-content-between'>
+                                                                                <span>{t("Wallet")}</span>
+                                                                                <div className='d-flex align-items-center'>
+
+                                                                                    <span>- {setting.setting && setting.setting.currency}    {Number(cart.checkout.total_amount).toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </> :
+                                                                    <></>
+                                                                } */}
+                                                                {/* {cart.cart.data.user_balance && cart.is_wallet_checked && (cart.checkout.total_amount <= cart.checkout.user_balance) && !cart.promo_code ? <>
+                                                                    <div className='d-flex justify-content-between'>
+                                                                        <span>{t("Wallet")}</span>
+                                                                        <div className='d-flex align-items-center'>
+
+                                                                            <span>- {setting.setting && setting.setting.currency}    {Number(cart.checkout.total_amount).toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </> : cart.checkout.user_balance >= cart.checkout.total_amount && !cart.is_wallet_checked ? <> {null}
+
+                                                                </>
+                                                                    : cart.checkout.user_balance <= cart.checkout.total_amount && !cart.is_wallet_checked ? <>{null}</>
+                                                                        : cart.is_wallet_checked && cart.promo_code && cart.promo_code.discount && (cart.promo_code.discount + cart.checkout.user_balance >= cart.checkout.total_amount) ? <>
+                                                                            {null}
+                                                                        </> : <>
+                                                                            <div className='d-flex justify-content-between'>
+                                                                                <span>{t("Wallet")}</span>
+                                                                                <div className='d-flex align-items-center'>
+
+                                                                                    <span>- {setting.setting && setting.setting.currency}    {Number(cart.checkout.total_amount).toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        </>
+                                                                } */}
                                                                 <div className='d-flex justify-content-between total'>
                                                                     <span>{t("total")}</span>
                                                                     <div className='d-flex align-items-center total-amount' style={{ color: "var(--secondary-color)" }}>
-
-                                                                        {cart.promo_code ?
-                                                                            <span>{setting.setting && setting.setting.currency} {(cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge).toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                        <span>
+                                                                            {setting.setting && setting.setting.currency}
+                                                                            {Number(totalPayment).toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                        </span>
+                                                                        {/* {cart.promo_code ?
+                                                                            <span>
+                                                                                {setting.setting && setting.setting.currency}
+                                                                                {(cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge).toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                            </span>
                                                                             : <>
-                                                                                <span>{setting.setting && setting.setting.currency} {(cart.checkout.total_amount).toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                            </>}
+                                                                                <span>{
+                                                                                    setting.setting && setting.setting.currency}
+                                                                                    {(cart.checkout.total_amount).toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                </span>
+                                                                            </>} */}
                                                                     </div>
                                                                 </div>
 
@@ -848,7 +978,7 @@ const Checkout = () => {
 
                                         </div>
                                     </div>
-                                </div >
+                                </div>
                             </>
                         )
                 }

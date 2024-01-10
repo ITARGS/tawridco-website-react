@@ -23,6 +23,7 @@ import FirebaseData from '../../utils/firebase/FirebaseData';
 import { logoutAuth, setCurrentUser } from "../../model/reducer/authReducer";
 import { setFilterBrands, setFilterCategory, setFilterSearch, setFilterSection } from "../../model/reducer/productFilterReducer";
 import WalletTransaction from '../wallet-transaction/WalletTransaction';
+import { PiWallet } from "react-icons/pi";
 
 
 const ProfileDashboard = (props) => {
@@ -259,6 +260,14 @@ const ProfileDashboard = (props) => {
                         </div>
                         <p>{user.user.name.split(' ')[0]}</p>
                         <span>{user.user.email}</span>
+                        <div className='image-container d-flex align-items-center mt-4' style={{ gap: "15px" }}>
+                            <PiWallet size={35} fill={'var(--secondary-color)'} />
+                            {t("Wallet Balance")}
+                            <p style={{ color: 'var(--secondary-color' }} className='mb-0'>
+                                {setting?.setting?.currency}
+                                {parseFloat(user?.user?.balance).toFixed(setting?.setting && setting?.setting?.decimal_point)}
+                            </p>
+                        </div>
                     </div>
                 }
 

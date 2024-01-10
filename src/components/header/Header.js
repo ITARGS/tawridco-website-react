@@ -119,7 +119,7 @@ const Header = () => {
             // locationModalTrigger.current.click();
             // setLocModal(true)
         }
-    }, [dispatch, setting]);
+    }, [setting]);
 
 
     useEffect(() => {
@@ -194,7 +194,7 @@ const Header = () => {
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    dispatch({ type: ActionTypes.SET_PAYMENT_SETTING, payload: JSON.parse(atob(result.data)) });
+                    dispatch(setPaymentSetting({ data: JSON.parse(atob(result.data)) }));
                     // dispatch(setPaymentSetting({ data: result.data }));
                 }
             })
@@ -613,7 +613,7 @@ const Header = () => {
                                     </button>
                                 }
 
-                                {city.city === null || cookies.get('jwt_token') === undefined
+                                {/* {city.city === null || cookies.get('jwt_token') === undefined
                                     ? <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative'
 
                                         onClick={() => {
@@ -646,6 +646,40 @@ const Header = () => {
                                             </span>
                                             : null}
                                     </button>
+                                } */}
+
+                                {
+                                    curr_url.pathname === "/checkout" ?
+                                        null :
+                                        city.city === null || cookies.get('jwt_token') === undefined
+                                            ? <button type='button' whileTap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative'
+                                                onClick={() => {
+                                                    if (cookies.get('jwt_token') === undefined) {
+                                                        toast.error(t("required_login_message_for_cartRedirect"));
+                                                    }
+                                                    else if (city.city === null) {
+                                                        toast.error("Please Select you delivery location first!");
+                                                    }
+                                                }}>
+                                                <IoCartOutline />
+                                            </button>
+                                            : <button type='button' whileTap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
+                                                onClick={() => {
+                                                    if (cookies.get('jwt_token') === undefined) {
+                                                        toast.error(t("required_login_message_for_cartRedirect"));
+                                                    }
+                                                    else if (city.city === null) {
+                                                        toast.error("Please Select you delivery location first!");
+                                                    }
+                                                }}>
+                                                <IoCartOutline />
+                                                {cart.cart !== null ?
+                                                    <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
+                                                        {cart.cart.total}
+                                                        <span className="visually-hidden">unread messages</span>
+                                                    </span>
+                                                    : null}
+                                            </button>
                                 }
 
                                 {user.status === 'loading'

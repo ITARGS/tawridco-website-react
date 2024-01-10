@@ -116,8 +116,8 @@ function App() {
     await api.getSettings().then(response => response.json())
       .then(result => {
         if (result.status === 1) {
-          dispatch({ type: ActionTypes.SET_SETTING, payload: result.data });
-          // dispatch(setSetting({ data: result.data }));
+          // dispatch({ type: ActionTypes.SET_SETTING, payload: result.data });
+          dispatch(setSetting({ data: result.data }));
         }
       })
       .catch(error => console.log(error));
@@ -137,6 +137,9 @@ function App() {
     };
     if (city.city !== null) {
       fetchShop(city.city.id, city.city.latitude, city.city.longitude);
+    }
+    else {
+      fetchShop(setting?.setting?.default_city_id, setting?.setting?.map_latitude, setting?.setting?.map_longitude);
     }
   }, [city, cart, setting]);
 

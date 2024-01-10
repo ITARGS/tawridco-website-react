@@ -15,8 +15,7 @@ import Loader from '../loader/Loader';
 import Promo from './Promo';
 import { useTranslation } from 'react-i18next';
 import { setProductSizes } from '../../model/reducer/productSizesReducer';
-import { setCart, setCartCheckout } from '../../model/reducer/cartReducer';
-
+import { clearCartPromo, setCart, setCartCheckout, setCartPromo } from '../../model/reducer/cartReducer';
 
 
 const ViewCart = () => {
@@ -118,11 +117,10 @@ const ViewCart = () => {
                         .then(res => {
                             setisLoader(false);
                             if (res.status === 1) {
-                                dispatch();
-                                dispatch({ type: ActionTypes.SET_CART, payload: res });
+                                dispatch(dispatch(setCart({ data: res })));
                             }
                             else {
-                                dispatch({ type: ActionTypes.SET_CART, payload: null });
+                                dispatch(setCart({ data: null }));
                             }
                         })
                         .catch(error => console.log(error));
@@ -301,7 +299,7 @@ const ViewCart = () => {
                                                                         <div className="d-flex flex-column">
                                                                             <span>{setting.setting && setting.setting.currency} {cart.promo_code.discount}</span>
                                                                             <span className='promo-remove' onClick={() => {
-                                                                                dispatch({ type: ActionTypes.SET_CART_PROMO, payload: null });
+                                                                                dispatch(clearCartPromo());
                                                                                 toast.info("Coupon Removed");
                                                                             }}> {t("remove")}</span>
                                                                         </div>

@@ -126,7 +126,7 @@ const ProductDetails = () => {
                 .then(result => {
                     if (result.status === 1) {
                         dispatch(setSelectedProduct({ data: result.data[0].id }));
-                        dispatch({ type: ActionTypes.SET_SELECTED_PRODUCT, payload: result.data[0].id });
+                        // dispatch({ type: ActionTypes.SET_SELECTED_PRODUCT, payload: result.data[0].id });
                         getProductDatafromApi({ id: result.data[0].id });
                     }
                     else {

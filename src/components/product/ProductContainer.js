@@ -178,7 +178,6 @@ const ProductContainer = ({ showModal, setShowModal }) => {
     };
 
 
-
     const settings = {
         infinite: false,
         slidesToShow: 5.5,
@@ -417,7 +416,7 @@ const ProductContainer = ({ showModal, setShowModal }) => {
                                                                                     <button type="button" id={`Add-to-cart-section${index}${index0}`} className='w-100 h-100 add-to-cart active' onClick={() => {
                                                                                         if (cookies.get('jwt_token') !== undefined) {
 
-                                                                                            if (cart.cart && cart.cart.data.cart.some(element => element.product_id === product.id) && cart.cart.data.cart.some(element => element.product_variant_id === product.variants[variant_index.pid === product.id ? variant_index.index : 0].id)) {
+                                                                                            if (cart.cart && cart.cart.data.cart.some(element => element.product_id === product.id) && cart.cart.data.cart.some(element => element.product_variant_id === product.variants[variant_index.pid === product.id ? variant_index?.index : 0].id)) {
                                                                                                 toast.info('Product already in Cart');
                                                                                             } else {
                                                                                                 if (product.variants[0].status) {
