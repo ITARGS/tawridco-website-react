@@ -114,6 +114,7 @@ const Location = (props) => {
           console.log(error);
         });
       props.setisLocationPresent(true);
+      props.setLocModal(false)
       // closeModalRef.current.click();
     }
   };
@@ -342,6 +343,7 @@ const Location = (props) => {
   useEffect(() => {
     if (setting.setting?.default_city) {
       // closeModalRef.current?.click()
+      props.setLocModal(false)
     }
   }, [setting]);
 
@@ -390,7 +392,7 @@ const Location = (props) => {
           <div className="d-flex flex-row justify-content-between align-items-center header">
             <h5>{t("select_location")}</h5>
             {setting.setting && setting.setting.default_city || props.isLocationPresent ?
-              <button type="button" className="" onClick={(e) => defaultLocationSet(e)  
+              <button type="button" className="" onClick={(e) => defaultLocationSet(e)
               }><AiOutlineCloseCircle /></button>
               : <></>}
           </div>

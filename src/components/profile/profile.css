@@ -42,6 +42,7 @@
     flex-direction: column;
     width: 100%;
     background-color: transparent;
+    margin-top: 30px;
 }
 
 #profile .sidebar .navigation-container-button {
@@ -66,7 +67,7 @@
 
 }
 
-#profile .sidebar .navigation-container-button:hover span svg path {
+#profile .sidebar .navigation-container-button:hover span svg {
     fill: #fff;
 }
 
@@ -256,4 +257,15 @@ input[type="file"] {
 
 [dir='rtl'] .profile-navigate-arrow {
     transform: rotate(180deg);
+}
+.activeTab{
+    background-color: var(--secondary-color) !important;
+}
+
+.activeTab span{
+    color: white !important;
+}
+
+.activeTab span svg{
+    fill: white !important;
 }

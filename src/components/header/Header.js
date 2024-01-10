@@ -64,9 +64,14 @@ const Header = () => {
 
     const curr_url = useLocation();
 
-    // Inside your component where the modal is defined
+    // to open Location modal 
     const openModal = () => {
         handleModal();
+    };
+
+    const openCanvasModal = () => {
+        handleModal();
+        closeSidebarRef.current.click();
     };
 
     useEffect(() => {
@@ -93,7 +98,7 @@ const Header = () => {
         if (!city.status === "fulfill") {
             handleModal()
         }
-    }, []);    
+    }, []);
 
     useEffect(() => {
 
@@ -111,7 +116,8 @@ const Header = () => {
             setisLocationPresent(true);
         }
         else if (!setting.setting?.default_city && !city.city) {
-            locationModalTrigger.current.click();
+            // locationModalTrigger.current.click();
+            // setLocModal(true)
         }
     }, [dispatch, setting]);
 
@@ -244,7 +250,7 @@ const Header = () => {
                     </div>
                     <div className="canvas-main">
                         <div className='site-location'>
-                            <button whileTap={{ scale: 0.8 }} type='buton' data-bs-toggle="modal" data-bs-target="#locationModal" ref={locationModalTrigger}>
+                            <button whiletap={{ scale: 0.8 }} type='buton' onClick={openCanvasModal} >
                                 <div className='d-flex flex-row gap-2'>
                                     <div className='icon location p-1 m-auto'>
                                         <GoLocation />
@@ -481,7 +487,7 @@ const Header = () => {
                             <div className='d-flex  w-lg-100 col-md-6 order-2 justify-content-center align-items-center '>
 
                                 {/* location modal trigger button */}
-                                {/* <button whileTap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile'
+                                {/* <button whiletap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile'
                                 >
                                     <div className='d-flex flex-row gap-2'>
                                         <div className='icon location p-1 m-auto'>
@@ -501,7 +507,7 @@ const Header = () => {
                                         </div>
                                     </div>
                                 </button> */}
-                                <button whileTap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile' onClick={openModal}>
+                                <button whiletap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile' onClick={openModal}>
                                     <div className='d-flex flex-row gap-2'>
                                         <div className='icon location p-1 m-auto'>
                                             <GoLocation />
@@ -561,7 +567,7 @@ const Header = () => {
 
 
                             <div className='d-flex col-md-3 w-auto order-3  justify-content-end align-items-center'>
-                                <button type='button' whileTap={{ scale: 0.6 }} className='icon position-relative hide-mobile mx-sm-4' onClick={() => {
+                                <button type='button' whiletap={{ scale: 0.6 }} className='icon position-relative hide-mobile mx-sm-4' onClick={() => {
                                     if (cookies.get('jwt_token') === undefined) {
                                         toast.error(t("required_login_message_for_notification"));
                                     }
@@ -575,7 +581,7 @@ const Header = () => {
                                 </button>
 
                                 {city.city === null || cookies.get('jwt_token') === undefined
-                                    ? <button whileTap={{ scale: 0.6 }} className='icon mx-sm-4 position-relative hide-mobile-screen'
+                                    ? <button whiletap={{ scale: 0.6 }} className='icon mx-sm-4 position-relative hide-mobile-screen'
                                         onClick={() => {
                                             if (cookies.get('jwt_token') === undefined) {
                                                 toast.error(t("required_login_message_for_cartRedirect"));
@@ -586,7 +592,7 @@ const Header = () => {
                                         }}>
                                         <IoHeartOutline className='' />
                                     </button>
-                                    : <button whileTap={{ scale: 0.6 }} className='icon mx-4 position-relative hide-mobile-screen' data-bs-toggle="offcanvas" data-bs-target="#favoriteoffcanvasExample" aria-controls="favoriteoffcanvasExample"
+                                    : <button whiletap={{ scale: 0.6 }} className='icon mx-4 position-relative hide-mobile-screen' data-bs-toggle="offcanvas" data-bs-target="#favoriteoffcanvasExample" aria-controls="favoriteoffcanvasExample"
                                         onClick={() => {
                                             if (cookies.get('jwt_token') === undefined) {
                                                 toast.error(t("required_login_message_for_cartRedirect"));
@@ -608,7 +614,7 @@ const Header = () => {
                                 }
 
                                 {city.city === null || cookies.get('jwt_token') === undefined
-                                    ? <button type='button' whileTap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative'
+                                    ? <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative'
 
                                         onClick={() => {
                                             if (cookies.get('jwt_token') === undefined) {
@@ -621,7 +627,7 @@ const Header = () => {
                                         <IoCartOutline />
                                     </button>
 
-                                    : <button type='button' whileTap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
+                                    : <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
 
                                         onClick={() => {
                                             if (cookies.get('jwt_token') === undefined) {
@@ -645,7 +651,7 @@ const Header = () => {
                                 {user.status === 'loading'
                                     ? (
                                         <div className='hide-mobile-screen px-3'>
-                                            <div whileTap={{ scale: 0.6 }} className='d-flex flex-row user-profile gap-1' data-bs-toggle="modal" data-bs-target="#loginModal">
+                                            <div whiletap={{ scale: 0.6 }} className='d-flex flex-row user-profile gap-1' data-bs-toggle="modal" data-bs-target="#loginModal">
                                                 <div className='d-flex align-items-center user-info my-auto'>
                                                     <span className='btn-success'><IoPersonOutline className='user_icon' /></span>
                                                     <span className='pe-3'>{t("login")}</span>

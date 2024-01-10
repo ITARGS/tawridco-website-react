@@ -620,7 +620,7 @@ const api = {
 
         return fetch(appUrl + appSubUrl + "/settings/payment_methods", requestOptions);
     },
-    getTransactions(token, limit = 10, offset = 0) {
+    getTransactions(token, limit = 10, offset = 0, type = 'transactions') {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
@@ -631,7 +631,7 @@ const api = {
             redirect: 'follow'
         };
 
-        var params = { limit: limit, offset: offset };
+        var params = { limit: limit, offset: offset ,type: type};
         var url = new URL(appUrl + appSubUrl + "/get_user_transactions");
         for (let k in params) {
             url.searchParams.append(k, params[k]);
@@ -838,7 +838,7 @@ const api = {
         data.append('order_item_id', order_item_id);
         data.append('status', status);
         data.append('device_type', "website");
-        data.append('app_version', "1.0.0");
+        data.append('app_version', "1.9.2 ");
 
         var requestOptions = {
             method: 'POST',

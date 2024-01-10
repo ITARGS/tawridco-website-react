@@ -2,6 +2,7 @@ import store from "../model/store";
 import api from "../api/api";
 import { setCart } from "../model/reducer/cartReducer";
 import { setFavourite } from "../model/reducer/favouriteReducer";
+import localeTranslations from '../utils/en (3).json'
 
 export const AddToCart = async (product_id, product_variant_id, qty, setisLoader, cookies, toast, city, props) => {
     setisLoader(true);
@@ -95,3 +96,16 @@ export const RemoveFromFavorite = async (product_id, cookies, toast, city) => {
             }
         });
 };
+
+
+// transalte strings
+export const translate = (label) => {
+    const langLabel = store.getState().languageSlice.languages.file_name &&
+      store.getState().languageSlice.languages.file_name[label];
+    const enTranslation = localeTranslations;
+    if (langLabel) {
+      return langLabel;
+    } else {
+      return enTranslation[label];
+    }
+  };

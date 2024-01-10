@@ -62,15 +62,15 @@ const ProductList2 = () => {
     const location = useLocation();
     // console.log(location);
 
-    useEffect(() => {
-        dispatch(setFilterBrands({ data: [] }));
-        dispatch(setFilterCategory({ data: null }));
-        dispatch(setFilterSearch({ data: "" }));
-        dispatch(setFilterSection({ data: null }));
-        dispatch(setFilterMinMaxPrice({ data: null }));
-        dispatch(setFilterProductSizes({ data: [] }));
-        dispatch(setFilterSort({ data: "new" }));
-    }, [])
+    // useEffect(() => {
+    //     dispatch(setFilterBrands({ data: [] }));
+    //     dispatch(setFilterCategory({ data: null }));
+    //     dispatch(setFilterSearch({ data: "" }));
+    //     dispatch(setFilterSection({ data: null }));
+    //     dispatch(setFilterMinMaxPrice({ data: null }));
+    //     dispatch(setFilterProductSizes({ data: [] }));
+    //     dispatch(setFilterSort({ data: "new" }));
+    // }, [])
     
 
 

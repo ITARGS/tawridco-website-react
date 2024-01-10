@@ -30,7 +30,8 @@ const Address = () => {
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    dispatch({ type: ActionTypes.SET_ADDRESS, payload: result.data });
+                    dispatch(setAddress({data: result.data}))
+                    // dispatch({ type: ActionTypes.SET_ADDRESS, payload: result.data });
                     if (result.data.find((element) => element.is_default == 1)) {
                         dispatch(setSelectedAddress({ data: result.data.find((element) => element.is_default == 1) }));
                         // dispatch({ type: ActionTypes.SET_SELECTED_ADDRESS, payload: result.data.find((element) => element.is_default == 1) });

@@ -58,6 +58,7 @@ const OrderDetails = () => {
 
     useEffect(() => {
         fetchOrderDetails()
+        // console.log(orderData, 'orderDaraaa')
     }, [])
 
 
@@ -102,6 +103,7 @@ const OrderDetails = () => {
             .then((response) => {
                 if (response.status) {
                     response.data && setOrderData(response.data)
+                    console.log(response.data, "update_order_status")
                     toast.success(response.message)
                 }
 
@@ -144,6 +146,7 @@ const OrderDetails = () => {
                                                 </thead>
                                                 <tbody>
                                                     {orderData?.items?.map((item, index) => {
+                                                        console.log(item, 'orderItem')
                                                         return (
                                                             <>
                                                                 <tr key={index} className={Number(item?.active_status) > 6 ? 'disabled' : ''}>
@@ -171,23 +174,66 @@ const OrderDetails = () => {
                                                                                 </span>
                                                                                 : ""} */}
                                                                         </div>
-                                                                        <div className="actions-container">
+                                                                        {/* <div className="actions-container">
 
-                                                                            {!Number(item?.active_status) >= 6 && !item?.cancelable_status && item?.return_status ?
+                                                                            {!Number(item?.active_status) >= 6 && item?.return_status == 1 ?
                                                                                 <span className="return">
                                                                                     <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('return')}</button>
                                                                                 </span>
                                                                                 : <></>
                                                                             }
 
-                                                                            {!Number(item?.active_status) >= 6 && item?.cancelable_status ?
+                                                                            {!Number(item?.active_status) <= 6 && !Number(item?.active_status) <= item?.till_status && item?.cancelable_status == 1 ?
                                                                                 <span className="cancel">
                                                                                     <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancel')}</button>
                                                                                 </span>
                                                                                 : <></>
+                                                                                
+                                                                            }
+                                                                            {!Number(item?.active_status === 7 && item?.active_status === '7')  ?
+                                                                                <span className="cancel">
+                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 7)}>cancelled</button>
+                                                                                </span>
+                                                                                : <></>
+                                                                            }
+                                                                            {!Number(item?.active_status) == 8 ?
+                                                                                <span className="return">
+                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('returned')}</button>
+                                                                                </span>
+                                                                                : <></>
                                                                             }
 
+                                                                        </div> */}
+                                                                        <div className="actions-container">
+                                                                            {Number(item?.active_status) <= 6 && item?.return_status === 1 ?
+                                                                                <span className="return">
+                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('return')}</button>
+                                                                                </span>
+                                                                                : null
+                                                                            }
+
+                                                                            {Number(item?.active_status) >= 6 && Number(item?.active_status) <= item?.till_status && item?.cancelable_status === 1 ?
+                                                                                <span className="cancel">
+                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancel')}</button>
+                                                                                </span>
+                                                                                : null
+                                                                            }
+
+                                                                            {Number(item?.active_status) === 7 && item?.active_status === '7' ?
+                                                                                <span className="cancelled">
+                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancelled')}</button>
+                                                                                </span>
+                                                                                : null
+                                                                            }
+
+                                                                            {Number(item?.active_status) === 8 ?
+                                                                                <span className="returned">
+                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('returned')}</button>
+                                                                                </span>
+                                                                                : null
+                                                                            }
                                                                         </div>
+
                                                                     </td>
                                                                 </tr>
                                                             </>
@@ -197,6 +243,17 @@ const OrderDetails = () => {
                                             </table>
                                         </div>
                                     </div>
+
+                                    {/* <hr /> */}
+
+                                    {/* <div className="container-footer">
+                                        <div className="cancelReturnBtnWrapper">
+                                            {
+                                                orderData?.items[0]?.cancelable_status === 1 ?
+                                                    "Cancel" : 'no cancel'
+                                            }
+                                        </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -294,7 +351,7 @@ const OrderDetails = () => {
                                                     {t('sub_total')}
                                                 </span>
                                                 <span>
-                                                {setting.setting?.currency}{orderData?.total}
+                                                    {setting.setting?.currency}{orderData?.total}
                                                 </span>
                                             </div>
                                             {orderData?.discount ?
@@ -303,7 +360,7 @@ const OrderDetails = () => {
                                                         {t('discount')}
                                                     </span>
                                                     <span>
-                                                    {setting.setting?.currency}{orderData?.discount}
+                                                        {setting.setting?.currency}{orderData?.discount}
                                                     </span>
                                                 </div>
                                                 : <></>}

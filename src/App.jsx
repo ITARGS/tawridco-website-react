@@ -74,7 +74,7 @@ function App() {
     api.getSystemLanguage(0, 1)
       .then(response => response.json())
       .then(result => {
-        document.documentElement.dir = result.data.type;
+        document.documentElement.dir = result?.data?.type;
         if (result.status === 1) {
           if (!language.current_language) {
             // dispatch({ type: ActionTypes.SET_LANGUAGE, payload: result.data });
@@ -138,7 +138,7 @@ function App() {
     if (city.city !== null) {
       fetchShop(city.city.id, city.city.latitude, city.city.longitude);
     }
-  }, [city, cart]);
+  }, [city, cart, setting]);
 
 
   useEffect(() => {
@@ -220,6 +220,7 @@ function App() {
                         <Route exact={true} path="/profile/orders" element={<ProfileDashboard showOrders={true} />}></Route>
                         <Route exact={true} path="/profile/orders/:id" element={<OrderDetails />}></Route>
                         <Route exact={true} path="/profile/transactions" element={<ProfileDashboard showTransaction={true} />}></Route>
+                        <Route exact={true} path="/profile/wallet-transaction" element={<ProfileDashboard showWalletTransaction={true} />}></Route>
                         <Route exact={true} path="/profile/address" element={<ProfileDashboard showAddress={true} />}></Route>
                         <Route exact={true} path="/notification" element={<Notification />}></Route>
                         <Route exact={true} path='/categories' element={<ShowAllCategories />}></Route>
