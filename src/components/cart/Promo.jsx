@@ -24,7 +24,7 @@ function Promo(props) {
 
     const [promo_detail, setPromoDetail] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [isapplied, setIsapplied] = useState(false)
+    const [isapplied, setIsapplied] = useState(false);
     const amount = cart.checkout && cart.checkout.sub_total;
 
     const fetchpromo_codes = async () => {
@@ -42,11 +42,11 @@ function Promo(props) {
             setLoading(false);
             if (result.status) {
                 dispatch(setCartPromo({ data: result.data }));
-                dispatch(setPromoCodeApplied({ data: 1 }));
+                // dispatch(setPromoCodeApplied({ data: 1 }));
                 // console.log(result.data, "resultData")
                 // dispatch({ type: ActionTypes.SET_CART_PROMO, payload: result.data });
                 toast.success("Coupon Applied Successfully");
-                setIsapplied(true)
+                setIsapplied(true);
                 // cart.promo_code && (cart.checkout.total_amount =Number(cart.promo_code.discounted_amount));
                 closeCanvas.current?.click();
             }
@@ -54,8 +54,8 @@ function Promo(props) {
     };
 
     useEffect(() => {
-
-    }, [isapplied])
+        // applyPromoCode();
+    }, [amount]);
 
 
     useEffect(() => {
@@ -91,7 +91,7 @@ function Promo(props) {
                         <div className="row-reverse">
                             {promo_detail && promo_detail.map((promo, index) => (
                                 <>
-                                    {console.log(promo, 'promo')}
+                                    {/* {console.log(promo, 'promo')} */}
                                     <div className="col-12 promo-card" key={index}>
                                         <div className="promo-card-e1">
                                             <div className="promo-details">
@@ -129,8 +129,8 @@ function Promo(props) {
                                                     }}
                                                 >
                                                     {promo.is_applied ? t('applied') : t('apply')}
-                                                </span> 
-                                                
+                                                </span>
+
 
 
 

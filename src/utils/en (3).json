@@ -245,5 +245,6 @@
   "please_select_date": "Please Select Date",
   "order_placed": "Order Placed",
   "order_id": "Order Id",
-  "item": "item"
+  "item": "item",
+  "seller_id_does_not_match":"Seller Id does not match"
 }

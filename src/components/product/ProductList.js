@@ -73,7 +73,7 @@ const ProductList = () => {
         dispatch({ type: ActionTypes.SET_FILTER_MIN_MAX_PRICE, payload: null });
         fetchCategory();
 
-    }, [])
+    }, []);
 
 
 
@@ -735,7 +735,7 @@ const ProductList = () => {
                                                                     <span className='border border-light rounded-circle p-2 px-3' id='aiEye'>
                                                                         <AiOutlineEye
                                                                             onClick={() => { setselectedProduct(product); }}
-                                                                            data-bs-toggle="modal" data-bs-target="#quickviewModal" />
+                                                                        />
                                                                     </span>
                                                                     <Link to={`/product/${product.slug}`}>
                                                                         <div className={`image-container  ${!filter.grid_view ? 'border-end col-3 ' : 'col-12'}`} >

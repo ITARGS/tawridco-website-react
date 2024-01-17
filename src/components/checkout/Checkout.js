@@ -37,7 +37,7 @@ import { ActionTypes } from '../../model/action-type';
 import { RiCoupon2Fill } from 'react-icons/ri';
 import Promo from '../cart/Promo';
 import { useTranslation } from 'react-i18next';
-import { clearCartPromo, setCart, setCartCheckout, setWallet } from '../../model/reducer/cartReducer';
+import { clearCartPromo, setCart, setCartCheckout, setCartPromo, setWallet } from '../../model/reducer/cartReducer';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { PiWallet } from "react-icons/pi";
 import { deductUserBalance } from '../../model/reducer/authReducer';
@@ -52,7 +52,7 @@ const Checkout = () => {
     const user = useSelector(state => (state.user));
     const setting = useSelector(state => (state.setting));
     const [paymentUrl, setpaymentUrl] = useState(null);
-    const [codAllow, setCodAllow] = useState([])
+    const [codAllow, setCodAllow] = useState([]);
     const [totalPayment, setTotalPayment] = useState(null);
     const [walletDeductionAmt, setWalletDeductionAmt] = useState(null);
     const [order, setOrder] = useState(false);
@@ -91,8 +91,7 @@ const Checkout = () => {
         api.getCartSeller(cookies.get('jwt_token'), city.city.latitude, city.city.longitude, 1)
             .then(res => res.json())
             .then(result => {
-                //    console.log(result.data.cod_allowed,'result')
-                setCodAllow(result.data.cod_allowed)
+                setCodAllow(result.data.cod_allowed);
 
             })
             .catch(error => console.log(error));
@@ -335,6 +334,7 @@ const Checkout = () => {
                             toast.success("Order Successfully Placed!");
                             setloadingPlaceOrder(false);
                             dispatch(setWallet({ data: 0 }));
+                            dispatch(setCartPromo({ data: null }));
                             dispatch(deductUserBalance({ data: walletDeductionAmt }));
                             setIsOrderPlaced(true);
                             setShow(true);
@@ -365,6 +365,7 @@ const Checkout = () => {
                                     if (res.status === 1) {
                                         setloadingPlaceOrder(false);
                                         dispatch(deductUserBalance({ data: walletDeductionAmt }));
+                                        dispatch(setCartPromo({ data: null }));
                                         handleRozarpayPayment(result.data.order_id, res.data.transaction_id, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, user.user.name, user.user.email, user.user.mobile, setting.setting?.app_name);
                                     }
                                     else {
@@ -392,6 +393,7 @@ const Checkout = () => {
                         // fetchOrders();
                         if (result.status === 1) {
                             dispatch(deductUserBalance({ data: walletDeductionAmt }));
+                            dispatch(setCartPromo({ data: null }));
                             setloadingPlaceOrder(false);
                             setOrderID(result.data.order_id);
                             handlePayStackPayment(user.user.email, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, setting.payment_setting.paystack_currency_code, setting.setting.support_email, result.data.order_id);
@@ -418,6 +420,7 @@ const Checkout = () => {
                                 .then(res => {
                                     if (res.status) {
                                         dispatch(deductUserBalance({ data: walletDeductionAmt }));
+                                        dispatch(setCartPromo({ data: null }));
                                         setstripeOrderId(result.data.order_id);
                                         setstripeClientSecret(res.data.client_secret);
                                         setstripeTransactionId(res.data.id);
@@ -461,6 +464,7 @@ const Checkout = () => {
                                         setloadingPlaceOrder(false);
                                         setpaymentUrl(res.data.paypal_redirect_url);
                                         dispatch(deductUserBalance({ data: walletDeductionAmt }));
+                                        dispatch(setCartPromo({ data: null }));
                                         // window.open(res.data.paypal_redirect_url, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes')
                                         // document.getElementById("iframe_id").contentWindow.location.href
                                         // handleRozarpayyPayment(result.data.order_id, res.data.transaction_id, cart.checkout.total_amount, user.user.name, user.user.email, user.user.mobile, setting.setting.app_name);
@@ -522,8 +526,8 @@ const Checkout = () => {
                 if (result.status === 1) {
                     dispatch(setCart({ data: null }));
                     dispatch(setCartCheckout({ data: null }));
-                    dispatch({ type: ActionTypes.SET_CART, payload: null });
-                    dispatch({ type: ActionTypes.SET_CART_CHECKOUT, payload: null });
+                    // dispatch({ type: ActionTypes.SET_CART, payload: null });
+                    // dispatch({ type: ActionTypes.SET_CART_CHECKOUT, payload: null });
                 }
             });
         setShow(false);
@@ -535,7 +539,7 @@ const Checkout = () => {
     const removeCoupon = () => {
         dispatch(clearCartPromo());
         toast.info("Coupon Removed");
-    }
+    };
 
 
     useEffect(() => {

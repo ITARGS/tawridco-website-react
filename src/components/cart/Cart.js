@@ -84,10 +84,15 @@ const Cart = () => {
                         .then(res => {
                             setisLoader(false);
                             if (res.status === 1) {
+                                dispatch(clearCartPromo());
+                                // dispatch(setPromoCodeApplied({ data: 0 }));
                                 dispatch(setCart({ data: res }));
                                 // dispatch({ type: ActionTypes.SET_CART, payload: res });
                             }
                         });
+
+                } else if (result.status === 0) {
+                    setisLoader(false);
 
                 }
                 else {
@@ -108,7 +113,8 @@ const Cart = () => {
                     await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
                         .then(resp => resp.json())
                         .then(res => {
-
+                            dispatch(clearCartPromo());
+                            // dispatch(setPromoCodeApplied({ data: 0 }));
                             if (res.status === 1) {
                                 // dispatch({ type: ActionTypes.SET_CART, payload: res });
                                 dispatch(setCart({ data: res }));
@@ -149,7 +155,7 @@ const Cart = () => {
     };
     const removeCoupon = () => {
         dispatch(clearCartPromo());
-        dispatch(setPromoCodeApplied({ data: 0 }));
+        // dispatch(setPromoCodeApplied({ data: 0 }));
         // console.log(totalPayment);
         toast.info("Coupon Removed");
     };
@@ -267,11 +273,11 @@ const Cart = () => {
                                     {/* Apply Promo Code */}
                                     <div className="promo-wrapper">
                                         <div className="promo-container">
-                                            <div className="promo-button d-flex justify-content-between align-items-center d-lg-flex pb-4 mb-4" style={{borderBottom: '1px solid lightgrey'}}>
-                                                <span className="" 
-                                                style={{fontSize: "16px"}}>{t("have_coupon")}</span>
+                                            <div className="promo-button d-flex justify-content-between align-items-center d-lg-flex pb-4 mb-4" style={{ borderBottom: '1px solid lightgrey' }}>
+                                                <span className=""
+                                                    style={{ fontSize: "16px" }}>{t("have_coupon")}</span>
                                                 <button className="btn" onClick={() => setShowPromoOffcanvas(true)}
-                                                style={{backgroundColor: '#33a36b',color: 'white',fontSize: '14px'}}
+                                                    style={{ backgroundColor: '#33a36b', color: 'white', fontSize: '14px' }}
                                                 >{t("view_coupon")}</button>
                                             </div>
                                             {cart.cart && cart.promo_code ?
@@ -334,7 +340,7 @@ const Cart = () => {
                 </>
             )
             }
-        </div >
+        </div>
 
     );
 };

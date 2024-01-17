@@ -18,16 +18,18 @@ import { IoIosArrowDown } from 'react-icons/io';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Range, getTrackBackground } from 'react-range';
-import { AddToCart, AddToFavorite, RemoveFromCart, RemoveFromFavorite } from '../../functions/Functions';
 import { setCategory } from '../../model/reducer/categoryReducer';
 import { setFilterBrands, setFilterCategory, setFilterMinMaxPrice, setFilterProductSizes, setFilterSearch, setFilterSection, setFilterSort } from '../../model/reducer/productFilterReducer';
 import { setSelectedProduct } from '../../model/reducer/selectedProduct';
-import { setProductSizes } from '../../model/reducer/productSizesReducer';
+// import { setProductSizes } from '../../model/reducer/productSizesReducer';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import { Flex } from '@chakra-ui/react';
+import Popup from "../same-seller-popup/Popup";
+import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
+import { setFavourite } from '../../model/reducer/favouriteReducer';
 
-const ProductList2 = () => {
+
+const ProductList2 = React.memo(() => {
     const total_products_per_page = 12;
 
     const dispatch = useDispatch();
@@ -52,13 +54,16 @@ const ProductList2 = () => {
     const [offset, setoffset] = useState(0);
     const [totalProducts, settotalProducts] = useState(0);
     const [currPage, setcurrPage] = useState(1);
-    const [isLoader, setisLoader] = useState(true);
+    const [isLoader, setisLoader] = useState(false);
     const [selectedVariant, setSelectedVariant] = useState({});
     const [minPrice, setMinPrice] = useState(null);
     const [maxPrice, setMaxPrice] = useState(null);
     const [values, setValues] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [sizes, setSizes] = useState([]);
+    const [p_id, setP_id] = useState(0);
+    const [p_v_id, setP_V_id] = useState(0);
+    const [qnty, setQnty] = useState(0);
     const location = useLocation();
     // console.log(location);
 
@@ -71,7 +76,7 @@ const ProductList2 = () => {
     //     dispatch(setFilterProductSizes({ data: [] }));
     //     dispatch(setFilterSort({ data: "new" }));
     // }, [])
-    
+
 
 
     const fetchBrands = () => {
@@ -106,7 +111,7 @@ const ProductList2 = () => {
     const filterProductsFromApi = async (filter) => {
         setproductresult(null);
         setisLoader(true);
-        await api.getProductbyFilter(city.city.id, city.city.latitude, city.city.longitude, filter, cookies.get('jwt_token'))
+        await api.getProductbyFilter(city?.city?.id, city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -213,7 +218,7 @@ const ProductList2 = () => {
             offset: offset,
             unit_ids: filter?.search_sizes.filter(obj => obj.checked).map(obj => obj["unit_id"]).join(","),
         });
-    }, [filter?.price_filter, offset, cart]);
+    }, [filter?.price_filter, offset, cart?.cart]);
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -223,7 +228,7 @@ const ProductList2 = () => {
     const FilterProductByPrice = async (filter) => {
         setproductresult(null);
         setisLoader(true);
-        await api.getProductbyFilter(city.city.id, city.city.latitude, city.city.longitude, filter, cookies.get('jwt_token'))
+        await api.getProductbyFilter(city?.city?.id, city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -639,21 +644,105 @@ const ProductList2 = () => {
     };
     // 
     const addtoCart = async (product_id, product_variant_id, qty) => {
-        AddToCart(product_id, product_variant_id, qty, setisLoader, cookies, toast, city);
+        setP_id(product_id);
+        setP_V_id(product_variant_id);
+        setQnty(qty);
+        setisLoader(true);
+        console.log("addtoCart ProductsList Called");
+        await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
+            .then(response => response.json())
+            .then(async (result) => {
+                if (result.status === 1) {
+                    toast.success(result.message);
+                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
+                        .then(resp => resp.json())
+                        .then(res => {
+                            //console.log(res);
+                            if (res.status === 1) {
+                                setShowModal(false);
+                                dispatch(setCart({ data: res }));
+                                setP_id(product_id);
+                                setP_V_id(product_variant_id);
+                                setQnty(qty);
+                            }
+                        });
+
+                }
+                else if (result?.data?.one_seller_error_code == 1) {
+                    dispatch(setSellerFlag({ data: 1 }));
+                    // console.log(result.message);
+                    toast.error(t(`${result.message}`));
+                } else {
+                    toast.error(result.message);
+                }
+                setisLoader(false);
+            });
     };
 
     //remove from Cart
     const removefromCart = async (product_id, product_variant_id) => {
-        RemoveFromCart(product_id, product_variant_id, cookies, toast, city);
+        await api.removeFromCart(cookies.get('jwt_token'), product_id, product_variant_id)
+            .then(response => response.json())
+            .then(async (result) => {
+                if (result.status === 1) {
+                    toast.success(result.message);
+                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
+                        .then(resp => resp.json())
+                        .then(res => {
+                            if (res.status === 1)
+                                dispatch(setCart({ data: res }));
+                            else
+                                dispatch(setCart({ data: null }));
+                        });
+
+                }
+                else {
+                    toast.error(result.message);
+                }
+            });
     };
 
     //Add to favorite
     const addToFavorite = async (product_id) => {
-        AddToFavorite(product_id, setisLoader, cookies, toast, city);
+        await api.addToFavotite(cookies.get('jwt_token'), product_id)
+            .then(response => response.json())
+            .then(async (result) => {
+                if (result.status === 1) {
+                    toast.success(result.message);
+                    await api.getFavorite(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
+                        .then(resp => resp.json())
+                        .then(res => {
+                            setisLoader(false);
+                            if (res.status === 1)
+                                dispatch(setFavourite({ data: res }));
+                        });
+                }
+                else {
+                    // setisLoader(false);
+                    toast.error(result.message);
+                }
+            });
     };
 
     const removefromFavorite = async (product_id) => {
-        RemoveFromFavorite(product_id, cookies, toast, city);
+        await api.removeFromFavorite(cookies.get('jwt_token'), product_id)
+            .then(response => response.json())
+            .then(async (result) => {
+                if (result.status === 1) {
+                    toast.success(result.message);
+                    await api.getFavorite(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
+                        .then(resp => resp.json())
+                        .then(res => {
+                            if (res.status === 1)
+                                dispatch(setFavourite({ data: res }));
+                            else
+                                dispatch(setFavourite({ data: null }));
+                        });
+                }
+                else {
+                    toast.error(result.message);
+                }
+            });
     };
 
     //page change
@@ -729,7 +818,7 @@ const ProductList2 = () => {
                                 </div>
                             </>) :
                                 (
-                                    <Skeleton width={692} height={49} borderRadius={8} />
+                                    <Skeleton height={49} borderRadius={8} />
                                 )
                             }
 
@@ -742,7 +831,7 @@ const ProductList2 = () => {
                                             <div className='row flex-wrap'>
                                                 {placeholderItems.map((index) => (
                                                     <div key={index} className={`${!filter.grid_view ? 'col-12 list-view ' : 'col-md-6 col-sm-6 col-lg-3 flex-column mt-3'}`}>
-                                                        <Skeleton width={162} height={289} className='mt-3 ' borderRadius={8} />
+                                                        <Skeleton height={289} className='mt-3 ' borderRadius={8} />
                                                     </div>
                                                 ))}
                                             </div>
@@ -764,6 +853,9 @@ const ProductList2 = () => {
                                                                             e.preventDefault();
                                                                             setShowModal(true);
                                                                             setselectedProduct(product);
+                                                                            setP_id(product.id);
+                                                                            setP_V_id(product.variants[0].id);
+                                                                            setQnty(product.variants[0].cart_count + 1);
                                                                         }}>
                                                                             <AiOutlineEye
 
@@ -922,7 +1014,12 @@ const ProductList2 = () => {
                                                                                         <input type="hidden" name={`default-variant-id`} id={`productlist${index}-variant-id`} />
 
                                                                                         {product.variants.length > 1 ? <>
-                                                                                            <div className='variant_selection' onClick={(e) => { e.preventDefault(); setselectedProduct(product); setShowModal(true); }} >
+                                                                                            <div className='variant_selection' onClick={(e) => {
+                                                                                                e.preventDefault(); setselectedProduct(product); setShowModal(true);
+                                                                                                setP_id(product.id);
+                                                                                                setP_V_id(product.variants[0].id);
+                                                                                                setQnty(product.variants[0].cart_count + 1);
+                                                                                            }} >
                                                                                                 <span className='product_list_dropdown_span'>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} </>}</span>
                                                                                                 <IoIosArrowDown />
                                                                                             </div>
@@ -937,7 +1034,11 @@ const ProductList2 = () => {
                                                                                 </> : <>
                                                                                     <div className='product_varients_drop d-flex align-items-center'>
                                                                                         {product.variants.length > 1 ? <>
-                                                                                            <div className='variant_selection' onClick={(e) => { e.preventDefault(); setselectedProduct(product); setShowModal(true); }} >
+                                                                                            <div className='variant_selection' onClick={(e) => {
+                                                                                                e.preventDefault(); setselectedProduct(product); setShowModal(true); setP_id(product.id);
+                                                                                                setP_V_id(product.variants[0].id);
+                                                                                                setQnty(product.variants[0].cart_count + 1);
+                                                                                            }} >
                                                                                                 <span className='product_list_dropdown_span'>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} Rs.<span className="original-price" id={`dropDown-Toggle${index}`}>{product.variants[0].toFixed(setting.setting && setting.setting.decimal_point)}</span></>}</span>
                                                                                                 <IoIosArrowDown />
                                                                                             </div>
@@ -1099,7 +1200,13 @@ const ProductList2 = () => {
                                                             onChange={handlePageChange.bind(this)}
                                                         />
                                                     </div>
-                                                    <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} />
+                                                    <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal}
+                                                        setP_id={setP_id}
+                                                        setP_V_id={setP_V_id}
+                                                    />
+                                                    <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} setisLoader={setisLoader} cookies={cookies} toast={toast} city={city} />
+
+
                                                 </div>
 
 
@@ -1126,6 +1233,6 @@ const ProductList2 = () => {
 
     );
 
-};
+});
 
 export default ProductList2;;

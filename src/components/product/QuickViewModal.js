@@ -13,8 +13,11 @@ import Loader from '../loader/Loader';
 import Slider from 'react-slick';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'react-bootstrap';
-import { AddToCart, AddToFavorite, RemoveFromCart, RemoveFromFavorite } from '../../functions/Functions';
+// import { AddToCart, AddToFavorite, RemoveFromCart, RemoveFromFavorite } from '../../functions/Functions';
 import { setProductSizes } from '../../model/reducer/productSizesReducer';
+import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
+import { setFavourite } from '../../model/reducer/favouriteReducer';
+import Popup from '../same-seller-popup/Popup';
 
 
 const QuickViewModal = (props) => {
@@ -44,9 +47,9 @@ const QuickViewModal = (props) => {
 
     useEffect(() => {
         if (Object.keys(props.selectedProduct).length > 0 && city.city !== null && Object.keys(product).length === 0 && props.showModal === true) {
-            fetchProduct(props.selectedProduct.id);
             getCategoryDetails();
             getBrandDetails();
+            fetchProduct(props.selectedProduct.id);
         }
         else if (props.showModal === true) {
             fetchProductVariant(props.selectedProduct.id);
@@ -55,15 +58,17 @@ const QuickViewModal = (props) => {
 
 
 
-
     const fetchProduct = async (product_id) => {
-
+        // console.log("fetchProduct Called");
         await api.getProductbyId(city.city.latitude, city.city.longitude, product_id, cookies.get('jwt_token'))
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
+                    // console.log("fetchProduct Result ->", result.data);
+                    // !variant_index && setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
+                    // setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index));
                     setproduct(result.data);
-                    !variant_index && setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
+                    setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
                     setmainimage(result.data.image_url);
                     selectedVariant && setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id === variant_index));
                 }
@@ -76,10 +81,13 @@ const QuickViewModal = (props) => {
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    // setproduct(result.data);
-                    !variant_index && setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
-                    // setmainimage(result.data.image_url);
+                    setproduct(result.data);
+                    setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
+                    setmainimage(result.data.image_url);
                     selectedVariant && setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id === variant_index));
+                    // console.log("fetchProduct Variant Func Called -> ", result.data);
+                    // !variant_index && setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
+                    // setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index));
                 }
             })
             .catch(error => console.log(error));
@@ -141,21 +149,100 @@ const QuickViewModal = (props) => {
 
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
-        AddToCart(product_id, product_variant_id, qty, setisLoader, cookies, toast, city, props);
+        // console.log("QuickView Add to Cart -> ", product_id, product_variant_id, qty);
+        setisLoader(true);
+        await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
+            .then(response => response.json())
+            .then(async (result) => {
+                if (result.status === 1) {
+                    toast.success(result.message);
+                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
+                        .then(resp => resp.json())
+                        .then(res => {
+                            //console.log(res);
+                            if (res.status === 1) {
+                                props.setShowModal(false);
+                                dispatch(setCart({ data: res }));
+                            }
+                        });
+
+                }
+                else if (result?.data?.one_seller_error_code == 1) {
+                    dispatch(setSellerFlag({ data: 1 }));
+                    // console.log(result.message);
+                    toast.error(t(`${result.message}`));
+                    props.setShowModal(false);
+                } else {
+                    toast.error(result.message);
+                }
+                setisLoader(false);
+            });
     };
 
     //remove from Cart
     const removefromCart = async (product_id, product_variant_id) => {
-        RemoveFromCart(product_id, product_variant_id, cookies, toast, city,);
+        await api.removeFromCart(cookies.get('jwt_token'), product_id, product_variant_id)
+            .then(response => response.json())
+            .then(async (result) => {
+                if (result.status === 1) {
+                    toast.success(result.message);
+                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
+                        .then(resp => resp.json())
+                        .then(res => {
+                            if (res.status === 1)
+                                dispatch(setCart({ data: res }));
+                            else
+                                dispatch(setCart({ data: null }));
+                        });
+
+                }
+                else {
+                    toast.error(result.message);
+                }
+            });
     };
 
     //Add to favorite
     const addToFavorite = async (product_id) => {
-        AddToFavorite(product_id, setisLoader, cookies, toast, city);
+        await api.addToFavotite(cookies.get('jwt_token'), product_id)
+            .then(response => response.json())
+            .then(async (result) => {
+                if (result.status === 1) {
+                    toast.success(result.message);
+                    await api.getFavorite(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
+                        .then(resp => resp.json())
+                        .then(res => {
+                            setisLoader(false);
+                            if (res.status === 1)
+                                dispatch(setFavourite({ data: res }));
+                        });
+                }
+                else {
+                    // setisLoader(false);
+                    toast.error(result.message);
+                }
+            });
     };
 
     const removefromFavorite = async (product_id) => {
-        RemoveFromFavorite(product_id, cookies, toast, city);
+        await api.removeFromFavorite(cookies.get('jwt_token'), product_id)
+            .then(response => response.json())
+            .then(async (result) => {
+                if (result.status === 1) {
+                    toast.success(result.message);
+                    await api.getFavorite(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
+                        .then(resp => resp.json())
+                        .then(res => {
+                            if (res.status === 1)
+                                dispatch(setFavourite({ data: res }));
+                            else
+                                dispatch(setFavourite({ data: null }));
+                        });
+                }
+                else {
+                    toast.error(result.message);
+                }
+            });
     };
 
     const settings_subImage = {
@@ -207,6 +294,9 @@ const QuickViewModal = (props) => {
     };
 
     const handleVariantChange = (variant, index) => {
+        // console.log(variant, index);
+        props.setP_id(product.id);
+        props.setP_V_id(variant.id);
         setSelectedVariant(variant);
         setVariantIndex(index);
     };
@@ -227,7 +317,6 @@ const QuickViewModal = (props) => {
             backdrop={"static"}>
             <div className="product-details-view">
                 <Modal.Body className='modal-body'>
-
                     <div className="d-flex flex-row justify-content-end header">
                         <button type="button" aria-label="Close" onClick={() => {
                             props.setselectedProduct({});
@@ -298,7 +387,7 @@ const QuickViewModal = (props) => {
                                                     <div className="d-flex flex-row gap-2 align-items-center my-1">
 
                                                         <div id="price-section-quickview" className='d-flex flex-row gap-2 align-items-center my-1'>
-                                                            {setting.setting && setting.setting.currency}<p id='fa-rupee' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price === 0 ? selectedVariant.price.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price.toFixed(setting.setting && setting.setting.decimal_point)) : (product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point))}</p>
+                                                            {setting.setting && setting.setting.currency}<p id='fa-rupee' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price === 0 ? selectedVariant.price?.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price?.toFixed(setting.setting && setting.setting.decimal_point)) : (product.variants[0].discounted_price === 0 ? product.variants[0].price?.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price?.toFixed(setting.setting && setting.setting.decimal_point))}</p>
                                                         </div>
                                                     </div>
 
@@ -323,7 +412,9 @@ const QuickViewModal = (props) => {
                                                                                     <label className="element_container " htmlFor={`variants${index}`}>
                                                                                         <div className="top-section">
 
-                                                                                            <input type="radio" name={`variants${index}`} id={`variants${index}`} checked={variant_index === variant.id} disabled={Number(product.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)} />
+                                                                                            <input type="radio" name={`variants${index}`} id={`variants${index}`} checked={variant_index === variant.id} disabled={Number(product.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)
+                                                                                            }
+                                                                                            />
                                                                                         </div>
                                                                                         <div className="bottom-section">
                                                                                             <span className="d-flex align-items-center flex-column">{variant.measurement} {variant.stock_unit_name} </span>
@@ -513,7 +604,7 @@ const QuickViewModal = (props) => {
                                                     {product?.fssai_lic_no &&
                                                         <div className='fssai-details'>
                                                             <div className='image-container'>
-                                                                <img src={product?.fssai_lic_img} />
+                                                                <img src={product?.fssai_lic_img} alt='fssai-image' />
                                                             </div>
                                                             <div className='fssai-license-no'>
                                                                 <span>

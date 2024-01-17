@@ -18,7 +18,8 @@ import QuickViewModal from '../product/QuickViewModal';
 import { useTranslation } from 'react-i18next';
 import { setProductSizes } from '../../model/reducer/productSizesReducer';
 import { setFavourite } from '../../model/reducer/favouriteReducer';
-import { setCart } from '../../model/reducer/cartReducer';
+import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
+import Popup from '../same-seller-popup/Popup';
 
 
 const Wishlist = () => {
@@ -38,6 +39,9 @@ const Wishlist = () => {
     const [isfavoriteEmpty, setisfavoriteEmpty] = useState(false);
     const [isLoader, setisLoader] = useState(false);
     const [selectedProduct, setselectedProduct] = useState({});
+    const [p_id, setP_id] = useState(0);
+    const [p_v_id, setP_V_id] = useState(0);
+    const [qnty, setQnty] = useState(0);
 
     useEffect(() => {
         if (sizes.sizes === null || sizes.status === 'loading') {
@@ -96,11 +100,15 @@ const Wishlist = () => {
                             }
                         });
                 }
-                else {
-                    setisLoader(false);
+                else if (result?.data?.one_seller_error_code == 1) {
+                    dispatch(setSellerFlag({ data: 1 }));
+                    // console.log(result.message);
+                    toast.error(t(`${result.message}`));
+                } else {
                     toast.error(result.message);
                 }
             });
+        setisLoader(false);
     };
 
     //remove from Cart
@@ -218,7 +226,7 @@ const Wishlist = () => {
 
                                                             <div className=''>
                                                                 <span>{product.name}</span>
-                                                                <div className='variant-section' onClick={() => { setselectedProduct(product); }} data-bs-toggle="modal" data-bs-target="#quickviewModal">{product.variants[0]?.measurement} {product.variants[0]?.stock_unit_name} <IoIosArrowDown /></div>
+                                                                <div className='variant-section' onClick={() => { setselectedProduct(product); }} >{product.variants[0]?.measurement} {product.variants[0]?.stock_unit_name} <IoIosArrowDown /></div>
                                                             </div>
                                                         </th>
 
@@ -275,6 +283,9 @@ const Wishlist = () => {
                                                                             if (cookies.get('jwt_token') !== undefined) {
 
                                                                                 addtoCart(product.id, product.variants[0]?.id, 1);
+                                                                                setP_id(product.id);
+                                                                                setP_V_id(product.variants[0]?.id);
+                                                                                setQnty(1);
                                                                             }
                                                                             else {
                                                                                 toast.error(t("required_login_message_for_cartRedirect"));
@@ -306,7 +317,16 @@ const Wishlist = () => {
                 )}
             </div>
             <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} />
-
+            <Popup
+                product_id={p_id}
+                product_variant_id={p_v_id}
+                quantity={qnty}
+                setisLoader={setisLoader}
+                cookies={cookies}
+                toast={toast}
+                city={city}
+                setP_V_id={setP_V_id}
+                setP_id={setP_id} />
         </section>
     );
 };

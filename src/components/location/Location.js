@@ -101,7 +101,7 @@ const Location = (props) => {
               }));
               setisloading(false);
               props.setLocModal(false);
-              props.bodyScroll(false)
+              props.bodyScroll(false);
               // closeModalRef.current.click();
             }
             else {
@@ -114,7 +114,7 @@ const Location = (props) => {
           console.log(error);
         });
       props.setisLocationPresent(true);
-      props.setLocModal(false)
+      props.setLocModal(false);
       // closeModalRef.current.click();
     }
   };
@@ -331,7 +331,7 @@ const Location = (props) => {
           setisloading(false);
           props.setisLocationPresent(true);
           props.setLocModal(false);
-          props.bodyScroll(false)
+          props.bodyScroll(false);
           // closeModalRef.current.click();
         }
         else {
@@ -343,7 +343,7 @@ const Location = (props) => {
   useEffect(() => {
     if (setting.setting?.default_city) {
       // closeModalRef.current?.click()
-      props.setLocModal(false)
+      props.setLocModal(false);
     }
   }, [setting]);
 
@@ -363,7 +363,7 @@ const Location = (props) => {
             // dispatch({ type: ActionTypes.SET_CITY, payload: result.data });
             props.setisLocationPresent(true);
             props.setLocModal(false);
-            props.bodyScroll(false)
+            props.bodyScroll(false);
 
           }
           else {
@@ -380,9 +380,9 @@ const Location = (props) => {
       setisInputFields(false);
       setisAddressLoading(false);
       props.setLocModal(false);
-      props.bodyScroll(false)
+      props.bodyScroll(false);
     }
-  }
+  };
   return (
     <>
       {

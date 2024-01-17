@@ -54,8 +54,8 @@ const Header = () => {
     const [isSticky, setIsSticky] = useState(false);
     const languages = useSelector((state) => (state.language));
     const [showModal, setShowModal] = useState(false);
-    const [bodyScroll, setBodyScroll] = useState(false)
-    const [locModal, setLocModal] = useState(false)
+    const [bodyScroll, setBodyScroll] = useState(false);
+    const [locModal, setLocModal] = useState(false);
 
     const { t } = useTranslation();
 
@@ -77,26 +77,26 @@ const Header = () => {
     useEffect(() => {
         if (bodyScroll) {
             document.body.style.overflow = 'hidden';
-            document.body.style.height = '100vh'
+            document.body.style.height = '100vh';
         } else {
             document.body.style.overflow = 'auto';
-            document.body.style.height = 'auto'
+            document.body.style.height = 'auto';
 
         }
     }, [bodyScroll]);
 
 
     const handleModal = () => {
-        setLocModal(true)
-        setBodyScroll(true)
-    }
+        setLocModal(true);
+        setBodyScroll(true);
+    };
 
     useEffect(() => {
         // console.log('status',city)
-        setLocModal(true)
-        setLocModal(false)
+        setLocModal(true);
+        setLocModal(false);
         if (!city.status === "fulfill") {
-            handleModal()
+            handleModal();
         }
     }, []);
 
@@ -592,15 +592,18 @@ const Header = () => {
                                         }}>
                                         <IoHeartOutline className='' />
                                     </button>
-                                    : <button whiletap={{ scale: 0.6 }} className='icon mx-4 position-relative hide-mobile-screen' data-bs-toggle="offcanvas" data-bs-target="#favoriteoffcanvasExample" aria-controls="favoriteoffcanvasExample"
+                                    : <button whiletap={{ scale: 0.6 }} className='icon mx-4 position-relative hide-mobile-screen'
                                         onClick={() => {
                                             if (cookies.get('jwt_token') === undefined) {
                                                 toast.error(t("required_login_message_for_cartRedirect"));
                                             }
                                             else if (city.city === null) {
                                                 toast.error("Please Select you delivery location first!");
+                                            } else {
+                                                navigate("/wishlist");
                                             }
                                         }}>
+                                        {/* {console.log("this runned")} */}
                                         <IoHeartOutline className='' />
 
                                         {favorite.favorite && favorite.favorite.status !== 0 && favorite.favorite !== null ?
@@ -993,7 +996,7 @@ const Header = () => {
                 <Cart />
 
                 {/* favorite sidebar */}
-                <Favorite />
+                {/* <Favorite /> */}
 
             </header>
 
