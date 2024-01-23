@@ -64,24 +64,6 @@ const Location = (props) => {
         .then(
           (res) => {
             if (res.status === 1) {
-
-              // dispatch({
-              //   type: ActionTypes.SET_CITY, payload: {
-              //     id: res.data.id,
-              //     name: city_name,
-              //     state: res.data.state,
-              //     formatted_address: formatted_address,
-              //     latitude: res.data.latitude,
-              //     longitude: res.data.longitude,
-              //     min_amount_for_free_delivery: res.data.min_amount_for_free_delivery,
-              //     delivery_charge_method: res.data.delivery_charge_method,
-              //     fixed_charge: res.data.fixed_charge,
-              //     per_km_charge: res.data.per_km_charge,
-              //     time_to_travel: res.data.time_to_travel,
-              //     max_deliverable_distance: res.data.max_deliverable_distance,
-              //     distance: res.data.distance
-              //   }
-              // });
               dispatch(setCity({
                 data: {
                   id: res.data.id,
@@ -102,7 +84,16 @@ const Location = (props) => {
               setisloading(false);
               props.setLocModal(false);
               props.bodyScroll(false);
+              props.setisLocationPresent(true);
+              props.setLocModal(false);
               // closeModalRef.current.click();
+            }
+            else if (res.status == 0) {
+              setisloading(false);
+              toast.error(t("We doesn't deliver at selected city"));
+              props.setisLocationPresent(false);
+              props.setLocModal(true);
+
             }
             else {
               setisloading(false);
@@ -114,8 +105,11 @@ const Location = (props) => {
           console.log(error);
         });
       props.setisLocationPresent(true);
-      props.setLocModal(false);
       // closeModalRef.current.click();
+    } else {
+      // toast.error("Location not found !");
+      props.setLocModal(true);
+      setisloading(false);
     }
   };
   //fetching city from server 
@@ -456,7 +450,7 @@ const Location = (props) => {
                         ) : null}
                       </>
                     )}
-                  <p className='text-danger' style={{ fontSize: "2rem" }}>{errorMsg}</p>
+                  {/* <p className='text-danger' style={{ fontSize: "2rem" }}>{errorMsg}</p> */}
                 </>
 
               )}

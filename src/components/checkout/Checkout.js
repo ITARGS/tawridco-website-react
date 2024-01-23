@@ -23,7 +23,7 @@ import animate1 from '../../utils/order_placed_back_animation.json';
 import animate2 from '../../utils/order_success_tick_animation.json';
 
 //payment methods
-import useRazorpay from 'react-razorpay';
+import useRazorpay, { Razorpay } from 'react-razorpay';
 import { loadStripe } from '@stripe/stripe-js';
 import {
     Elements,
@@ -186,65 +186,110 @@ const Checkout = () => {
 
 
     const [Razorpay] = useRazorpay();
-    const handleRozarpayPayment = useCallback(
-        (order_id, razorpay_transaction_id, amount, name, email, mobile, app_name) => {
-            // const amount = total_amount
-            // const name = user.user.name
-            // const email = user.user.email
-            // const mobile = user.user.mobile
-            const key = setting.payment_setting && setting.payment_setting.razorpay_key;
-            const options = {
-                key: key,
-                amount: amount * 100,
-                currency: "INR",
-                name: name,
-                description: app_name,
-                image: setting.setting && setting.setting.web_settings.web_logo,
-                order_id: razorpay_transaction_id,
-                handler: async (res) => {
-                    if (res.razorpay_payment_id) {
-                        setloadingPlaceOrder(true);
-                        await api.addRazorpayTransaction(cookies.get('jwt_token'), order_id, res.razorpay_payment_id, res.razorpay_order_id, res.razorpay_payment_id, res.razorpay_signature)
-                            .then(response => response.json())
-                            .then(result => {
-                                setloadingPlaceOrder(false);
-                                if (result.status === 1) {
-                                    toast.success(result.message);
-                                    setIsOrderPlaced(true);
-                                    setShow(true);
-                                }
-                                else {
-                                    toast.error(result.message);
-                                }
-                            })
-                            .catch(error => console.log(error));
-                        //Add Transaction
+    const handleRozarpayPayment = useCallback(async (order_id, razorpay_transaction_id, amount, name, email, mobile, app_name) => {
+        // const amount = total_amount
+        // const name = user.user.name
+        // const email = user.user.email
+        // const mobile = user.user.mobile
+        // console.log("RazorPay Payment Handler Function");
+
+        const res = await initializeRazorpay();
+
+        if (!res) {
+            console.error("RazorPay SDK Load Failed");
+            return;
+        }
+        const key = setting.payment_setting && setting.payment_setting.razorpay_key;
+        const convertedAmount = Math.floor(amount * 100);
+        const options = {
+            key: key,
+            amount: convertedAmount,
+            currency: "INR",
+            name: name,
+            description: app_name,
+            image: setting.setting && setting.setting.web_settings.web_logo,
+            order_id: razorpay_transaction_id,
+            handler: async (res) => {
+                if (res.razorpay_payment_id) {
+                    setloadingPlaceOrder(true);
+                    await api.addRazorpayTransaction(cookies.get('jwt_token'), order_id, res.razorpay_payment_id, res.razorpay_order_id, res.razorpay_payment_id, res.razorpay_signature)
+                        .then(response => response.json())
+                        .then(result => {
+                            setloadingPlaceOrder(false);
+                            if (result.status === 1) {
+                                toast.success(result.message);
+                                setIsOrderPlaced(true);
+                                setShow(true);
+                            }
+                            else {
+                                toast.error(result.message);
+                            }
+                        })
+                        .catch(error => console.log(error));
+                    //Add Transaction
+                }
+
+
+            },
+            oncancel: async (res) => {
+                handleRazorpayCancel(order_id);
+
+            },
+            modal: {
+                confirm_close: true,
+                ondismiss: async (reason) => {
+                    if (reason === undefined) {
+                        handleRazorpayCancel(order_id);
+                        dispatch(deductUserBalance({ data: walletDeductionAmt ? walletDeductionAmt : 0 }));
                     }
+                }
+            },
+            prefill: {
+                name: name,
+                email: email,
+                contact: mobile,
+            },
+            notes: {
+                address: "Razorpay Corporate ",
+            },
+            theme: {
+                color: setting.setting && setting.setting.web_settings.color,
+            },
+        };
+        const rzpay = new window.Razorpay(options);
+        rzpay.on('payment.cancel', function (response) {
+            alert("Payment Cancelled");
+            handleRazorpayCancel(order_id);
+        });
+        rzpay.on('payment.failed', function (response) {
+            api.deleteOrder(cookies.get('jwt_token'), order_id);
+        });
+        rzpay.open();
 
+    }, [Razorpay]);
+    const initializeRazorpay = () => {
+        return new Promise((resolve) => {
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            // document.body.appendChild(script);
 
-                },
-                prefill: {
-                    name: name,
-                    email: email,
-                    contact: mobile,
-                },
-                notes: {
-                    address: "Razorpay Corporate ",
-                },
-                theme: {
-                    color: setting.setting && setting.setting.web_settings.color,
-                },
+            script.onload = () => {
+                resolve(true);
+            };
+            script.onerror = () => {
+                resolve(false);
             };
 
-            const rzpay = new Razorpay(options);
-            rzpay.on('payment.failed', function (response) {
-                api.deleteOrder(cookies.get('jwt_token'), order_id);
-            });
-            rzpay.open();
-        },
-        [Razorpay]
-    );
-
+            document.body.appendChild(script);
+        });
+    };
+    const handleRazorpayCancel = (order_id) => {
+        api.deleteOrder(cookies.get('jwt_token'), order_id);
+        setWalletDeductionAmt(walletDeductionAmt);
+        setWalletAmount(user.user.balance);
+        setTotalPayment(totalPayment);
+        setIsOrderPlaced(false);
+    };
 
     const handlePayStackPayment = (email, amount, currency, support_email, orderid) => {
         let handler = PaystackPop.setup({
@@ -256,6 +301,8 @@ const Checkout = () => {
             label: support_email,
             onClose: function () {
                 api.deleteOrder(cookies.get('jwt_token'), orderid);
+                setWalletAmount(user.user.balance);
+                dispatch(setWallet({ data: 0 }));
             },
             callback: async function (response) {
 
@@ -351,7 +398,7 @@ const Checkout = () => {
                     });
             }
             else if (paymentMethod === 'Razorpay') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge - walletDeductionAmt) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
 
@@ -364,14 +411,15 @@ const Checkout = () => {
 
                                     if (res.status === 1) {
                                         setloadingPlaceOrder(false);
-                                        dispatch(deductUserBalance({ data: walletDeductionAmt }));
                                         dispatch(setCartPromo({ data: null }));
-                                        handleRozarpayPayment(result.data.order_id, res.data.transaction_id, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, user.user.name, user.user.email, user.user.mobile, setting.setting?.app_name);
+                                        // handleRozarpayPayment(result.data.order_id, res.data.transaction_id, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, user.user.name, user.user.email, user.user.mobile, setting.setting?.app_name, walletDeductionAmt);
+                                        handleRozarpayPayment(result.data.order_id, res.data.transaction_id, totalPayment, user.user.name, user.user.email, user.user.mobile, setting.setting?.app_name);
                                     }
                                     else {
                                         api.deleteOrder(cookies.get('jwt_token'), result.data.order_id);
                                         toast.error(res.message);
                                         setloadingPlaceOrder(false);
+                                        setWalletAmount(walletDeductionAmt);
                                     }
                                 })
                                 .catch(error => {
@@ -387,16 +435,16 @@ const Checkout = () => {
                     .catch(error => console.log(error));
             }
             else if (paymentMethod === 'Paystack') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(result => {
                         // fetchOrders();
                         if (result.status === 1) {
-                            dispatch(deductUserBalance({ data: walletDeductionAmt }));
+                            // dispatch(deductUserBalance({ data: walletDeductionAmt }));
                             dispatch(setCartPromo({ data: null }));
                             setloadingPlaceOrder(false);
                             setOrderID(result.data.order_id);
-                            handlePayStackPayment(user.user.email, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, setting.payment_setting.paystack_currency_code, setting.setting.support_email, result.data.order_id);
+                            handlePayStackPayment(user.user.email, totalPayment, setting.payment_setting.paystack_currency_code, setting.setting.support_email, result.data.order_id);
 
                         }
                         else {
@@ -409,7 +457,7 @@ const Checkout = () => {
             }
             else if (paymentMethod === "Stripe") {
                 setStripeModalShow(true);
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge - walletDeductionAmt) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
                         if (result.status === 1) {
@@ -448,12 +496,12 @@ const Checkout = () => {
                 setloadingPlaceOrder(false);
             }
             else if (paymentMethod === 'Paypal') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge - walletDeductionAmt) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
-                        setOrderID(result.data.order_id);
                         // fetchOrders();
                         if (result.status === 1) {
+                            setOrderID(result.data.order_id);
                             await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Paypal")
                                 .then(resp => resp.json())
                                 .then(res => {
@@ -469,7 +517,7 @@ const Checkout = () => {
                                         // document.getElementById("iframe_id").contentWindow.location.href
                                         // handleRozarpayyPayment(result.data.order_id, res.data.transaction_id, cart.checkout.total_amount, user.user.name, user.user.email, user.user.mobile, setting.setting.app_name);
 
-                                        var ccavenue_redirect_url = res.data.paypal_redirect_url;
+                                        var ccavenue_redirect_url = `${res.data.paypal_redirect_url}&&amount=${totalPayment}`;
                                         //var ccavenue_redirect_url = "https://admin.pocketgroceries.in/customer/ccavenue_payment";
 
                                         var subWindow = window.open(ccavenue_redirect_url, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
@@ -479,9 +527,10 @@ const Checkout = () => {
                                         const checkChildWindow = setInterval((e) => {
                                             if (subWindow && subWindow.closed) {
                                                 clearInterval(checkChildWindow);
-                                                console.log('Child window is closed');
+                                                // console.log('Child window is closed');
                                                 if (subWindow && subWindow.closed && !paypalStatus.current) {
                                                     api.deleteOrder(cookies.get('jwt_token'), result.data.order_id);
+                                                    setWalletAmount(user.user.balance);
                                                     toast.error("Payment failed ");
                                                     // Perform any actions or display a message here
                                                 }
@@ -500,6 +549,7 @@ const Checkout = () => {
                         else {
                             toast.error(result.message);
                             setloadingPlaceOrder(false);
+                            setisLoader(false);
                         }
                     })
                     .catch(error => console.log(error));
@@ -526,8 +576,6 @@ const Checkout = () => {
                 if (result.status === 1) {
                     dispatch(setCart({ data: null }));
                     dispatch(setCartCheckout({ data: null }));
-                    // dispatch({ type: ActionTypes.SET_CART, payload: null });
-                    // dispatch({ type: ActionTypes.SET_CART_CHECKOUT, payload: null });
                 }
             });
         setShow(false);
@@ -604,7 +652,7 @@ const Checkout = () => {
 
 
                 {
-                    setting.payment_setting === null && expectedTime === null
+                    !setting.payment_setting === null && !expectedTime === null
                         ? (
                             <Loader screen='full' />
                         )
@@ -990,10 +1038,11 @@ const Checkout = () => {
 
                 <Promo show={showPromoOffcanvas} setShow={setShowPromoOffcanvas} />
 
-            </section >
-
+            </section>
             <Modal id="stripeModal" size='lg' centered show={stripeModalShow}>
-                <Modal.Header onClick={() => setStripeModalShow(false)} className='header justify-content-between'>
+                <Modal.Header onClick={() => setStripeModalShow(false)
+
+                } className='header justify-content-between'>
                     <span style={{ color: '#33a36b', fontSize: '18px', fontWeight: 'bolder' }}>Egrocers Payment</span>
                     <span style={{ cursor: 'pointer' }}>
                         <AiOutlineCloseCircle size={20} />
@@ -1005,8 +1054,8 @@ const Checkout = () => {
                     {stripeOrderId === null || stripeClientSecret === null || stripeTransactionId === null
                         ? <Loader width='100%' height='100%' />
                         :
-                        <Elements stripe={stripePromise} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount}>
-                            <InjectCheckout setShow={setStripeModalShow} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount} />
+                        <Elements stripe={stripePromise} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment}>
+                            <InjectCheckout setShow={setStripeModalShow} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment} />
                         </Elements>
                     }
 

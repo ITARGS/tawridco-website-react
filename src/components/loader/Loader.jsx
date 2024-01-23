@@ -1,5 +1,5 @@
-import React from 'react'
-import './loader.css'
+import React from 'react';
+import './loader.css';
 const Loader = (props) => {
   return (
     <>
@@ -28,7 +28,7 @@ const Loader = (props) => {
         )
       }
     </>
-  )
-}
+  );
+};
 
-export default Loader
+export default Loader;

@@ -30,7 +30,7 @@ const Address = () => {
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    dispatch(setAddress({data: result.data}))
+                    dispatch(setAddress({ data: result.data }));
                     // dispatch({ type: ActionTypes.SET_ADDRESS, payload: result.data });
                     if (result.data.find((element) => element.is_default == 1)) {
                         dispatch(setSelectedAddress({ data: result.data.find((element) => element.is_default == 1) }));
@@ -38,7 +38,7 @@ const Address = () => {
                     }
                 } else {
                     dispatch(setAddress({ data: null }));
-                    dispatch({ type: ActionTypes.SET_ADDRESS, payload: null });
+                    // dispatch({ type: ActionTypes.SET_ADDRESS, payload: null });
                     setisLoader(false);
                 }
                 setisLoader(false);
@@ -53,6 +53,7 @@ const Address = () => {
         if (cookies.get('jwt_token') !== undefined && user.user !== null) {
             fetchAddress(cookies.get('jwt_token'));
         }
+        console.log("useEffect Runned");
     }, [user]);
     useEffect(() => {
         // if (address.address && !address.selected_address) {
@@ -97,72 +98,76 @@ const Address = () => {
 
     const { t } = useTranslation();
     return (
-        <div className='address-wrapper'>
-            {address.status !== "fulfill" || isLoader
-                ? (
-                    <Loader width='100%' height='300px' />
-                )
-                : (
-                    <>
-                        {address.address && address.address.map((address, index) => (
-                            <div key={index} className='address-component'>
-                                <div className='d-flex justify-content-between'>
-                                    <div className='d-flex gap-2 align-items-center justify'>
-                                        <input className="form-input" type="radio" name="AddressRadio" id={`AddressRadioId${index}`} defaultChecked={address.is_default === 1} onChange={() => {
-                                            // dispatch({ type: ActionTypes.SET_SELECTED_ADDRESS, payload: address });
-                                            dispatch(setSelectedAddress({ data: address }));
-                                        }} />
-                                        <label className="form-check-label" htmlFor={`AddressRadioId${index}`}>
-                                            <span>{address.name}</span>
+        <>
 
-                                            <span className='home mx-3'>{address.type}</span>
-                                        </label>
+            <div className='address-wrapper'>
+                {address.status !== "fulfill" || isLoader
+                    ? (
+                        <Loader width='100%' height='300px' />
+                    )
+                    : (
+                        <>
+                            {address.address && address.address.map((address, index) => (
+                                <div key={index} className='address-component'>
+                                    <div className='d-flex justify-content-between'>
+                                        <div className='d-flex gap-2 align-items-center justify'>
+                                            <input className="form-input" type="radio" name="AddressRadio" id={`AddressRadioId${index}`} defaultChecked={address.is_default === 1} onChange={() => {
+                                                // dispatch({ type: ActionTypes.SET_SELECTED_ADDRESS, payload: address });
+                                                dispatch(setSelectedAddress({ data: address }));
+                                            }} />
+                                            <label className="form-check-label" htmlFor={`AddressRadioId${index}`}>
+                                                <span>{address.name}</span>
+
+                                                <span className='home mx-3'>{address.type}</span>
+                                            </label>
+                                        </div>
+
+                                        <div className='d-flex gap-2'>
+                                            <button type='button' className='edit' onClick={() => {
+                                                setisLoader(true);
+                                                // dispatch({ type: ActionTypes.SET_SELECTED_ADDRESS, payload: address });
+                                                setIsAddressSelected(true);
+                                                dispatch(setSelectedAddress({ data: address }));
+                                                setShow(true);
+                                                setisLoader(false);
+
+                                            }}>
+                                                <FiEdit fill='var(--secondary-color)' size={24} />
+                                            </button>
+
+                                            <button type='button' className='remove' onClick={() => deleteAddress(address.id)}>
+                                                <RiDeleteBinLine fill='red' size={24} />
+                                            </button>
+                                        </div>
                                     </div>
 
-                                    <div className='d-flex gap-2'>
-                                        <button type='button' className='edit' onClick={() => {
-                                            setisLoader(true);
-                                            // dispatch({ type: ActionTypes.SET_SELECTED_ADDRESS, payload: address });
-                                            setIsAddressSelected(true);
-                                            dispatch(setSelectedAddress({ data: address }));
-                                            setShow(true);
-                                            setisLoader(false);
+                                    <div className='address'>
+                                        {address.address}, {address.landmark}, {address.area}, {address.city}, {address.state}, {address.pincode}-{address.country}
+                                    </div>
 
-                                        }}>
-                                            <FiEdit fill='var(--secondary-color)' size={24} />
-                                        </button>
-
-                                        <button type='button' className='remove' onClick={() => deleteAddress(address.id)}>
-                                            <RiDeleteBinLine fill='red' size={24} />
-                                        </button>
+                                    <div className='mobile'>
+                                        {address.mobile}
                                     </div>
                                 </div>
+                            ))}
 
-                                <div className='address'>
-                                    {address.address}, {address.landmark}, {address.area}, {address.city}, {address.state}, {address.pincode}-{address.country}
-                                </div>
-
-                                <div className='mobile'>
-                                    {address.mobile}
-                                </div>
+                            <div className='address-component new-address'>
+                                <button type='button' onClick={(e) => {
+                                    // dispatch({ type: ActionTypes.SET_SELECTED_ADDRESS, payload: null });
+                                    dispatch(setSelectedAddress({ data: null }));
+                                    setIsAddressSelected(false);
+                                    setShow(true);
+                                }}>
+                                    <GrAddCircle fontSize='3rem' /> {t("add_new_address")}
+                                </button>
                             </div>
-                        ))}
+                        </>
+                    )}
 
-                        <div className='address-component new-address'>
-                            <button type='button' onClick={(e) => {
-                                dispatch({ type: ActionTypes.SET_SELECTED_ADDRESS, payload: null });
-                                dispatch(setSelectedAddress({ data: null }));
-                                setIsAddressSelected(false);
-                                setShow(true);
-                            }}>
-                                <GrAddCircle fontSize='3rem' /> {t("add_new_address")}
-                            </button>
-                        </div>
-                    </>
-                )}
+                <NewAddress setIsAddressSelected={setIsAddressSelected} isAddressSelected={isAddressSelected} show={show} setshow={setShow} isLoader={isLoader} setisLoader={setisLoader} />
+            </div>
+        </>
 
-            <NewAddress setIsAddressSelected={setIsAddressSelected} isAddressSelected={isAddressSelected} show={show} setshow={setShow} isLoader={isLoader} setisLoader={setisLoader} />
-        </div>
     );
 };
 

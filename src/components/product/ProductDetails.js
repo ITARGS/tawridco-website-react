@@ -18,7 +18,7 @@ import { IoIosArrowDown } from 'react-icons/io';
 import { useTranslation } from 'react-i18next';
 import Loader from '../loader/Loader';
 import { clearSelectedProduct, setSelectedProduct } from '../../model/reducer/selectedProduct';
-import { setCart } from '../../model/reducer/cartReducer';
+import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
 import { setFavourite } from '../../model/reducer/favouriteReducer';
 import Popup from '../same-seller-popup/Popup';
 
@@ -292,7 +292,11 @@ const ProductDetails = () => {
                         });
 
                 }
-                else {
+                else if (result?.data?.one_seller_error_code == 1) {
+                    dispatch(setSellerFlag({ data: 1 }));
+                    // console.log(result.message);
+                    // toast.error(t(`${result.message}`));
+                } else {
                     toast.error(result.message);
                 }
                 setisLoading(false);
@@ -530,6 +534,7 @@ const ProductDetails = () => {
                                                                     else {
                                                                         addtoCart(productdata.id, selectedVariant.id, selectedVariant.cart_count - 1);
 
+
                                                                     }
 
                                                                 }} className="wishlist-button"><BiMinus fill='#fff' /></button>
@@ -574,6 +579,9 @@ const ProductDetails = () => {
 
                                                                             if (selectedVariant.status) {
                                                                                 addtoCart(productdata.id, selectedVariant.id, 1);
+                                                                                setP_id(productdata.id);
+                                                                                setP_V_id(selectedVariant.id);
+                                                                                setQnty(1);
                                                                             } else {
                                                                                 toast.error('OOps, Limited Stock Available');
                                                                             }
@@ -642,7 +650,10 @@ const ProductDetails = () => {
                                                                                 } else {
 
                                                                                     if (selectedVariant.status) {
-                                                                                        addtoCart(productdata.id, productdata.varinats[0].id, 1);
+                                                                                        addtoCart(productdata.id, productdata.variants[0].id, 1);
+                                                                                        setP_id(productdata.id);
+                                                                                        setP_V_id(productdata.variants[0].id);
+                                                                                        setQnty(1);
                                                                                     } else {
                                                                                         toast.error('OOps, Limited Stock Available');
                                                                                     }

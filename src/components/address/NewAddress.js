@@ -55,9 +55,12 @@ const NewAddress = (props) => {
             libraries: ['geometry', 'drawing', 'places'], // Include 'places' library
         });
     };
+    // const { isLoaded } = useGoogleMapsLoader();
+    const [isLoaded, setIsLoaded] = useState(false);
 
-    const { isLoaded } = useGoogleMapsLoader();
-
+    const handleLoadScript = () => {
+        setIsLoaded(true);
+    };
 
 
     useEffect(() => {
@@ -134,7 +137,7 @@ const NewAddress = (props) => {
                                 props.setisLoader(false);
                                 if (res.status === 1) {
                                     dispatch(setAddress({ data: res.data }));
-                                    dispatch({ type: ActionTypes.SET_ADDRESS, payload: res.data });
+                                    // dispatch({ type: ActionTypes.SET_ADDRESS, payload: res.data });
                                 }
                                 if (res.data.find((element) => element.is_default == 1)) {
                                     dispatch(setSelectedAddress({ data: res.data.find((element) => element.is_default == 1) }));
@@ -463,7 +466,7 @@ const NewAddress = (props) => {
 
     return (
         <>
-            <LoadScript googleMapsApiKey={setting.setting?.google_place_api_key} libraries={libraries}>
+            <LoadScript googleMapsApiKey={setting.setting?.google_place_api_key} libraries={libraries} loadingElement={<div className='invisible'></div>} onLoad={handleLoadScript}>
                 {isLoaded &&
                     (
                         <Modal

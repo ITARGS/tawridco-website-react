@@ -71,7 +71,7 @@ const Favorite = React.memo(() => {
                 else if (result?.data?.one_seller_error_code == 1) {
                     dispatch(setSellerFlag({ data: 1 }));
                     // console.log(result.message);
-                    toast.error(t(`${result.message}`));
+                    // toast.error(t(`${result.message}`));
                 } else {
                     toast.error(result.message);
                 }

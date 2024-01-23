@@ -110,7 +110,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal }) => {
                 }
                 else if (result?.data?.one_seller_error_code == 1) {
                     dispatch(setSellerFlag({ data: 1 }));
-                    toast.error(t(`${result.message}`));
+                    // toast.error(t(`${result.message}`));
                 }
             });
     };
@@ -268,8 +268,8 @@ const ProductContainer = React.memo(({ showModal, setShowModal }) => {
 
                                                 <div className="d-flex product_title_content justify-content-between align-items-center col-md-12">
                                                     <div className="">
-                                                        <span className='d-none d-md-block'>{section.short_description}</span>
                                                         <p>{section.title}</p>
+                                                        <span className='d-none d-md-block'>{section.short_description}</span>
                                                     </div>
                                                     <div>
                                                         {/* {console.log(section)} */}

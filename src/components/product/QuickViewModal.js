@@ -170,7 +170,7 @@ const QuickViewModal = (props) => {
                 else if (result?.data?.one_seller_error_code == 1) {
                     dispatch(setSellerFlag({ data: 1 }));
                     // console.log(result.message);
-                    toast.error(t(`${result.message}`));
+                    // toast.error(t(`${result.message}`));
                     props.setShowModal(false);
                 } else {
                     toast.error(result.message);
