@@ -55,62 +55,69 @@ const Location = (props) => {
     setisloading(true);
 
     const [place] = inputRef.current.getPlaces();
-    if (place) {
-      let city_name = place.address_components[0].long_name;
-      let loc_lat = place.geometry.location.lat();
-      let loc_lng = place.geometry.location.lng();
-      let formatted_address = place.formatted_address;
-      fetchCity(city_name, loc_lat, loc_lng)
-        .then(
-          (res) => {
-            if (res.status === 1) {
-              dispatch(setCity({
-                data: {
-                  id: res.data.id,
-                  name: city_name,
-                  state: res.data.state,
-                  formatted_address: formatted_address,
-                  latitude: res.data.latitude,
-                  longitude: res.data.longitude,
-                  min_amount_for_free_delivery: res.data.min_amount_for_free_delivery,
-                  delivery_charge_method: res.data.delivery_charge_method,
-                  fixed_charge: res.data.fixed_charge,
-                  per_km_charge: res.data.per_km_charge,
-                  time_to_travel: res.data.time_to_travel,
-                  max_deliverable_distance: res.data.max_deliverable_distance,
-                  distance: res.data.distance
-                }
-              }));
-              setisloading(false);
-              props.setLocModal(false);
-              props.bodyScroll(false);
-              props.setisLocationPresent(true);
-              props.setLocModal(false);
-              // closeModalRef.current.click();
-            }
-            else if (res.status == 0) {
-              setisloading(false);
-              toast.error(t("We doesn't deliver at selected city"));
-              props.setisLocationPresent(false);
-              props.setLocModal(true);
+    // console.log(place);
+    try {
+      if (place) {
+        let city_name = place.address_components[0].long_name;
+        let loc_lat = place.geometry.location.lat();
+        let loc_lng = place.geometry.location.lng();
+        let formatted_address = place.formatted_address;
+        fetchCity(city_name, loc_lat, loc_lng)
+          .then(
+            (res) => {
+              if (res.status === 1) {
+                dispatch(setCity({
+                  data: {
+                    id: res.data.id,
+                    name: city_name,
+                    state: res.data.state,
+                    formatted_address: formatted_address,
+                    latitude: res.data.latitude,
+                    longitude: res.data.longitude,
+                    min_amount_for_free_delivery: res.data.min_amount_for_free_delivery,
+                    delivery_charge_method: res.data.delivery_charge_method,
+                    fixed_charge: res.data.fixed_charge,
+                    per_km_charge: res.data.per_km_charge,
+                    time_to_travel: res.data.time_to_travel,
+                    max_deliverable_distance: res.data.max_deliverable_distance,
+                    distance: res.data.distance
+                  }
+                }));
+                setisloading(false);
+                props.setLocModal(false);
+                props.bodyScroll(false);
+                props.setisLocationPresent(true);
+                props.setLocModal(false);
+                // closeModalRef.current.click();
+              }
+              else if (res.status == 0) {
+                setisloading(false);
+                toast.error(t("We doesn't deliver at selected city"));
+                props.setisLocationPresent(false);
+                props.setLocModal(true);
 
+              }
+              else {
+                setisloading(false);
+                seterrorMsg(res.message);
+              }
             }
-            else {
-              setisloading(false);
-              seterrorMsg(res.message);
-            }
-          }
-        )
-        .catch(error => {
-          console.log(error);
-        });
-      props.setisLocationPresent(true);
-      // closeModalRef.current.click();
-    } else {
-      // toast.error("Location not found !");
-      props.setLocModal(true);
-      setisloading(false);
+          )
+          .catch(error => {
+            console.log(error);
+          });
+        props.setisLocationPresent(true);
+        // closeModalRef.current.click();
+      } else {
+        // toast.error("Location not found !");
+        props.setLocModal(true);
+        setisloading(false);
+      }
+    } catch (e) {
+      toast.error("Location not found!");
+      // console.log(e.message);
     }
+    setisloading(false);
   };
   //fetching city from server 
   const fetchCity = async (city_name, loc_lat, loc_lng) => {

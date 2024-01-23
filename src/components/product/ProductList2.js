@@ -648,7 +648,7 @@ const ProductList2 = React.memo(() => {
         setP_V_id(product_variant_id);
         setQnty(qty);
         setisLoader(true);
-        console.log("addtoCart ProductsList Called");
+        // console.log("addtoCart ProductsList Called");
         await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {
@@ -671,7 +671,7 @@ const ProductList2 = React.memo(() => {
                 else if (result?.data?.one_seller_error_code == 1) {
                     dispatch(setSellerFlag({ data: 1 }));
                     // console.log(result.message);
-                    toast.error(t(`${result.message}`));
+                    // toast.error(t(`${result.message}`));
                 } else {
                     toast.error(result.message);
                 }
