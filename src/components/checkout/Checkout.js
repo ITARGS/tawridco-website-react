@@ -96,7 +96,28 @@ const Checkout = () => {
             })
             .catch(error => console.log(error));
         fetchTimeSlot();
+        setpaymentMethod("COD");
     }, []);
+
+    useEffect(() => {
+        api.getCart(cookies.get('jwt_token'), address?.selected_address?.latitude, address?.selected_address?.longitude, 1)
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 1) {
+                    dispatch(setCartCheckout({ data: result.data }));
+                    dispatch(setWallet({ data: 0 }));
+                    if (cart?.promo_code) {
+                        setTotalPayment(result.data.total_amount - cart?.promo_code?.discount);
+                    }
+                    else {
+                        setTotalPayment(result.data.total_amount);
+                    }
+                }
+
+            })
+            .catch(error => console.log(error));
+    }, [address?.selected_address]);
+
 
     useEffect(() => {
 
@@ -109,6 +130,7 @@ const Checkout = () => {
                 } else {
                     api.deleteOrder(cookies.get('jwt_token'), orderID);
                     toast.error("Payment failed");
+                    setIsOrderPlaced(false);
                 }
             }
         };
@@ -148,7 +170,7 @@ const Checkout = () => {
     const [selectedAddress, setselectedAddress] = useState(null);
     const today = new Date();
     const [expectedTime, setexpectedTime] = useState();
-    const [paymentMethod, setpaymentMethod] = useState("COD");
+    const [paymentMethod, setpaymentMethod] = useState("");
     const [deliveryTime, setDeliveryTime] = useState("");
     const [orderID, setOrderID] = useState(0);
     const [loadingPlaceOrder, setloadingPlaceOrder] = useState(false);
@@ -158,7 +180,7 @@ const Checkout = () => {
     const [show, setShow] = useState(false);
     const [showPromoOffcanvas, setShowPromoOffcanvas] = useState(false);
     const [stripeModalShow, setStripeModalShow] = useState(false);
-
+    const [isFullWalletPay, setIsFullWalletPay] = useState(false);
     // const [paymentSettings, setpaymentSettings] = useState(null)
     const [isLoader, setisLoader] = useState(false);
     const fetchTimeSlot = () => {
@@ -267,6 +289,7 @@ const Checkout = () => {
         rzpay.open();
 
     }, [Razorpay]);
+
     const initializeRazorpay = () => {
         return new Promise((resolve) => {
             const script = document.createElement("script");
@@ -329,26 +352,30 @@ const Checkout = () => {
     };
 
     useEffect(() => {
-        if (cart?.is_wallet_checked && totalPayment >= walletAmount) {
+        if (cart?.is_wallet_checked && totalPayment > walletAmount) {
             setWalletDeductionAmt(walletAmount);
             setWalletAmount(0);
             setTotalPayment(totalPayment - walletAmount);
-        } else if (cart?.is_wallet_checked && totalPayment < walletAmount) {
+            setIsFullWalletPay(false);
+        } else if (cart?.is_wallet_checked && totalPayment <= walletAmount) {
             const remainingwalletBalance = walletAmount - totalPayment;
             setWalletDeductionAmt(totalPayment);
             setWalletAmount(remainingwalletBalance);
             setTotalPayment(0);
+            setIsFullWalletPay(true);
+            setpaymentMethod("Wallet");
         } else if (!cart?.is_wallet_checked && cart?.promo_code) {
             setTotalPayment(cart?.checkout?.total_amount - cart?.promo_code?.discount);
             setWalletAmount(user.user.balance);
             setWalletDeductionAmt(0);
+            setIsFullWalletPay(false);
         } else {
             setTotalPayment(cart?.checkout?.total_amount);
             setWalletAmount(user.user.balance);
             setWalletDeductionAmt(0);
+            setIsFullWalletPay(false);
         }
     }, [cart?.is_wallet_checked]);
-
 
     const HandlePlaceOrder = async (e) => {
         // e.preventDefault();
@@ -366,7 +393,6 @@ const Checkout = () => {
             setDeliveryTime(`${expectedDate.getDate()}-${expectedDate.getMonth() + 1}-${expectedDate.getFullYear()} ${expectedTime.title}`);
             const delivery_time = `${expectedDate.getDate()}-${expectedDate.getMonth() + 1}-${expectedDate.getFullYear()} ${expectedTime.title}`;
             setloadingPlaceOrder(true);
-
             if (delivery_time === null) {
                 toast.error("Please Select Preffered Delivery Time");
             }
@@ -377,7 +403,6 @@ const Checkout = () => {
                     .then(async (result) => {
                         setisLoader(false);
                         if (result.status === 1) {
-                            // console.log(result);
                             toast.success("Order Successfully Placed!");
                             setloadingPlaceOrder(false);
                             dispatch(setWallet({ data: 0 }));
@@ -467,13 +492,14 @@ const Checkout = () => {
                                 .then(resp => resp.json())
                                 .then(res => {
                                     if (res.status) {
-                                        dispatch(deductUserBalance({ data: walletDeductionAmt }));
+                                        // dispatch(deductUserBalance({ data: walletDeductionAmt }));
                                         dispatch(setCartPromo({ data: null }));
                                         setstripeOrderId(result.data.order_id);
                                         setstripeClientSecret(res.data.client_secret);
                                         setstripeTransactionId(res.data.id);
                                     } else {
                                         // document.getElementById('stripe-toggle').click()
+                                        setIsOrderPlaced(false);
                                         api.deleteOrder(cookies.get('jwt_token'), result.data.order_id);
 
                                     }
@@ -554,19 +580,45 @@ const Checkout = () => {
                     })
                     .catch(error => console.log(error));
             }
-            // else if (paymentMethod === "Paytm") {
-            //      await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? cart.promo_code.discounted_amount: cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time)
-            //         .then(response => response.json())
-            //         .then(async result => {
-            //             if (result.status === 1) {
+            else if (paymentMethod === 'Wallet') {
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                    .then(response => response.json())
+                    .then(async (result) => {
+                        setisLoader(false);
+                        if (result.status === 1) {
+                            toast.success("Order Successfully Placed!");
+                            setloadingPlaceOrder(false);
+                            dispatch(setWallet({ data: 0 }));
+                            dispatch(setCartPromo({ data: null }));
+                            dispatch(deductUserBalance({ data: walletDeductionAmt }));
+                            setIsOrderPlaced(true);
+                            setShow(true);
+                        }
+                        else {
+                            toast.error(result.message);
+                            setloadingPlaceOrder(false);
+                        }
+                    })
+                    .catch(error => {
+                        setisLoader(false);
+                        setloadingPlaceOrder(false);
+                        console.log(error);
+                    });
 
-            //             }
+                // else if (paymentMethod === "Paytm") {
+                //      await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? cart.promo_code.discounted_amount: cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time)
+                //         .then(response => response.json())
+                //         .then(async result => {
+                //             if (result.status === 1) {
 
-            //         })
-            //         .catch(error => console.error(error))
-            // }
+                //             }
+
+                //         })
+                //         .catch(error => console.error(error))
+                // }
+
+            };
         }
-
     };
 
     const handleClose = () => {
@@ -598,12 +650,6 @@ const Checkout = () => {
             }, 5000);
         }
     }, [IsOrderPlaced]);
-
-    // useEffect(()=>{
-    //     if (address.address && !address.selected_address) {
-    //         dispatch({type:ActionTypes.SET_SELECTED_ADDRESS, payload:address.address.find((element)=>element.is_default == 1 )})
-    //     }
-    // },[address])
 
     const { t } = useTranslation();
     const placeHolderImage = (e) => {
@@ -788,91 +834,92 @@ const Checkout = () => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className='payment-wrapper checkout-component'>
-                                            <span className='heading'>{t("payment_method")}</span>
 
-                                            {setting?.payment_setting.cod_payment_method === "1" && codAllow == '1'
-                                                ? (
-                                                    <label className="form-check-label" htmlFor='cod'>
-                                                        <div className='payment-selector'>
-                                                            <div className="">
-                                                                <img src={cod} alt='cod' />
-                                                                <span>{t("cash_on_delivery")}</span>
-                                                            </div>
-                                                            <input type="radio" name="payment-method" id='cod' defaultChecked={true} onChange={() => {
-                                                                setpaymentMethod("COD");
-                                                            }} />
-                                                        </div>
-                                                    </label>
-                                                ) : null}
+                                        {isFullWalletPay ? <></> :
+                                            <div className='payment-wrapper checkout-component'>
+                                                <span className='heading'>{t("payment_method")}</span>
 
-                                            {setting.payment_setting.razorpay_payment_method === "1"
-                                                ? (
-                                                    <label className="form-check-label" htmlFor='razorpay'>
-                                                        <div className='payment-selector'>
-                                                            <div className="">
-                                                                <img src={rozerpay} alt='cod' />
-                                                                <span>{t("razorpay")}</span>
-                                                            </div>
-                                                            <input type="radio" name="payment-method" id='razorpay' onChange={() => {
-                                                                setpaymentMethod("Razorpay");
-                                                            }} />
-                                                        </div>
-                                                    </label>
-                                                ) : null}
-
-                                            {setting.payment_setting.paystack_payment_method === "1"
-                                                ? (
-                                                    <label className="form-check-label" htmlFor='paystack'>
-                                                        <div className='payment-selector'>
-                                                            <div className="">
-                                                                <img src={paystack} alt='cod' />
-                                                                <span>{t("paystack")}</span>
-                                                            </div>
-                                                            <input type="radio" name="payment-method" id='paystack' onChange={() => {
-                                                                setpaymentMethod("Paystack");
-                                                            }} />
-                                                        </div>
-                                                    </label>
-                                                ) : null}
-
-                                            {setting.payment_setting.stripe_payment_method === "1"
-                                                ? (
-                                                    <label className="form-check-label" htmlFor='stripe'>
-                                                        <div className='payment-selector'>
-                                                            <div className="">
-                                                                <img src={Stripe} alt='stripe' />
-                                                                <span>{t("stripe")}</span>
-
-                                                            </div>
-                                                            <input type="radio" name="payment-method" id='stripe' onChange={() => {
-                                                                setpaymentMethod("Stripe");
-                                                            }} />
-                                                        </div>
-                                                    </label>
-                                                ) : null}
-
-                                            {setting.payment_setting.paypal_payment_method === "1"
-                                                ? (
-                                                    <>
-                                                        <label className="form-check-label" htmlFor='paypal'>
+                                                {setting?.payment_setting.cod_payment_method === "1" && codAllow == '1'
+                                                    ? (
+                                                        <label className="form-check-label" htmlFor='cod'>
                                                             <div className='payment-selector'>
                                                                 <div className="">
-                                                                    <img src={paypal} alt='paypal' />
-                                                                    <span>{t("paypal")}</span>
+                                                                    <img src={cod} alt='cod' />
+                                                                    <span>{t("cash_on_delivery")}</span>
                                                                 </div>
-                                                                <input type="radio" name="payment-method" id='paypal' onChange={() => {
-                                                                    setpaymentMethod("Paypal");
+                                                                <input type="radio" name="payment-method" id='cod' defaultChecked={true} onChange={() => {
+                                                                    setpaymentMethod("COD");
                                                                 }} />
                                                             </div>
                                                         </label>
+                                                    ) : null}
 
-                                                    </>
-                                                ) : null}
+                                                {setting.payment_setting.razorpay_payment_method === "1"
+                                                    ? (
+                                                        <label className="form-check-label" htmlFor='razorpay'>
+                                                            <div className='payment-selector'>
+                                                                <div className="">
+                                                                    <img src={rozerpay} alt='cod' />
+                                                                    <span>{t("razorpay")}</span>
+                                                                </div>
+                                                                <input type="radio" name="payment-method" id='razorpay' onChange={() => {
+                                                                    setpaymentMethod("Razorpay");
+                                                                }} />
+                                                            </div>
+                                                        </label>
+                                                    ) : null}
+
+                                                {setting.payment_setting.paystack_payment_method === "1"
+                                                    ? (
+                                                        <label className="form-check-label" htmlFor='paystack'>
+                                                            <div className='payment-selector'>
+                                                                <div className="">
+                                                                    <img src={paystack} alt='cod' />
+                                                                    <span>{t("paystack")}</span>
+                                                                </div>
+                                                                <input type="radio" name="payment-method" id='paystack' onChange={() => {
+                                                                    setpaymentMethod("Paystack");
+                                                                }} />
+                                                            </div>
+                                                        </label>
+                                                    ) : null}
+
+                                                {setting.payment_setting.stripe_payment_method === "1"
+                                                    ? (
+                                                        <label className="form-check-label" htmlFor='stripe'>
+                                                            <div className='payment-selector'>
+                                                                <div className="">
+                                                                    <img src={Stripe} alt='stripe' />
+                                                                    <span className='ps-2'> {t("stripe")}</span>
+                                                                </div>
+                                                                <input type="radio" name="payment-method" id='stripe' onChange={() => {
+                                                                    setpaymentMethod("Stripe");
+                                                                }} />
+                                                            </div>
+                                                        </label>
+                                                    ) : null}
+
+                                                {setting.payment_setting.paypal_payment_method === "1"
+                                                    ? (
+                                                        <>
+                                                            <label className="form-check-label" htmlFor='paypal'>
+                                                                <div className='payment-selector'>
+                                                                    <div className="">
+                                                                        <img src={paypal} alt='paypal' />
+                                                                        <span>{t("paypal")}</span>
+                                                                    </div>
+                                                                    <input type="radio" name="payment-method" id='paypal' onChange={() => {
+                                                                        setpaymentMethod("Paypal");
+                                                                    }} />
+                                                                </div>
+                                                            </label>
+
+                                                        </>
+                                                    ) : null}
 
 
-                                            {/* {console.log(cart)} */}
-                                        </div>
+                                                {/* {console.log(cart)} */}
+                                            </div>}
 
 
                                         <div className='order-summary-wrapper checkout-component'>
@@ -1055,7 +1102,10 @@ const Checkout = () => {
                         ? <Loader width='100%' height='100%' />
                         :
                         <Elements stripe={stripePromise} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment}>
-                            <InjectCheckout setShow={setStripeModalShow} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment} />
+                            <InjectCheckout setShow={setStripeModalShow} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment}
+                                setWalletAmount={setWalletAmount} walletAmount={user?.user?.balance}
+                                walletDeductionAmt={walletDeductionAmt}
+                            />
                         </Elements>
                     }
 
@@ -1064,4 +1114,5 @@ const Checkout = () => {
         </>
     );
 };
+
 export default Checkout;

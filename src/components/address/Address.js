@@ -11,7 +11,6 @@ import { toast } from 'react-toastify';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { confirmAlert } from 'react-confirm-alert';
-import { ActionTypes } from '../../model/action-type';
 import { setAddress, setSelectedAddress } from "../../model/reducer/addressReducer";
 
 const Address = () => {
@@ -23,6 +22,8 @@ const Address = () => {
     const [isAddressSelected, setIsAddressSelected] = useState(false);
     const [show, setShow] = useState(false);
     const [isLoader, setisLoader] = useState(false);
+    const address = useSelector(state => state.address);
+    const user = useSelector(state => (state.user));
 
 
     const fetchAddress = (token) => {
@@ -31,36 +32,24 @@ const Address = () => {
             .then(result => {
                 if (result.status === 1) {
                     dispatch(setAddress({ data: result.data }));
-                    // dispatch({ type: ActionTypes.SET_ADDRESS, payload: result.data });
                     if (result.data.find((element) => element.is_default == 1)) {
                         dispatch(setSelectedAddress({ data: result.data.find((element) => element.is_default == 1) }));
-                        // dispatch({ type: ActionTypes.SET_SELECTED_ADDRESS, payload: result.data.find((element) => element.is_default == 1) });
                     }
                 } else {
                     dispatch(setAddress({ data: null }));
-                    // dispatch({ type: ActionTypes.SET_ADDRESS, payload: null });
                     setisLoader(false);
                 }
                 setisLoader(false);
             });
     };
 
-    const user = useSelector(state => (state.user));
-    const address = useSelector(state => state.address);
 
 
     useEffect(() => {
         if (cookies.get('jwt_token') !== undefined && user.user !== null) {
             fetchAddress(cookies.get('jwt_token'));
         }
-        console.log("useEffect Runned");
     }, [user]);
-    useEffect(() => {
-        // if (address.address && !address.selected_address) {
-        //     dispatch({ type: ActionTypes.SET_SELECTED_ADDRESS, payload: address.address.find((element) => element.is_default == 1) })
-        // }
-    }, [address]);
-
 
 
 

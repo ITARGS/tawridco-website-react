@@ -90,8 +90,7 @@ const WalletTransaction = () => {
                                             </thead>
 
                                             <tbody>
-
-                                                {transactions.map((transaction, index) => (
+                                                {transactions?.map((transaction, index) => (
                                                     <tr key={index} className={index === transactions.length - 1 ? 'last-column' : ''}>
                                                         <th>{transaction.id}</th>
                                                         {/* <th>{transaction?.txn_id}</th> */}
@@ -109,7 +108,7 @@ const WalletTransaction = () => {
 
                                                             {
                                                                 transaction.order_id != null || transaction.order_id != null && transaction.order_item_id != null || transaction.order_item_id != null && transaction.type == "credit" ?
-                                                                    `${transaction.message}-${t("order_id")}:${transaction?.order_id},${t("item")}:${transaction.productName} ${transaction.measurement}${transaction.measurementUnit}`
+                                                                    `${transaction.message}-${t("order_id")}:${transaction?.order_id}`
                                                                     :
                                                                     ""
                                                             }

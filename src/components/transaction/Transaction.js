@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import './transaction.css'
-import api from '../../api/api'
+import React, { useEffect, useState } from 'react';
+import './transaction.css';
+import api from '../../api/api';
 import Cookies from 'universal-cookie';
 import { FaRupeeSign } from "react-icons/fa";
 import Loader from '../loader/Loader';
 import Pagination from 'react-js-pagination';
-import No_Transactions from '../../utils/zero-state-screens/No_Transaction.svg'
+import No_Transactions from '../../utils/zero-state-screens/No_Transaction.svg';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
@@ -17,47 +17,47 @@ const Transaction = () => {
 
     const total_transactions_per_page = 10;
 
-    const type = 'transactions'
+    const type = 'transactions';
 
 
-    const [transactions, settransactions] = useState(null)
-    const [totalTransactions, settotalTransactions] = useState(null)
-    const [offset, setoffset] = useState(0)
-    const [currPage, setcurrPage] = useState(1)
-    const [isLoader, setisLoader] = useState(false)
+    const [transactions, settransactions] = useState(null);
+    const [totalTransactions, settotalTransactions] = useState(null);
+    const [offset, setoffset] = useState(0);
+    const [currPage, setcurrPage] = useState(1);
+    const [isLoader, setisLoader] = useState(false);
 
 
     const fetchTransactions = () => {
-        api.getTransactions(cookies.get('jwt_token'), total_transactions_per_page, offset,type)
+        api.getTransactions(cookies.get('jwt_token'), total_transactions_per_page, offset, type)
             .then(response => response.json())
             .then(result => {
-                console.log(result,'transREsult')
+                // console.log(result,'transREsult')
                 if (result.status === 1) {
-                    setisLoader(false)
-                    settransactions(result.data)
+                    setisLoader(false);
+                    settransactions(result.data);
                     // console.log(result.data,'transactionssss')
-                    settotalTransactions(result.total)
+                    settotalTransactions(result.total);
                 }
                 // else{
                 //     setisLoader(false)
                 //     toast.error('No Transaction Found')
                 // }
-            })
-    }
+            });
+    };
 
     useEffect(() => {
-        setisLoader(true)
-        fetchTransactions()
+        setisLoader(true);
+        fetchTransactions();
         // eslint-disable-next-line
 
-    }, [offset])
+    }, [offset]);
 
     //page change
     const handlePageChange = (pageNum) => {
         setcurrPage(pageNum);
-        setoffset(pageNum * total_transactions_per_page - total_transactions_per_page)
-    }
-    const { t } = useTranslation()
+        setoffset(pageNum * total_transactions_per_page - total_transactions_per_page);
+    };
+    const { t } = useTranslation();
     return (
 
         <div className='transaction-list'>
@@ -101,7 +101,7 @@ const Transaction = () => {
                                                         <th className={transaction.status === 'failed' ? 'failed' : 'success'}><p>{transaction.status}</p></th>
                                                     </tr>
                                                 ))
-                                            }
+                                                }
                                             </tbody>
                                         </table>
                                     </>
@@ -123,7 +123,7 @@ const Transaction = () => {
 
                 )}
         </div>
-    )
-}
+    );
+};
 
-export default Transaction
+export default Transaction;

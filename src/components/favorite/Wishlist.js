@@ -75,7 +75,7 @@ const Wishlist = () => {
             .then(response => response.json())
             .then((result) => {
                 dispatch(setFavourite({ data: result }));
-                dispatch({ type: ActionTypes.SET_FAVORITE, payload: result });
+                // dispatch({ type: ActionTypes.SET_FAVORITE, payload: result });
             });
     }, [cart]);
 
@@ -222,8 +222,12 @@ const Wishlist = () => {
                                                         <th className='products-image-container first-column'>
                                                             <div className='image-container'>
                                                                 <img onError={placeHolderImage} src={product.image_url} alt='product'></img>
+                                                                {!Number(product.is_unlimited_stock) && product.variants[0].status === 0 &&
+                                                                    <div className="out_of_stockOverlay">
+                                                                        <span className="out_of_stockText">{t("out_of_stock")}</span>
+                                                                    </div>
+                                                                }
                                                             </div>
-
                                                             <div className=''>
                                                                 <span>{product.name}</span>
                                                                 <div className='variant-section' onClick={() => { setselectedProduct(product); }} >{product.variants[0]?.measurement} {product.variants[0]?.stock_unit_name} <IoIosArrowDown /></div>
@@ -232,7 +236,7 @@ const Wishlist = () => {
 
                                                         <th className='price'>
                                                             {setting.setting && setting.setting.currency + ' '}
-                                                            <span id={`price-wishlist${index}`}>{(product.variants.length > 0 ? product.variants[0]?.price.toFixed(setting.setting && setting.setting.decimal_point) : 0)}</span>
+                                                            <span id={`price-wishlist${index}`}>{(product.variants.length > 0 ? product.variants[0]?.discounted_price.toFixed(setting.setting && setting.setting.decimal_point) : 0)}</span>
                                                         </th>
 
                                                         <th className='quantity'>
@@ -281,7 +285,6 @@ const Wishlist = () => {
                                                                     <button type='button' id={`Add-to-cart-wishlist${index}`} className='add-to-cart active'
                                                                         onClick={() => {
                                                                             if (cookies.get('jwt_token') !== undefined) {
-
                                                                                 addtoCart(product.id, product.variants[0]?.id, 1);
                                                                                 setP_id(product.id);
                                                                                 setP_V_id(product.variants[0]?.id);
@@ -292,6 +295,7 @@ const Wishlist = () => {
                                                                             }
 
                                                                         }}
+                                                                        disabled={!Number(product.is_unlimited_stock) && product.variants[0].status === 0}
                                                                     >{t("add_to_cart")}</button></>}
 
 
