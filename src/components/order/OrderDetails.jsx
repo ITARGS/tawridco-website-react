@@ -1,69 +1,70 @@
-import React, { useEffect, useState } from 'react'
-import coverImg from '../../utils/cover-img.jpg'
-import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
-import './order.css'
-import api from '../../api/api'
-import Cookies from 'universal-cookie'
-import { useNavigate, useParams } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import axios from 'axios'
+import React, { useEffect, useState } from 'react';
+import coverImg from '../../utils/cover-img.jpg';
+import { useTranslation } from 'react-i18next';
+import { useSelector } from 'react-redux';
+import './order.css';
+import api from '../../api/api';
+import Cookies from 'universal-cookie';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const OrderDetails = () => {
-    const { t } = useTranslation()
+    const { t } = useTranslation();
 
-    const setting = useSelector(state => state.setting)
+    const setting = useSelector(state => state.setting);
 
     const [orderData, setOrderData] = useState(null);
     const [orderStatus, setOrderStatus] = useState(t("recieved"));
 
-    const urlParams = useParams()
+    const urlParams = useParams();
 
     useEffect(() => {
         if (orderData?.active_status === "6") {
-            setOrderStatus(t("delivered"))
+            setOrderStatus(t("delivered"));
         } else if (orderData?.active_status === "5") {
-            setOrderStatus(t("out_for_delivery"))
+            setOrderStatus(t("out_for_delivery"));
         } else if (orderData?.active_status === "4") {
-            setOrderStatus(t("shipped"))
+            setOrderStatus(t("shipped"));
         } else if (orderData?.active_status === "3") {
-            setOrderStatus(t("processed"))
+            setOrderStatus(t("processed"));
         }
         else if (orderData?.active_status === "7") {
-            setOrderStatus(t("cancelled"))
+            setOrderStatus(t("cancelled"));
         }
         else if (orderData?.active_status === "8") {
-            setOrderStatus(t("returned"))
+            setOrderStatus(t("returned"));
         }
-    }, [orderData])
+    }, [orderData]);
 
-    const cookies = new Cookies()
+    const cookies = new Cookies();
 
     const placeHolderImage = (e) => {
 
-        e.target.src = setting.setting?.web_logo
-    }
+        e.target.src = setting.setting?.web_logo;
+    };
 
     const fetchOrderDetails = async () => {
         api.getOrders(cookies.get('jwt_token'), null, null, null, urlParams?.id).then(result => result.json()).then((response) => {
 
             if (response.status) {
-                setOrderData(response.data[0])
+                setOrderData(response.data[0]);
             } else {
-                toast.error(response.message)
+                toast.error(response.message);
             }
-        })
+        });
 
-    }
+    };
 
     useEffect(() => {
-        fetchOrderDetails()
-    }, [])
+        fetchOrderDetails();
+        // console.log(orderData, 'orderDaraaa')
+    }, []);
 
 
     const getInvoice = async (Oid) => {
-        let postData = new FormData()
-        postData.append('order_id', Oid)
+        let postData = new FormData();
+        postData.append('order_id', Oid);
         axios({
             url: `${process.env.REACT_APP_API_URL}${process.env.REACT_APP_API_SUBURL}/invoice_download`,
             method: 'post',
@@ -93,22 +94,23 @@ const OrderDetails = () => {
                 toast.error("Something went wrong!");
             }
         });
-    }
-    const navigate = useNavigate()
+    };
+    const navigate = useNavigate();
 
     const handleUpdateStatus = async (item_id, status) => {
         await api.updateOrderStatus(cookies.get('jwt_token'), orderData?.id, item_id, status)
             .then((result) => result.json())
             .then((response) => {
                 if (response.status) {
-                    response.data && setOrderData(response.data)
-                    toast.success(response.message)
+                    response.data && setOrderData(response.data);
+                    console.log(response.data, "update_order_status");
+                    toast.success(response.message);
                 }
 
             }).catch((error) => {
-                console.error(error)
-            })
-    }
+                console.error(error);
+            });
+    };
 
 
     return (
@@ -143,6 +145,7 @@ const OrderDetails = () => {
                                                     {/* <th>{t('action')}</th> */}
                                                 </thead>
                                                 <tbody>
+                                                    {/* console.log(item, 'orderItem'); */}
                                                     {orderData?.items?.map((item, index) => {
                                                         return (
                                                             <>
@@ -171,32 +174,86 @@ const OrderDetails = () => {
                                                                                 </span>
                                                                                 : ""} */}
                                                                         </div>
-                                                                        <div className="actions-container">
+                                                                        {/* <div className="actions-container">
 
-                                                                            {!Number(item?.active_status) >= 6 && !item?.cancelable_status && item?.return_status ?
+                                                                            {!Number(item?.active_status) >= 6 && item?.return_status == 1 ?
                                                                                 <span className="return">
                                                                                     <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('return')}</button>
                                                                                 </span>
                                                                                 : <></>
                                                                             }
 
-                                                                            {!Number(item?.active_status) >= 6 && item?.cancelable_status ?
+                                                                            {!Number(item?.active_status) <= 6 && !Number(item?.active_status) <= item?.till_status && item?.cancelable_status == 1 ?
                                                                                 <span className="cancel">
                                                                                     <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancel')}</button>
                                                                                 </span>
                                                                                 : <></>
+                                                                                
+                                                                            }
+                                                                            {!Number(item?.active_status === 7 && item?.active_status === '7')  ?
+                                                                                <span className="cancel">
+                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 7)}>cancelled</button>
+                                                                                </span>
+                                                                                : <></>
+                                                                            }
+                                                                            {!Number(item?.active_status) == 8 ?
+                                                                                <span className="return">
+                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('returned')}</button>
+                                                                                </span>
+                                                                                : <></>
                                                                             }
 
+                                                                        </div> */}
+                                                                        <div className="actions-container">
+                                                                            {Number(item?.active_status) <= 6 && item?.return_status === 1 ?
+                                                                                <span className="return">
+                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('return')}</button>
+                                                                                </span>
+                                                                                : null
+                                                                            }
+
+                                                                            {Number(item?.active_status) >= 6 && Number(item?.active_status) <= item?.till_status && item?.cancelable_status === 1 ?
+                                                                                <span className="cancel">
+                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancel')}</button>
+                                                                                </span>
+                                                                                : null
+                                                                            }
+
+                                                                            {Number(item?.active_status) === 7 && item?.active_status === '7' ?
+                                                                                <span className="cancelled">
+                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancelled')}</button>
+                                                                                </span>
+                                                                                : null
+                                                                            }
+
+                                                                            {Number(item?.active_status) === 8 ?
+                                                                                <span className="returned">
+                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('returned')}</button>
+                                                                                </span>
+                                                                                : null
+                                                                            }
                                                                         </div>
+
                                                                     </td>
                                                                 </tr>
                                                             </>
-                                                        )
+                                                        );
                                                     })}
                                                 </tbody>
                                             </table>
                                         </div>
                                     </div>
+
+                                    {/* <hr /> */}
+
+                                    {/* <div className="container-footer">
+                                        <div className="cancelReturnBtnWrapper">
+                                            {
+                                                orderData?.items[0]?.cancelable_status === 1 ?
+                                                    "Cancel" : 'no cancel'
+                                            }
+                                        </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>
@@ -294,7 +351,7 @@ const OrderDetails = () => {
                                                     {t('sub_total')}
                                                 </span>
                                                 <span>
-                                                {setting.setting?.currency}{orderData?.total}
+                                                    {setting.setting?.currency}{orderData?.total}
                                                 </span>
                                             </div>
                                             {orderData?.discount ?
@@ -303,7 +360,7 @@ const OrderDetails = () => {
                                                         {t('discount')}
                                                     </span>
                                                     <span>
-                                                    {setting.setting?.currency}{orderData?.discount}
+                                                        {setting.setting?.currency}{orderData?.discount}
                                                     </span>
                                                 </div>
                                                 : <></>}
@@ -322,7 +379,7 @@ const OrderDetails = () => {
                                         {orderData?.active_status === "6" ?
                                             <div className="button-container">
                                                 <button className="btn" onClick={() => {
-                                                    getInvoice(orderData?.id)
+                                                    getInvoice(orderData?.id);
                                                 }}>
                                                     {t('get_invoice')}
                                                 </button>
@@ -336,7 +393,7 @@ const OrderDetails = () => {
                 </div>
             </section>
         </>
-    )
-}
+    );
+};
 
-export default OrderDetails
+export default OrderDetails;

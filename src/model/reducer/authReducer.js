@@ -18,6 +18,11 @@ export const authReducer = createSlice({
         logoutAuth: (state, action) => {
             state.status = "loading";
             state.user = null;
+        },
+        deductUserBalance: (state, action) => {
+            if (state.user) {
+                state.user.balance -= action.payload.data;
+            }
         }
     }
     //     switch(type) {
@@ -37,5 +42,5 @@ export const authReducer = createSlice({
     // }
 });
 
-export const { setCurrentUser, logoutAuth } = authReducer.actions;
+export const { setCurrentUser, logoutAuth, deductUserBalance } = authReducer.actions;
 export default authReducer.reducer;

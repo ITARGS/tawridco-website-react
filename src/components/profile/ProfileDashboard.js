@@ -5,7 +5,7 @@ import { ActionTypes } from '../../model/action-type';
 import './profile.css';
 
 import coverImg from '../../utils/cover-img.jpg';
-import { FaUserCircle, FaListAlt, FaHome, FaEdit } from 'react-icons/fa';
+import { FaUserCircle, FaListAlt, FaHome, FaEdit, FaWallet } from 'react-icons/fa';
 import { GoChecklist } from 'react-icons/go';
 import { IoIosArrowForward, IoMdLogOut } from 'react-icons/io';
 import { AiFillDelete, AiOutlineCloseCircle } from 'react-icons/ai';
@@ -22,9 +22,8 @@ import { useTranslation } from 'react-i18next';
 import FirebaseData from '../../utils/firebase/FirebaseData';
 import { logoutAuth, setCurrentUser } from "../../model/reducer/authReducer";
 import { setFilterBrands, setFilterCategory, setFilterSearch, setFilterSection } from "../../model/reducer/productFilterReducer";
-
-
-
+import WalletTransaction from '../wallet-transaction/WalletTransaction';
+import { PiWallet } from "react-icons/pi";
 
 
 const ProfileDashboard = (props) => {
@@ -43,6 +42,14 @@ const ProfileDashboard = (props) => {
     const [profileClick, setprofileClick] = useState(true);
     const [orderClick, setorderClick] = useState(false);
 
+    const [selectedButton, setSelectedButton] = useState('profile');
+
+    const handleButtonClick = (buttonName) => {
+        setSelectedButton(buttonName);
+        // Add your existing button click logic here
+    };
+
+
     useEffect(() => {
         if (user.status === 'loading') {
             navigate('/');
@@ -55,14 +62,20 @@ const ProfileDashboard = (props) => {
             setprofileClick(false);
             settransactionClick(true);
         } else if (props.showAddress) {
+        } else if (props.showWalletTransaction) {
+            setprofileClick(false);
+            setWalletTransactionClick(true);
+        } else if (props.showAddress) {
             setprofileClick(false);
             setaddressClick(true);
         }
+
     }, [user]);
 
 
     const [addressClick, setaddressClick] = useState(false);
     const [transactionClick, settransactionClick] = useState(false);
+    const [walletTransactionClick, setWalletTransactionClick] = useState(false);
     const [username, setusername] = useState(user.user && user.user.name);
     const [useremail, setuseremail] = useState(user.user && user.user.email);
     const [selectedFile, setselectedFile] = useState();
@@ -247,20 +260,30 @@ const ProfileDashboard = (props) => {
                         </div>
                         <p>{user.user.name.split(' ')[0]}</p>
                         <span>{user.user.email}</span>
+                        <div className='image-container d-flex align-items-center mt-4' style={{ gap: "15px" }}>
+                            <PiWallet size={35} fill={'var(--secondary-color)'} />
+                            {t("Wallet Balance")}
+                            <p style={{ color: 'var(--secondary-color' }} className='mb-0'>
+                                {setting?.setting?.currency}
+                                {parseFloat(user?.user?.balance).toFixed(setting?.setting && setting?.setting?.decimal_point)}
+                            </p>
+                        </div>
                     </div>
                 }
 
 
                 <div className="navigation-container">
 
-
-                    <button type='button' className='navigation-container-button ' onClick={() => {
+                    {/* Profile */}
+                    <button type='button' className={`navigation-container-button ${selectedButton === 'profile' ? 'activeTab' : ''}`} onClick={() => {
                         setprofileClick(true);
                         navigate('/profile');
                         setaddressClick(false);
                         setorderClick(false);
                         settransactionClick(false);
+                        setWalletTransactionClick(false);
                         closeCanvas.current.click();
+                        handleButtonClick('profile')
                     }}>
 
                         <span>
@@ -269,14 +292,18 @@ const ProfileDashboard = (props) => {
                         </span>
                         <IoIosArrowForward className="profile-navigate-arrow" />
                     </button>
-                    <button type='button' className='navigation-container-button ' onClick={() => {
+
+                    {/* Orders */}
+                    <button type='button' className={`navigation-container-button ${selectedButton === 'orders' ? 'activeTab' : ''}`} onClick={() => {
                         setprofileClick(false);
                         setaddressClick(false);
                         setorderClick(true);
                         settransactionClick(false);
+                        setWalletTransactionClick(false);
                         setisupdating(false);
                         navigate('/profile/orders');
                         closeCanvas.current.click();
+                        handleButtonClick('orders')
 
                     }}>
                         <span >
@@ -285,14 +312,18 @@ const ProfileDashboard = (props) => {
                         </span>
                         <IoIosArrowForward className="profile-navigate-arrow" />
                     </button>
-                    <button type='button' className='navigation-container-button ' onClick={() => {
+
+                    {/* Address  */}
+                    <button type='button' className={`navigation-container-button ${selectedButton === 'address' ? 'activeTab' : ''}`} onClick={() => {
                         setprofileClick(false);
                         navigate('/profile/address');
                         setaddressClick(true);
                         setorderClick(false);
                         settransactionClick(false);
+                        setWalletTransactionClick(false);
                         setisupdating(false);
                         closeCanvas.current.click();
+                        handleButtonClick('address')
 
                     }}>
                         <span >
@@ -301,14 +332,18 @@ const ProfileDashboard = (props) => {
                         </span>
                         <IoIosArrowForward className="profile-navigate-arrow" />
                     </button>
-                    <button type='button' className='navigation-container-button ' onClick={() => {
+
+                    {/* Transaction_History */}
+                    <button type='button' className={`navigation-container-button ${selectedButton === 'transactions' ? 'activeTab' : ''}`} onClick={() => {
                         navigate('/profile/transactions');
                         setprofileClick(false);
                         setaddressClick(false);
                         setorderClick(false);
                         settransactionClick(true);
+                        setWalletTransactionClick(false);
                         setisupdating(false);
                         closeCanvas.current.click();
+                        handleButtonClick('transactions')
                         // navigate('/profile/address')
 
                         if (window.innerWidth < 768) document.getElementsByClassName('sidebar')[0].classList.toggle('active');
@@ -319,6 +354,29 @@ const ProfileDashboard = (props) => {
                         </span>
                         <IoIosArrowForward className="profile-navigate-arrow" />
                     </button>
+
+                    {/* Wallet_History */}
+                    <button type='button' className={`navigation-container-button ${selectedButton === 'wallet' ? 'activeTab' : ''}`} onClick={() => {
+                        navigate('/profile/wallet-transaction');
+                        setprofileClick(false);
+                        setaddressClick(false);
+                        setorderClick(false);
+                        settransactionClick(false);
+                        setWalletTransactionClick(true);
+                        setisupdating(false);
+                        closeCanvas.current.click();
+                        handleButtonClick('wallet')
+
+                        if (window.innerWidth < 768) document.getElementsByClassName('sidebar')[0].classList.toggle('active');
+                    }} >
+                        <span>
+                            <FaWallet size={30} className='mx-3' fill={'var(--secondary-color)'} />
+                            {t("wallet_history")}
+                        </span>
+                        <IoIosArrowForward className="profile-navigate-arrow" />
+                    </button>
+
+                    {/* Logout */}
                     <button type='button' className='navigation-container-button no-hover' onClick={handleLogout}>
                         <span>
                             <IoMdLogOut size={35} className='mx-3' fill={'var(--secondary-color)'} />
@@ -326,6 +384,8 @@ const ProfileDashboard = (props) => {
                         </span>
                         <IoIosArrowForward className="profile-navigate-arrow" />
                     </button>
+
+                    {/* Delete_Account  */}
                     <button type='button' className='navigation-container-button ' onClick={handleDeleteAcount}>
                         <span>
                             <AiFillDelete size={35} className='mx-3' fill={'var(--secondary-color)'} />
@@ -428,6 +488,11 @@ const ProfileDashboard = (props) => {
                                     {addressClick
                                         ? <Address />
                                         : null}
+
+                                    {walletTransactionClick
+                                        ? <WalletTransaction />
+                                        : null}
+
 
                                 </div>
                             </div>

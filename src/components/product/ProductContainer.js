@@ -21,15 +21,16 @@ import { FacebookIcon, FacebookShareButton, TelegramIcon, TelegramShareButton, W
 import { IoIosArrowDown } from 'react-icons/io';
 import { useTranslation } from 'react-i18next';
 
-import { setCart } from "../../model/reducer/cartReducer";
+import { setCart, setSellerFlag } from "../../model/reducer/cartReducer";
 import { setFavourite } from "../../model/reducer/favouriteReducer";
 import { setProductSizes } from "../../model/reducer/productSizesReducer";
+import { setFilterSection } from '../../model/reducer/productFilterReducer';
+import Popup from "../same-seller-popup/Popup";
 
 
 
 
-
-const ProductContainer = ({ showModal, setShowModal }) => {
+const ProductContainer = React.memo(({ showModal, setShowModal }) => {
 
     //initialize cookies
     const cookies = new Cookies();
@@ -46,7 +47,12 @@ const ProductContainer = ({ showModal, setShowModal }) => {
     const sizes = useSelector(state => state.productSizes);
     const favorite = useSelector(state => (state.favourite));
     const [selectedVariant, setSelectedVariant] = useState({});
+    const [p_id, setP_id] = useState(0);
+    const [p_v_id, setP_V_id] = useState(0);
+    const [qnty, setQnty] = useState(0);
+    const [loader, setisLoader] = useState(false);
 
+    // console.log("Product Container Rendered");
     // const shop = useSelector(state=>state.shop);
 
     useEffect(() => {
@@ -79,6 +85,9 @@ const ProductContainer = ({ showModal, setShowModal }) => {
 
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
+        setP_id(product_id);
+        setP_V_id(product_variant_id);
+        setQnty(qty);
         await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {
@@ -89,14 +98,19 @@ const ProductContainer = ({ showModal, setShowModal }) => {
                         .then(res => {
                             if (res.status === 1) {
                                 dispatch(setCart({ data: res }));
-                                // dispatch({ type: ActionTypes.SET_CART, payload: res });
+                                setShowModal(false);
+                                setP_id(0);
+                                setP_V_id(0);
+                                setQnty(0);
+                                // dispatch({ type: ActionTypes.SET_CART, payloTad: res });
                             }
 
                         });
 
                 }
-                else {
-                    toast.error(result.message);
+                else if (result?.data?.one_seller_error_code == 1) {
+                    dispatch(setSellerFlag({ data: 1 }));
+                    // toast.error(t(`${result.message}`));
                 }
             });
     };
@@ -178,7 +192,6 @@ const ProductContainer = ({ showModal, setShowModal }) => {
     };
 
 
-
     const settings = {
         infinite: false,
         slidesToShow: 5.5,
@@ -255,13 +268,13 @@ const ProductContainer = ({ showModal, setShowModal }) => {
 
                                                 <div className="d-flex product_title_content justify-content-between align-items-center col-md-12">
                                                     <div className="">
-                                                        <span className='d-none d-md-block'>{section.short_description}</span>
                                                         <p>{section.title}</p>
+                                                        <span className='d-none d-md-block'>{section.short_description}</span>
                                                     </div>
                                                     <div>
                                                         {/* {console.log(section)} */}
                                                         <Link to="/products" onClick={() => {
-                                                            dispatch({ type: ActionTypes.SET_FILTER_SECTION, payload: section.id });
+                                                            dispatch(setFilterSection({ data: section.id }));
                                                             navigate('/products');
 
                                                         }}>{t('see_all')}</Link>
@@ -279,7 +292,10 @@ const ProductContainer = ({ showModal, setShowModal }) => {
                                                                     <div className='product-card'  >
                                                                         <span className='border border-light rounded-circle p-2 px-3' id='aiEye'>
                                                                             <AiOutlineEye
-                                                                                onClick={() => { setselectedProduct(product); setShowModal(true); }}
+                                                                                onClick={() => {
+                                                                                    setselectedProduct(product); setShowModal(true);
+                                                                                    setP_id(product.id); setP_V_id(product.variants[0].id); setQnty(product.variants[0].cart_count + 1);
+                                                                                }}
                                                                             />
                                                                         </span>
                                                                         <Link to={`/product/${product.slug}`}>
@@ -313,7 +329,7 @@ const ProductContainer = ({ showModal, setShowModal }) => {
                                                                                 <input type="hidden" name={`select-product${index}${index0}-variant-id`} id={`select-product${index}${index0}-variant-id`} value={selectedVariant.pid === product.id ? selectedVariant.id : product.variants[0].id} />
                                                                                 {/* {console.log(product, product.variants)} */}
                                                                                 {product.variants.length > 1 ? <>
-                                                                                    <div className='variant_selection' onClick={() => { setselectedProduct(product); setShowModal(true); }} >
+                                                                                    <div className='variant_selection' onClick={() => { setselectedProduct(product); setShowModal(true); setP_id(product.id); setP_V_id(product.variants[0].id); setQnty(product.variants[0].cart_count + 1); }} >
                                                                                         <span>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} </>}</span>
                                                                                         <IoIosArrowDown />
                                                                                     </div>
@@ -417,7 +433,7 @@ const ProductContainer = ({ showModal, setShowModal }) => {
                                                                                     <button type="button" id={`Add-to-cart-section${index}${index0}`} className='w-100 h-100 add-to-cart active' onClick={() => {
                                                                                         if (cookies.get('jwt_token') !== undefined) {
 
-                                                                                            if (cart.cart && cart.cart.data.cart.some(element => element.product_id === product.id) && cart.cart.data.cart.some(element => element.product_variant_id === product.variants[variant_index.pid === product.id ? variant_index.index : 0].id)) {
+                                                                                            if (cart.cart && cart.cart.data.cart.some(element => element.product_id === product.id) && cart.cart.data.cart.some(element => element.product_variant_id === product.variants[variant_index?.pid === product.id ? variant_index?.index : 0].id)) {
                                                                                                 toast.info('Product already in Cart');
                                                                                             } else {
                                                                                                 if (product.variants[0].status) {
@@ -480,7 +496,8 @@ const ProductContainer = ({ showModal, setShowModal }) => {
                             )
 
                             }
-                            <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} />
+                            <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} setP_id={setP_id} setP_V_id={setP_V_id} />
+                            <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} setisLoader={setisLoader} cookies={cookies} toast={toast} city={city} />
                         </>
 
 
@@ -496,6 +513,6 @@ const ProductContainer = ({ showModal, setShowModal }) => {
 
         </section>
     );
-};
+});
 
 export default ProductContainer;

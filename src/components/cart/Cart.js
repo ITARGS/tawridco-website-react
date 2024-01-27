@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, } from 'react';
 import './cart.css';
 import { useSelector, useDispatch } from 'react-redux';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
@@ -13,8 +13,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setProductSizes } from "../../model/reducer/productSizesReducer";
-import { setCart } from "../../model/reducer/cartReducer";
-
+import { clearCartPromo, setCart, setPromoCodeApplied } from "../../model/reducer/cartReducer";
+import Promo from "./Promo";
+import { RiCoupon2Fill } from 'react-icons/ri';
 
 
 
@@ -34,6 +35,7 @@ const Cart = () => {
     const [productSizes, setproductSizes] = useState(null);
     const [iscartEmpty, setiscartEmpty] = useState(false);
     const [isLoader, setisLoader] = useState(false);
+    const [showPromoOffcanvas, setShowPromoOffcanvas] = useState(false);
 
     useEffect(() => {
         if (sizes.sizes === null || sizes.status === 'loading') {
@@ -82,10 +84,15 @@ const Cart = () => {
                         .then(res => {
                             setisLoader(false);
                             if (res.status === 1) {
+                                dispatch(clearCartPromo());
+                                // dispatch(setPromoCodeApplied({ data: 0 }));
                                 dispatch(setCart({ data: res }));
                                 // dispatch({ type: ActionTypes.SET_CART, payload: res });
                             }
                         });
+
+                } else if (result.status === 0) {
+                    setisLoader(false);
 
                 }
                 else {
@@ -106,7 +113,8 @@ const Cart = () => {
                     await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
                         .then(resp => resp.json())
                         .then(res => {
-
+                            dispatch(clearCartPromo());
+                            // dispatch(setPromoCodeApplied({ data: 0 }));
                             if (res.status === 1) {
                                 // dispatch({ type: ActionTypes.SET_CART, payload: res });
                                 dispatch(setCart({ data: res }));
@@ -142,7 +150,14 @@ const Cart = () => {
             }
             closeCanvas.current.click();
             navigate('/checkout');
+            //dispatch(toggleWallet());
         });
+    };
+    const removeCoupon = () => {
+        dispatch(clearCartPromo());
+        // dispatch(setPromoCodeApplied({ data: 0 }));
+        // console.log(totalPayment);
+        toast.info("Coupon Removed");
     };
     return (
         <div tabIndex="-1" className={`cart-sidebar-container offcanvas offcanvas-end`} id="cartoffcanvasExample" aria-labelledby="cartoffcanvasExampleLabel">
@@ -240,7 +255,10 @@ const Cart = () => {
                                                         {setting.setting && setting.setting.currency} <span id={`price${index}-cart-sidebar`}> {(product.discounted_price == 0 ? (product.price * product.qty).toFixed(setting.setting && setting.setting.decimal_point) : (product.discounted_price * product.qty).toFixed(setting.setting && setting.setting.decimal_point))}</span>
                                                     </div>
 
-                                                    <button type='button' className='remove-product' onClick={() => removefromCart(product.product_id, product.product_variant_id)}>{t("delete")}</button>
+                                                    <button type='button' className='remove-product' onClick={() => {
+                                                        removefromCart(product.product_id, product.product_variant_id);
+                                                        dispatch(clearCartPromo());
+                                                    }}>{t("delete")}</button>
 
                                                 </div>
                                             </div>
@@ -252,7 +270,36 @@ const Cart = () => {
 
                                 <div className='cart-sidebar-footer'>
 
-
+                                    {/* Apply Promo Code */}
+                                    <div className="promo-wrapper">
+                                        <div className="promo-container">
+                                            <div className="promo-button d-flex justify-content-between align-items-center d-lg-flex pb-4 mb-4" style={{ borderBottom: '1px solid lightgrey' }}>
+                                                <span className=""
+                                                    style={{ fontSize: "16px" }}>{t("have_coupon")}</span>
+                                                <button className="btn" onClick={() => setShowPromoOffcanvas(true)}
+                                                    style={{ backgroundColor: '#33a36b', color: 'white', fontSize: '14px' }}
+                                                >{t("view_coupon")}</button>
+                                            </div>
+                                            {cart.cart && cart.promo_code ?
+                                                <>
+                                                    <div className="promo-code">
+                                                        <div className="">
+                                                            <span><RiCoupon2Fill size={26} fill='var(--secondary-color)' /></span>
+                                                        </div>
+                                                        <div className="d-flex flex-column">
+                                                            <span className='promo-name'>{cart.promo_code.promo_code}</span>
+                                                            <span className='promo-discount-amount'>{cart.promo_code.message}</span>
+                                                        </div>
+                                                        <div className="d-flex flex-column">
+                                                            <span>{setting.setting && setting.setting.currency} {cart.promo_code.discount}</span>
+                                                            <span className='promo-remove' onClick={removeCoupon}> {t("remove")}</span>
+                                                        </div>
+                                                    </div>
+                                                </>
+                                                : <></>}
+                                        </div>
+                                    </div>
+                                    <Promo show={showPromoOffcanvas} setShow={setShowPromoOffcanvas} />
                                     {cart.cart?.data === null
                                         ? (
                                             <Loader />

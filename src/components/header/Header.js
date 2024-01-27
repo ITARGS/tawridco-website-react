@@ -1,3 +1,4 @@
+import "../location/location.css";
 import React, { useState, useEffect, useRef } from 'react';
 import './header.css';
 import { BsShopWindow } from 'react-icons/bs';
@@ -28,8 +29,7 @@ import { setLanguage, setLanguageList } from "../../model/reducer/languageReduce
 import { setNotification } from "../../model/reducer/notificationReducer";
 import { setFavourite } from "../../model/reducer/favouriteReducer";
 import { setFilterBrands, setFilterCategory, setFilterMinMaxPrice, setFilterSearch } from "../../model/reducer/productFilterReducer";
-import { Modal } from 'react-bootstrap';
-import "../location/location.css";
+import { Modal } from 'antd';
 
 const Header = () => {
 
@@ -54,6 +54,8 @@ const Header = () => {
     const [isSticky, setIsSticky] = useState(false);
     const languages = useSelector((state) => (state.language));
     const [showModal, setShowModal] = useState(false);
+    const [bodyScroll, setBodyScroll] = useState(false);
+    const [locModal, setLocModal] = useState(false);
 
     const { t } = useTranslation();
 
@@ -62,6 +64,41 @@ const Header = () => {
 
     const curr_url = useLocation();
 
+    // to open Location modal 
+    const openModal = () => {
+        handleModal();
+    };
+
+    const openCanvasModal = () => {
+        handleModal();
+        closeSidebarRef.current.click();
+    };
+
+    useEffect(() => {
+        if (bodyScroll) {
+            document.body.style.overflow = 'hidden';
+            document.body.style.height = '100vh';
+        } else {
+            document.body.style.overflow = 'auto';
+            document.body.style.height = 'auto';
+
+        }
+    }, [bodyScroll]);
+
+
+    const handleModal = () => {
+        setLocModal(true);
+        setBodyScroll(true);
+    };
+
+    useEffect(() => {
+        // console.log('status',city)
+        setLocModal(true);
+        setLocModal(false);
+        if (!city.status === "fulfill") {
+            handleModal();
+        }
+    }, []);
 
     useEffect(() => {
 
@@ -79,9 +116,10 @@ const Header = () => {
             setisLocationPresent(true);
         }
         else if (!setting.setting?.default_city && !city.city) {
-            locationModalTrigger.current.click();
+            // locationModalTrigger.current.click();
+            // setLocModal(true)
         }
-    }, [dispatch, setting]);
+    }, [setting]);
 
 
     useEffect(() => {
@@ -92,6 +130,7 @@ const Header = () => {
                 dispatch(setLanguageList({ data: result.data }));
             });
     }, []);
+
     const fetchCart = async (token, latitude, longitude) => {
         await api.getCart(token, latitude, longitude)
             .then(response => response.json())
@@ -155,8 +194,8 @@ const Header = () => {
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    // dispatch({ type: ActionTypes.SET_PAYMENT_SETTING, payload: JSON.parse(atob(result.data)) });
-                    dispatch(setPaymentSetting({ data: result.data }));
+                    dispatch(setPaymentSetting({ data: JSON.parse(atob(result.data)) }));
+                    // dispatch(setPaymentSetting({ data: result.data }));
                 }
             })
             .catch(error => console.log(error));
@@ -178,10 +217,10 @@ const Header = () => {
     useEffect(() => {
         fetchPaymentSetting();
         dispatch(setFilterSearch({ data: null }));
-        window.addEventListener("scroll", handleScroll);
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        };
+        // window.addEventListener("scroll", handleScroll);
+        // return () => {
+        //     window.removeEventListener("scroll", handleScroll);
+        // };
 
 
     }, []);
@@ -211,29 +250,28 @@ const Header = () => {
                     </div>
                     <div className="canvas-main">
                         <div className='site-location'>
-                            <button whileTap={{ scale: 0.8 }} type='button' >
+                            <button whiletap={{ scale: 0.8 }} type='buton' onClick={openCanvasModal} >
                                 <div className='d-flex flex-row gap-2'>
                                     <div className='icon location p-1 m-auto'>
                                         <GoLocation />
                                     </div>
                                     <div className='d-flex flex-column flex-grow-1'>
                                         <span className='location-description'>{t("deliver_to")} <IoMdArrowDropdown /></span>
-                                        <span className='current-location' onClick={() => { setisLocationPresent(true); setShowModal(true); }}>
-                                            {isLocationPresent
-                                                ? (
-                                                    <>
-                                                        {city.status === 'fulfill'
-                                                            ? city.city.formatted_address
-                                                            : (
-                                                                <div className="d-flex justify-content-center">
-                                                                    <div className="spinner-border" role="status">
-                                                                        <span className="visually-hidden">Loading...</span>
-                                                                    </div>
+                                        <span className='current-location'>{isLocationPresent
+                                            ? (
+                                                <>
+                                                    {city.status === 'fulfill'
+                                                        ? city.city.formatted_address
+                                                        : (
+                                                            <div className="d-flex justify-content-center">
+                                                                <div className="spinner-border" role="status">
+                                                                    <span className="visually-hidden">Loading...</span>
                                                                 </div>
-                                                            )}
-                                                    </>)
-                                                : t("select_location")
-                                            }</span>
+                                                            </div>
+                                                        )}
+                                                </>)
+                                            : t("select_location")
+                                        }</span>
                                     </div>
                                 </div>
                             </button>
@@ -449,7 +487,7 @@ const Header = () => {
                             <div className='d-flex  w-lg-100 col-md-6 order-2 justify-content-center align-items-center '>
 
                                 {/* location modal trigger button */}
-                                <button whileTap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile'
+                                {/* <button whiletap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile'
                                 >
                                     <div className='d-flex flex-row gap-2'>
                                         <div className='icon location p-1 m-auto'>
@@ -458,6 +496,25 @@ const Header = () => {
                                         <div className='d-flex flex-column flex-grow-1 align-items-start' >
                                             <span className='location-description'>{t('deliver_to')} <IoMdArrowDropdown /></span>
                                             <span className='current-location' onClick={() => { setisLocationPresent(true); setShowModal(true); }}>
+                                                <>
+                                                    {city.status === 'fulfill'
+                                                        ? city.city.formatted_address
+                                                        : (
+                                                            t("select_location")
+                                                        )}
+                                                </>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </button> */}
+                                <button whiletap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile' onClick={openModal}>
+                                    <div className='d-flex flex-row gap-2'>
+                                        <div className='icon location p-1 m-auto'>
+                                            <GoLocation />
+                                        </div>
+                                        <div className='d-flex flex-column flex-grow-1 align-items-start' >
+                                            <span className='location-description'>{t('deliver_to')} <IoMdArrowDropdown /></span>
+                                            <span className='current-location'>
                                                 <>
                                                     {city.status === 'fulfill'
                                                         ? city.city.formatted_address
@@ -510,7 +567,7 @@ const Header = () => {
 
 
                             <div className='d-flex col-md-3 w-auto order-3  justify-content-end align-items-center'>
-                                <button type='button' whileTap={{ scale: 0.6 }} className='icon position-relative hide-mobile mx-sm-4' onClick={() => {
+                                <button type='button' whiletap={{ scale: 0.6 }} className='icon position-relative hide-mobile mx-sm-4' onClick={() => {
                                     if (cookies.get('jwt_token') === undefined) {
                                         toast.error(t("required_login_message_for_notification"));
                                     }
@@ -524,7 +581,7 @@ const Header = () => {
                                 </button>
 
                                 {city.city === null || cookies.get('jwt_token') === undefined
-                                    ? <button whileTap={{ scale: 0.6 }} className='icon mx-sm-4 position-relative hide-mobile-screen'
+                                    ? <button whiletap={{ scale: 0.6 }} className='icon mx-sm-4 position-relative hide-mobile-screen'
                                         onClick={() => {
                                             if (cookies.get('jwt_token') === undefined) {
                                                 toast.error(t("required_login_message_for_cartRedirect"));
@@ -535,15 +592,18 @@ const Header = () => {
                                         }}>
                                         <IoHeartOutline className='' />
                                     </button>
-                                    : <button whileTap={{ scale: 0.6 }} className='icon mx-4 position-relative hide-mobile-screen' data-bs-toggle="offcanvas" data-bs-target="#favoriteoffcanvasExample" aria-controls="favoriteoffcanvasExample"
+                                    : <button whiletap={{ scale: 0.6 }} className='icon mx-4 position-relative hide-mobile-screen'
                                         onClick={() => {
                                             if (cookies.get('jwt_token') === undefined) {
                                                 toast.error(t("required_login_message_for_cartRedirect"));
                                             }
                                             else if (city.city === null) {
                                                 toast.error("Please Select you delivery location first!");
+                                            } else {
+                                                navigate("/wishlist");
                                             }
                                         }}>
+                                        {/* {console.log("this runned")} */}
                                         <IoHeartOutline className='' />
 
                                         {favorite.favorite && favorite.favorite.status !== 0 && favorite.favorite !== null ?
@@ -556,8 +616,8 @@ const Header = () => {
                                     </button>
                                 }
 
-                                {city.city === null || cookies.get('jwt_token') === undefined
-                                    ? <button type='button' whileTap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative'
+                                {/* {city.city === null || cookies.get('jwt_token') === undefined
+                                    ? <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative'
 
                                         onClick={() => {
                                             if (cookies.get('jwt_token') === undefined) {
@@ -570,7 +630,7 @@ const Header = () => {
                                         <IoCartOutline />
                                     </button>
 
-                                    : <button type='button' whileTap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
+                                    : <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
 
                                         onClick={() => {
                                             if (cookies.get('jwt_token') === undefined) {
@@ -589,12 +649,46 @@ const Header = () => {
                                             </span>
                                             : null}
                                     </button>
+                                } */}
+
+                                {
+                                    curr_url.pathname === "/checkout" ?
+                                        null :
+                                        city.city === null || cookies.get('jwt_token') === undefined
+                                            ? <button type='button' whileTap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative'
+                                                onClick={() => {
+                                                    if (cookies.get('jwt_token') === undefined) {
+                                                        toast.error(t("required_login_message_for_cartRedirect"));
+                                                    }
+                                                    else if (city.city === null) {
+                                                        toast.error("Please Select you delivery location first!");
+                                                    }
+                                                }}>
+                                                <IoCartOutline />
+                                            </button>
+                                            : <button type='button' whileTap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
+                                                onClick={() => {
+                                                    if (cookies.get('jwt_token') === undefined) {
+                                                        toast.error(t("required_login_message_for_cartRedirect"));
+                                                    }
+                                                    else if (city.city === null) {
+                                                        toast.error("Please Select you delivery location first!");
+                                                    }
+                                                }}>
+                                                <IoCartOutline />
+                                                {cart.cart !== null ?
+                                                    <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
+                                                        {cart.cart.total}
+                                                        <span className="visually-hidden">unread messages</span>
+                                                    </span>
+                                                    : null}
+                                            </button>
                                 }
 
                                 {user.status === 'loading'
                                     ? (
                                         <div className='hide-mobile-screen px-3'>
-                                            <div whileTap={{ scale: 0.6 }} className='d-flex flex-row user-profile gap-1' data-bs-toggle="modal" data-bs-target="#loginModal">
+                                            <div whiletap={{ scale: 0.6 }} className='d-flex flex-row user-profile gap-1' data-bs-toggle="modal" data-bs-target="#loginModal">
                                                 <div className='d-flex align-items-center user-info my-auto'>
                                                     <span className='btn-success'><IoPersonOutline className='user_icon' /></span>
                                                     <span className='pe-3'>{t("login")}</span>
@@ -860,27 +954,39 @@ const Header = () => {
 
                 {/* location modal */}
 
-                <Modal
-                    id="locationModal"
-                    size='md'
-                    centered
-                    show={showModal}
-                    onHide={() => setShowModal(false)}
-                    backdrop="static"
-                    className='location'
-                >
-                    <Modal.Body style={{ borderRadius: "10px" }} className='location'
-                    >
-                        <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent} showModal={showModal} setShowModal={setShowModal} />
-                    </Modal.Body>
-                </Modal>
+                {
 
+                    <Modal
+                        className='location'
+                        id="locationModal"
+                        centered
+                        open={locModal}
+                    >
+                        <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
+                            showModal={locModal} setLocModal={setLocModal} bodyScroll={setBodyScroll} openModal={openModal} />
+                    </Modal>
+                }
+
+
+
+                {/* {
+                    bodyScroll ?
+                        <div className="modal fade location" id="locationModal" data-bs-backdrop="static" aria-labelledby="locationModalLabel" aria-hidden="true">
+                            <div className="modal-dialog modal-dialog-centered">
+                                <div className="modal-content" style={{ borderRadius: "10px" }}>
+                                    <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
+                                        showModal={showModal} setShowModal={setShowModal} bodyScroll={setBodyScroll} />
+                                </div>
+                            </div>
+                        </div> : ''
+                } */}
 
 
                 {/* <div className="modal fade location" id="locationModal" data-bs-backdrop="static" aria-labelledby="locationModalLabel" aria-hidden="true">
                     <div className="modal-dialog modal-dialog-centered">
                         <div className="modal-content" style={{ borderRadius: "10px" }}>
-                            <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent} />
+                            <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
+                                showModal={showModal} setShowModal={setShowModal} />
                         </div>
                     </div>
                 </div> */}
@@ -890,7 +996,7 @@ const Header = () => {
                 <Cart />
 
                 {/* favorite sidebar */}
-                <Favorite />
+                {/* <Favorite /> */}
 
             </header>
 

@@ -43,6 +43,8 @@ import { setSetting } from './model/reducer/settingReducer';
 import { setCartPromo } from './model/reducer/cartReducer';
 import { setShop } from "./model/reducer/shopReducer";
 import CategoryChild from './components/category/CategoryChild';
+import "./components/location/location.css";
+
 
 
 function App() {
@@ -72,7 +74,7 @@ function App() {
     api.getSystemLanguage(0, 1)
       .then(response => response.json())
       .then(result => {
-        document.documentElement.dir = result.data.type;
+        document.documentElement.dir = result?.data?.type;
         if (result.status === 1) {
           if (!language.current_language) {
             // dispatch({ type: ActionTypes.SET_LANGUAGE, payload: result.data });
@@ -136,7 +138,10 @@ function App() {
     if (city.city !== null) {
       fetchShop(city.city.id, city.city.latitude, city.city.longitude);
     }
-  }, [city, cart]);
+    else {
+      fetchShop(setting?.setting?.default_city_id, setting?.setting?.map_latitude, setting?.setting?.map_longitude);
+    }
+  }, [city, cart, setting]);
 
 
   useEffect(() => {
@@ -186,7 +191,7 @@ function App() {
   `;
 
   useEffect(() => {
-    dispatch(setCartPromo({ data: null }));
+    // dispatch(setCartPromo({ data: null }));
     // dispatch({ type: ActionTypes.SET_CART_PROMO, payload: null });
   }, [cart.cart]);
 
@@ -218,6 +223,7 @@ function App() {
                         <Route exact={true} path="/profile/orders" element={<ProfileDashboard showOrders={true} />}></Route>
                         <Route exact={true} path="/profile/orders/:id" element={<OrderDetails />}></Route>
                         <Route exact={true} path="/profile/transactions" element={<ProfileDashboard showTransaction={true} />}></Route>
+                        <Route exact={true} path="/profile/wallet-transaction" element={<ProfileDashboard showWalletTransaction={true} />}></Route>
                         <Route exact={true} path="/profile/address" element={<ProfileDashboard showAddress={true} />}></Route>
                         <Route exact={true} path="/notification" element={<Notification />}></Route>
                         <Route exact={true} path='/categories' element={<ShowAllCategories />}></Route>

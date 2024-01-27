@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setCity } from '../../model/reducer/locationReducer';
-import { Modal } from 'react-bootstrap';
+// import { Modal } from 'react-bootstrap';
 
 const libraries = ["places"];
 
@@ -43,9 +43,11 @@ const Location = (props) => {
   const inputRef = useRef();
   const closeModalRef = useRef();
 
-  useEffect(() => {
-
-  }, [props.setShowModal]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     props.openModal()
+  //   }, 1000);
+  // }, []);
 
   // By Selecting place from input field
 
@@ -53,66 +55,69 @@ const Location = (props) => {
     setisloading(true);
 
     const [place] = inputRef.current.getPlaces();
-    if (place) {
-      let city_name = place.address_components[0].long_name;
-      let loc_lat = place.geometry.location.lat();
-      let loc_lng = place.geometry.location.lng();
-      let formatted_address = place.formatted_address;
-      fetchCity(city_name, loc_lat, loc_lng)
-        .then(
-          (res) => {
-            if (res.status === 1) {
+    // console.log(place);
+    try {
+      if (place) {
+        let city_name = place.address_components[0].long_name;
+        let loc_lat = place.geometry.location.lat();
+        let loc_lng = place.geometry.location.lng();
+        let formatted_address = place.formatted_address;
+        fetchCity(city_name, loc_lat, loc_lng)
+          .then(
+            (res) => {
+              if (res.status === 1) {
+                dispatch(setCity({
+                  data: {
+                    id: res.data.id,
+                    name: city_name,
+                    state: res.data.state,
+                    formatted_address: formatted_address,
+                    latitude: res.data.latitude,
+                    longitude: res.data.longitude,
+                    min_amount_for_free_delivery: res.data.min_amount_for_free_delivery,
+                    delivery_charge_method: res.data.delivery_charge_method,
+                    fixed_charge: res.data.fixed_charge,
+                    per_km_charge: res.data.per_km_charge,
+                    time_to_travel: res.data.time_to_travel,
+                    max_deliverable_distance: res.data.max_deliverable_distance,
+                    distance: res.data.distance
+                  }
+                }));
+                setisloading(false);
+                props.setLocModal(false);
+                props.bodyScroll(false);
+                props.setisLocationPresent(true);
+                props.setLocModal(false);
+                // closeModalRef.current.click();
+              }
+              else if (res.status == 0) {
+                setisloading(false);
+                toast.error(t("We doesn't deliver at selected city"));
+                props.setisLocationPresent(false);
+                props.setLocModal(true);
 
-              // dispatch({
-              //   type: ActionTypes.SET_CITY, payload: {
-              //     id: res.data.id,
-              //     name: city_name,
-              //     state: res.data.state,
-              //     formatted_address: formatted_address,
-              //     latitude: res.data.latitude,
-              //     longitude: res.data.longitude,
-              //     min_amount_for_free_delivery: res.data.min_amount_for_free_delivery,
-              //     delivery_charge_method: res.data.delivery_charge_method,
-              //     fixed_charge: res.data.fixed_charge,
-              //     per_km_charge: res.data.per_km_charge,
-              //     time_to_travel: res.data.time_to_travel,
-              //     max_deliverable_distance: res.data.max_deliverable_distance,
-              //     distance: res.data.distance
-              //   }
-              // });
-              dispatch(setCity({
-                data: {
-                  id: res.data.id,
-                  name: city_name,
-                  state: res.data.state,
-                  formatted_address: formatted_address,
-                  latitude: res.data.latitude,
-                  longitude: res.data.longitude,
-                  min_amount_for_free_delivery: res.data.min_amount_for_free_delivery,
-                  delivery_charge_method: res.data.delivery_charge_method,
-                  fixed_charge: res.data.fixed_charge,
-                  per_km_charge: res.data.per_km_charge,
-                  time_to_travel: res.data.time_to_travel,
-                  max_deliverable_distance: res.data.max_deliverable_distance,
-                  distance: res.data.distance
-                }
-              }));
-              setisloading(false);
-              props.setShowModal(false);
-              // closeModalRef.current.click();
+              }
+              else {
+                setisloading(false);
+                seterrorMsg(res.message);
+              }
             }
-            else {
-              setisloading(false);
-              seterrorMsg(res.message);
-            }
-          }
-        )
-        .catch(error => {
-          console.log(error);
-        });
-      props.setisLocationPresent(true);
-      // closeModalRef.current.click();
+          )
+          .catch(error => {
+            console.log(error);
+          });
+        props.setisLocationPresent(true);
+        // closeModalRef.current.click();
+      } else {
+        // toast.error("Location not found !");
+        props.setLocModal(true);
+        setisloading(false);
+      }
+    } catch (e) {
+      toast.error("Location not found!");
+      // console.log(e.message);
     }
+    setisloading(false);
   };
   //fetching city from server 
   const fetchCity = async (city_name, loc_lat, loc_lng) => {
@@ -283,7 +288,6 @@ const Location = (props) => {
       });
   };
 
-
   //handle Confirm current location
   const confirmCurrentLocation = () => {
     setisloading(true);
@@ -327,7 +331,8 @@ const Location = (props) => {
           }));
           setisloading(false);
           props.setisLocationPresent(true);
-          props.setShowModal(false);
+          props.setLocModal(false);
+          props.bodyScroll(false);
           // closeModalRef.current.click();
         }
         else {
@@ -339,8 +344,46 @@ const Location = (props) => {
   useEffect(() => {
     if (setting.setting?.default_city) {
       // closeModalRef.current?.click()
+      props.setLocModal(false);
     }
   }, [setting]);
+
+  const defaultLocationSet = (e) => {
+    e.preventDefault();
+    if (!props.isLocationPresent) {
+
+      const name = setting.setting.default_city.name;
+      const lat = setting.setting.default_city.latitude;
+      const lng = setting.setting.default_city.longitude;
+
+
+      fetchCity(name, lat, lng)
+        .then(result => {
+          if (result.status === 1) {
+            dispatch(setCity({ data: result.data }));
+            // dispatch({ type: ActionTypes.SET_CITY, payload: result.data });
+            props.setisLocationPresent(true);
+            props.setLocModal(false);
+            props.bodyScroll(false);
+
+          }
+          else {
+            console.log(result.message);
+          }
+        }).catch(error => console.log("error ", error));
+      toast.info('Default Delivery Location is Selected!!');
+
+    }
+    else {
+      seterrorMsg("");
+      setisloading(false);
+      setcurrLocationClick(false);
+      setisInputFields(false);
+      setisAddressLoading(false);
+      props.setLocModal(false);
+      props.bodyScroll(false);
+    }
+  };
   return (
     <>
       {
@@ -350,38 +393,8 @@ const Location = (props) => {
           <div className="d-flex flex-row justify-content-between align-items-center header">
             <h5>{t("select_location")}</h5>
             {setting.setting && setting.setting.default_city || props.isLocationPresent ?
-              <button type="button" className="" onClick={() => {
-                if (!props.isLocationPresent) {
-
-                  const name = setting.setting.default_city.name;
-                  const lat = setting.setting.default_city.latitude;
-                  const lng = setting.setting.default_city.longitude;
-
-
-                  fetchCity(name, lat, lng)
-                    .then(result => {
-                      if (result.status === 1) {
-                        dispatch(setCity({ data: result.data }));
-                        // dispatch({ type: ActionTypes.SET_CITY, payload: result.data });
-                        props.setisLocationPresent(true);
-                        props.setShowModal(false);
-                      }
-                      else {
-                        console.log(result.message);
-                      }
-                    }).catch(error => console.log("error ", error));
-                  toast.info('Default Delivery Location is Selected!!');
-
-                }
-                else {
-                  seterrorMsg("");
-                  setisloading(false);
-                  setcurrLocationClick(false);
-                  setisInputFields(false);
-                  setisAddressLoading(false);
-                  props.setShowModal(false);
-                }
-              }}><AiOutlineCloseCircle /></button>
+              <button type="button" className="" onClick={(e) => defaultLocationSet(e)
+              }><AiOutlineCloseCircle /></button>
               : <></>}
           </div>
 
@@ -444,7 +457,7 @@ const Location = (props) => {
                         ) : null}
                       </>
                     )}
-                  <p className='text-danger' style={{ fontSize: "2rem" }}>{errorMsg}</p>
+                  {/* <p className='text-danger' style={{ fontSize: "2rem" }}>{errorMsg}</p> */}
                 </>
 
               )}

@@ -8,11 +8,7 @@ import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import Loader from '../loader/Loader';
 import { Offcanvas } from 'react-bootstrap';
-import { setCartPromo } from '../../model/reducer/cartReducer';
-
-
-
-
+import { setCartPromo, setPromoCodeApplied } from '../../model/reducer/cartReducer';
 
 
 function Promo(props) {
@@ -28,14 +24,16 @@ function Promo(props) {
 
     const [promo_detail, setPromoDetail] = useState(null);
     const [loading, setLoading] = useState(false);
-
-    const amount = cart.checkout && cart.checkout.sub_total;
+    const [isapplied, setIsapplied] = useState(false);
+    const amount = cart?.cart?.data?.sub_total;
 
     const fetchpromo_codes = async () => {
 
         await api.getPromo(cookies.get('jwt_token'), amount).then(response => response.json())
             .then((result) => {
+                // console.log(result);
                 if (result.status === 1) {
+                    // console.log(result.data);
                     setPromoDetail(result.data);
                 }
             });
@@ -46,13 +44,22 @@ function Promo(props) {
             setLoading(false);
             if (result.status) {
                 dispatch(setCartPromo({ data: result.data }));
-                // dispatch({ type: ActionTypes.SET_CART_PROMO, payload: result.data });
                 toast.success("Coupon Applied Successfully");
+                setIsapplied(true);
+                props.setShow(false);
+                // dispatch(setPromoCodeApplied({ data: 1 }));
+                // console.log(result.data, "resultData")
+                // dispatch({ type: ActionTypes.SET_CART_PROMO, payload: result.data });
                 // cart.promo_code && (cart.checkout.total_amount =Number(cart.promo_code.discounted_amount));
-                closeCanvas.current?.click();
+                // closeCanvas.current?.click();
             }
         });
     };
+
+    useEffect(() => {
+        // applyPromoCode();
+    }, [amount]);
+
 
     useEffect(() => {
         if (props.show) {
@@ -81,12 +88,13 @@ function Promo(props) {
                 <Offcanvas.Body className="promo-sidebar-body">
 
 
-                    {loading ? <>
+                    {loading ? (
                         <Loader />
-                    </> : <>
+                    ) : (
                         <div className="row-reverse">
-                            {promo_detail && promo_detail.map((promo, index) => (
-                                <>
+                            {promo_detail?.map((promo, index) => {
+                                const isAlreadyApplied = cart?.promo_code?.promo_code_id === promo.promo_code_id ? true : false;
+                                return (
 
                                     <div className="col-12 promo-card" key={index}>
                                         <div className="promo-card-e1">
@@ -100,12 +108,38 @@ function Promo(props) {
                                                 </div>
                                             </div>
                                             <div className="promo-apply">
-                                                <span className={`btn ${!promo.is_applicable && 'disabled'}`}
+                                                {/* {
+                                                    isapplied?<span className={`btn ${!promo.is_applicable && 'disabled'}`}
                                                     onClick={() => {
                                                         if (promo.is_applicable) {
                                                             applyPromoCode(promo);
                                                         }
-                                                    }}>{t("apply")}</span>
+                                                    }}> {t('applied')}</span>:
+                                                    <span className={`btn ${!promo.is_applicable && 'disabled'}`}
+                                                    onClick={() => {
+                                                        if (promo.is_applicable) {
+                                                            applyPromoCode(promo);
+                                                        }
+                                                    }}>{t('apply')}</span>
+                                                } */}
+                                                <span
+                                                    className={`btn ${!promo.is_applicable && 'disabled'} ${!isAlreadyApplied && 'applied'}`}
+                                                    onClick={() => {
+                                                        if (promo.is_applicable && !isAlreadyApplied) {
+                                                            applyPromoCode(promo);
+                                                            // Update the applied state for the current promo code
+                                                            promo_detail[index].is_applied = true;
+                                                            // props.setShow(false);
+                                                            const updatedPromoDetail = promo_detail.map((item) =>
+                                                                item.promo_code_id === promo.promo_code_id
+                                                                    ? { ...item, is_applied: true }
+                                                                    : { ...item, is_applied: false });
+                                                            setPromoDetail(updatedPromoDetail);
+                                                        }
+                                                    }}
+                                                >
+                                                    {isAlreadyApplied && promo.is_applicable ? t('applied') : t('apply')}
+                                                </span>
                                             </div>
                                         </div>
                                         <div className="promo-card-e2">
@@ -116,10 +150,11 @@ function Promo(props) {
                                             }
                                         </div>
                                     </div>
-                                </>
-                            ))}
+                                );
+                            })
+                            }
                         </div>
-                    </>}
+                    )}
                 </Offcanvas.Body>
             </Offcanvas>
 

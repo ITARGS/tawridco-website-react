@@ -11,8 +11,8 @@ import productSizesReducer from './productSizesReducer';
 import favouriteReducer from "./favouriteReducer";
 import shopReducer from "./shopReducer";
 import notificationReducer from "./notificationReducer";
-import settingReducer from "./settingReducer";
 import addressReducer from "./addressReducer";
+import settingReducer from "./settingReducer";
 
 const reducers = combineReducers({
     city: locationReducer,

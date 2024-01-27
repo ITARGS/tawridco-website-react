@@ -13,11 +13,12 @@ import Cookies from 'universal-cookie';
 import { ActionTypes } from '../../model/action-type';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
-import { setCart } from '../../model/reducer/cartReducer';
+import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
 import { setFavourite } from '../../model/reducer/favouriteReducer';
+import Popup from '../same-seller-popup/Popup';
 
 
-const Favorite = () => {
+const Favorite = React.memo(() => {
     const closeCanvas = useRef();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -29,6 +30,9 @@ const Favorite = () => {
     const cart = useSelector(state => (state.cart));
     const [isfavoriteEmpty, setisfavoriteEmpty] = useState(false);
     const [isLoader, setisLoader] = useState(false);
+    const [p_id, setP_id] = useState(0);
+    const [p_v_id, setP_V_id] = useState(0);
+    const [qnty, setQnty] = useState(0);
 
     useEffect(() => {
         if (favorite.favorite === null && favorite.status === 'fulfill') {
@@ -40,9 +44,15 @@ const Favorite = () => {
 
     }, [favorite]);
 
+    // console.log(p_id, p_v_id, qnty);
 
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
+        setP_id(product_id);
+        setP_V_id(product_variant_id);
+        setQnty(qty);
+        // console.log("Favourite State ->", product_id, product_variant_id, qty);
+        // console.log("Favourite State -> ", p_id, p_v_id, qnty);
         setisLoader(true);
         await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
             .then(response => response.json())
@@ -53,17 +63,20 @@ const Favorite = () => {
                         .then(resp => resp.json())
                         .then(res => {
                             setisLoader(false);
-
                             if (res.status === 1)
-                                //dispatch({ type: ActionTypes.SET_CART, payload: res });
                                 dispatch(setCart({ data: res }));
+                            //dispatch({ type: ActionTypes.SET_CART, payload: res });
                         });
                 }
-                else {
-                    setisLoader(false);
+                else if (result?.data?.one_seller_error_code == 1) {
+                    dispatch(setSellerFlag({ data: 1 }));
+                    // console.log(result.message);
+                    // toast.error(t(`${result.message}`));
+                } else {
                     toast.error(result.message);
                 }
             });
+        setisLoader(false);
     };
 
     //remove from Cart
@@ -226,7 +239,10 @@ const Favorite = () => {
                                                                             onClick={() => {
                                                                                 if (cookies.get('jwt_token') !== undefined) {
                                                                                     if (product.variants[0].status) {
-                                                                                        addtoCart(product.id, product.variants[0].id, 1);
+                                                                                        addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
+                                                                                        setP_id(product.id);
+                                                                                        setP_V_id(product.variants[0].id);
+                                                                                        setQnty(product.variants[0].cart_count + 1);
                                                                                     }
                                                                                     else {
                                                                                         toast.error(t("out_of_stock_message"));
@@ -242,7 +258,10 @@ const Favorite = () => {
                                                                             onClick={() => {
                                                                                 if (cookies.get('jwt_token') !== undefined) {
                                                                                     if (Number(product.variants[0].stock > 1)) {
-                                                                                        addtoCart(product.id, product.variants[0].id, 1);
+                                                                                        addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
+                                                                                        setP_id(product.id);
+                                                                                        setP_V_id(product.variants[0].id);
+                                                                                        setQnty(product.variants[0].cart_count + 1);
                                                                                     }
                                                                                     else {
                                                                                         toast.error(t("out_of_stock_message"));
@@ -280,13 +299,23 @@ const Favorite = () => {
                                             }}>{t("viewSaved")}</button>
                                         </div>
                                     </div>
+                                    <Popup
+                                        product_id={p_id}
+                                        product_variant_id={p_v_id}
+                                        quantity={qnty}
+                                        setisLoader={setisLoader}
+                                        cookies={cookies}
+                                        toast={toast}
+                                        city={city}
+                                    />
                                 </>
                             )}
                     </>
 
                 )}
+
         </div>
     );
-};
+});
 
 export default Favorite;

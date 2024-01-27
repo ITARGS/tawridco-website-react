@@ -340,13 +340,23 @@
     margin-top: 10px;
 }
 
-.order-container .container-body .table-container .actions-container button {
+.order-container .container-body .table-container .actions-container .cancel button ,
+.order-container .container-body .table-container .actions-container .return button{
     padding: 4px 8px;
     font-size: 14px;
     background-color: rgba(255, 0, 0, 0.575);
     color: #fff;
     border-radius: 4px;
 }
+.order-container .container-body .table-container .actions-container .cancelled button,
+.order-container .container-body .table-container .actions-container .returned button{
+    padding: 4px 8px;
+    font-size: 14px;
+    background-color: transparent;
+    color: red;
+}
+
+
 
 
 .order-info {
@@ -501,4 +511,24 @@
     display: flex !important;
     padding: 0 !important;
     transform: translateY(100%);
+}
+
+/* new css  */
+
+.order-container .container-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.order-container .container-footer .cancelReturnBtnWrapper{
+    margin-top: 20px;
+    padding: 6px 22px;
+    background-color: var(--secondary-color-dark);
+    font-size: 20px;
+    border-radius: 8px;
+}
+.order-container .container-footer .cancelReturnBtnWrapper span{
+    color: white;
+    cursor: pointer;
 }

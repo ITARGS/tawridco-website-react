@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './transaction.css';
+import '../transaction/transaction.css';
 import api from '../../api/api';
 import Cookies from 'universal-cookie';
 import { FaRupeeSign } from "react-icons/fa";
@@ -10,14 +10,14 @@ import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 
 
-const Transaction = () => {
+const WalletTransaction = () => {
 
     //initialize cookies
     const cookies = new Cookies();
 
     const total_transactions_per_page = 10;
 
-    const type = 'transactions';
+    const type = 'wallet';
 
 
     const [transactions, settransactions] = useState(null);
@@ -31,7 +31,7 @@ const Transaction = () => {
         api.getTransactions(cookies.get('jwt_token'), total_transactions_per_page, offset, type)
             .then(response => response.json())
             .then(result => {
-                // console.log(result,'transREsult')
+                // console.log(result, 'transREsult')
                 if (result.status === 1) {
                     setisLoader(false);
                     settransactions(result.data);
@@ -62,7 +62,7 @@ const Transaction = () => {
 
         <div className='transaction-list'>
             <div className='heading'>
-                {t("transactions")}
+                {t("wallet_transactions")}
             </div>
             {transactions === null
                 ? (
@@ -82,7 +82,7 @@ const Transaction = () => {
                                             <thead>
                                                 <tr>
                                                     <th>{t("transactions")} {t("id")}</th>
-                                                    <th>{t("payment_method")}</th>
+                                                    <th>Message</th>
                                                     <th>{t("transactions")} {t("date")}</th>
                                                     <th>{t("amount")}</th>
                                                     <th>{t("status")}</th>
@@ -90,12 +90,31 @@ const Transaction = () => {
                                             </thead>
 
                                             <tbody>
-
-                                                {transactions.map((transaction, index) => (
+                                                {transactions?.map((transaction, index) => (
                                                     <tr key={index} className={index === transactions.length - 1 ? 'last-column' : ''}>
-                                                        {/* <th>{transaction.id}</th> */}
-                                                        <th>{transaction?.txn_id}</th>
-                                                        <th>{transaction.type}</th>
+                                                        <th>{transaction.id}</th>
+                                                        {/* <th>{transaction?.txn_id}</th> */}
+                                                        <th>
+
+                                                            {transaction.order_id == null && transaction.order_item_id == null ? transaction.message : ''
+                                                            }
+
+                                                            {
+                                                                transaction.order_id != null || transaction.order_id != null && transaction.order_item_id != null || transaction.order_item_id != null && transaction.type == "debit" ?
+                                                                    `${t("order_placed")}-${t("order_id")}:${transaction.order_id}`
+                                                                    :
+                                                                    ""
+                                                            }
+
+                                                            {
+                                                                transaction.order_id != null || transaction.order_id != null && transaction.order_item_id != null || transaction.order_item_id != null && transaction.type == "credit" ?
+                                                                    `${transaction.message}-${t("order_id")}:${transaction?.order_id}`
+                                                                    :
+                                                                    ""
+                                                            }
+
+
+                                                        </th>
                                                         <th>{`${new Date(transaction.created_at).getDate()}-${new Date(transaction.created_at).getMonth() + 1}-${new Date(transaction.created_at).getFullYear()}`}</th>
                                                         <th className='amount'><FaRupeeSign fill='var(--secondary-color)' />{transaction.amount}</th>
                                                         <th className={transaction.status === 'failed' ? 'failed' : 'success'}><p>{transaction.status}</p></th>
@@ -126,4 +145,4 @@ const Transaction = () => {
     );
 };
 
-export default Transaction;
+export default WalletTransaction;

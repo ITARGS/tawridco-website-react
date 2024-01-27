@@ -18,8 +18,9 @@ import { IoIosArrowDown } from 'react-icons/io';
 import { useTranslation } from 'react-i18next';
 import Loader from '../loader/Loader';
 import { clearSelectedProduct, setSelectedProduct } from '../../model/reducer/selectedProduct';
-import { setCart } from '../../model/reducer/cartReducer';
+import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
 import { setFavourite } from '../../model/reducer/favouriteReducer';
+import Popup from '../same-seller-popup/Popup';
 
 const ProductDetails = () => {
 
@@ -60,6 +61,9 @@ const ProductDetails = () => {
     const [variant_index, setVariantIndex] = useState(null);
     const [realted_variant_index, setRelatedVariantIndex] = useState(0);
     const [showModal, setShowModal] = useState(false);
+    const [p_id, setP_id] = useState(0);
+    const [p_v_id, setP_V_id] = useState(0);
+    const [qnty, setQnty] = useState(0);
 
     const getCategoryDetails = (id) => {
 
@@ -125,9 +129,9 @@ const ProductDetails = () => {
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
-                        dispatch(setSelectedProduct({ data: result.data[0].id }));
-                        dispatch({ type: ActionTypes.SET_SELECTED_PRODUCT, payload: result.data[0].id });
-                        getProductDatafromApi({ id: result.data[0].id });
+                        dispatch(setSelectedProduct({ data: result?.data[0]?.id }));
+                        // dispatch({ type: ActionTypes.SET_SELECTED_PRODUCT, payload: result.data[0].id });
+                        getProductDatafromApi({ id: result?.data[0]?.id });
                     }
                     else {
                     }
@@ -288,7 +292,11 @@ const ProductDetails = () => {
                         });
 
                 }
-                else {
+                else if (result?.data?.one_seller_error_code == 1) {
+                    dispatch(setSellerFlag({ data: 1 }));
+                    // console.log(result.message);
+                    // toast.error(t(`${result.message}`));
+                } else {
                     toast.error(result.message);
                 }
                 setisLoading(false);
@@ -526,6 +534,7 @@ const ProductDetails = () => {
                                                                     else {
                                                                         addtoCart(productdata.id, selectedVariant.id, selectedVariant.cart_count - 1);
 
+
                                                                     }
 
                                                                 }} className="wishlist-button"><BiMinus fill='#fff' /></button>
@@ -570,6 +579,9 @@ const ProductDetails = () => {
 
                                                                             if (selectedVariant.status) {
                                                                                 addtoCart(productdata.id, selectedVariant.id, 1);
+                                                                                setP_id(productdata.id);
+                                                                                setP_V_id(selectedVariant.id);
+                                                                                setQnty(1);
                                                                             } else {
                                                                                 toast.error('OOps, Limited Stock Available');
                                                                             }
@@ -638,7 +650,10 @@ const ProductDetails = () => {
                                                                                 } else {
 
                                                                                     if (selectedVariant.status) {
-                                                                                        addtoCart(productdata.id, productdata.varinats[0].id, 1);
+                                                                                        addtoCart(productdata.id, productdata.variants[0].id, 1);
+                                                                                        setP_id(productdata.id);
+                                                                                        setP_V_id(productdata.variants[0].id);
+                                                                                        setQnty(1);
                                                                                     } else {
                                                                                         toast.error('OOps, Limited Stock Available');
                                                                                     }
@@ -752,6 +767,7 @@ const ProductDetails = () => {
                                                     <span className='border border-light rounded-circle p-2 px-3' id='aiEye' onClick={() => {
                                                         setShowModal(true);
                                                         setselectedProduct(related_product);
+                                                        setP_id(related_product.id); setP_V_id(related_product.variants[0].id); setQnty(related_product.variants[0].cart_count + 1);
                                                     }} >
                                                         <AiOutlineEye
                                                         />
@@ -798,7 +814,7 @@ const ProductDetails = () => {
                                                                     <div className='variant_selection' onClick={() => {
 
                                                                         setselectedProduct(related_product);
-                                                                    }} data-bs-toggle="modal" data-bs-target="#quickviewModal">
+                                                                    }} >
                                                                         <span>{<>{related_product.variants[0].measurement} {related_product.variants[0].stock_unit_name}    </>}</span>
                                                                         <IoIosArrowDown />
                                                                     </div>
@@ -953,10 +969,11 @@ const ProductDetails = () => {
 
                         </div>
                     </div>
-                    <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} />
-                </div >
+                    <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} setP_V_id={setP_V_id} setP_id={setP_id} />
+                    <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} cookies={cookies} toast={toast} city={city} />
+                </div>
 
-            </div >
+            </div>
         </>
 
     );

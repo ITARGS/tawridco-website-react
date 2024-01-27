@@ -65,6 +65,17 @@ const ProductList = () => {
     const [isLoader, setisLoader] = useState(false);
     const [selectedVariant, setSelectedVariant] = useState({});
 
+    useEffect(() => {
+        dispatch({ type: ActionTypes.SET_FILTER_BRANDS, payload: [] });
+        dispatch({ type: ActionTypes.SET_FILTER_CATEGORY, payload: null });
+        dispatch({ type: ActionTypes.SET_FILTER_SEARCH, payload: null });
+        dispatch({ type: ActionTypes.SET_FILTER_SECTION, payload: null });
+        dispatch({ type: ActionTypes.SET_FILTER_MIN_MAX_PRICE, payload: null });
+        fetchCategory();
+
+    }, []);
+
+
 
     const getBrandsApi = () => {
         api.getBrands()
@@ -126,8 +137,8 @@ const ProductList = () => {
                     setminmaxTotalPrice({
                         total_min_price: result.total_min_price,
                         total_max_price: result.total_max_price,
-                        min_price: result.min_price,
-                        max_price: result.max_price,
+                        min_price: result.total_min_price,
+                        max_price: result.total_max_price,
                     });
                     setproductresult(result.data);
                     settotalProducts(result.total);
@@ -311,8 +322,8 @@ const ProductList = () => {
                     setminmaxTotalPrice({
                         total_min_price: result.total_min_price,
                         total_max_price: result.total_max_price,
-                        min_price: result.min_price,
-                        max_price: result.max_price,
+                        min_price: result.total_min_price,
+                        max_price: result.total_max_price,
                     });
                     setproductresult(result.data);
                     settotalProducts(result.total);
@@ -374,10 +385,10 @@ const ProductList = () => {
                     setminmaxTotalPrice({
                         total_min_price: result.total_min_price,
                         total_max_price: result.total_max_price,
-                        min_price: result.min_price,
-                        max_price: result.max_price,
+                        min_price: result.total_min_price,
+                        max_price: result.total_max_price,
                     });
-                    dispatch({ type: ActionTypes.SET_FILTER_MIN_MAX_PRICE, payload: { min_price: result.min_price, max_price: result.max_price } });
+                    dispatch({ type: ActionTypes.SET_FILTER_MIN_MAX_PRICE, payload: { min_price: result.total_min_price, max_price: result.total_max_price } });
 
                     setproductresult(result.data);
                     settotalProducts(result.total);
@@ -724,7 +735,7 @@ const ProductList = () => {
                                                                     <span className='border border-light rounded-circle p-2 px-3' id='aiEye'>
                                                                         <AiOutlineEye
                                                                             onClick={() => { setselectedProduct(product); }}
-                                                                            data-bs-toggle="modal" data-bs-target="#quickviewModal" />
+                                                                        />
                                                                     </span>
                                                                     <Link to={`/product/${product.slug}`}>
                                                                         <div className={`image-container  ${!filter.grid_view ? 'border-end col-3 ' : 'col-12'}`} >

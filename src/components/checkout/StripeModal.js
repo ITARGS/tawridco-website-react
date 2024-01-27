@@ -13,7 +13,8 @@ import Lottie from 'lottie-react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { ActionTypes } from '../../model/action-type';
-import { setCart, setCartCheckout } from '../../model/reducer/cartReducer';
+import { setCart, setCartCheckout, setWallet } from '../../model/reducer/cartReducer';
+import { deductUserBalance } from '../../model/reducer/authReducer';
 
 const CARD_OPTIONS = {
     iconStyle: "solid",
@@ -65,7 +66,7 @@ const StripeModal = (props) => {
 
         if (!orderID) {
             setloadingPay(false);
-            // props.setShow(false)
+            props.setShow(false);
             return;
         }
 
@@ -89,12 +90,13 @@ const StripeModal = (props) => {
 
                 },
             },
-        });
+        },);
         if (error) {
-            console.error(error);
-            closeModal.current.click();
+            // console.log(error.message);
             api.deleteOrder(cookies.get('jwt_token'), orderID);
             toast.error(error.message);
+            props.setWalletAmount(props.walletAmount);
+            dispatch(setWallet({ data: 0 }));
             props.setShow(false);
 
         } else if (paymentIntent.status === 'succeeded') {
@@ -115,12 +117,18 @@ const StripeModal = (props) => {
                     // closeModal.current.click()
                 })
                 .catch(error => console.log(error));
+            dispatch(deductUserBalance({ data: props.walletDeductionAmt }));
+            props.setShow(false);
+            setTimeout(() => {
+                navigate("/");
+            }, 4000);
         } else {
             // Handle other payment status scenarios
             api.deleteOrder(cookies.get('jwt_token'), orderID);
             setloadingPay(false);
             console.log('Payment failed');
             props.setShow(false);
+            setIsOrderPlaced(false);
         }
     };
 
@@ -132,8 +140,6 @@ const StripeModal = (props) => {
                 if (result.status === 1) {
                     dispatch(setCart({ data: null }));
                     dispatch(setCartCheckout({ data: null }));
-                    // dispatch({ type: ActionTypes.SET_CART, payload: null });
-                    // dispatch({ type: ActionTypes.SET_CART_CHECKOUT, payload: null });
                 }
             });
 
@@ -145,7 +151,6 @@ const StripeModal = (props) => {
     return (
         <>
             {isOrderPlaced ?
-
                 <>
                     <Modal
                         show={show}
@@ -173,10 +178,10 @@ const StripeModal = (props) => {
 
                 <div className='stripe-container d-flex flex-column p-0'>
 
-                    <div className="d-flex flex-row justify-content-between header">
+                    {/* <div className="d-flex flex-row justify-content-between header">
                         <span className='heading'>Egrocers Payment</span>
                         <button type="button" className="close-stripe" data-bs-dismiss="modal" aria-label="Close" ref={closeModal}><AiOutlineCloseCircle /></button>
-                    </div>
+                    </div> */}
                     <form onSubmit={handleSubmit} id="stripe-form" className='row p-5 border-3'>
                         {/* <CardSection /> */}
                         <fieldset className='FormGroup p-4'>
@@ -204,7 +209,17 @@ export default function InjectCheckout(props) {
         <ElementsConsumer orderID={props.orderID} client_secret={props.client_secret} transaction_id={props.transaction_id} amount={props.amount}>
             {({ stripe, elements, orderID, client_secret, transaction_id, amount }) => (
                 <>
-                    <StripeModal stripe={stripe} setShow={props.setShow} elements={elements} orderID={props.orderID} client_secret={props.client_secret} transaction_id={props.transaction_id} amount={props.amount}></StripeModal>
+                    <StripeModal stripe={stripe}
+                        setShow={props.setShow}
+                        elements={elements}
+                        orderID={props.orderID}
+                        client_secret={props.client_secret}
+                        transaction_id={props.transaction_id}
+                        amount={props.amount}
+                        setWalletAmount={props.setWalletAmount}
+                        walletAmount={props.walletAmount}
+                        walletDeductionAmt={props.walletDeductionAmt}
+                    ></StripeModal>
                 </>
             )}
         </ElementsConsumer>

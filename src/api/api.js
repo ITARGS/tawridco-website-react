@@ -315,6 +315,25 @@ const api = {
         return fetch(url, requestOptions);
 
     },
+    getCartSeller(token, latitude, longitude, checkout = 1) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+
+        var params = { latitude: latitude, longitude: longitude, is_checkout: checkout };
+        var url = new URL(appUrl + appSubUrl + "/cart");
+        for (let k in params) {
+            url.searchParams.append(k, params[k]);
+        };
+        return fetch(url, requestOptions);
+
+    },
     removeCart(token) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
@@ -528,7 +547,7 @@ const api = {
 
         return fetch(appUrl + appSubUrl + "/settings/time_slots", requestOptions);
     },
-    placeOrder(token, product_variant_id, quantity, total, delivery_charge, final_total, payment_method, address_id, deliveryTime, promocode_id = 0) {
+    placeOrder(token, product_variant_id, quantity, total, delivery_charge, final_total, payment_method, address_id, deliveryTime, promocode_id = 0, wallet_balance, wallet_used) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
@@ -542,6 +561,12 @@ const api = {
         formdata.append("payment_method", payment_method);
         formdata.append("address_id", address_id);
         formdata.append("delivery_time", deliveryTime);
+        if (wallet_balance) {
+            formdata.append("wallet_balance", wallet_balance);
+        }
+        if (wallet_used) {
+            formdata.append("wallet_used", wallet_used);
+        }
         promocode_id !== 0 && formdata.append("promocode_id", promocode_id);
         payment_method === "COD" ? formdata.append("status", 2) : formdata.append("status", 1);
 
@@ -601,7 +626,7 @@ const api = {
 
         return fetch(appUrl + appSubUrl + "/settings/payment_methods", requestOptions);
     },
-    getTransactions(token, limit = 10, offset = 0) {
+    getTransactions(token, limit = 10, offset = 0, type = 'transactions') {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
@@ -612,7 +637,7 @@ const api = {
             redirect: 'follow'
         };
 
-        var params = { limit: limit, offset: offset };
+        var params = { limit: limit, offset: offset, type: type };
         var url = new URL(appUrl + appSubUrl + "/get_user_transactions");
         for (let k in params) {
             url.searchParams.append(k, params[k]);
@@ -819,7 +844,7 @@ const api = {
         data.append('order_item_id', order_item_id);
         data.append('status', status);
         data.append('device_type', "website");
-        data.append('app_version', "1.0.0");
+        data.append('app_version', "1.9.2 ");
 
         var requestOptions = {
             method: 'POST',

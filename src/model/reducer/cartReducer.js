@@ -7,6 +7,8 @@ const initialState = {
     cart: null,
     checkout: null,
     promo_code: null,
+    is_wallet_checked: 0,
+    same_seller_flag: 0
 };
 
 export const cartReducer = createSlice({
@@ -24,6 +26,18 @@ export const cartReducer = createSlice({
         setCartPromo: (state, action) => {
             state.status = "fulfill";
             state.promo_code = action.payload.data;
+        },
+        clearCartPromo: (state) => {
+            state.cart.promo_code = null;
+            state.promo_code = null;
+        },
+        setWallet: (state, action) => {
+            state.status = "fulfill";
+            state.is_wallet_checked = action.payload.data;
+        },
+        setSellerFlag: (state, action) => {
+            state.status = "fulfill";
+            state.same_seller_flag = action.payload.data;
         }
     }
     // switch (type) {
@@ -50,5 +64,5 @@ export const cartReducer = createSlice({
     // }
 });
 
-export const { setCart, setCartCheckout, setCartPromo } = cartReducer.actions;
+export const { setCart, setCartCheckout, setCartPromo, clearCartPromo, setWallet, setSellerFlag } = cartReducer.actions;
 export default cartReducer.reducer;

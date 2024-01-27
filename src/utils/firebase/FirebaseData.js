@@ -1,7 +1,7 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/messaging";
-import { onMessage } from 'firebase/messaging'
+import { onMessage } from 'firebase/messaging';
 import { useSelector } from "react-redux";
 import Loader from "../../components/loader/Loader";
 
@@ -42,12 +42,12 @@ const FirebaseData = () => {
   const auth = firebase.auth();
 
   const messaging = firebase.messaging();
-  
+
   onMessage(messaging, (payload) => {
     console.log('Message received. ', payload);
     // ...
   });
- 
+
   return { auth, firebase, messaging };
 };
 
