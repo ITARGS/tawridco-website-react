@@ -283,7 +283,7 @@ const ProfileDashboard = (props) => {
                         settransactionClick(false);
                         setWalletTransactionClick(false);
                         closeCanvas.current.click();
-                        handleButtonClick('profile')
+                        handleButtonClick('profile');
                     }}>
 
                         <span>
@@ -303,7 +303,7 @@ const ProfileDashboard = (props) => {
                         setisupdating(false);
                         navigate('/profile/orders');
                         closeCanvas.current.click();
-                        handleButtonClick('orders')
+                        handleButtonClick('orders');
 
                     }}>
                         <span >
@@ -323,7 +323,7 @@ const ProfileDashboard = (props) => {
                         setWalletTransactionClick(false);
                         setisupdating(false);
                         closeCanvas.current.click();
-                        handleButtonClick('address')
+                        handleButtonClick('address');
 
                     }}>
                         <span >
@@ -343,7 +343,7 @@ const ProfileDashboard = (props) => {
                         setWalletTransactionClick(false);
                         setisupdating(false);
                         closeCanvas.current.click();
-                        handleButtonClick('transactions')
+                        handleButtonClick('transactions');
                         // navigate('/profile/address')
 
                         if (window.innerWidth < 768) document.getElementsByClassName('sidebar')[0].classList.toggle('active');
@@ -365,7 +365,7 @@ const ProfileDashboard = (props) => {
                         setWalletTransactionClick(true);
                         setisupdating(false);
                         closeCanvas.current.click();
-                        handleButtonClick('wallet')
+                        handleButtonClick('wallet');
 
                         if (window.innerWidth < 768) document.getElementsByClassName('sidebar')[0].classList.toggle('active');
                     }} >
@@ -470,7 +470,7 @@ const ProfileDashboard = (props) => {
                                                                     {/* accept={'image/*'} */}
                                                                     <input type="file" id="file" name='file' onChange={(e) => { setselectedFile(e.target.files[0]); }} accept='image/png, image/jpeg, image/jpg' />
                                                                 </div>
-                                                                <button whileTap={{ scale: 0.8 }} type='submit' disabled={isupdating} >{t("update_profile")}</button>
+                                                                <button whiletap={{ scale: 0.8 }} type='submit' disabled={isupdating} >{t("update_profile")}</button>
                                                             </form>
                                                         )}
                                                 </div>

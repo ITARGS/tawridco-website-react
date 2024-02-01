@@ -52,12 +52,13 @@ const Checkout = () => {
     const user = useSelector(state => (state.user));
     const setting = useSelector(state => (state.setting));
     const [paymentUrl, setpaymentUrl] = useState(null);
-    const [codAllow, setCodAllow] = useState([]);
+    const [codAllow, setCodAllow] = useState(0);
     const [totalPayment, setTotalPayment] = useState(null);
     const [walletDeductionAmt, setWalletDeductionAmt] = useState(null);
     const [order, setOrder] = useState(false);
     const [walletAmount, setWalletAmount] = useState(user?.user?.balance);
     const [isPromoApplied, setIsPromoApplied] = useState(false);
+    const [IsOrderPlaced, setIsOrderPlaced] = useState(false);
 
 
     const paypalStatus = useRef(false);
@@ -68,7 +69,6 @@ const Checkout = () => {
     const stripePromise = loadStripe(setting.payment_setting && setting.payment_setting.stripe_publishable_key);
 
 
-    const [IsOrderPlaced, setIsOrderPlaced] = useState(false);
     useEffect(() => {
         api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude, 1)
             .then(response => response.json())
@@ -91,7 +91,7 @@ const Checkout = () => {
         api.getCartSeller(cookies.get('jwt_token'), city.city.latitude, city.city.longitude, 1)
             .then(res => res.json())
             .then(result => {
-                setCodAllow(result.data.cod_allowed);
+                setCodAllow(result?.data?.cod_allowed);
 
             })
             .catch(error => console.log(error));
@@ -104,6 +104,7 @@ const Checkout = () => {
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
+                    setCodAllow(1);
                     dispatch(setCartCheckout({ data: result.data }));
                     dispatch(setWallet({ data: 0 }));
                     if (cart?.promo_code) {
@@ -423,7 +424,7 @@ const Checkout = () => {
                     });
             }
             else if (paymentMethod === 'Razorpay') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge - walletDeductionAmt) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge - walletDeductionAmt) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
 
@@ -460,7 +461,7 @@ const Checkout = () => {
                     .catch(error => console.log(error));
             }
             else if (paymentMethod === 'Paystack') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(result => {
                         // fetchOrders();
@@ -482,7 +483,7 @@ const Checkout = () => {
             }
             else if (paymentMethod === "Stripe") {
                 setStripeModalShow(true);
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge - walletDeductionAmt) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge - walletDeductionAmt) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
                         if (result.status === 1) {
@@ -522,7 +523,7 @@ const Checkout = () => {
                 setloadingPlaceOrder(false);
             }
             else if (paymentMethod === 'Paypal') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge - walletDeductionAmt) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge - walletDeductionAmt) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
                         // fetchOrders();
@@ -839,7 +840,7 @@ const Checkout = () => {
                                             <div className='payment-wrapper checkout-component'>
                                                 <span className='heading'>{t("payment_method")}</span>
 
-                                                {setting?.payment_setting.cod_payment_method === "1" && codAllow == '1'
+                                                {setting?.payment_setting.cod_payment_method === "1" && codAllow == 1
                                                     ? (
                                                         <label className="form-check-label" htmlFor='cod'>
                                                             <div className='payment-selector'>

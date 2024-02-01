@@ -117,7 +117,7 @@ const WalletTransaction = () => {
                                                         </th>
                                                         <th>{`${new Date(transaction.created_at).getDate()}-${new Date(transaction.created_at).getMonth() + 1}-${new Date(transaction.created_at).getFullYear()}`}</th>
                                                         <th className='amount'><FaRupeeSign fill='var(--secondary-color)' />{transaction.amount}</th>
-                                                        <th className={transaction.status === 'failed' ? 'failed' : 'success'}><p>{transaction.status}</p></th>
+                                                        <th className={transaction.status == 'credit' ? 'success' : 'failed'}><p>{transaction.status}</p></th>
                                                     </tr>
                                                 ))
                                                 }

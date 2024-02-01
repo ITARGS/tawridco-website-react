@@ -106,7 +106,7 @@ function NewUserModal() {
                             }} required />
                             <input type='tel' placeholder={t('mobile_number')} value={user.user && user.user.mobile} readOnly style={{ color: "var(--sub-text-color)" }} />
                         </div>
-                        <button whileTap={{ scale: 0.8 }} type='submit' disabled={isLoading} >{t("update")} {t("profile")}</button>
+                        <button whiletap={{ scale: 0.8 }} type='submit' disabled={isLoading} >{t("update")} {t("profile")}</button>
                     </form>
                     {error ? <p className='user_data_form_error'>{error}</p> : ""}
                 </Modal.Body>

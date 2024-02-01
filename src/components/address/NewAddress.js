@@ -4,19 +4,16 @@ import { toast } from 'react-toastify';
 import Cookies from 'universal-cookie';
 import api from '../../api/api';
 import './address.css';
-import { LoadScript, GoogleMap, MarkerF } from '@react-google-maps/api';
-import { useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, MarkerF } from '@react-google-maps/api';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal } from 'react-bootstrap';
-import { ActionTypes } from '../../model/action-type';
 import Loader from '../loader/Loader';
 import { setAddress, setSelectedAddress } from '../../model/reducer/addressReducer';
+import { BiCurrentLocation } from 'react-icons/bi';
 
-const libraries = ["places"];
 
 const NewAddress = (props) => {
-
     //initialize cookies
     const cookies = new Cookies();
     const dispatch = useDispatch();
@@ -41,34 +38,13 @@ const NewAddress = (props) => {
         is_default: false,
     });
 
-
-    // useEffect(() => {
-
-    // }, [])
-
-
-    // Load Google Maps
-    const useGoogleMapsLoader = () => {
-        return useJsApiLoader({
-            id: 'google-map-script',
-            googleMapsApiKey: setting.setting?.google_place_api_key,
-            libraries: ['geometry', 'drawing', 'places'], // Include 'places' library
-        });
-    };
-    // const { isLoaded } = useGoogleMapsLoader();
     const [isLoaded, setIsLoaded] = useState(false);
 
-    const handleLoadScript = () => {
-        setIsLoaded(true);
-    };
 
 
-    useEffect(() => {
-
-        if (window.google && isLoaded) {
-            // Initialize any Google Maps API-dependent logic here
-        }
-    }, [isLoaded]);
+    // useEffect(() => {
+    //     handleCurrentLocationClick();
+    // }, [props.show]);
 
 
     const handleAddnewAddress = (e) => {
@@ -184,7 +160,7 @@ const NewAddress = (props) => {
     };
 
     useEffect(() => {
-
+        // console.log("In UseEffect Of NewAddress");
         if (props.isAddressSelected && address.selected_address) {
             setaddressDetails({
                 name: address.selected_address.name,
@@ -202,7 +178,7 @@ const NewAddress = (props) => {
 
             });
         }
-    }, [props.isAddressSelected, address]);
+    }, [props.isAddressSelected, address?.selected_address]);
 
     const [isconfirmAddress, setisconfirmAddress] = useState(false);
     const [localLocation, setlocalLocation] = useState({
@@ -214,10 +190,6 @@ const NewAddress = (props) => {
         lat: localLocation.lat,
         lng: localLocation.lng,
     }), [localLocation.lat, localLocation.lng]);
-
-
-
-
 
     //get available delivery location city
     const getAvailableCity = async (response) => {
@@ -463,178 +435,233 @@ const NewAddress = (props) => {
         width: "100%",
         height: window.innerWidth > 990 ? "100%" : "400px"
     };
+    const handleCurrentLocationClick = () => {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const latLng = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
+                setlocalLocation({
+                    lat: parseFloat(latLng.lat),
+                    lng: parseFloat(latLng.lng),
+                });
+                const geocoder = new window.google.maps.Geocoder();
+                geocoder.geocode({
+                    location: latLng
+                }).then(response => {
+                    if (response.results[0]) {
+                        let address = '', country = '', pincode = '', landmark = '', area = '', state_ = '', city = '';
+                        response.results[0].address_components.forEach((res_add) => {
+                            if (res_add.types.includes('premise') || res_add.types.includes('plus_code') || res_add.types.includes('route')) {
+                                address = res_add.long_name;
+                            }
+                            if (res_add.types.includes("political")) {
+                                landmark = res_add.long_name;
+                            }
+                            if (res_add.types.includes('administrative_area_level_3') || res_add.types.includes('administrative_area_level_2') || res_add.types.includes("sublocality")) {
+                                area = res_add.long_name;
+                            }
+                            if (res_add.types.includes("administrative_area_level_1")) {
+                                state_ = res_add.long_name;
+                            }
+                            if (res_add.types.includes('country')) {
+                                country = res_add.long_name;
+                            }
+                            if (res_add?.types?.includes('postal_code')) {
+                                pincode = res_add?.long_name;
+                            }
+                            if (res_add.types.includes("locality")) {
+                                city = res_add.long_name;
+                            }
+                        });
+                        setaddressDetails(state => ({
+                            ...state,
+                            address: address,
+                            landmark: landmark,
+                            city: city,
+                            area: area,
+                            pincode: pincode,
+                            country: country,
+                            state: state_,
+                        }));
+
+                    }
+                    else {
+                        console.log("No result found");
+                    }
+                }).catch(error => {
+                    console.log(error);
+                });
+                if (!("geolocation" in navigator)) {
+                    console.log("error hoti");
+                }
+            });
+    };
+
 
     return (
         <>
-            <LoadScript googleMapsApiKey={setting.setting?.google_place_api_key} libraries={libraries} loadingElement={<div className='invisible'></div>} onLoad={handleLoadScript}>
-                {isLoaded &&
-                    (
-                        <Modal
-                            className='new-address'
-                            show={props.show}
-                            backdrop="static"
-                            keyboard={true}
-                            size="xl"
-                        >
+            <Modal
+                className='new-address'
+                show={props.show}
+                backdrop="static"
+                keyboard={true}
+                size="xl"
+            >
 
-                            <Modal.Header>
+                <Modal.Header>
 
-                                <div className="d-flex flex-row justify-content-between header w-100 align-items-center">
-                                    <h5>{t("new_address")}</h5>
-                                    <button type="button" className="" onClick={() => {
-                                        setaddressDetails({
-                                            name: '',
-                                            mobile_num: '',
-                                            alternate_mobile_num: '',
-                                            address: '',
-                                            landmark: '',
-                                            city: '',
-                                            area: '',
-                                            pincode: '',
-                                            state: '',
-                                            country: '',
-                                            address_type: 'Home',
-                                            is_default: false,
-                                        });
-                                        props.setshow(false);
-                                        setisconfirmAddress(false);
-                                    }} style={{ width: "30px" }}><AiOutlineCloseCircle /></button>
-                                </div>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <div className="flex d-lg-flex flex-row gap-5">
+                    <div className="d-flex flex-row justify-content-between header w-100 align-items-center">
+                        <h5>{t("new_address")}</h5>
+                        <button type="button" className="" onClick={() => {
+                            setaddressDetails({
+                                name: '',
+                                mobile_num: '',
+                                alternate_mobile_num: '',
+                                address: '',
+                                landmark: '',
+                                city: '',
+                                area: '',
+                                pincode: '',
+                                state: '',
+                                country: '',
+                                address_type: 'Home',
+                                is_default: false,
+                            });
+                            props.setshow(false);
+                            setisconfirmAddress(false);
+                        }} style={{ width: "30px" }}><AiOutlineCloseCircle /></button>
+                    </div>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="flex d-lg-flex flex-row gap-5">
+                        <div className='w-100'>
+                            <button whiletap={{ scale: 0.6 }} style={{ position: 'absolute', zIndex: 120000 }} className="current-location-button"
+                                onClick={handleCurrentLocationClick}>
+                                <BiCurrentLocation className='mx-3' width="40px" height="40px" />
+                            </button>
+                            <GoogleMap zoom={10} center={center} mapContainerStyle={mapContainerStyle} className="map-marker">
+                                <MarkerF position={center} draggable={true} onDragStart={onMarkerDragStart} onDragEnd={onMarkerDragEnd}>
+                                </MarkerF>
+                            </GoogleMap>
+                        </div>
 
+                        {addressLoading
+                            ? <div className="d-flex justify-content-center">
+                                <Loader width="500px" height="500px" />
+                            </div>
+                            :
+                            <>
+                                <div className="">
 
-                                    <div className='w-100'>
+                                    <form onSubmit={(e) => { e.preventDefault(); handleConfirmAddress(); }} className='address-details-wrapper'>
 
-                                        <GoogleMap zoom={10} center={center} mapContainerStyle={mapContainerStyle} className="map-marker">
-                                            <MarkerF position={center} draggable={true} onDragStart={onMarkerDragStart} onDragEnd={onMarkerDragEnd}>
-                                            </MarkerF>
-                                        </GoogleMap>
-                                    </div>
+                                        <div className='contact-detail-container'>
+                                            <h3>{t("contact_details")}</h3>
+                                            <div className='contact-details'>
+                                                <input type='text' style={{ width: "100%" }} placeholder={t('Name')} value={addressDetails.name} required onChange={(e) => {
 
-                                    {/* {address !== '' ? <p style={{ fontWeight: 'bolder', fontSize: "1.755rem", marginTop: "10px" }}>Address : <span className='text-danger' style={{ fontWeight: "normal" }}>{address}</span></p> : null} */}
+                                                    setaddressDetails(state => ({ ...state, name: e.target.value }));
+                                                }}></input>
+                                                <input required type='number' min={1} onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()} inputMode='numeric' style={{ width: "100%" }} placeholder={t('mobile_number')} value={addressDetails.mobile_num} onChange={(e) => {
+                                                    if (addressDetails?.mobile_num?.length < 16) {
+                                                        setaddressDetails(state => ({ ...state, mobile_num: e.target.value }));
+                                                    } else if (e.target.value?.length < addressDetails?.mobile_num?.length) {
+                                                        setaddressDetails(state => ({ ...state, mobile_num: e.target.value }));
 
+                                                    }
+                                                }} />
+                                                <input type='number' style={{ width: "100%" }} onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()} placeholder={t('alt_mobile_no')} value={addressDetails.alternate_mobile_num} onChange={(e) => {
+                                                    if (addressDetails?.alternate_mobile_num?.length < 16) {
+                                                        setaddressDetails(state => ({ ...state, alternate_mobile_num: e.target.value }));
+                                                    } else if (e.target.value?.length < addressDetails?.alternate_mobile_num?.length) {
+                                                        setaddressDetails(state => ({ ...state, alternate_mobile_num: e.target.value }));
 
-
-                                    {addressLoading
-                                        ? <div className="d-flex justify-content-center">
-                                            <Loader width="500px" height="500px" />
-                                        </div>
-                                        :
-                                        <>
-                                            <div className="">
-
-                                                <form onSubmit={(e) => { e.preventDefault(); handleConfirmAddress(); }} className='address-details-wrapper'>
-
-                                                    <div className='contact-detail-container'>
-                                                        <h3>{t("contact_details")}</h3>
-                                                        <div className='contact-details'>
-                                                            <input type='text' style={{ width: "100%" }} placeholder={t('Name')} value={addressDetails.name} required onChange={(e) => {
-
-                                                                setaddressDetails(state => ({ ...state, name: e.target.value }));
-                                                            }}></input>
-                                                            <input required type='number' min={1} onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()} inputMode='numeric' style={{ width: "100%" }} placeholder={t('mobile_number')} value={addressDetails.mobile_num} onChange={(e) => {
-                                                                if (addressDetails?.mobile_num?.length < 16) {
-                                                                    setaddressDetails(state => ({ ...state, mobile_num: e.target.value }));
-                                                                } else if (e.target.value?.length < addressDetails?.mobile_num?.length) {
-                                                                    setaddressDetails(state => ({ ...state, mobile_num: e.target.value }));
-
-                                                                }
-                                                            }} />
-                                                            <input type='number' style={{ width: "100%" }} onKeyDown={(evt) => ["e", "E", "+", "-"].includes(evt.key) && evt.preventDefault()} placeholder={t('alt_mobile_no')} value={addressDetails.alternate_mobile_num} onChange={(e) => {
-                                                                if (addressDetails?.alternate_mobile_num?.length < 16) {
-                                                                    setaddressDetails(state => ({ ...state, alternate_mobile_num: e.target.value }));
-                                                                } else if (e.target.value?.length < addressDetails?.alternate_mobile_num?.length) {
-                                                                    setaddressDetails(state => ({ ...state, alternate_mobile_num: e.target.value }));
-
-                                                                }
-                                                            }} ></input>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className='address-detail-container'>
-                                                        <h3>{t("address_details")}</h3>
-                                                        <div className='address-details'>
-                                                            <input type='text' style={{ width: "100%" }} placeholder={t("address")} value={addressDetails.address} onChange={(e) => {
-
-                                                                setaddressDetails(state => ({ ...state, address: e.target.value }));
-                                                            }} required></input>
-                                                            <input type='text' style={{ width: "100%" }} placeholder={t("enter_landmark")} value={addressDetails.landmark} onChange={(e) => {
-
-                                                                setaddressDetails(state => ({ ...state, landmark: e.target.value }));
-                                                            }} required></input>
-                                                            <input type='text' style={{ width: "100%" }} placeholder={t('enter_area')} value={addressDetails.area} onChange={(e) => {
-
-                                                                setaddressDetails(state => ({ ...state, area: e.target.value }));
-                                                            }} required></input>
-                                                            <input type='text' style={{ width: "100%" }} placeholder={t('enter_pincode')} value={addressDetails.pincode} onChange={(e) => {
-
-                                                                setaddressDetails(state => ({ ...state, pincode: e.target.value }));
-                                                            }} required></input>
-                                                            <input type='text' className='' style={{ width: "100%" }} required value={addressDetails.city} placeholder={t('enter_city')} onChange={
-                                                                (e) => setaddressDetails(state => ({ ...state, city: e.target.value }))
-                                                            }></input>
-                                                            <input type='text' style={{ width: "100%" }} placeholder={t('enter_state')} value={addressDetails.state} onChange={(e) => {
-
-                                                                setaddressDetails(state => ({ ...state, state: e.target.value }));
-                                                            }} required></input>
-                                                            <input type='text' style={{ width: "100%" }} placeholder={t("enter_country")} value={addressDetails.country} onChange={(e) => {
-
-                                                                setaddressDetails(state => ({ ...state, country: e.target.value }));
-                                                            }} required></input>
-                                                        </div>
-                                                    </div>
-
-                                                    <div className='address-type-container'>
-                                                        <h3>{t("address_type")}</h3>
-                                                        <div className='address-type'>
-                                                            <input type='radio' name='address-type' id='home-address' onChange={() => {
-                                                                setaddressDetails(state => ({ ...state, address_type: 'Home' }));
-                                                            }} autoComplete='off' defaultChecked={true} />
-                                                            <label htmlFor='home-address'>{t("adress_type_home")}</label>
-
-
-                                                            <input type='radio' name='address-type' id='office-address' onChange={() => {
-                                                                setaddressDetails(state => ({ ...state, address_type: 'Office' }));
-                                                            }} autoComplete='off' />
-                                                            <label htmlFor='office-address'>
-                                                                {t("address_type_office")}
-                                                            </label>
-
-
-                                                            <input type='radio' name='address-type' id='other-address' onChange={() => {
-                                                                setaddressDetails(state => ({ ...state, address_type: 'Other' }));
-                                                            }} autoComplete='off' />
-                                                            <label htmlFor='other-address'>
-                                                                {t("address_type_other")}
-
-                                                            </label>
-                                                        </div>
-                                                        <div className='default-address'>
-                                                            <input type="checkbox" className='mx-2' onChange={() => {
-                                                                setaddressDetails(state => ({ ...state, is_default: !addressDetails.is_default }));
-
-                                                            }} checked={addressDetails.is_default} />
-                                                            {t("set_as_default_address")}
-                                                        </div>
-                                                    </div>
-
-                                                    <button type='submit' className='confirm-address' >{t("confirm_location")}</button>
-
-
-                                                </form>
-
+                                                    }
+                                                }} ></input>
                                             </div>
-                                        </>
-                                    }
-                                </div>
+                                        </div>
 
-                            </Modal.Body>
-                        </Modal>
-                    )
-                }
-            </LoadScript>
+                                        <div className='address-detail-container'>
+                                            <h3>{t("address_details")}</h3>
+                                            <div className='address-details'>
+                                                <input type='text' style={{ width: "100%" }} placeholder={t("address")} value={addressDetails.address} onChange={(e) => {
+
+                                                    setaddressDetails(state => ({ ...state, address: e.target.value }));
+                                                }} required></input>
+                                                <input type='text' style={{ width: "100%" }} placeholder={t("enter_landmark")} value={addressDetails.landmark} onChange={(e) => {
+
+                                                    setaddressDetails(state => ({ ...state, landmark: e.target.value }));
+                                                }} required></input>
+                                                <input type='text' style={{ width: "100%" }} placeholder={t('enter_area')} value={addressDetails.area} onChange={(e) => {
+
+                                                    setaddressDetails(state => ({ ...state, area: e.target.value }));
+                                                }} required></input>
+                                                <input type='text' style={{ width: "100%" }} placeholder={t('enter_pincode')} value={addressDetails.pincode} onChange={(e) => {
+
+                                                    setaddressDetails(state => ({ ...state, pincode: e.target.value }));
+                                                }} required></input>
+                                                <input type='text' className='' style={{ width: "100%" }} required value={addressDetails.city} placeholder={t('enter_city')} onChange={
+                                                    (e) => setaddressDetails(state => ({ ...state, city: e.target.value }))
+                                                }></input>
+                                                <input type='text' style={{ width: "100%" }} placeholder={t('enter_state')} value={addressDetails.state} onChange={(e) => {
+
+                                                    setaddressDetails(state => ({ ...state, state: e.target.value }));
+                                                }} required></input>
+                                                <input type='text' style={{ width: "100%" }} placeholder={t("enter_country")} value={addressDetails.country} onChange={(e) => {
+
+                                                    setaddressDetails(state => ({ ...state, country: e.target.value }));
+                                                }} required></input>
+                                            </div>
+                                        </div>
+
+                                        <div className='address-type-container'>
+                                            <h3>{t("address_type")}</h3>
+                                            <div className='address-type'>
+                                                <input type='radio' name='address-type' id='home-address' onChange={() => {
+                                                    setaddressDetails(state => ({ ...state, address_type: 'Home' }));
+                                                }} autoComplete='off' defaultChecked={true} />
+                                                <label htmlFor='home-address'>{t("adress_type_home")}</label>
+
+
+                                                <input type='radio' name='address-type' id='office-address' onChange={() => {
+                                                    setaddressDetails(state => ({ ...state, address_type: 'Office' }));
+                                                }} autoComplete='off' />
+                                                <label htmlFor='office-address'>
+                                                    {t("address_type_office")}
+                                                </label>
+
+
+                                                <input type='radio' name='address-type' id='other-address' onChange={() => {
+                                                    setaddressDetails(state => ({ ...state, address_type: 'Other' }));
+                                                }} autoComplete='off' />
+                                                <label htmlFor='other-address'>
+                                                    {t("address_type_other")}
+
+                                                </label>
+                                            </div>
+                                            <div className='default-address'>
+                                                <input type="checkbox" className='mx-2' onChange={() => {
+                                                    setaddressDetails(state => ({ ...state, is_default: !addressDetails.is_default }));
+
+                                                }} checked={addressDetails.is_default} />
+                                                {t("set_as_default_address")}
+                                            </div>
+                                        </div>
+
+                                        <button type='submit' className='confirm-address' >{t("confirm_location")}</button>
+
+
+                                    </form>
+
+                                </div>
+                            </>
+                        }
+                    </div>
+
+                </Modal.Body>
+            </Modal>
         </>
     );
 };

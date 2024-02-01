@@ -193,7 +193,7 @@ const StripeModal = (props) => {
                         {loadingPay
                             ? <Loader screen='full' background='none' />
                             :
-                            <button whileTap={{ scale: 0.8 }} type='submit' disabled={!props.stripe} className='pay-stripe'>Pay</button>
+                            <button whiletap={{ scale: 0.8 }} type='submit' disabled={!props.stripe} className='pay-stripe'>Pay</button>
                         }
                     </form>
                 </div>

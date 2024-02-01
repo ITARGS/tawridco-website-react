@@ -144,7 +144,7 @@ export const Footer = () => {
             <div className="footer ">
                 <div className="container flex-sm-row flex-column gap-3 bottom-section-footer">
                     {setting.setting && setting.setting.social_media.length > 0 &&
-                        <div className="social-media-icons order-sm-0">
+                        <div className="social-media-icons order-sm-0" key={"social-media-icons"}>
                             <span>{t('follow_us')}:
 
                                 {setting.setting.social_media.map((icon, index) => {

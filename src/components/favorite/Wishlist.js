@@ -236,7 +236,10 @@ const Wishlist = () => {
 
                                                         <th className='price'>
                                                             {setting.setting && setting.setting.currency + ' '}
-                                                            <span id={`price-wishlist${index}`}>{(product.variants.length > 0 ? product.variants[0]?.discounted_price.toFixed(setting.setting && setting.setting.decimal_point) : 0)}</span>
+                                                            <span id={`price-wishlist${index}`}>{(product.variants.length > 0 ?
+                                                                product.variants[0]?.discounted_price != "0" ?
+                                                                    product.variants[0]?.discounted_price.toFixed(setting.setting && setting.setting.decimal_point) :
+                                                                    product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : 0)}</span>
                                                         </th>
 
                                                         <th className='quantity'>

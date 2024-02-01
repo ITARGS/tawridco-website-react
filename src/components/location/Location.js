@@ -1,22 +1,18 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import './location.css';
-import { LoadScript, StandaloneSearchBox, GoogleMap, MarkerF } from '@react-google-maps/api';
+import { StandaloneSearchBox, GoogleMap, MarkerF } from '@react-google-maps/api';
 import api from '../../api/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { ActionTypes } from '../../model/action-type';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { BiCurrentLocation } from 'react-icons/bi';
 import { toast } from 'react-toastify';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setCity } from '../../model/reducer/locationReducer';
-// import { Modal } from 'react-bootstrap';
 
-const libraries = ["places"];
+// const libraries = ["places"];
 
 const Location = (props) => {
-
-
   const dispatch = useDispatch();
 
   const setting = useSelector(state => (state.setting));
@@ -41,7 +37,6 @@ const Location = (props) => {
 
 
   const inputRef = useRef();
-  const closeModalRef = useRef();
 
   // useEffect(() => {
   //   setTimeout(() => {
@@ -330,6 +325,7 @@ const Location = (props) => {
             }
           }));
           setisloading(false);
+          setcurrLocationClick(false);
           props.setisLocationPresent(true);
           props.setLocModal(false);
           props.bodyScroll(false);
@@ -341,13 +337,17 @@ const Location = (props) => {
       }).catch(error => console.log("error ", error));
   };
   const { t } = useTranslation();
+
   useEffect(() => {
+    import('./location.css');
     if (setting.setting?.default_city) {
       // closeModalRef.current?.click()
       props.setLocModal(false);
     }
   }, [setting]);
 
+
+  // console.log(isloading);
   const defaultLocationSet = (e) => {
     e.preventDefault();
     if (!props.isLocationPresent) {
@@ -384,16 +384,16 @@ const Location = (props) => {
       props.bodyScroll(false);
     }
   };
+
   return (
     <>
       {
         setting.setting &&
-        <LoadScript googleMapsApiKey={setting.setting?.google_place_api_key} libraries={libraries}>
-
+        <>
           <div className="d-flex flex-row justify-content-between align-items-center header">
             <h5>{t("select_location")}</h5>
             {setting.setting && setting.setting.default_city || props.isLocationPresent ?
-              <button type="button" className="" onClick={(e) => defaultLocationSet(e)
+              <button type="button" className="" onClick={(e) => { defaultLocationSet(e); props.setLocModal(false); }
               }><AiOutlineCloseCircle /></button>
               : <></>}
           </div>
@@ -412,7 +412,7 @@ const Location = (props) => {
                         <img src={setting.setting && setting.setting.web_settings.web_logo} className='location-logo' alt='location'></img>
                         <h5>{t("select_delivery_location")}</h5>
 
-                        <button whileTap={{ scale: 0.6 }} onClick={handleCurrentLocationClick} disabled={isInputFields} style={isInputFields ? { opacity: "0.5" } : null}>
+                        <button whiletap={{ scale: 0.6 }} onClick={handleCurrentLocationClick} disabled={isInputFields} style={isInputFields ? { opacity: "0.5" } : null}>
                           <BiCurrentLocation className='mx-3' />{t("use_my_current_location")}</button>
 
                         <div className='oval-continer'>
@@ -444,6 +444,8 @@ const Location = (props) => {
                           <GoogleMap streetViewControl={false} tilt={true} options={{
                             streetViewControl: false
                           }} zoom={11} center={center} mapContainerStyle={{ height: "400px" }}>
+                            <button className='current-location-click' whiletap={{ scale: 0.6 }} onClick={handleCurrentLocationClick} style={{ position: "relative", zIndex: 10 }}>
+                              <BiCurrentLocation className='mx-3' /></button>
                             <MarkerF position={center} draggable={true} onDragStart={onMarkerDragStart} onDragEnd={onMarkerDragEnd}>
                             </MarkerF>
                           </GoogleMap>
@@ -452,7 +454,9 @@ const Location = (props) => {
                         <p className='map-content-p'><b>{t("address")} : </b>{isAddressLoading ? "...." : localLocation.formatted_address}</p>
                         {errorMsg === "" ? (
                           <div className='map-content'>
-                            <button whileTap={{ scale: 0.6 }} type='button' className='btn-confirm-location' onClick={confirmCurrentLocation} disabled={localLocation.formatted_address === ''}>{t("confirm")}</button>
+                            {/* <button whileTap={{ scale: 0.6 }} onClick={handleCurrentLocationClick} disabled={isInputFields} style={isInputFields ? { opacity: "0.5" } : null}>
+                              <BiCurrentLocation className='mx-3' />{t("use_my_current_location")}</button> */}
+                            <button whiletap={{ scale: 0.6 }} type='button' className='btn-confirm-location' onClick={confirmCurrentLocation} disabled={localLocation.formatted_address === ''}>{t("confirm")}</button>
                           </div>
                         ) : null}
                       </>
@@ -463,7 +467,8 @@ const Location = (props) => {
               )}
 
           </div>
-        </LoadScript>
+        </>
+
       }
     </>
   );
