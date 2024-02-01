@@ -88,3 +88,15 @@
 #Wishlist .add-to-cart.disabled {
   color: var(--text-field-color) !important;
 }
+
+@media (max-width: 768px) {
+  #wishlist .products-image-container.first-column .out_of_stockText {
+    color: red;
+    font-size: 7px;
+    font-weight: normal;
+    text-align: center;
+    padding: 4px 8px;
+    background: var(--second-cards-color);
+    border-radius: 5px;
+  }
+}

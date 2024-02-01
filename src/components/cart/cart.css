@@ -152,6 +152,7 @@
   .image-container
   img {
   height: 100px;
+  width: 100px;
 }
 
 .cart-sidebar-container

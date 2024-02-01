@@ -1,7 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700&display=swap");
 
-
-
 * {
   font-family: "Nunito", sans-serif;
   margin: 0;
@@ -26,7 +24,9 @@ html {
   scroll-padding-top: 6.5rem;
   scroll-behavior: smooth;
 }
-
+body {
+  overflow-x: hidden !important;
+}
 html::-webkit-scrollbar {
   /* width: 0; */
 }
@@ -109,10 +109,10 @@ body.modal-open {
   right: 0;
   animation: fadeIn 700ms ease-in-out 1s both;
   cursor: pointer;
-  z-index:10;
+  z-index: 10;
 }
-.scroll-to-top svg path{
-  color:white;
+.scroll-to-top svg path {
+  color: white;
 }
 
 /* media queries */
@@ -153,23 +153,23 @@ body.modal-open {
 }
 
 @media (max-width: 479px) {
-  .see-all{
+  .see-all {
     font-size: 14px;
   }
 }
- input::-webkit-outer-spin-button,
- input::-webkit-inner-spin-button {
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
   -webkit-appearance: none !important;
-  -moz-appearance:textfield; 
+  -moz-appearance: textfield;
   margin: 0;
 }
 
-input[type=number]{
+input[type="number"] {
   -moz-appearance: textfield;
 }
 
 .popup.modal .modal-content {
-  background:transparent !important;
+  background: transparent !important;
   border: 0 !important;
 }
 .popup.modal .modal-content .modal-header {
@@ -178,20 +178,19 @@ input[type=number]{
   cursor: pointer;
 }
 
- .fssai-details {
+.fssai-details {
   display: flex;
   justify-self: flex-start;
   align-items: center;
   gap: 10px;
   margin: 20px 0;
-
 }
- .fssai-details .image-container img {
+.fssai-details .image-container img {
   height: 25px;
   object-fit: contain;
 }
 
- .fssai-details .fssai-license-no span {
+.fssai-details .fssai-license-no span {
   font-size: 16px;
   font-weight: 600;
 }

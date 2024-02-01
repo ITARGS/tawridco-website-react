@@ -86,6 +86,7 @@ const Address = () => {
     };
 
     const { t } = useTranslation();
+
     return (
         <>
 
@@ -101,7 +102,6 @@ const Address = () => {
                                     <div className='d-flex justify-content-between'>
                                         <div className='d-flex gap-2 align-items-center justify'>
                                             <input className="form-input" type="radio" name="AddressRadio" id={`AddressRadioId${index}`} defaultChecked={address.is_default === 1} onChange={() => {
-                                                // dispatch({ type: ActionTypes.SET_SELECTED_ADDRESS, payload: address });
                                                 dispatch(setSelectedAddress({ data: address }));
                                             }} />
                                             <label className="form-check-label" htmlFor={`AddressRadioId${index}`}>
@@ -114,9 +114,8 @@ const Address = () => {
                                         <div className='d-flex gap-2'>
                                             <button type='button' className='edit' onClick={() => {
                                                 setisLoader(true);
-                                                // dispatch({ type: ActionTypes.SET_SELECTED_ADDRESS, payload: address });
-                                                setIsAddressSelected(true);
                                                 dispatch(setSelectedAddress({ data: address }));
+                                                setIsAddressSelected(true);
                                                 setShow(true);
                                                 setisLoader(false);
 
@@ -141,8 +140,13 @@ const Address = () => {
                             ))}
 
                             <div className='address-component new-address'>
-                                <button type='button' onClick={(e) => {
+                                {/* <button type='button' onClick={(e) => {
                                     // dispatch({ type: ActionTypes.SET_SELECTED_ADDRESS, payload: null });
+                                    dispatch(setSelectedAddress({ data: null }));
+                                    setIsAddressSelected(false);
+                                    setShow(true);
+                                }}> */}
+                                <button type='button' onClick={() => {
                                     dispatch(setSelectedAddress({ data: null }));
                                     setIsAddressSelected(false);
                                     setShow(true);
@@ -150,10 +154,10 @@ const Address = () => {
                                     <GrAddCircle fontSize='3rem' /> {t("add_new_address")}
                                 </button>
                             </div>
+                            <NewAddress setIsAddressSelected={setIsAddressSelected} isAddressSelected={isAddressSelected} show={show} setshow={setShow} isLoader={isLoader} setisLoader={setisLoader} />
                         </>
                     )}
 
-                <NewAddress setIsAddressSelected={setIsAddressSelected} isAddressSelected={isAddressSelected} show={show} setshow={setShow} isLoader={isLoader} setisLoader={setisLoader} />
             </div>
         </>
 

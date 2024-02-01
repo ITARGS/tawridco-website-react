@@ -1,4 +1,3 @@
-import "../location/location.css";
 import React, { useState, useEffect, useRef } from 'react';
 import './header.css';
 import { BsShopWindow } from 'react-icons/bs';
@@ -30,6 +29,7 @@ import { setNotification } from "../../model/reducer/notificationReducer";
 import { setFavourite } from "../../model/reducer/favouriteReducer";
 import { setFilterBrands, setFilterCategory, setFilterMinMaxPrice, setFilterSearch } from "../../model/reducer/productFilterReducer";
 import { Modal } from 'antd';
+import "../location/location.css";
 
 const Header = () => {
 
@@ -93,8 +93,8 @@ const Header = () => {
 
     useEffect(() => {
         // console.log('status',city)
-        setLocModal(true);
-        setLocModal(false);
+        // setLocModal(true);
+        // setLocModal(false);
         if (!city.status === "fulfill") {
             handleModal();
         }
@@ -655,7 +655,7 @@ const Header = () => {
                                     curr_url.pathname === "/checkout" ?
                                         null :
                                         city.city === null || cookies.get('jwt_token') === undefined
-                                            ? <button type='button' whileTap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative'
+                                            ? <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative'
                                                 onClick={() => {
                                                     if (cookies.get('jwt_token') === undefined) {
                                                         toast.error(t("required_login_message_for_cartRedirect"));
@@ -951,21 +951,16 @@ const Header = () => {
 
                 <Login modal_id='loginModal' />
 
-
                 {/* location modal */}
-
-                {
-
-                    <Modal
-                        className='location'
-                        id="locationModal"
-                        centered
-                        open={locModal}
-                    >
-                        <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
-                            showModal={locModal} setLocModal={setLocModal} bodyScroll={setBodyScroll} openModal={openModal} />
-                    </Modal>
-                }
+                <Modal
+                    className='location'
+                    id="locationModal"
+                    centered
+                    open={locModal}
+                >
+                    <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
+                        showModal={locModal} setLocModal={setLocModal} bodyScroll={setBodyScroll} />
+                </Modal>
 
 
 

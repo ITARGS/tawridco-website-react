@@ -60,6 +60,14 @@
     right: -25px;
   }
 }
+@media (min-width: 1300px) {
+  .prev-arrow {
+    right: -42px !important;
+  }
+  .next-arrow {
+    right: -10px !important;
+  }
+}
 
 .next-arrow:hover {
   background-color: var(--secondary-color);
@@ -1653,4 +1661,10 @@ button:disabled {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
+
+@media (max-width: 1400px) {
+  .prev-arrow {
+    left: 23px;
+  }
 }

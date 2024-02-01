@@ -509,7 +509,7 @@ const ProductList2 = React.memo(() => {
                         : (
                             <>
                                 {brands.map((brand, index) => (
-                                    <div whileTap={{ scale: 0.8 }} onClick={() => {
+                                    <div whiltap={{ scale: 0.8 }} onClick={() => {
                                         filterbyBrands(brand);
                                         closeCanvas.current.click();
                                     }} className={`d-flex justify-content-between align-items-center filter-bar ${filter.brand_ids?.length != 0 ? filter.brand_ids.includes(brand.id) ? 'active' : null : null}`} key={index} >
@@ -621,7 +621,7 @@ const ProductList2 = React.memo(() => {
                         (
                             sizes.map((size, index) => (
                                 <div
-                                    whileTap={{ scale: 0.8 }}
+                                    whiletap={{ scale: 0.8 }}
                                     onClick={() => {
                                         closeCanvas.current.click();
                                     }} className={`d-flex justify-content-between align-items-center filter-bar`} key={index}>
