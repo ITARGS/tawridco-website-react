@@ -536,8 +536,8 @@ const NewAddress = (props) => {
                 </Modal.Header>
                 <Modal.Body>
                     <div className="flex d-lg-flex flex-row gap-5">
-                        <div className='w-100'>
-                            <button whiletap={{ scale: 0.6 }} style={{ position: 'absolute', zIndex: 120000 }} className="current-location-button"
+                        <div className='w-100 mapWrapper'>
+                            <button whiletap={{ scale: 0.6 }} className="current-location-button"
                                 onClick={handleCurrentLocationClick}>
                                 <BiCurrentLocation className='mx-3' width="40px" height="40px" />
                             </button>
