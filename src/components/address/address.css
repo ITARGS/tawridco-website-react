@@ -200,13 +200,27 @@
     margin-top: 0 !important;
   }
 }
-
+.mapWrapper {
+  position: relative;
+}
 .current-location-button {
   position: absolute;
   z-index: 5;
-  top: 18px;
+  top: 10px;
   width: 40px;
   height: 40px;
-  left: 420px;
-  background-color: var(--bs-white);
+  left: auto;
+  right: 55px;
+  background: var(--bs-white);
+}
+.current-location-logo {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 350px) {
+  .current-location-button {
+    top: 55px;
+    right: 10px;
+  }
 }
