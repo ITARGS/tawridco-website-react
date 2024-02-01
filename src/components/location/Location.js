@@ -439,12 +439,12 @@ const Location = (props) => {
                     )
                     : (
                       <>
-                        <div className='w-100'>
+                        <div className='w-100 mapWrapper'>
 
                           <GoogleMap streetViewControl={false} tilt={true} options={{
                             streetViewControl: false
                           }} zoom={11} center={center} mapContainerStyle={{ height: "400px" }}>
-                            <button className='current-location-click' whiletap={{ scale: 0.6 }} onClick={handleCurrentLocationClick} style={{ position: "relative", zIndex: 10 }}>
+                            <button className='current-location-click' whiletap={{ scale: 0.6 }} onClick={handleCurrentLocationClick} >
                               <BiCurrentLocation className='mx-3' /></button>
                             <MarkerF position={center} draggable={true} onDragStart={onMarkerDragStart} onDragEnd={onMarkerDragEnd}>
                             </MarkerF>

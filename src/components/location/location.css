@@ -134,7 +134,7 @@
   display: none !important;
 }
 
-.current-location-click {
+/* .current-location-click {
   position: relative;
   left: 370px;
   top: 10px;
@@ -148,7 +148,7 @@
   width: 40px !important;
   height: 40px;
   font-size: 1.845rem;
-}
+} */
 
 .current-location-click:hover {
   background: var(--bs-white) !important;
@@ -164,5 +164,39 @@
   .current-location-click {
     left: 207px;
     top: 53px;
+  }
+}
+.mapWrapper {
+  position: relative !important;
+}
+.current-location-click {
+  position: absolute;
+  z-index: 5;
+  top: 10px;
+  width: 40px;
+  height: 40px;
+  left: auto;
+  right: 55px;
+  background: var(--bs-white);
+  z-index: 10 !important;
+  margin-top: 0px !important;
+  padding: 0px !important;
+  border-radius: 0px !important;
+  border: none !important;
+  background-color: var(--bs-white);
+  color: var(--primary-color);
+  width: 40px !important;
+  height: 40px;
+  font-size: 1.845rem;
+}
+.current-location-logo {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 350px) {
+  .current-location-click {
+    top: 55px;
+    right: 10px;
   }
 }
