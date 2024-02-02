@@ -802,7 +802,7 @@ const ProductDetails = () => {
                                                         window.scrollTo({ top: 0, behavior: 'smooth' });
 
                                                     }} >
-                                                        <h3>{product.name}</h3>
+                                                        <h3>{related_product.name}</h3>
                                                         <div className='price'>
 
                                                             <span id={`price${index}-section`} className="d-flex align-items-center"><p id='relatedproduct-fa-rupee' className='m-0'>{setting.setting && setting.setting.currency}</p>{related_product.variants[0].discounted_price === 0 ? related_product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : related_product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)} </span>
