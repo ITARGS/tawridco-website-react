@@ -100,23 +100,24 @@ const Checkout = () => {
     }, []);
 
     useEffect(() => {
-        api.getCart(cookies.get('jwt_token'), address?.selected_address?.latitude, address?.selected_address?.longitude, 1)
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    setCodAllow(1);
-                    dispatch(setCartCheckout({ data: result.data }));
-                    dispatch(setWallet({ data: 0 }));
-                    if (cart?.promo_code) {
-                        setTotalPayment(result.data.total_amount - cart?.promo_code?.discount);
+        if (address?.selected_address?.latitude && address?.selected_address?.longitude)
+            api.getCart(cookies.get('jwt_token'), address?.selected_address?.latitude, address?.selected_address?.longitude, 1)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 1) {
+                        setCodAllow(1);
+                        dispatch(setCartCheckout({ data: result.data }));
+                        dispatch(setWallet({ data: 0 }));
+                        if (cart?.promo_code) {
+                            setTotalPayment(result.data.total_amount - cart?.promo_code?.discount);
+                        }
+                        else {
+                            setTotalPayment(result.data.total_amount);
+                        }
                     }
-                    else {
-                        setTotalPayment(result.data.total_amount);
-                    }
-                }
 
-            })
-            .catch(error => console.log(error));
+                })
+                .catch(error => console.log(error));
     }, [address?.selected_address]);
 
 

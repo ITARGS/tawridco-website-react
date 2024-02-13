@@ -246,7 +246,7 @@ a:focus .product-card {
   /* padding: 15px; */
   aspect-ratio: 3/3;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 8px 8px 0px 0px;
 }
 
 .product-card .product-card-body {
