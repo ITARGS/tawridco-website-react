@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setCity } from '../../model/reducer/locationReducer';
-
 // const libraries = ["places"];
 
 const Location = (props) => {

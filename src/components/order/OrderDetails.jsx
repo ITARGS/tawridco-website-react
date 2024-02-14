@@ -7,6 +7,7 @@ import api from '../../api/api';
 import Cookies from 'universal-cookie';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import RateProductModal from '../rate-product/RateProductModal';
 import axios from 'axios';
 
 const OrderDetails = () => {
@@ -142,6 +143,7 @@ const OrderDetails = () => {
                                                 <thead>
                                                     <th>{t('product')}</th>
                                                     <th>{t('price')}</th>
+                                                    <th>{t('rating')}</th>
                                                     {/* <th>{t('action')}</th> */}
                                                 </thead>
                                                 <tbody>
@@ -167,6 +169,9 @@ const OrderDetails = () => {
                                                                         <div className="price-container">
                                                                             <span className="discounted-price">
                                                                                 {`${setting.setting?.currency} ${item.price}`}
+                                                                            </span>
+                                                                            <span>
+                                                                                Rate Product
                                                                             </span>
                                                                             {/* {item.discounted_price !== 0 ?
                                                                                 <span className="original-price">
@@ -392,6 +397,7 @@ const OrderDetails = () => {
                     </div>
                 </div>
             </section>
+            <RateProductModal />
         </>
     );
 };

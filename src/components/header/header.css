@@ -284,6 +284,7 @@
   font-size: 18px;
   text-decoration: none;
   background: none;
+  align-items: center;
 }
 
 .mobile-nav-wrapper ul li {
@@ -315,7 +316,7 @@
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
-  padding: 8px 16px;
+  padding: 8px 8px;
   background: var(--secondary-color);
   margin: 0;
   border-radius: 4px;
