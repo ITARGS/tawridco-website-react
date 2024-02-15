@@ -10,14 +10,16 @@ import { toast } from 'react-toastify';
 import RateProductModal from '../rate-product/RateProductModal';
 import axios from 'axios';
 
-const OrderDetails = () => {
+const OrderDetails = React.memo(() => {
     const { t } = useTranslation();
 
     const setting = useSelector(state => state.setting);
 
     const [orderData, setOrderData] = useState(null);
     const [orderStatus, setOrderStatus] = useState(t("recieved"));
-
+    const [showPdtRatingModal, setShowPdtRatingModal] = useState(false);
+    const [ratingProductId, setRatingProductId] = useState(0);
+    console.log(showPdtRatingModal, ratingProductId);
     const urlParams = useParams();
 
     useEffect(() => {
@@ -170,9 +172,6 @@ const OrderDetails = () => {
                                                                             <span className="discounted-price">
                                                                                 {`${setting.setting?.currency} ${item.price}`}
                                                                             </span>
-                                                                            <span>
-                                                                                Rate Product
-                                                                            </span>
                                                                             {/* {item.discounted_price !== 0 ?
                                                                                 <span className="original-price">
                                                                                     {`${setting.setting?.currency} ${item.price}`}
@@ -239,6 +238,12 @@ const OrderDetails = () => {
                                                                             }
                                                                         </div>
 
+                                                                    </td>
+                                                                    <td>
+                                                                        <button className='rateProductText' onClick={() => {
+                                                                            setRatingProductId(item.product_id);
+                                                                            setShowPdtRatingModal(true);
+                                                                        }}>Rate</button>
                                                                     </td>
                                                                 </tr>
                                                             </>
@@ -396,10 +401,10 @@ const OrderDetails = () => {
                         </div>
                     </div>
                 </div>
+                <RateProductModal product_id={ratingProductId} showPdtRatingModal={showPdtRatingModal} setShowPdtRatingModal={setShowPdtRatingModal} />
             </section>
-            <RateProductModal />
         </>
     );
-};
+});
 
 export default OrderDetails;

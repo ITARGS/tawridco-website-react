@@ -854,6 +854,51 @@ const api = {
         };
 
         return fetch(appUrl + appSubUrl + "/update_order_status", requestOptions);
+    },
+    getProductRatings(token, product_id, limit, offset) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+        var params = {
+            product_id: product_id,
+            limit,
+            offset
+        };
+        var url = new URL(appUrl + appSubUrl + "/products/ratings_list");
+        for (let k in params) {
+            url.searchParams.append(k, params[k]);
+        };
+
+        return fetch(url, requestOptions);
+    },
+    addProductRating(token, product_id, rate, review, images) {
+        console.log(product_id, rate, review, images);
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+
+        var data = new FormData();
+        data.append("product_id", product_id);
+        data.append("rate", rate);
+        data.append("review", review);
+
+        for (let i = 0; i < images.length; i++) {
+            data.append(`image[${i}]`, images[i]);
+        }
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            redirect: 'follow',
+            body: data
+        };
+
+        return fetch(appUrl + appSubUrl + "/products/rating/add", requestOptions);
     }
 
 };

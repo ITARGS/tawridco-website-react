@@ -21,6 +21,7 @@ import { clearSelectedProduct, setSelectedProduct } from '../../model/reducer/se
 import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
 import { setFavourite } from '../../model/reducer/favouriteReducer';
 import Popup from '../same-seller-popup/Popup';
+import ProductRating from './ProductRating';
 
 const ProductDetails = () => {
 
@@ -463,7 +464,7 @@ const ProductDetails = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-xl-8 col-lg-6 col-md-12 col-12">
+                                    <div className="col-xl-4 col-lg-6 col-md-12 col-12">
                                         <div className='detail-wrapper'>
                                             <div className='top-section'>
                                                 <p className='product_name'>{productdata.name}</p>
@@ -734,6 +735,10 @@ const ProductDetails = () => {
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                    {/* {console.log(selectedVariant)} */}
+                                    <div className='col-xl-4 col-log-6 col-md-12 col-12'>
+                                        <ProductRating product_id={selectedVariant?.id} />
                                     </div>
                                 </div>
                             )}

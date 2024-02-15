@@ -246,5 +246,11 @@
   "order_placed": "Order Placed",
   "order_id": "Order Id",
   "item": "item",
-  "seller_id_does_not_match":"Seller Id does not match"
+  "seller_id_does_not_match": "Seller Id does not match",
+  "rate": "Rate",
+  "rate_the_product": "Rate The Product",
+  "write_a_review": "Write A Review",
+  "share_your_review_here": "Share your reviews here",
+  "attachments": "Attachments",
+  "only_images_are_allowed": "Only Images with extension jpg, png and jpeg are allowed"
 }

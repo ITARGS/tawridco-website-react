@@ -1,20 +1,20 @@
-import React from 'react'
+import React from 'react';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import '../category/category.css'
+import '../category/category.css';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineArrowRight } from 'react-icons/ai';
 import Slider from 'react-slick';
 import { ActionTypes } from '../../model/action-type';
 
 const Brand = () => {
-  const shop = useSelector(state => state.shop)
+  const shop = useSelector(state => state.shop);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const setting = useSelector(state => (state.setting))
+  const setting = useSelector(state => (state.setting));
   const { t } = useTranslation();
 
   const sliderRef = useRef(null);
@@ -70,9 +70,9 @@ const Brand = () => {
     ]
   };
   const placeHolderImage = (e) => {
-    
-    e.target.src = setting.setting?.web_logo
-  }
+
+    e.target.src = setting.setting?.web_logo;
+  };
   return (
     <>
       {/* {
@@ -97,8 +97,8 @@ const Brand = () => {
           <Slider {...settings} ref={sliderRef}>
             {shop.shop?.brands?.map((ctg, index) => (
               <div className="my-3 content" key={index} onClick={() => {
-                dispatch({ type: ActionTypes.SET_FILTER_BRANDS, payload: ctg.id.toString() })
-                navigate('/products')
+                dispatch({ type: ActionTypes.SET_FILTER_BRANDS, payload: ctg.id.toString() });
+                navigate('/products');
               }}>
 
 
@@ -117,7 +117,7 @@ const Brand = () => {
       </section>
       {/* } */}
     </>
-  )
-}
+  );
+};
 
-export default Brand
+export default Brand;
