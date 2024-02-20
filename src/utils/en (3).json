@@ -20,7 +20,8 @@
   "unit": "Unit",
   "Paytm": "Paytm",
   "apply": "Apply",
-  "brand": "Brand",
+  "brands": "Brands",
+  "countries": "Countries",
   "email": "Email",
   "login": "Login",
   "order": "Order",
@@ -252,5 +253,6 @@
   "write_a_review": "Write A Review",
   "share_your_review_here": "Share your reviews here",
   "attachments": "Attachments",
-  "only_images_are_allowed": "Only Images with extension jpg, png and jpeg are allowed"
+  "only_images_are_allowed": "Only Images with extension jpg, png and jpeg are allowed",
+  "sellers": "Sellers"
 }

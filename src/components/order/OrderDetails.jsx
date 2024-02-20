@@ -19,7 +19,6 @@ const OrderDetails = React.memo(() => {
     const [orderStatus, setOrderStatus] = useState(t("recieved"));
     const [showPdtRatingModal, setShowPdtRatingModal] = useState(false);
     const [ratingProductId, setRatingProductId] = useState(0);
-    console.log(showPdtRatingModal, ratingProductId);
     const urlParams = useParams();
 
     useEffect(() => {

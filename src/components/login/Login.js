@@ -3,7 +3,6 @@ import './login.css';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import api from '../../api/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { ActionTypes } from '../../model/action-type';
 import { toast } from 'react-toastify';
 import Loader from '../loader/Loader';
 import 'react-phone-input-2/lib/style.css';
@@ -90,7 +89,9 @@ const Login = (props) => {
 
     useEffect(() => {
         if (firebase && auth && window.recaptchaVerifier && setting.setting.firebase) {
-            window.recaptchaVerifier.clear();
+            if (window.recaptchaVerifier) {
+                window.recaptchaVerifier.clear();
+            }
 
         }
         firebase && auth && (window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", {

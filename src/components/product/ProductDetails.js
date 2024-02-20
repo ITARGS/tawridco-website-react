@@ -415,7 +415,7 @@ const ProductDetails = () => {
                             : (
 
                                 <div className='row body-wrapper '>
-                                    <div className="col-xl-4 col-lg-6 col-md-12 col-12">
+                                    <div className="col-xl-6 col-lg-6 col-md-12 col-12">
 
                                         <div className='image-wrapper '>
                                             <div className='main-image col-12 border'>
@@ -464,7 +464,7 @@ const ProductDetails = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-xl-4 col-lg-6 col-md-12 col-12">
+                                    <div className="col-xl-6 col-lg-6 col-md-12 col-12">
                                         <div className='detail-wrapper'>
                                             <div className='top-section'>
                                                 <p className='product_name'>{productdata.name}</p>
@@ -736,10 +736,6 @@ const ProductDetails = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    {/* {console.log(selectedVariant)} */}
-                                    <div className='col-xl-4 col-log-6 col-md-12 col-12'>
-                                        <ProductRating product_id={selectedVariant?.id} />
-                                    </div>
                                 </div>
                             )}
 
@@ -751,6 +747,8 @@ const ProductDetails = () => {
                         <div className='description' dangerouslySetInnerHTML={{ __html: productdata.description }}>
                         </div>
                     </div>
+
+                                                            
 
                     <div className='related-product-wrapper'>
                         <h5>{t("related_product")}</h5>
@@ -974,6 +972,8 @@ const ProductDetails = () => {
 
                         </div>
                     </div>
+
+
                     <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} setP_V_id={setP_V_id} setP_id={setP_id} />
                     <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} cookies={cookies} toast={toast} city={city} />
                 </div>

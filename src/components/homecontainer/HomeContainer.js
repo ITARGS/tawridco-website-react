@@ -1,12 +1,14 @@
-import React from 'react'
-import Category from '../category/Category'
-import Slider from '../sliders/Slider'
-import './homecontainer.css'
-import { useSelector } from 'react-redux'
-import Brand from '../brands/Brand'
+import React from 'react';
+import Category from '../category/Category';
+import Slider from '../sliders/Slider';
+import './homecontainer.css';
+import { useSelector } from 'react-redux';
+import Brand from '../brands/Brand';
+import ShopByCountries from '../shop-by-countries/ShopByCountries';
+import ShopBySellers from '../shop-by-seller/ShopBySellers';
 
 const HomeContainer = () => {
-    const shop = useSelector((state) => state.shop)
+    const shop = useSelector((state) => state.shop);
     return (
 
         // elementor-section-height-min-height elementor-section-items-stretch elementor-section-boxed elementor-section-height-default
@@ -29,7 +31,7 @@ const HomeContainer = () => {
 
                     </div>
                 </div>
-            :<></>}
+                : <></>}
             {shop.shop?.is_brand_section_in_homepage ?
                 <div className='category_section'>
                     <div className="container">
@@ -38,13 +40,26 @@ const HomeContainer = () => {
 
                     </div>
                 </div>
-            :<></>}
-
+                : <></>}
+            {shop.shop?.is_country_section_in_homepage &&
+                <div className='category_section'>
+                    <div className='container'>
+                        <ShopByCountries />
+                    </div>
+                </div>
+            }
+            {shop.shop?.is_seller_section_in_homepage &&
+                <div className='category_section'>
+                    <div className='container'>
+                        <ShopBySellers />
+                    </div>
+                </div>
+            }
 
 
         </section>
 
-    )
-}
+    );
+};
 
-export default HomeContainer
+export default HomeContainer;

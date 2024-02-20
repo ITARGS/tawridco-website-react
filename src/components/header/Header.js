@@ -240,7 +240,7 @@ const Header = () => {
     };
     const handleResize = () => {
         setIsDesktopView(window.innerWidth > 768);
-    }
+    };
     useEffect(() => {
         handleResize();
         window.addEventListener('resize', handleResize);
@@ -251,10 +251,10 @@ const Header = () => {
         };
     }, []);
     // console.log(isDesktopView)
-    const [mobileNavActKey, setMobileNavActKey] = useState(null)
+    const [mobileNavActKey, setMobileNavActKey] = useState(null);
     const handleMobileNavActKey = (key) => {
         setMobileNavActKey(key == mobileNavActKey ? null : key);
-    }
+    };
     return (
         <>
             {/* sidebar */}
@@ -758,7 +758,7 @@ const Header = () => {
                                     //     document.getElementsByClassName('search')[0].classList.remove('active');
                                     //     document.getElementsByClassName('header-search')[0].classList.remove('active');
                                     // }
-                                    handleMobileNavActKey(1)
+                                    handleMobileNavActKey(1);
                                 }}>
                                     <div>
                                         <BsShopWindow />
@@ -770,7 +770,7 @@ const Header = () => {
                             <li className='menu-item'>
                                 <button type='button' className={`search ${mobileNavActKey == 2 ? "active" : ""}`} ref={searchNavTrigger} onClick={() => {
                                     handleMobileNavActKey(2);
-                                    searchNavTrigger.current.focus()
+                                    searchNavTrigger.current.focus();
                                     // document.getElementsByClassName('header-search')[0].classList.toggle('active');
                                     // document.getElementsByClassName('search')[0].classList.toggle('active');
                                     // if (curr_url.pathname === '/products') {
@@ -797,7 +797,7 @@ const Header = () => {
                                         // if (curr_url.pathname === '/profile') {
                                         //     document.getElementsByClassName('profile-account')[0].classList.remove('active');
                                         // }
-                                        handleMobileNavActKey(3)
+                                        handleMobileNavActKey(3);
                                         // document.getElementsByClassName('filter')[0].classList.toggle('active');
                                         // document.getElementsByClassName('search')[0].classList.remove('active');
                                         // document.getElementsByClassName('wishlist')[0].classList.remove('active');
@@ -825,8 +825,8 @@ const Header = () => {
                                             toast.error("Please Select you delivery location first!");
                                         }
                                         else {
-                                            handleMobileNavActKey(4)
-                                            navigate("/wishlist")
+                                            handleMobileNavActKey(4);
+                                            navigate("/wishlist");
                                             // document.getElementsByClassName('wishlist')[0].classList.toggle('active');
                                             // if (curr_url.pathname === '/products') {
                                             //     document.getElementsByClassName('filter')[0].classList.remove('active');
@@ -894,7 +894,7 @@ const Header = () => {
                             {curr_url.pathname === '/profile' ? (
                                 <li className='menu-item'>
                                     <button type='button' className={`profile-account user-profile ${mobileNavActKey == 5 ? "active" : ""}`} onClick={() => {
-                                        handleMobileNavActKey(5)
+                                        handleMobileNavActKey(5);
                                         document.getElementsByClassName('profile-account')[0].classList.toggle('active');
                                         document.getElementsByClassName('wishlist')[0].classList.remove('active');
                                         if (curr_url.pathname === '/products') {
@@ -924,7 +924,7 @@ const Header = () => {
                                             ? (
                                                 <>
                                                     <button type='button' className={`account ${mobileNavActKey == 5 ? "active" : ""}`} data-bs-toggle="modal" data-bs-target="#loginModal" onClick={() => {
-                                                        handleMobileNavActKey(5)
+                                                        handleMobileNavActKey(5);
                                                         // document.getElementsByClassName('wishlist')[0].classList.remove('active');
                                                         // if (curr_url.pathname === '/products') {
                                                         //     document.getElementsByClassName('filter')[0].classList.remove('active');
@@ -948,7 +948,7 @@ const Header = () => {
                                             : (
                                                 <>
                                                     <Link to='/profile' className={`d-flex user-profile account ${mobileNavActKey == 5 ? "active" : ""}`} onClick={() => {
-                                                        handleMobileNavActKey(5)
+                                                        handleMobileNavActKey(5);
                                                         // document.getElementsByClassName('wishlist')[0].classList.remove('active');
                                                         // if (curr_url.pathname === '/products') {
                                                         //     document.getElementsByClassName('filter')[0].classList.remove('active');

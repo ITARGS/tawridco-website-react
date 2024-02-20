@@ -1,48 +1,33 @@
-import '../category/category.css';
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { setFilterBrands } from '../../model/reducer/productFilterReducer';
 import coverImg from '../../utils/cover-img.jpg';
 import { useTranslation } from 'react-i18next';
-import { setFilterBrands } from "../../model/reducer/productFilterReducer";
+import "../category/category.css";
 import Pagination from 'react-js-pagination';
+import useShopByCountries from '../../hooks/useShopByCountries';
 import Cookies from 'universal-cookie';
-import useShopByBrands from '../../hooks/useShopByBrands';
+import Loader from '../loader/Loader';
 import Skeleton from 'react-loading-skeleton';
 
+const ShopByCountriesPage = () => {
 
-const BrandList = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const cookies = new Cookies();
 
+    const [limit, setLimit] = useState(12);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [offset, setOffset] = useState(0);
+
+    const { data, totalData, loading, error } = useShopByCountries(cookies.get("jwt_token"), limit, offset);
+    console.log(data, totalData);
+
+    const countries = useSelector(state => state.shop.shop?.countries);
     const setting = useSelector(state => state.setting);
     const filter = useSelector(state => state.productFilter);
-
-    const [limit, setLimit] = useState(12);
-    const [offset, setOffset] = useState(0);
-    const [currentPage, setCurrentPage] = useState(1);
-
-    const { data, totalData, loading } = useShopByBrands(cookies.get("jwt_token"), limit, offset);
-    console.log(data);
-    // const [brands, setBrands] = useState(null);
-
-
-    // useEffect(() => {
-    //     api.getBrands().then(response => response.json()).then((response) => {
-    //         if (response.status) {
-    //             setBrands(response.data);
-    //         } else {
-    //             toast.error(response.message);
-    //         }
-    //     });
-    // }, []);
-
-    const placeHolderImage = (e) => {
-
-        e.target.src = setting.setting?.web_logo;
-    };
 
     const sort_unique_brand_ids = (int_brand_ids) => {
         if (int_brand_ids.length === 0) return int_brand_ids;
@@ -56,83 +41,92 @@ const BrandList = () => {
         return ret;
     };
 
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
+
+    }, []);
+
+    const placeHolderImage = (e) => {
+        e.target.src = setting.setting?.web_logo;
+    };
+
     const handlePageChange = (pageNo) => {
         setCurrentPage(pageNo);
         setOffset(pageNo * limit - limit);
     };
+
 
     const placeholderItems = Array.from({ length: 12 }).map((_, index) => index);
 
 
     return (
         <>
-
-            <section id='allcategories'  >
+            <section id='allcategories'>
                 <div className='cover'>
                     <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
                     <div className='page-heading'>
-                        <h5>{t("brands")}</h5>
-                        <p><Link to="/" className='text-light text-decoration-none'>{t("home")} /</Link> <span>{t("brands")}</span></p>
+                        <h5>{t("countries")}</h5>
+                        <p><Link to="/" className='text-light text-decoration-none'>{t("home")} /</Link> <span>{t("countries")}</span></p>
                     </div>
                 </div>
 
-                <div className='container' style={{ padding: "30px 0" }}>
+                <div className='container' style={{ padding: "30px 0px" }}>
                     {loading ?
+
                         <div className='row justify-content-center mx-3'>
                             {placeholderItems.map((index) => (
-                                <div key={index} className='col-md-3 col-lg-2 col-6 col-sm-3 my-3'>
+                                <div key={index} className='col-md-3 col-lg-2 col-6 col-sm-3 my-3 content'>
                                     <Skeleton height={250} />
                                 </div>
                             ))}
                         </div>
-                        :
-                        <div className='row justify-content-center mx-3'>
-                            {data?.map((ctg, index) => (
-                                <div className="col-md-3 col-lg-2 col-6 col-sm-3 my-3 content" key={index} onClick={() => {
+                        : <div className='row justify-content-center'>
+                            {data?.map((country, index) => (
+                                <div className="col-md-3 col-lg-2 col-6 col-sm-3  my-3 content" key={index} onClick={() => {
 
                                     // setSelectedBrands((prev) => [...prev, ...brand.id])
                                     var brand_ids = [...filter.brand_ids];
 
-                                    if (brand_ids.includes(ctg.id)) {
-                                        brand_ids.splice(ctg.indexOf(ctg.id), 1);
+                                    if (brand_ids.includes(country.id)) {
+                                        brand_ids.splice(data.indexOf(country.id), 1);
                                     }
                                     else {
-                                        brand_ids.push(parseInt(ctg.id));
+                                        brand_ids.push(parseInt(country.id));
                                     }
 
                                     const sorted_brand_ids = sort_unique_brand_ids(brand_ids);
                                     dispatch(setFilterBrands({ data: sorted_brand_ids }));
-                                    // dispatch({ type: ActionTypes.SET_FILTER_BRANDS, payload: sorted_brand_ids });
                                     navigate('/products');
                                 }}>
 
                                     <div className='card'>
-                                        <img onError={placeHolderImage} className='card-img-top' src={ctg.image_url} alt='' loading='lazy' />
+                                        <img onError={placeHolderImage} className='card-img-top' src={country.logo} alt='countryLogo' loading='lazy' />
                                         <div className='card-body' style={{ cursor: "pointer" }} >
-                                            <p>{ctg.name} </p>
+                                            <p>{country.name} </p>
                                         </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
-
                     }
 
-                    {(limit < totalData) &&
-                        <Pagination
-                            activePage={currentPage}
-                            itemsCountPerPage={limit}
-                            totalItemsCount={totalData}
-                            pageRangeDisplayed={5}
-                            onChange={handlePageChange.bind(this)}
-                        />
-                    }
                 </div>
+                {limit < totalData &&
+                    <Pagination
+                        activePage={currentPage}
+                        itemsCountPerPage={limit}
+                        totalItemsCount={totalData}
+                        pageRangeDisplayed={5}
+                        onChange={handlePageChange.bind(this)}
+
+                    />
+                }
             </section>
         </>
-
     );
-
 };
 
-export default BrandList;
+export default ShopByCountriesPage;

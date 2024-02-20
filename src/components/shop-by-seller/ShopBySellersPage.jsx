@@ -1,48 +1,31 @@
-import '../category/category.css';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { setFilterBrands } from '../../model/reducer/productFilterReducer';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import coverImg from '../../utils/cover-img.jpg';
 import { useTranslation } from 'react-i18next';
-import { setFilterBrands } from "../../model/reducer/productFilterReducer";
-import Pagination from 'react-js-pagination';
+import coverImg from '../../utils/cover-img.jpg';
+import "../category/category.css";
+import useShopBySellers from '../../hooks/useShopBySellers';
 import Cookies from 'universal-cookie';
-import useShopByBrands from '../../hooks/useShopByBrands';
+import Pagination from 'react-js-pagination';
 import Skeleton from 'react-loading-skeleton';
 
-
-const BrandList = () => {
+const ShopBySellersPage = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { t } = useTranslation();
     const cookies = new Cookies();
 
-    const setting = useSelector(state => state.setting);
-    const filter = useSelector(state => state.productFilter);
-
-    const [limit, setLimit] = useState(12);
+    const [limit, setLimit] = useState(1);
     const [offset, setOffset] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const { data, totalData, loading } = useShopByBrands(cookies.get("jwt_token"), limit, offset);
-    console.log(data);
-    // const [brands, setBrands] = useState(null);
 
+    const setting = useSelector(state => state.setting);
+    const filter = useSelector(state => state.productFilter);
+    const city = useSelector(state => state.city.city);
 
-    // useEffect(() => {
-    //     api.getBrands().then(response => response.json()).then((response) => {
-    //         if (response.status) {
-    //             setBrands(response.data);
-    //         } else {
-    //             toast.error(response.message);
-    //         }
-    //     });
-    // }, []);
-
-    const placeHolderImage = (e) => {
-
-        e.target.src = setting.setting?.web_logo;
-    };
+    const { data, totalData, loading, error } = useShopBySellers(cookies.get("jwt_token"), city.latitude, city.longitude, limit, offset);
 
     const sort_unique_brand_ids = (int_brand_ids) => {
         if (int_brand_ids.length === 0) return int_brand_ids;
@@ -56,6 +39,19 @@ const BrandList = () => {
         return ret;
     };
 
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+        });
+
+    }, []);
+
+    const placeHolderImage = (e) => {
+        e.target.src = setting.setting?.web_logo;
+    };
+
+
     const handlePageChange = (pageNo) => {
         setCurrentPage(pageNo);
         setOffset(pageNo * limit - limit);
@@ -63,30 +59,29 @@ const BrandList = () => {
 
     const placeholderItems = Array.from({ length: 12 }).map((_, index) => index);
 
-
     return (
         <>
-
-            <section id='allcategories'  >
+            <section id='allcategories'>
                 <div className='cover'>
                     <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
                     <div className='page-heading'>
-                        <h5>{t("brands")}</h5>
-                        <p><Link to="/" className='text-light text-decoration-none'>{t("home")} /</Link> <span>{t("brands")}</span></p>
+                        <h5>{t("sellers")}</h5>
+                        <p><Link to="/" className='text-light text-decoration-none'>{t("home")} /</Link> <span>{t("sellers")}</span></p>
                     </div>
                 </div>
 
-                <div className='container' style={{ padding: "30px 0" }}>
+                <div className='container' style={{ padding: "30px 0px" }}>
                     {loading ?
                         <div className='row justify-content-center mx-3'>
                             {placeholderItems.map((index) => (
                                 <div key={index} className='col-md-3 col-lg-2 col-6 col-sm-3 my-3'>
                                     <Skeleton height={250} />
                                 </div>
-                            ))}
+                            ))
+                            }
                         </div>
                         :
-                        <div className='row justify-content-center mx-3'>
+                        <div className='row justify-content-center'>
                             {data?.map((ctg, index) => (
                                 <div className="col-md-3 col-lg-2 col-6 col-sm-3 my-3 content" key={index} onClick={() => {
 
@@ -107,7 +102,7 @@ const BrandList = () => {
                                 }}>
 
                                     <div className='card'>
-                                        <img onError={placeHolderImage} className='card-img-top' src={ctg.image_url} alt='' loading='lazy' />
+                                        <img onError={placeHolderImage} className='card-img-top' src={ctg.logo_url} alt='sellers' loading='lazy' />
                                         <div className='card-body' style={{ cursor: "pointer" }} >
                                             <p>{ctg.name} </p>
                                         </div>
@@ -118,21 +113,20 @@ const BrandList = () => {
 
                     }
 
-                    {(limit < totalData) &&
-                        <Pagination
-                            activePage={currentPage}
-                            itemsCountPerPage={limit}
-                            totalItemsCount={totalData}
-                            pageRangeDisplayed={5}
-                            onChange={handlePageChange.bind(this)}
-                        />
-                    }
                 </div>
             </section>
+
+            {(limit < totalData) &&
+                <Pagination
+                    activePage={currentPage}
+                    itemsCountPerPage={limit}
+                    totalItemsCount={totalData}
+                    pageRangeDisplayed={5}
+                    onChange={handlePageChange.bind(this)}
+                />
+            }
         </>
-
     );
-
 };
 
-export default BrandList;
+export default ShopBySellersPage;

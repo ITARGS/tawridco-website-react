@@ -68,13 +68,23 @@ const ShowAllCategories = () => {
     // }
   }, [category]);
 
-
+  useEffect(() => {
+    const handleBrowserBack = (e) => {
+      console.log(e);
+      console.log("Browser Back Button Clicked");
+    };
+    window.addEventListener("popstate", handleBrowserBack);
+    return () => {
+      window.removeEventListener("popstate", handleBrowserBack);
+    };
+  }, []);
   //categories and their product count map
   const [map, setMap] = useState(new Map());
 
   const selectCategory = (category) => {
     if (category.has_child) {
       fetchCategory(category.id);
+
       setShowbackButton(true);
     } else {
       dispatch(setFilterCategory({ data: category.id }));
@@ -145,9 +155,9 @@ const ShowAllCategories = () => {
             <div className='row justify-content-center'>
 
               {category.category.map((ctg, index) => (
-                <div className="col-md-4 col-lg-3 col-6  my-3 content" key={index} onClick={() => { setArr([...arr, ctg]); selectCategory(ctg); }}>
+                <div className="col-md-3 col-lg-2 col-6 col-sm-3 my-3 content" key={index} onClick={() => { setArr([...arr, ctg]); selectCategory(ctg); }}>
                   <div className='card'>
-                    <img onError={placeHolderImage} className='card-img-top' src={ctg.image_url} alt='' />
+                    <img onError={placeHolderImage} className='card-img-top' src={ctg.image_url} alt='allCategories' loading='lazy' />
                     <div className='card-body' style={{ cursor: "pointer" }}>
                       <p>
                         {ctg.name}

@@ -8,6 +8,8 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineArrowRight } from 'react-icons/ai';
 import Slider from 'react-slick';
 import { ActionTypes } from '../../model/action-type';
+import { setFilterBrands } from '../../model/reducer/productFilterReducer';
+
 
 const Brand = () => {
   const shop = useSelector(state => state.shop);
@@ -97,7 +99,7 @@ const Brand = () => {
           <Slider {...settings} ref={sliderRef}>
             {shop.shop?.brands?.map((ctg, index) => (
               <div className="my-3 content" key={index} onClick={() => {
-                dispatch({ type: ActionTypes.SET_FILTER_BRANDS, payload: ctg.id.toString() });
+                dispatch(setFilterBrands({ data: ctg.id.toString() }));
                 navigate('/products');
               }}>
 

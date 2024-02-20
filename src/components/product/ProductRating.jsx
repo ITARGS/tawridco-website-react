@@ -28,7 +28,7 @@ const ProductRating = ({ product_id }) => {
         setIsLoading(false);
     };
 
-    console.log(ratings, isRatingAvailable);
+    // console.log(ratings, isRatingAvailable);
 
 
     return (

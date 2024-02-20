@@ -105,7 +105,7 @@ const api = {
         return fetch(url, requestOptions);
 
     },
-    getShop(city_id, latitiude, longitude, token = "") {
+    getShop(latitiude, longitude, token = "") {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
@@ -116,7 +116,7 @@ const api = {
             headers: myHeaders,
             redirect: 'follow'
         };
-        var params = { city_id: city_id, latitude: latitiude, longitude: longitude };
+        var params = { latitude: latitiude, longitude: longitude };
         var url = new URL(appUrl + appSubUrl + "/shop");
         for (let k in params) {
             url.searchParams.append(k, params[k]);
@@ -899,6 +899,65 @@ const api = {
         };
 
         return fetch(appUrl + appSubUrl + "/products/rating/add", requestOptions);
+    },
+    getShopBySellers(token, latitude, longitude, limit, offset) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+        let params = {
+            latitude: latitude,
+            longitude: longitude,
+            limit: limit,
+            offset: offset
+        };
+        let url = new URL(appUrl + appSubUrl + "/sellers");
+        for (let p in params) {
+            url.searchParams.append(p, params[p]);
+        }
+        return fetch(url, requestOptions);
+    },
+    getShopByCountries(token, limit, offset) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+        let params = {
+            limit: limit,
+            offset: offset
+        };
+        let url = new URL(appUrl + appSubUrl + "/countries");
+        for (let p in params) {
+            url.searchParams.append(p, params[p]);
+        }
+        return fetch(url, requestOptions);
+    },
+    getShopByBrands(token, limit, offset) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+        let params = {
+            limit: limit,
+            offset: offset
+        };
+        let url = new URL(appUrl + appSubUrl + "/brands");
+        for (let p in params) {
+            url.searchParams.append(p, params[p]);
+        }
+        return fetch(url, requestOptions);
     }
 
 };

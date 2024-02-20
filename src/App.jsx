@@ -44,6 +44,9 @@ import { setCartPromo } from './model/reducer/cartReducer';
 import { setShop } from "./model/reducer/shopReducer";
 import CategoryChild from './components/category/CategoryChild';
 import "./components/location/location.css";
+import ShopByCountries from './components/shop-by-countries/ShopByCountries';
+import ShopByCountriesPage from './components/shop-by-countries/ShopByCountriesPage';
+import ShopBySellersPage from './components/shop-by-seller/ShopBySellersPage';
 
 
 
@@ -124,22 +127,21 @@ function App() {
   };
 
   useEffect(() => {
-    const fetchShop = (city_id, latitude, longitude) => {
-      api.getShop(city_id, latitude, longitude, cookies.get('jwt_token'))
+    const fetchShop = (latitude, longitude) => {
+      api.getShop(latitude, longitude, cookies.get('jwt_token'))
         .then(response => response.json())
         .then(result => {
           if (result.status === 1) {
             dispatch(setShop({ data: result.data }));
-            // dispatch({ type: ActionTypes.SET_SHOP, payload: result.data });
           }
         });
 
     };
     if (city.city !== null) {
-      fetchShop(city.city.id, city.city.latitude, city.city.longitude);
+      fetchShop(city.city.latitude, city.city.longitude);
     }
     else {
-      fetchShop(setting?.setting?.default_city_id, setting?.setting?.map_latitude, setting?.setting?.map_longitude);
+      fetchShop(setting?.setting?.map_latitude, setting?.setting?.map_longitude);
     }
   }, [city, cart, setting]);
 
@@ -238,12 +240,16 @@ function App() {
                         <Route exact={true} path='/policy/:policy_type' element={<Policy />}></Route>
                         <Route exact={true} path="" element={<MainContainer />}></Route>
                         <Route exact={true} path='/brands' element={<BrandList />} />
+                        <Route exact={true} path='/countries' element={<ShopByCountriesPage />} />
+                        <Route exact={true} path='/sellers' element={<ShopBySellersPage />} />
                       </>
                       :
                       <>
 
                         <Route exact={true} path='/categories' element={<ShowAllCategories />}></Route>
                         <Route exact={true} path='/brands' element={<BrandList />} />
+                        <Route exact={true} path='/countries' element={<ShopByCountriesPage />} />
+                        <Route exact={true} path='/sellers' element={<ShopBySellersPage />} />
                         {/* <Route exact={true} path='/products' element={<ProductList />}></Route> */}
                         <Route exact={true} path='/products' element={<ProductList2 />}></Route>
                         <Route exact={true} path='/product' element={<ProductDetails />}></Route>

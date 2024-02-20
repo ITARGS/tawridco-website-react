@@ -140,12 +140,12 @@
   color: var(--secondary-color);
 }
 
-#allcategories .content {
+/* #allcategories .content {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
-}
+} */
 
 #allcategories .content .card {
   border-radius: 8px;
