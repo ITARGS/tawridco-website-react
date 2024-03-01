@@ -1,12 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react'
-import './order.css'
-import api from '../../api/api'
+import React, { useEffect, useRef, useState } from 'react';
+import './order.css';
+import api from '../../api/api';
 import Cookies from 'universal-cookie';
 import { FaRupeeSign } from "react-icons/fa";
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import Loader from '../loader/Loader';
 import Pagination from 'react-js-pagination';
-import No_Orders from '../../utils/zero-state-screens/No_Orders.svg'
+import No_Orders from '../../utils/zero-state-screens/No_Orders.svg';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
@@ -20,71 +20,71 @@ const Order = () => {
 
 
     const [NoOrders, setNoOrders] = useState(false);
-    const [totalActiveOrders, setTotalActiveOrders] = useState(null)
-    const [totalPrevOrders, setTotalPrevOrders] = useState(null)
-    const [ActiveOrders, setActiveOrders] = useState([])
-    const [PrevOrders, setPrevOrders] = useState([])
-    const [offset, setoffset] = useState(0)
-    const [currPage, setcurrPage] = useState(1)
-    const [isLoader, setisLoader] = useState(false)
-    const [showTracker, setShowTracker] = useState(false)
+    const [totalActiveOrders, setTotalActiveOrders] = useState(null);
+    const [totalPrevOrders, setTotalPrevOrders] = useState(null);
+    const [ActiveOrders, setActiveOrders] = useState([]);
+    const [PrevOrders, setPrevOrders] = useState([]);
+    const [offset, setoffset] = useState(0);
+    const [currPage, setcurrPage] = useState(1);
+    const [isLoader, setisLoader] = useState(false);
+    const [showTracker, setShowTracker] = useState(false);
 
     //initialize Cookies
     const cookies = new Cookies();
     const componentRef = useRef();
     const total_orders_per_page = 10;
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
-    const setting = useSelector(state => state.setting)
-    const [orderId, setOrderId] = useState(null)
+    const setting = useSelector(state => state.setting);
+    const [orderId, setOrderId] = useState(null);
 
     const fetchOrders = async () => {
         await api.getOrders(cookies.get('jwt_token'), total_orders_per_page, offset)
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    setisLoader(false)
+                    setisLoader(false);
                     setActiveOrders(result.data);
-                    setTotalActiveOrders(result.total)
+                    setTotalActiveOrders(result.total);
                 }
                 else if (result.message === "No orders found") {
-                    setisLoader(false)
-                    setNoOrders(true)
+                    setisLoader(false);
+                    setNoOrders(true);
                 }
-            })
+            });
 
         await api.getOrders(cookies.get('jwt_token'), total_orders_per_page, offset, 0)
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    setisLoader(false)
+                    setisLoader(false);
                     setPrevOrders(result.data);
-                    setTotalPrevOrders(result.total)
+                    setTotalPrevOrders(result.total);
                 }
                 else if (result.message === "No orders found") {
-                    setisLoader(false)
-                    setNoOrders(true)
+                    setisLoader(false);
+                    setNoOrders(true);
                 }
-            })
-    }
+            });
+    };
 
     useEffect(() => {
-        setisLoader(true)
-        fetchOrders()
-    }, [offset])
+        setisLoader(true);
+        fetchOrders();
+    }, [offset]);
 
     //page change
     const handlePageChange = (pageNum) => {
         setcurrPage(pageNum);
-        setoffset(pageNum * total_orders_per_page - total_orders_per_page)
-    }
+        setoffset(pageNum * total_orders_per_page - total_orders_per_page);
+    };
 
 
     const getInvoice = async (Oid) => {
-        setisLoader(true)
-        let postData = new FormData()
-        postData.append('order_id', Oid)
+        setisLoader(true);
+        let postData = new FormData();
+        postData.append('order_id', Oid);
         axios({
             url: `${process.env.REACT_APP_API_URL}${process.env.REACT_APP_API_SUBURL}/invoice_download`,
             method: 'post',
@@ -103,7 +103,7 @@ const Order = () => {
             fileLink.setAttribute('download', 'Invoice-No:' + Oid + '.pdf');
             document.body.appendChild(fileLink);
             fileLink.click();
-            setisLoader(false)
+            setisLoader(false);
 
 
         }).catch(error => {
@@ -115,7 +115,7 @@ const Order = () => {
                 toast.error("Something went wrong!");
             }
         });
-    }
+    };
 
     const closeModalRef = useRef();
     const getOrderStatus = (pid) => {
@@ -128,33 +128,33 @@ const Order = () => {
             //     document.getElementById('mainContentTrack').innerHTML = html;
 
             // }
-            closeModalRef.current.click()
+            closeModalRef.current.click();
         }
-    }
+    };
     const [element, setElement] = useState({});
     const setHtml = (ID, status = 0) => {
 
         if (!status) {
-            
+
             ActiveOrders.map((obj, index) => {
                 if (obj.id === Number(ID)) {
-                    setElement(obj)
-                    
+                    setElement(obj);
+
                 }
-            })
-        }else {
+            });
+        } else {
             PrevOrders?.map((obj, index) => {
                 if (obj.id === Number(ID)) {
-                    setElement(obj)
-                    
+                    setElement(obj);
+
                 }
-            })
+            });
         }
-    }
+    };
     const handlePrint = () => {
         if (closeModalRef.current) {
             closeModalRef.current.click();
-            toast.success('Invoice Downloaded Successfully')
+            toast.success('Invoice Downloaded Successfully');
         }
     };
     const { t } = useTranslation();
@@ -214,10 +214,10 @@ const Order = () => {
                                                             <FaRupeeSign fontSize={'1.7rem'} /> {order.final_total}
                                                         </th>
                                                         <th className='button-container'>
-                                                            <button type='button' id={`track - ${order.order_id} `} data-bs-toggle="modal" data-bs-target="#trackModal" className='track' value={order.order_id} onClick={(e) => { setHtml(e.target.value); getOrderStatus(e.target.value) }}>{t("track_order")}</button>
+                                                            <button type='button' id={`track - ${order.order_id} `} data-bs-toggle="modal" data-bs-target="#trackModal" className='track' value={order.order_id} onClick={(e) => { setHtml(e.target.value); getOrderStatus(e.target.value); }}>{t("track_order")}</button>
                                                             {/* <button type='button' id={`invoice - ${order.order_id} `} className='Invoice' value={order.order_id} onClick={(e) => { setHtml(e.target.value); getInvoice(e.target.value) }}>{t("get_invoice")}</button> */}
                                                             <button onClick={() => {
-                                                                navigate(`${order.order_id}`)
+                                                                navigate(`${order.order_id}`);
                                                             }} className='Invoice'>{t('view_details')}</button>
                                                         </th>
                                                     </tr>
@@ -277,10 +277,10 @@ const Order = () => {
                                                             <FaRupeeSign fontSize={'1.7rem'} /> {order.final_total}
                                                         </th>
                                                         <th className='button-container'>
-                                                            <button type='button' id={`track - ${order.order_id} `} data-bs-toggle="modal" data-bs-target="#trackModal" className='track' value={order.order_id} onClick={(e) => { setHtml(e.target.value, 1); getOrderStatus(e.target.value) }}>{t("track_order")}</button>
+                                                            <button type='button' id={`track - ${order.order_id} `} data-bs-toggle="modal" data-bs-target="#trackModal" className='track' value={order.order_id} onClick={(e) => { setHtml(e.target.value, 1); getOrderStatus(e.target.value); }}>{t("track_order")}</button>
                                                             {/* <button type='button' id={`invoice - ${order.order_id} `} className='Invoice' value={order.order_id} onClick={(e) => { setHtml(e.target.value); getInvoice(e.target.value) }}>{t("get_invoice")}</button> */}
                                                             <button onClick={() => {
-                                                                navigate(`${order.order_id}`)
+                                                                navigate(`${order.order_id}`);
                                                             }} className='Invoice'>{t('view_details')}</button>
                                                         </th>
                                                     </tr>
@@ -326,7 +326,7 @@ const Order = () => {
                                             <div className="d-flex my-4 align-items-center">
                                                 <div className="col-sm-4 bg-white track-col"> <span className="rounded-circle px-3 pt-2 fs-2 track-order-icon btn " style={{ background: "var(--secondary-color-light)" }}><i className="bi bi-cart "></i></span></div>
                                                 <span className=""> {t("order_status_display_name_recieved")}</span>
-                                                <ProgressBar now={element && element.active_status === "2" ? 23 : element.active_status === "5" ? 77 : element.active_status === "4" ? 57 : element.active_status === "6" ? 100 : 0} />
+                                                <ProgressBar className='orderProgressBar' now={element && element.active_status === "2" ? 23 : element.active_status === "5" ? 77 : element.active_status === "4" ? 57 : element.active_status === "6" ? 100 : 0} />
                                             </div>
                                             {/* <div className="progress flex-column col-sm-3" role="progressbar" aria-label="Basic example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
 
@@ -361,7 +361,7 @@ const Order = () => {
             </div>
             <OrderTracker show={showTracker} setShow={setShowTracker} />
         </div>
-    )
-}
+    );
+};
 
-export default Order
+export default Order;

@@ -27,6 +27,7 @@ import 'react-loading-skeleton/dist/skeleton.css';
 import Popup from "../same-seller-popup/Popup";
 import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
 import { setFavourite } from '../../model/reducer/favouriteReducer';
+import { LuStar } from 'react-icons/lu';
 
 
 const ProductList2 = React.memo(() => {
@@ -227,7 +228,7 @@ const ProductList2 = React.memo(() => {
 
     const FilterProductByPrice = async (filter) => {
         setproductresult(null);
-        setisLoader(true);
+        // setisLoader(true);
         await api.getProductbyFilter(city?.city?.id, city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
             .then(response => response.json())
             .then(result => {
@@ -239,7 +240,7 @@ const ProductList2 = React.memo(() => {
                     setproductresult([]);
                     settotalProducts(0);
                 }
-                setisLoader(false);
+                // setisLoader(false);
             })
             .catch(error => console.log("error ", error));
     };
@@ -268,209 +269,6 @@ const ProductList2 = React.memo(() => {
 
         e.target.src = setting.setting?.web_logo;
     };
-
-
-    // const Filter = () => {
-    //     return (
-    //         <>
-    //             {/* filter section */}
-
-    //             {/* <div className=' filter-row'>
-    //                 <h2 className='product-filter-headline d-flex w-100 align-items-center justify-content-between'><span>{t("product_category")}</span> <span className='btn border-0' onClick={() => {
-
-    //                     dispatch(setFilterBrands({ data: [] }));
-    //                     dispatch(setFilterCategory({ data: null }));
-    //                     dispatch(setFilterSearch({ data: null }));
-    //                     dispatch(setFilterSection({ data: null }));
-    //                     dispatch(setFilterMinMaxPrice({ data: null }));
-
-    //                 }}>{t("clear_filters")}</span></h2>
-    //                 {category.status === 'loading'
-    //                     ? (
-    //                         <Loader />
-    //                     )
-    //                     : (
-    //                         <>
-    //                             {category.category.map((ctg, index) => (
-    //                                 <div whileTap={{ scale: 0.8 }} onClick={() => {
-    //                                     dispatch(setFilterSearch({ data: null }));
-    //                                     filterByCategory(ctg);
-    //                                     closeCanvas.current.click();
-    //                                 }} className={`d-flex justify-content-between align-items-center filter-bar ${filter.category_id !== null ? filter.category_id === ctg.id ? 'active' : null : null}`} key={index}>
-    //                                     <div className='d-flex gap-3'>
-    //                                         <div className='image-container'>
-    //                                             <img onError={placeHolderImage} src={ctg.image_url} alt="category"></img>
-
-    //                                         </div>
-    //                                         <p>{ctg.name}</p>
-    //                                     </div>
-
-
-    //                                     <BsPlusCircle />
-    //                                 </div>
-    //                             ))}
-    //                         </>
-    //                     )}
-    //             </div> */}
-    //             {/* 
-    //             <div className=' filter-row'>
-    //                 <h2 className='product-filter-headline d-flex w-100 align-items-center justify-content-between'><span>{t("product_category")}</span> </h2>
-    //             </div> */}
-    //             <div className='filter-row'>
-    //                 <h5 className='product-filter-headline d-flex w-100 align-items-center justify-content-between'>{t("brand")}
-    //                     <span className='btn border-0' onClick={() => {
-
-    //                         dispatch(setFilterBrands({ data: [] }));
-    //                         dispatch(setFilterCategory({ data: null }));
-    //                         dispatch(setFilterSearch({ data: null }));
-    //                         dispatch(setFilterSection({ data: null }));
-    //                         dispatch(setFilterMinMaxPrice({ data: null }));
-    //                         dispatch(setFilterProductSizes({ data: [] }));
-
-    //                     }}>{t("clear_filters")}</span></h5>
-    //                 {brands === null
-    //                     ? (
-    //                         <Loader />
-
-    //                     )
-    //                     : (
-    //                         <>
-    //                             {brands.map((brand, index) => (
-    //                                 <div whileTap={{ scale: 0.8 }} onClick={() => {
-    //                                     filterbyBrands(brand);
-    //                                     closeCanvas.current.click();
-    //                                 }} className={`d-flex justify-content-between align-items-center filter-bar ${filter.brand_ids?.length != 0 ? filter.brand_ids.includes(brand.id) ? 'active' : null : null}`} key={index} >
-    //                                     <div className='d-flex gap-3 align-items-baseline'>
-    //                                         <div className='image-container'>
-    //                                             <img onError={placeHolderImage} src={brand.image_url} alt="category"></img>
-    //                                         </div>
-    //                                         <p>{brand.name}</p>
-    //                                     </div>
-    //                                 </div>
-    //                             ))}
-    //                         </>
-    //                     )}
-    //             </div>
-
-    //             <div className='filter-row '>
-    //                 <h5>{t("filter")} {t("by_price")}</h5>
-    //                 {/* {minmaxTotalPrice.total_min_price === null || minmaxTotalPrice.total_max_price === null || minmaxTotalPrice.min_price === null || minmaxTotalPrice.max_price === null */
-    //                     (minPrice === null || maxPrice === null)
-    //                         ? (
-    //                             <Loader />
-    //                         )
-    //                         : (
-    //                             <div
-    //                                 className='slider'
-    //                             >
-    //                                 <Range
-    //                                     draggableTrack
-    //                                     values={values}
-    //                                     step={1}
-    //                                     min={minPrice}
-    //                                     max={maxPrice}
-    //                                     onChange={(newValues) => {
-    //                                         setValues(newValues);
-    //                                     }}
-    //                                     i18nIsDynamicList
-    //                                     onFinalChange={(newValues) => {
-    //                                         // console.log(newValues);
-
-    //                                         dispatch(setFilterMinMaxPrice({ data: { min_price: newValues[0], max_price: newValues[1] } }));
-    //                                     }}
-    //                                     renderTrack={({ props, children }) => (
-    //                                         <div
-    //                                             className='track'
-    //                                             onMouseDown={props.onMouseDown}
-    //                                             onTouchStart={props.onTouchStart}
-    //                                             style={{
-    //                                                 ...props.style,
-    //                                                 height: '36px',
-    //                                                 display: 'flex',
-    //                                                 width: '100%',
-    //                                             }}
-    //                                         >
-    //                                             <div
-    //                                                 ref={props.ref}
-    //                                                 style={{
-    //                                                     height: '5px',
-    //                                                     width: '100%',
-    //                                                     borderRadius: '4px',
-    //                                                     background: getTrackBackground({
-    //                                                         values,
-    //                                                         colors: ['white', '#51BD88', 'white'],
-    //                                                         min: minPrice,
-    //                                                         max: maxPrice,
-
-    //                                                     }),
-    //                                                     alignSelf: 'center',
-    //                                                 }}
-    //                                                 className='track-1'
-    //                                             >
-    //                                                 {children}
-    //                                             </div>
-    //                                         </div>
-    //                                     )}
-    //                                     renderThumb={({ props, isDragged }) => (
-    //                                         <div
-    //                                             {...props}
-    //                                             className='thumb'
-    //                                             tabIndex={0}
-    //                                             onKeyDown={(e) => {
-    //                                                 // Handle keyboard events here
-    //                                                 if (e.key === 'ArrowLeft') {
-    //                                                     // setMaxPrice(maxPrice - 1);
-    //                                                     setValues([values[0] - 1, values[1]]);
-    //                                                 } else if (e.key === 'ArrowRight') {
-    //                                                     // setMinPrice(minPrice + 1);
-    //                                                     setValues([values[0] + 1, values[1]]);
-    //                                                 }
-    //                                             }}
-    //                                         >   {props['aria-valuenow']}
-
-    //                                         </div>
-    //                                     )}
-    //                                 />
-    //                             </div>
-    //                         )}
-
-    //             </div>
-
-    //             <div className='filter-row overflow-auto' style={{ height: "456px" }}>
-    //                 <h5>{t("Filter By Sizes")}</h5>
-    //                 {sizes === null
-    //                     ? (
-    //                         <Loader />
-
-    //                     )
-    //                     : (
-    //                         <>
-    //                             {sizes.map((size, index) => (
-    //                                 <div whileTap={{ scale: 0.8 }} onClick={() => {
-    //                                     dispatch(setFilterProductSizes({ data: [...filter?.search_sizes, { "size": size.size.toString(), "checked": true }] }));
-    //                                     closeCanvas.current.click();
-    //                                 }} className={`d-flex justify-content-between align-items-center filter-bar`} key={index} >
-    //                                     <div className='d-flex gap-3 align-items-baseline'>
-    //                                         <p className='d-inline-flex justify-content-center'>{size.size} {size.short_code}</p>
-    //                                     </div>
-    //                                     <div className='d-flex justify-content-center'>
-    //                                         <input type='checkbox'
-    //                                             className='d-inline-flex justify-self-end'
-    //                                             checked={filter?.search_sizes?.find((value) => { return value["size"] === size.size.toString(); }) ? true : false}
-    //                                             onClick={() => {
-    //                                                 filter?.search_sizes.filter(value => value["size"] !== size.size);
-    //                                             }}
-    //                                         />
-    //                                     </div>
-    //                                     {console.log(filter?.search_sizes?.find((value) => value["size"] === size.size))}
-    //                                 </div>
-    //                             ))}
-    //                         </>
-    //                     )}
-    //             </div>
-    //         </>
-    //     );
-    // };
 
     const handleCheckboxToggle = (size) => {
         const updatedSizes = filter.search_sizes.map(obj =>
@@ -647,7 +445,7 @@ const ProductList2 = React.memo(() => {
         setP_id(product_id);
         setP_V_id(product_variant_id);
         setQnty(qty);
-        setisLoader(true);
+        // setisLoader(true);
         // console.log("addtoCart ProductsList Called");
         await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
             .then(response => response.json())
@@ -660,6 +458,26 @@ const ProductList2 = React.memo(() => {
                             //console.log(res);
                             if (res.status === 1) {
                                 setShowModal(false);
+                                // console.log(res);
+                                // const updatedProduct = productresult.map((product) => {
+                                //     if (product.id === product_id) {
+                                //         return {
+                                //             ...product,
+                                //             variants: product.variants.map((variant) => {
+                                //                 if (variant.id === product_variant_id) {
+                                //                     return {
+                                //                         ...variant,
+                                //                         cart_count: qty, // Increment cart_count by 1
+                                //                     };
+                                //                 }
+                                //                 return variant;
+                                //             }),
+                                //         };
+                                //     }
+                                //     return product;
+                                // });
+                                // setproductresult(updatedProduct);
+                                // console.log(productresult.find((product) => product.id == product_id).variants.find((variant) => variant.id == product_variant_id));
                                 dispatch(setCart({ data: res }));
                                 setP_id(product_id);
                                 setP_V_id(product_variant_id);
@@ -675,7 +493,7 @@ const ProductList2 = React.memo(() => {
                 } else {
                     toast.error(result.message);
                 }
-                setisLoader(false);
+                // setisLoader(false);
             });
     };
 
@@ -1000,13 +818,22 @@ const ProductList2 = React.memo(() => {
 
 
                                                                         <div className="card-body product-card-body p-3" >
-
+                                                                            {console.log(product)}
+                                                                            <div>
+                                                                                <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                <LuStar className='me-3' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                {product.average_rating}
+                                                                            </div>
                                                                             <h3 onClick={(e) => {
                                                                                 e.preventDefault();
                                                                                 dispatch(setSelectedProduct({ data: product.id }));
                                                                                 setSelectedProductId(product.id);
                                                                                 navigate('/product');
-                                                                            }} >{product.name}</h3>
+                                                                            }} >{product.name}
+                                                                            </h3>
                                                                             <div className='price'>
                                                                                 {filter.grid_view ? <>
                                                                                     <span id={`price${index}-section`} className="d-flex align-items-center"><p id={`fa-rupee${index}`}>{setting.setting && setting.setting.currency}</p> {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}</span>
@@ -1228,7 +1055,7 @@ const ProductList2 = React.memo(() => {
 
                 </div>
 
-            </section>
+            </section >
         </>
 
     );

@@ -1,10 +1,11 @@
-import React from 'react'
-import './offer.css'
-import Slider from 'react-slick'
-import { useSelector } from 'react-redux'
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa'
-import { useTranslation } from 'react-i18next'
-
+import React from 'react';
+import './offer.css';
+import Slider from 'react-slick';
+import { useDispatch, useSelector } from 'react-redux';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+import { setFilterCategory } from "../../model/reducer/productFilterReducer";
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -12,7 +13,8 @@ const Offers = () => {
 
     const shop = useSelector(state => state.shop);
     const setting = useSelector(state => state.setting);
-    
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { t } = useTranslation();
 
     const settings = {
@@ -60,10 +62,10 @@ const Offers = () => {
             }
         ]
     };
-    const placeHolderImage = (e) =>{
-        
-        e.target.src = setting.setting?.web_logo
-    }
+    const placeHolderImage = (e) => {
+
+        e.target.src = setting.setting?.web_logo;
+    };
     return (
         <>
             {shop.shop.offers.length === 0
@@ -83,10 +85,19 @@ const Offers = () => {
 
                                         <Slider {...settings}>
                                             {shop.shop.offers.map((offer, index) => (
-                                                <div key={index} >
+                                                <div key={`${offer?.category?.id}-${offer?.product?.slug}-${offer?.offer_url}`} onClick={() => {
+                                                    if (offer?.category) {
+                                                        dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
+                                                        navigate("/products");
+                                                    } else if (offer?.product) {
+                                                        navigate(`/product/${offer.product.slug}`);
+                                                    } else if (offer?.offer_url) {
+                                                        window.open(offer?.offer_url, "_blank");
+                                                    }
+                                                }} className={`${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`}>
                                                     <div className="offer-container-body p-2 col-3'">
 
-                                                        <img  onError={placeHolderImage} src={offer.image_url} alt="offers" />
+                                                        <img onError={placeHolderImage} src={offer.image_url} alt="offers" />
                                                         {/* <button type='button'>shop now <AiOutlineArrowRight fill="#fff" /></button> */}
                                                     </div>
                                                 </div>
@@ -102,7 +113,7 @@ const Offers = () => {
                     </>
                 )}
         </>
-    )
-}
+    );
+};
 
-export default Offers
+export default Offers;

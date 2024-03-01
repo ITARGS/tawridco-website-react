@@ -878,7 +878,7 @@ const api = {
         return fetch(url, requestOptions);
     },
     addProductRating(token, product_id, rate, review, images) {
-        console.log(product_id, rate, review, images);
+        // console.log(product_id, rate, review, images);
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
@@ -899,6 +899,42 @@ const api = {
         };
 
         return fetch(appUrl + appSubUrl + "/products/rating/add", requestOptions);
+    }, getProductRatingById(token, ratingId) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+        var data = new FormData();
+        data.append("id", ratingId);
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            redirect: 'follow',
+            body: data
+        };
+
+        return fetch(appUrl + appSubUrl + "/products/rating/edit", requestOptions);
+    },
+    updateProductRating(token, ratingId, rate, review, images, deleteImageIds) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+        var data = new FormData();
+        data.append("id", ratingId);
+        data.append("rate", rate);
+        data.append("review", review);
+        data.append("deleteImageIds", deleteImageIds);
+        for (let i = 0; i < images.length; i++) {
+            data.append(`image[${i}]`, images[i]);
+        }
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            redirect: 'follow',
+            body: data
+        };
+
+        return fetch(appUrl + appSubUrl + "/products/rating/update", requestOptions);
     },
     getShopBySellers(token, latitude, longitude, limit, offset) {
         var myHeaders = new Headers();

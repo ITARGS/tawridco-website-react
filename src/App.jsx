@@ -43,10 +43,11 @@ import { setSetting } from './model/reducer/settingReducer';
 import { setCartPromo } from './model/reducer/cartReducer';
 import { setShop } from "./model/reducer/shopReducer";
 import CategoryChild from './components/category/CategoryChild';
-import "./components/location/location.css";
+// import "./components/location/location.css";
 import ShopByCountries from './components/shop-by-countries/ShopByCountries';
 import ShopByCountriesPage from './components/shop-by-countries/ShopByCountriesPage';
 import ShopBySellersPage from './components/shop-by-seller/ShopBySellersPage';
+import AllRatingsAndReviews from './components/product/AllRatingsAndReviews';
 
 
 
@@ -233,6 +234,7 @@ function App() {
                         <Route exact={true} path='/products' element={<ProductList2 />}></Route>
                         <Route exact={true} path='/product' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
+                        <Route exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} ></Route>
                         <Route exact={true} path='/about' element={<About />}></Route>
                         <Route exact={true} path='/contact' element={<Contact />}></Route>
                         <Route exact={true} path='/faq' element={<FAQ />}></Route>
@@ -254,6 +256,7 @@ function App() {
                         <Route exact={true} path='/products' element={<ProductList2 />}></Route>
                         <Route exact={true} path='/product' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
+                        <Route exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} ></Route>
                         <Route exact={true} path='/about' element={<About />}></Route>
                         <Route exact={true} path='/contact' element={<Contact />}></Route>
                         <Route exact={true} path='/faq' element={<FAQ />}></Route>

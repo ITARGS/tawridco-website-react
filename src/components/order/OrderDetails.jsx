@@ -9,16 +9,27 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import RateProductModal from '../rate-product/RateProductModal';
 import axios from 'axios';
+import RateProductStar from "../../utils/stars.svg";
+import { LuStar } from "react-icons/lu";
+import UpdateRatingModal from '../rate-product/UpdateRatingModal';
+
+
+
 
 const OrderDetails = React.memo(() => {
     const { t } = useTranslation();
 
     const setting = useSelector(state => state.setting);
+    const user = useSelector(state => state?.user?.user);
+    // console.log(user);
 
     const [orderData, setOrderData] = useState(null);
     const [orderStatus, setOrderStatus] = useState(t("recieved"));
     const [showPdtRatingModal, setShowPdtRatingModal] = useState(false);
     const [ratingProductId, setRatingProductId] = useState(0);
+    const [editRatingId, setEditRatingId] = useState(0);
+    const [showRatingEditModal, setShowRatingEditModal] = useState(false);
+
     const urlParams = useParams();
 
     useEffect(() => {
@@ -61,7 +72,7 @@ const OrderDetails = React.memo(() => {
     useEffect(() => {
         fetchOrderDetails();
         // console.log(orderData, 'orderDaraaa')
-    }, []);
+    }, [editRatingId]);
 
 
     const getInvoice = async (Oid) => {
@@ -150,6 +161,7 @@ const OrderDetails = React.memo(() => {
                                                 <tbody>
                                                     {/* console.log(item, 'orderItem'); */}
                                                     {orderData?.items?.map((item, index) => {
+                                                        console.log(item);
                                                         return (
                                                             <>
                                                                 <tr key={index} className={Number(item?.active_status) > 6 ? 'disabled' : ''}>
@@ -239,10 +251,31 @@ const OrderDetails = React.memo(() => {
 
                                                                     </td>
                                                                     <td>
-                                                                        <button className='rateProductText' onClick={() => {
-                                                                            setRatingProductId(item.product_id);
-                                                                            setShowPdtRatingModal(true);
-                                                                        }}>Rate</button>
+                                                                        <div className='rateProductText' >
+                                                                            {item.item_rating.find((rating) => rating.user.id === user.id) ?
+                                                                                <div className='pb-4' onClick={() => {
+                                                                                    setRatingProductId(item.product_id);
+                                                                                    setShowRatingEditModal(true);
+                                                                                    setEditRatingId(item.item_rating.find((rating) => rating.user.id === user.id)?.id);
+                                                                                }}>
+                                                                                    <span className='me-2' >
+                                                                                        {t("you_rated")}
+                                                                                    </span>
+                                                                                    <span className="userRatedStarContainer">
+                                                                                        <LuStar fill='white' stroke='white' />
+                                                                                        {item?.item_rating?.find((rating) => rating?.user?.id === user?.id)?.rate}
+                                                                                    </span>
+                                                                                </div>
+                                                                                :
+                                                                                <div onClick={() => {
+                                                                                    setRatingProductId(item.product_id);
+                                                                                    setShowPdtRatingModal(true);
+                                                                                }}>
+                                                                                    <img className='me-2' src={RateProductStar} alt='rateProductStar' />
+                                                                                    {t("review_and_rating")}
+                                                                                </div>
+                                                                            }
+                                                                        </div>
                                                                     </td>
                                                                 </tr>
                                                             </>
@@ -401,6 +434,7 @@ const OrderDetails = React.memo(() => {
                     </div>
                 </div>
                 <RateProductModal product_id={ratingProductId} showPdtRatingModal={showPdtRatingModal} setShowPdtRatingModal={setShowPdtRatingModal} />
+                <UpdateRatingModal product_id={ratingProductId} showModal={showRatingEditModal} setShowModal={setShowRatingEditModal} ratingId={editRatingId} />
             </section>
         </>
     );

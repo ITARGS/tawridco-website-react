@@ -20,7 +20,7 @@ const Slider = () => {
     const dispatch = useDispatch();
 
     const language = useSelector((state) => (state.language));
-    
+
     const handleImageUrl = (slide) => {
         switch (slide.type) {
             case "default":
@@ -91,7 +91,7 @@ const Slider = () => {
                                     key={language.current_language && language.current_language.type}
                                 >
 
-                                    {shop.shop.sliders.map((sld, index) => {
+                                    {shop?.shop?.sliders?.map((sld, index) => {
                                         return (
 
                                             <SwiperSlide key={index} >

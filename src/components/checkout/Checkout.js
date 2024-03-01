@@ -533,7 +533,7 @@ const Checkout = () => {
                             await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Paypal")
                                 .then(resp => resp.json())
                                 .then(res => {
-                                    console.log(res.data)
+                                    console.log(res.data);
                                     // console.log(res.data.paypal_redirect_url)
                                     setisLoader(false);
 

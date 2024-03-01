@@ -456,9 +456,9 @@ const Header = () => {
                                 </div> */}
 
                                 <div className='language-container bg-white' >
-                                    <MdGTranslate size={24} />
                                     <Dropdown>
                                         <Dropdown.Toggle>
+                                            <MdGTranslate size={20} className='me-2' />
                                             {languages.current_language && languages.current_language.name}
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu>

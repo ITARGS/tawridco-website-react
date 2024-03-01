@@ -60,9 +60,12 @@ const WalletTransaction = () => {
     const { t } = useTranslation();
     return (
 
-        <div className='transaction-list'>
-            <div className='heading'>
+        <div className='transaction-list pe-5'>
+            <div className='heading d-flex justify-content-between'>
                 {t("wallet_transactions")}
+                <div>
+                    <button className='addMoneyBtn'>{t("add_money")}</button>
+                </div>
             </div>
             {transactions === null
                 ? (
