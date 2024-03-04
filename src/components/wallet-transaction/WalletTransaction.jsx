@@ -8,6 +8,9 @@ import Pagination from 'react-js-pagination';
 import No_Transactions from '../../utils/zero-state-screens/No_Transaction.svg';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
+import { PiWallet } from 'react-icons/pi';
+import AddWalletModal from './AddWalletModal';
+import { Elements } from '@stripe/react-stripe-js';
 
 
 const WalletTransaction = () => {
@@ -25,7 +28,7 @@ const WalletTransaction = () => {
     const [offset, setoffset] = useState(0);
     const [currPage, setcurrPage] = useState(1);
     const [isLoader, setisLoader] = useState(false);
-
+    const [addWalletModal, setAddWalletModal] = useState(false);
 
     const fetchTransactions = () => {
         api.getTransactions(cookies.get('jwt_token'), total_transactions_per_page, offset, type)
@@ -50,7 +53,7 @@ const WalletTransaction = () => {
         fetchTransactions();
         // eslint-disable-next-line
 
-    }, [offset]);
+    }, [offset, addWalletModal]);
 
     //page change
     const handlePageChange = (pageNum) => {
@@ -61,10 +64,15 @@ const WalletTransaction = () => {
     return (
 
         <div className='transaction-list pe-5'>
-            <div className='heading d-flex justify-content-between'>
+            <div className='heading d-flex justify-content-between align-items-center'>
                 {t("wallet_transactions")}
                 <div>
-                    <button className='addMoneyBtn'>{t("add_money")}</button>
+                    <button type='button' className='addMoneyBtn'
+                        onClick={() => setAddWalletModal(true)}
+                    >
+                        <PiWallet className='me-2' fill='white' />
+                        {t("add_money")}
+                    </button>
                 </div>
             </div>
             {transactions === null
@@ -140,7 +148,7 @@ const WalletTransaction = () => {
                                 onChange={handlePageChange.bind(this)}
                             />
                             : null}
-
+                        <AddWalletModal showModal={addWalletModal} setShowModal={setAddWalletModal} />
                     </>
 
                 )}

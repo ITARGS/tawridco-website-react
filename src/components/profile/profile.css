@@ -145,7 +145,15 @@
   padding: 15px;
   border-radius: 5px;
 }
-
+#profile .table-content .addMoneyBtn {
+  background-color: var(--secondary-color);
+  padding: 6px 12px;
+  border-radius: 4px;
+  color: var(--bs-white);
+}
+#profile .table-content .addMoneyBtn:hover {
+  cursor: pointer;
+}
 #profile .table-content .actual-content {
   padding-top: 20px;
   background: #fff;

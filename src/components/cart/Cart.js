@@ -73,7 +73,7 @@ const Cart = () => {
 
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
-        setisLoader(true);
+        // setisLoader(true);
         await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {

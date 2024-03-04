@@ -20,7 +20,6 @@ const UpdateRatingModal = (props) => {
   const [newFiles, setNewFiles] = useState([]);
   const [deletedImageIds, setDeletedImageIds] = useState([]);
   const { rating, error, loading } = useGetRatingById(cookies.get("jwt_token"), props.ratingId);
-  console.log(rating);
 
   useMemo(() => {
     setReview(rating?.review);
@@ -52,7 +51,7 @@ const UpdateRatingModal = (props) => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(deletedImageIds);
+    // console.log(deletedImageIds);
     try {
       const response = await api.updateProductRating(cookies.get("jwt_token"), props?.ratingId, activeIndex, review, newFiles, deletedImageIds?.join(","));
       const result = await response.json();
@@ -65,6 +64,7 @@ const UpdateRatingModal = (props) => {
       setActiveIndex(null);
       setReview("");
       setNewFiles([]);
+      setDeletedImageIds([]);
     } catch (err) {
       toast.error(err.message);
 
@@ -135,7 +135,6 @@ const UpdateRatingModal = (props) => {
             <div className="container mt-3">
               <p className="modalSubHeading">{t("add_photos")}:</p>
               <div className="d-flex flex-row flex-wrap justify-content-start">
-                {console.log(files)}
                 {files?.map((image) => (
                   <div div key={image?.id} className="uploadedImagesContainer">
                     <img className="uploadedImages" src={image?.image_url} alt="uploadedImage" loading="lazy" />

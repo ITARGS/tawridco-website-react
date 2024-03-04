@@ -116,7 +116,7 @@ const OrderDetails = React.memo(() => {
             .then((response) => {
                 if (response.status) {
                     response.data && setOrderData(response.data);
-                    console.log(response.data, "update_order_status");
+                    // console.log(response.data, "update_order_status");
                     toast.success(response.message);
                 }
 
@@ -159,9 +159,7 @@ const OrderDetails = React.memo(() => {
                                                     {/* <th>{t('action')}</th> */}
                                                 </thead>
                                                 <tbody>
-                                                    {/* console.log(item, 'orderItem'); */}
                                                     {orderData?.items?.map((item, index) => {
-                                                        console.log(item);
                                                         return (
                                                             <>
                                                                 <tr key={index} className={Number(item?.active_status) > 6 ? 'disabled' : ''}>
@@ -267,7 +265,7 @@ const OrderDetails = React.memo(() => {
                                                                                     </span>
                                                                                 </div>
                                                                                 :
-                                                                                <div onClick={() => {
+                                                                                <div className='rateProductText' onClick={() => {
                                                                                     setRatingProductId(item.product_id);
                                                                                     setShowPdtRatingModal(true);
                                                                                 }}>

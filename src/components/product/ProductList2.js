@@ -110,7 +110,6 @@ const ProductList2 = React.memo(() => {
     };
 
     const filterProductsFromApi = async (filter) => {
-        setproductresult(null);
         setisLoader(true);
         await api.getProductbyFilter(city?.city?.id, city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
             .then(response => response.json())
@@ -223,11 +222,10 @@ const ProductList2 = React.memo(() => {
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [productresult]);
+    }, []);
 
 
     const FilterProductByPrice = async (filter) => {
-        setproductresult(null);
         // setisLoader(true);
         await api.getProductbyFilter(city?.city?.id, city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
             .then(response => response.json())
@@ -458,7 +456,6 @@ const ProductList2 = React.memo(() => {
                             //console.log(res);
                             if (res.status === 1) {
                                 setShowModal(false);
-                                // console.log(res);
                                 // const updatedProduct = productresult.map((product) => {
                                 //     if (product.id === product_id) {
                                 //         return {
@@ -476,8 +473,6 @@ const ProductList2 = React.memo(() => {
                                 //     }
                                 //     return product;
                                 // });
-                                // setproductresult(updatedProduct);
-                                // console.log(productresult.find((product) => product.id == product_id).variants.find((variant) => variant.id == product_variant_id));
                                 dispatch(setCart({ data: res }));
                                 setP_id(product_id);
                                 setP_V_id(product_variant_id);
@@ -818,14 +813,13 @@ const ProductList2 = React.memo(() => {
 
 
                                                                         <div className="card-body product-card-body p-3" >
-                                                                            {console.log(product)}
                                                                             <div>
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-3' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                {product.average_rating}
+                                                                                {product.average_rating.toFixed(2)}
                                                                             </div>
                                                                             <h3 onClick={(e) => {
                                                                                 e.preventDefault();

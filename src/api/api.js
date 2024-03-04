@@ -663,14 +663,22 @@ const api = {
 
         return fetch(appUrl + appSubUrl + "/invoice_download", requestOptions);
     },
-    addTransaction(token, order_id, transaction_id, transaction_method) {
+    addTransaction(token, order_id, transaction_id, transaction_method, type, wallet_amount) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append('Authorization', token_prefix + token);
         var formData = new FormData();
-        formData.append('order_id', order_id);
+        if (order_id) {
+            formData.append('order_id', order_id);
+        }
         formData.append('transaction_id', transaction_id);
         formData.append('payment_method', transaction_method);
+        if (type) {
+            formData.append("type", type);
+        }
+        if (wallet_amount) {
+            formData.append("wallet_amount", wallet_amount);
+        }
         formData.append('device_type', 'web');
         formData.append('app_version', '1.0');
 
@@ -683,12 +691,20 @@ const api = {
         return fetch(appUrl + appSubUrl + "/add_transaction", requestOptions);
 
     },
-    initiate_transaction(token, order_id, payment_method) {
+    initiate_transaction(token, order_id, payment_method, type, wallet_amount) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append('Authorization', token_prefix + token);
         var formData = new FormData();
-        formData.append('order_id', order_id);
+        if (order_id) {
+            formData.append('order_id', order_id);
+        }
+        if (type) {
+            formData.append("type", type);
+        }
+        if (wallet_amount) {
+            formData.append("wallet_amount", wallet_amount);
+        }
         if (payment_method.toLocaleLowerCase() === 'razorpay') {
             formData.append("payment_method", "Razorpay");
         }

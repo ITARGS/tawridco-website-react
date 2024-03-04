@@ -274,5 +274,9 @@
   "submit_review": "Submit Review",
   "you_rated": "You Rated",
   "fileUploadError": "Only Files with extension .jpg, .png and .jpeg are allowed",
-  "add_money": "Add Money"
+  "add_money": "Add Money",
+  "add_to_wallet": "Add money to your Wallet",
+  "choose_payment_method": "Choose Payment Method",
+  "type_amount": "Type Amount",
+  "paypal": "Paypal"
 }

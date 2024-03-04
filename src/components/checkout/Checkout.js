@@ -431,7 +431,7 @@ const Checkout = () => {
 
                         // fetchOrders();
                         if (result.status === 1) {
-                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Razorpay")
+                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Razorpay", "order")
                                 .then(resp => resp.json())
                                 .then(res => {
                                     setisLoader(false);
@@ -490,7 +490,7 @@ const Checkout = () => {
                         if (result.status === 1) {
 
 
-                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, 'Stripe')
+                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, 'Stripe', "order")
                                 .then(resp => resp.json())
                                 .then(res => {
                                     if (res.status) {
@@ -530,7 +530,7 @@ const Checkout = () => {
                         // fetchOrders();
                         if (result.status === 1) {
                             setOrderID(result.data.order_id);
-                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Paypal")
+                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Paypal", "order")
                                 .then(resp => resp.json())
                                 .then(res => {
                                     console.log(res.data);
