@@ -19,9 +19,8 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { Range, getTrackBackground } from 'react-range';
 import { setCategory } from '../../model/reducer/categoryReducer';
-import { setFilterBrands, setFilterCategory, setFilterMinMaxPrice, setFilterProductSizes, setFilterSearch, setFilterSection, setFilterSort } from '../../model/reducer/productFilterReducer';
+import { setFilterBrands, setFilterByCountry, setFilterBySeller, setFilterCategory, setFilterMinMaxPrice, setFilterProductSizes, setFilterSearch, setFilterSection, setFilterSort } from '../../model/reducer/productFilterReducer';
 import { setSelectedProduct } from '../../model/reducer/selectedProduct';
-// import { setProductSizes } from '../../model/reducer/productSizesReducer';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Popup from "../same-seller-popup/Popup";
@@ -201,6 +200,8 @@ const ProductList2 = React.memo(() => {
                 sizes: filter?.search_sizes.filter(obj => obj.checked).map(obj => obj["size"]).join(","),
                 offset: offset,
                 unit_ids: filter?.search_sizes.filter(obj => obj.checked).map(obj => obj["unit_id"]).join(","),
+                seller_slug: filter?.seller_slug,
+                country_id: filter?.country_id
             });
 
     }, [filter.search, filter.category_id, filter.brand_ids, filter.sort_filter, filter?.search_sizes]);
@@ -217,6 +218,8 @@ const ProductList2 = React.memo(() => {
             limit: total_products_per_page,
             offset: offset,
             unit_ids: filter?.search_sizes.filter(obj => obj.checked).map(obj => obj["unit_id"]).join(","),
+            seller_slug: filter?.seller_slug,
+            country_id: filter?.country_id
         });
     }, [filter?.price_filter, offset, cart?.cart]);
 
@@ -297,6 +300,8 @@ const ProductList2 = React.memo(() => {
                             dispatch(setFilterMinMaxPrice({ data: null }));
                             dispatch(setFilterProductSizes({ data: [] }));
                             dispatch(setFilterSort({ data: "new" }));
+                            dispatch(setFilterBySeller({ data: "" }));
+                            dispatch(setFilterByCountry({ data: "" }));
                         }}>{t("clear_filters")}</span></h5>
                     {brands === null
                         ? (

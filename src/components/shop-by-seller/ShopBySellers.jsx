@@ -5,6 +5,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
+import { setFilterBySeller } from '../../model/reducer/productFilterReducer';
 
 const ShopBySellers = () => {
     const navigate = useNavigate();
@@ -90,16 +91,17 @@ const ShopBySellers = () => {
                 </div>
                 <div className='row justify-content-center home' id='allcategories'>
                     <Slider {...settings} ref={sliderRef}>
-                        {shop.shop?.sellers?.map((ctg, index) => (
+                        {shop.shop?.sellers?.map((seller, index) => (
                             <div className="my-3 content" key={index} onClick={() => {
+                                dispatch(setFilterBySeller({ data: seller?.store_name }));
                                 navigate('/products');
                             }}>
 
 
                                 <div className='card'>
-                                    <img onError={placeHolderImage} className='card-img-top' src={ctg.logo_url} alt='country' loading='lazy' />
+                                    <img onError={placeHolderImage} className='card-img-top' src={seller.logo_url} alt='country' loading='lazy' />
                                     <div className='card-body' style={{ cursor: "pointer" }} >
-                                        <p>{ctg.store_name} </p>
+                                        <p>{seller.store_name} </p>
                                     </div>
                                 </div>
                             </div>

@@ -5,15 +5,16 @@ import { useTranslation } from 'react-i18next';
 import Slider from 'react-slick';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineArrowRight } from 'react-icons/ai';
+import { setFilterByCountry } from '../../model/reducer/productFilterReducer';
 
 
 
 const ShopByCountries = () => {
     const navigate = useNavigate();
-    
+
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    
+
     const shop = useSelector(state => state.shop);
     const setting = useSelector(state => state.setting);
 
@@ -94,16 +95,15 @@ const ShopByCountries = () => {
                 </div>
                 <div className='row justify-content-center home' id='allcategories'>
                     <Slider {...settings} ref={sliderRef}>
-                        {shop.shop?.countries?.map((ctg, index) => (
+                        {shop.shop?.countries?.map((country, index) => (
                             <div className="my-3 content" key={index} onClick={() => {
+                                dispatch(setFilterByCountry({ data: country?.id }));
                                 navigate('/products');
                             }}>
-
-
                                 <div className='card'>
-                                    <img onError={placeHolderImage} className='card-img-top' src={ctg.logo} alt='sellers' loading='lazy' />
+                                    <img onError={placeHolderImage} className='card-img-top' src={`${process.env.REACT_APP_API_URL}/storage/${country.logo}`} alt='sellers' loading='lazy' />
                                     <div className='card-body' style={{ cursor: "pointer" }} >
-                                        <p>{ctg.name} </p>
+                                        <p>{country.name} </p>
                                     </div>
                                 </div>
                             </div>

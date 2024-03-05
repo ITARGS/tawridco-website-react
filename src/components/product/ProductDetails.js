@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './product.css';
-// import { FaRupeeSign } from "react-icons/fa";
 import { BsHeart, BsShare, BsPlus, BsHeartFill } from "react-icons/bs";
-import { BiMinus, BiLink, BiDownArrow } from 'react-icons/bi';
+import { BiMinus, BiLink } from 'react-icons/bi';
 import { toast } from 'react-toastify';
 import api from '../../api/api';
 import { useDispatch, useSelector } from 'react-redux';
@@ -45,7 +44,6 @@ const ProductDetails = () => {
         window.scrollTo({ top: 0 });
         return () => {
             dispatch(clearSelectedProduct({ data: null }));
-            //dispatch({ type: ActionTypes.CLEAR_SELECTED_PRODUCT, payload: null });
             setproductcategory({});
             setproductbrand({});
         };
@@ -516,35 +514,22 @@ const ProductDetails = () => {
 
                                         <div className='image-wrapper '>
                                             <div className='main-image col-12 border'>
-                                                <img onError={placeHolderImage} src={mainimage} alt='main-product' className='col-12' style={{ width: '85%' }} />
+                                                <img onError={placeHolderImage} src={mainimage} alt='main-product' className='col-12' />
                                             </div>
 
 
                                             <div className='sub-images-container'>
                                                 {images.length >= 4 ?
                                                     <>
-                                                        <Slider {...settings_subImage}>
-                                                            <>
-                                                                {/* <div >
-                                                                    {console.log("Image Slider Rendered")}
-                                                                    <div className={`sub-image border `}>
+                                                        <Slider {...settings_subImage} className='imageListSlider'>
+                                                            {images.map((image, index) => (
+                                                                <div className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
+                                                                    <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
+                                                                        setmainimage(image);
+                                                                    }} />
+                                                                </div>
 
-                                                                        <img onError={placeHolderImage} src={mainimage} className='col-12' alt="product" onClick={() => {
-                                                                            setmainimage(mainimage);
-                                                                        }} />
-                                                                    </div>
-                                                                </div> */}
-                                                                {/* <div key={index} > */}
-                                                                {images.map((image, index) => (
-                                                                    <div className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
-                                                                        <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
-                                                                            setmainimage(image);
-                                                                        }} />
-                                                                    </div>
-
-                                                                ))}
-                                                                {/* </div> */}
-                                                            </>
+                                                            ))}
                                                         </Slider>
 
 

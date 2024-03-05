@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect } from 'react';
 import { Route, Routes } from "react-router-dom";
 import Header from "./components/header/Header";
 import MainContainer from "./components/MainContainer";
@@ -8,7 +8,6 @@ import { Footer } from "./components/footer/Footer";
 import ProfileDashboard from './components/profile/ProfileDashboard';
 import Cookies from 'universal-cookie';
 import { useDispatch, useSelector } from 'react-redux';
-import { ActionTypes } from './model/action-type';
 import api from './api/api';
 
 //react-toast
@@ -16,7 +15,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
 import ShowAllCategories from './components/category/ShowAllCategories';
-import ProductList from './components/product/ProductList';
 import ProductList2 from './components/product/ProductList2';
 import ProductDetails from './components/product/ProductDetails';
 import ViewCart from './components/cart/ViewCart';
@@ -42,9 +40,6 @@ import { setLanguage } from './model/reducer/languageReducer';
 import { setSetting } from './model/reducer/settingReducer';
 import { setCartPromo } from './model/reducer/cartReducer';
 import { setShop } from "./model/reducer/shopReducer";
-import CategoryChild from './components/category/CategoryChild';
-// import "./components/location/location.css";
-import ShopByCountries from './components/shop-by-countries/ShopByCountries';
 import ShopByCountriesPage from './components/shop-by-countries/ShopByCountriesPage';
 import ShopBySellersPage from './components/shop-by-seller/ShopBySellersPage';
 import AllRatingsAndReviews from './components/product/AllRatingsAndReviews';
@@ -69,7 +64,6 @@ function App() {
       getCurrentUser(cookies.get('jwt_token'));
     } else {
       dispatch(logoutAuth({ data: null }));
-      // dispatch({ type: ActionTypes.LOGOUT_AUTH, payload: null });
     }
     getSetting();
   }, []);
@@ -81,7 +75,6 @@ function App() {
         document.documentElement.dir = result?.data?.type;
         if (result.status === 1) {
           if (!language.current_language) {
-            // dispatch({ type: ActionTypes.SET_LANGUAGE, payload: result.data });
             dispatch(setLanguage({ data: result.data }));
 
           } else {
@@ -110,7 +103,6 @@ function App() {
       .then(response => response.json())
       .then(result => {
         if (result.status === 1) {
-          // dispatch({ type: ActionTypes.SET_CURRENT_USER, payload: result.user });
           dispatch(setCurrentUser({ data: result.user }));
         }
       });
@@ -120,7 +112,6 @@ function App() {
     await api.getSettings().then(response => response.json())
       .then(result => {
         if (result.status === 1) {
-          // dispatch({ type: ActionTypes.SET_SETTING, payload: result.data });
           dispatch(setSetting({ data: result.data }));
         }
       })
@@ -230,7 +221,6 @@ function App() {
                         <Route exact={true} path="/profile/address" element={<ProfileDashboard showAddress={true} />}></Route>
                         <Route exact={true} path="/notification" element={<Notification />}></Route>
                         <Route exact={true} path='/categories' element={<ShowAllCategories />}></Route>
-                        {/* <Route exact={true} path='/products' element={<ProductList />}></Route> */}
                         <Route exact={true} path='/products' element={<ProductList2 />}></Route>
                         <Route exact={true} path='/product' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
@@ -252,7 +242,6 @@ function App() {
                         <Route exact={true} path='/brands' element={<BrandList />} />
                         <Route exact={true} path='/countries' element={<ShopByCountriesPage />} />
                         <Route exact={true} path='/sellers' element={<ShopBySellersPage />} />
-                        {/* <Route exact={true} path='/products' element={<ProductList />}></Route> */}
                         <Route exact={true} path='/products' element={<ProductList2 />}></Route>
                         <Route exact={true} path='/product' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
