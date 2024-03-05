@@ -16,7 +16,7 @@ const ShopBySellersPage = () => {
     const { t } = useTranslation();
     const cookies = new Cookies();
 
-    const [limit, setLimit] = useState(1);
+    const [limit, setLimit] = useState(12);
     const [offset, setOffset] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
