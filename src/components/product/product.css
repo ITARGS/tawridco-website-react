@@ -173,6 +173,9 @@
 .product_section_content {
   margin-top: 10px !important;
 }
+.product_section_content .product-card-body .ratings {
+  font-size: 14px;
+}
 
 .product-card {
   color: var(--primary-color);

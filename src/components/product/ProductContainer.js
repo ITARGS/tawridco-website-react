@@ -26,6 +26,7 @@ import { setFavourite } from "../../model/reducer/favouriteReducer";
 import { setProductSizes } from "../../model/reducer/productSizesReducer";
 import { setFilterSection } from '../../model/reducer/productFilterReducer';
 import Popup from "../same-seller-popup/Popup";
+import { LuStar } from 'react-icons/lu';
 
 
 
@@ -286,7 +287,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal }) => {
                                                         {section.products.map((product, index) => (
                                                             <div className="row" key={index}>
                                                                 {/* {setSelectedVariant({ ...product.variants[0], pid: product.id })} */}
-
+                                                                {console.log(product)}
                                                                 <div className="col-md-12">
 
                                                                     <div className='product-card'  >
@@ -317,6 +318,14 @@ const ProductContainer = React.memo(({ showModal, setShowModal }) => {
                                                                         </Link>
 
                                                                         <div className="card-body product-card-body p-3" >
+                                                                            <div className='ratings'>
+                                                                                <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                <LuStar className='me-4' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                {product.average_rating.toFixed(2)}
+                                                                            </div>
                                                                             <h3>{product.name}</h3>
                                                                             <div className='price'>
 
