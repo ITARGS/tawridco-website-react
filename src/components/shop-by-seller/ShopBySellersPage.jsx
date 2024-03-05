@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { setFilterBrands } from '../../model/reducer/productFilterReducer';
+import { setFilterBrands, setFilterBySeller } from '../../model/reducer/productFilterReducer';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -26,18 +26,6 @@ const ShopBySellersPage = () => {
     const city = useSelector(state => state.city.city);
 
     const { data, totalData, loading, error } = useShopBySellers(cookies.get("jwt_token"), city.latitude, city.longitude, limit, offset);
-
-    const sort_unique_brand_ids = (int_brand_ids) => {
-        if (int_brand_ids.length === 0) return int_brand_ids;
-        int_brand_ids = int_brand_ids.sort(function (a, b) { return a * 1 - b * 1; });
-        var ret = [int_brand_ids[0]];
-        for (var i = 1; i < int_brand_ids.length; i++) { //Start loop at 1: arr[0] can never be a duplicate
-            if (int_brand_ids[i - 1] !== int_brand_ids[i]) {
-                ret.push(int_brand_ids[i]);
-            }
-        }
-        return ret;
-    };
 
     useEffect(() => {
         window.scrollTo({
@@ -82,29 +70,16 @@ const ShopBySellersPage = () => {
                         </div>
                         :
                         <div className='row justify-content-center'>
-                            {data?.map((ctg, index) => (
+                            {data?.map((seller, index) => (
                                 <div className="col-md-3 col-lg-2 col-6 col-sm-3 my-3 content" key={index} onClick={() => {
-
-                                    // setSelectedBrands((prev) => [...prev, ...brand.id])
-                                    var brand_ids = [...filter.brand_ids];
-
-                                    if (brand_ids.includes(ctg.id)) {
-                                        brand_ids.splice(ctg.indexOf(ctg.id), 1);
-                                    }
-                                    else {
-                                        brand_ids.push(parseInt(ctg.id));
-                                    }
-
-                                    const sorted_brand_ids = sort_unique_brand_ids(brand_ids);
-                                    dispatch(setFilterBrands({ data: sorted_brand_ids }));
-                                    // dispatch({ type: ActionTypes.SET_FILTER_BRANDS, payload: sorted_brand_ids });
+                                    dispatch(setFilterBySeller({ data: seller?.store_name }));
                                     navigate('/products');
                                 }}>
 
                                     <div className='card'>
-                                        <img onError={placeHolderImage} className='card-img-top' src={ctg.logo_url} alt='sellers' loading='lazy' />
+                                        <img onError={placeHolderImage} className='card-img-top' src={seller.logo_url} alt='sellers' loading='lazy' />
                                         <div className='card-body' style={{ cursor: "pointer" }} >
-                                            <p>{ctg.name} </p>
+                                            <p>{seller.name} </p>
                                         </div>
                                     </div>
                                 </div>

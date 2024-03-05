@@ -25,7 +25,6 @@ const BrandList = () => {
     const [currentPage, setCurrentPage] = useState(1);
 
     const { data, totalData, loading } = useShopByBrands(cookies.get("jwt_token"), limit, offset);
-    console.log(data);
     // const [brands, setBrands] = useState(null);
 
 
