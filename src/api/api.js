@@ -733,6 +733,7 @@ const api = {
         // formData.append("razorpay_order_id", razorpay_order_id);
         // formData.append("razorpay_payment_id", razorpay_payment_id);
         // formData.append("razorpay_signature", razorpay_signature);
+        formData.append('type', 'order');
         formData.append('payment_method', 'Razorpay');
         formData.append('device_type', 'web');
         formData.append('app_version', '1.0');

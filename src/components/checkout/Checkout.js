@@ -332,7 +332,7 @@ const Checkout = () => {
             callback: async function (response) {
 
                 setloadingPlaceOrder(true);
-                await api.addTransaction(cookies.get('jwt_token'), orderid, response.reference, paymentMethod)
+                await api.addTransaction(cookies.get('jwt_token'), orderid, response.reference, paymentMethod, "order")
                     .then(response => response.json())
                     .then(result => {
                         setloadingPlaceOrder(false);
@@ -807,8 +807,7 @@ const Checkout = () => {
                                                 </div>
                                             </div>
                                         </div> */}
-
-                                        <div className="promo-section">
+                                        {user?.user?.balance > 0 ? <div className="promo-section">
                                             <div className="heading">
                                                 <span>{t("Wallet")}</span>
                                             </div>
@@ -836,7 +835,7 @@ const Checkout = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> : null}
 
                                         {isFullWalletPay ? <></> :
                                             <div className='payment-wrapper checkout-component'>

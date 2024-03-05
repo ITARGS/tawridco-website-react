@@ -83,7 +83,7 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading }) 
 
                             <div className='d-flex flex-row justify-content-start align-items-center ratingCircleContainer'>
                                 <div className='ratingCircle'>
-                                    {productRating?.average_rating}
+                                    {productRating?.average_rating?.toFixed(2)}
                                 </div>
                                 <div className='d-flex flex-column justify-content-center align-items-center'>
                                     <div>{t("rating")}

@@ -19,7 +19,7 @@ import { CardElement, Elements, ElementsConsumer } from '@stripe/react-stripe-js
 import { useNavigate } from 'react-router-dom';
 import Loader from '../loader/Loader';
 import { loadStripe } from '@stripe/stripe-js';
-
+import InjectCheckout from './AddWalletStripeModal';
 
 const AddWalletModal = (props) => {
     const cookies = new Cookies();
@@ -34,9 +34,9 @@ const AddWalletModal = (props) => {
     const [stripeTransId, setStripeTransId] = useState(null);
     const [stripeClientSecret, setstripeClientSecret] = useState(null);
     const [stripeModalShow, setStripeModalShow] = useState(false);
-    console.log(walletAmount);
     const handleAmountChange = (e) => {
-        setWalletAmount(e.target.value);
+        const amt = parseInt(e.target.value);
+        setWalletAmount(amt);
     };
 
     const handlePmtMethodChange = (value) => {
@@ -103,10 +103,6 @@ const AddWalletModal = (props) => {
 
 
             },
-            oncancel: async (res) => {
-                // handleRazorpayCancel(order_id);
-
-            },
             modal: {
                 confirm_close: true,
                 ondismiss: async (reason) => {
@@ -130,10 +126,11 @@ const AddWalletModal = (props) => {
         };
         const rzpay = new window.Razorpay(options);
         rzpay.on('payment.cancel', function (response) {
-            alert("Payment Cancelled");
+            // alert("Payment Cancelled");
             // handleRazorpayCancel(order_id);
         });
         rzpay.on('payment.failed', function (response) {
+            toast.error(response);
             // api.deleteOrder(cookies.get('jwt_token'), order_id);
         });
         rzpay.open();
@@ -184,11 +181,11 @@ const AddWalletModal = (props) => {
             } else if (paymentMethod === "paystack") {
                 handlePayStackPayment(user?.user?.email, walletAmount, setting.payment_setting.paystack_currency_code, setting.setting.support_email);
             } else if (paymentMethod === "stripe") {
+                console.log(walletAmount);
                 setStripeTransId(result.data?.id);
                 setstripeClientSecret(result.data?.client_secret);
                 setStripeModalShow(true);
             }
-            setWalletAmount(0);
         } catch (err) {
             console.log(err.message);
         }
@@ -302,20 +299,8 @@ const AddWalletModal = (props) => {
                     {stripeClientSecret === null || stripeTransId === null
                         ? <Loader width='100%' height='100%' />
                         :
-                        <Elements stripe={stripePromise} client_secret={stripeClientSecret} transaction_id={stripeTransId}>
-                            <ElementsConsumer client_secret={stripeClientSecret} transaction_id={stripeTransId} amount={walletAmount}>
-                                {({ stripe, elements, orderID, client_secret, transaction_id, amount }) => (
-                                    <>
-                                        <StripeModal stripe={stripe}
-                                            setShow={setStripeModalShow}
-                                            elements={elements}
-                                            client_secret={stripeClientSecret}
-                                            transaction_id={stripeTransId}
-                                            walletAmount={parseInt(walletAmount)}
-                                        />
-                                    </>
-                                )}
-                            </ElementsConsumer>
+                        <Elements stripe={stripePromise} client_secret={stripeClientSecret} transaction_id={stripeTransId} amount={walletAmount}>
+                            <InjectCheckout setAddWalletModal={props.setShowModal} setShow={setStripeModalShow} stripe={stripePromise} client_secret={stripeClientSecret} transaction_id={stripeTransId} amount={walletAmount} />
                         </Elements>
                     }
 
@@ -325,147 +310,6 @@ const AddWalletModal = (props) => {
 
     );
 };
-const CARD_OPTIONS = {
-    iconStyle: "solid",
-    style: {
-        base: {
-            // iconColor: "#c4f0ff",
-            fontWeight: 500,
-            fontFamily: "Roboto, Open Sans, Segoe UI, sans-serif",
-            fontSize: "16px",
-            fontSmoothing: "antialiased",
-            ":-webkit-autofill": { color: "#fce883" },
-            "::placeholder": { color: "#87bbfd" },
-            border: "2px solid black"
-        },
-        invalid: {
-            // iconColor: "#ffc7ee",
-            color: "#ffc7ee"
-        }
-    }
-};
-const StripeModal = (props) => {
-    console.log(props);
-    const cookies = new Cookies();
-    const navigate = useNavigate();
-
-    const dispatch = useDispatch();
 
 
-    const user = useSelector((state) => state.user);
-
-    const [loadingPay, setloadingPay] = useState(false);
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        const { stripe, elements, transaction_id } = props;
-
-        setloadingPay(true);
-        if (!stripe || !elements) {
-            // Stripe.js has not yet loaded.
-            // Make sure to disable form submission until Stripe.js has loaded.
-            setloadingPay(false);
-            // props.setShow(false)
-            return;
-        }
-
-        if (!transaction_id) {
-            setloadingPay(false);
-            props.setShow(false);
-            return;
-        }
-
-
-
-        const SK = props.client_secret;
-
-        // Confirm the PaymentIntent with the Payment Element
-        const { paymentIntent, error } = await stripe.confirmCardPayment(SK, {
-            payment_method: {
-                card: elements.getElement(CardElement),
-                billing_details: {
-                    name: user.user && user.user.name,
-                    address: {
-                        line1: '510 Townsend St',
-                        postal_code: '98140',
-                        city: 'San Francisco',
-                        state: 'CA',
-                        country: 'US',
-                    },
-
-                },
-            },
-        },);
-        if (error) {
-            // console.log(error.message);
-            // api.deleteOrder(cookies.get('jwt_token'), orderID);
-            toast.error(error.message);
-            props.setWalletAmount(props.walletAmount);
-            props.setShow(false);
-
-        } else if (paymentIntent.status === 'succeeded') {
-            // Redirect the customer to a success page
-            // window.location.href = '/success';
-            // props.setShow(false)
-            await api.addTransaction(cookies.get('jwt_token'), null, props.transaction_id, "Stripe", "wallet", props.walletAmount)
-                .then(response => response.json())
-                .then(result => {
-                    if (result.status === 1) {
-                        setShow(true);
-                        setIsOrderPlaced(true);
-                        setloadingPay(false);
-                    }
-                    else {
-                        setloadingPay(false);
-                    }
-                    // closeModal.current.click()
-                })
-                .catch(error => console.log(error));
-            props.setShow(false);
-            // setTimeout(() => {
-            //     navigate("/");
-            // }, 4000);
-        } else {
-            // Handle other payment status scenarios
-            // api.deleteOrder(cookies.get('jwt_token'), orderID);
-            setloadingPay(false);
-            console.log('Payment failed');
-            props.setShow(false);
-            setIsOrderPlaced(false);
-        }
-    };
-
-    const [isOrderPlaced, setIsOrderPlaced] = useState(false);
-    const [show, setShow] = useState(false);
-
-    return (
-        <>
-            <div className="modal-body">
-
-                <div className='stripe-container d-flex flex-column p-0'>
-
-                    {/* <div className="d-flex flex-row justify-content-between header">
-                        <span className='heading'>Egrocers Payment</span>
-                        <button type="button" className="close-stripe" data-bs-dismiss="modal" aria-label="Close" ref={closeModal}><AiOutlineCloseCircle /></button>
-                    </div> */}
-                    <form onSubmit={handleSubmit} id="stripe-form" className='row p-5 border-3'>
-                        {/* <CardSection /> */}
-                        <fieldset className='FormGroup p-4'>
-                            <div className="FormRow">
-
-                                <CardElement options={CARD_OPTIONS} />
-                            </div>
-                        </fieldset>
-                        {loadingPay
-                            ? <Loader screen='full' background='none' />
-                            :
-                            <button whiletap={{ scale: 0.8 }} type='submit' disabled={!props.stripe} className='pay-stripe'>Pay</button>
-                        }
-                    </form>
-                </div>
-
-            </div>
-        </>
-    );
-};
 export default AddWalletModal;
