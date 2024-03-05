@@ -103,7 +103,7 @@ const ShopByCountriesPage = () => {
                                 }}>
 
                                     <div className='card'>
-                                        <img onError={placeHolderImage} className='card-img-top' src={country.logo} alt='countryLogo' loading='lazy' />
+                                        <img onError={placeHolderImage} className='card-img-top' src={`${process.env.REACT_APP_API_URL}/storage/${country.logo}`} alt='countryLogo' loading='lazy' />
                                         <div className='card-body' style={{ cursor: "pointer" }} >
                                             <p>{country.name} </p>
                                         </div>
