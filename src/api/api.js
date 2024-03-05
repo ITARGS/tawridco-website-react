@@ -939,7 +939,7 @@ const api = {
         data.append("id", ratingId);
         data.append("rate", rate);
         data.append("review", review);
-        data.append("deleteImageIds", deleteImageIds);
+        data.append("deleteImageIds", `[${deleteImageIds}]`);
         for (let i = 0; i < images.length; i++) {
             data.append(`image[${i}]`, images[i]);
         }
