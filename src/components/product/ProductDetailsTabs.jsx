@@ -171,12 +171,12 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading }) 
 
                     <div className='col-md-7 px-4 customerReviewsContainer'>
                         <h5 className='title'>{t("customer_reviews")}</h5>
-                        {productRating?.rating_list.slice(0, 3).map((review) => (
+                        {productRating?.rating_list?.slice(0, 3)?.map((review) => (
                             <>
                                 <div className='reviewList mb-5' key={review.id}>
                                     <div className='d-flex justify-content-start align-items-center gap-3 review-container-name'>
                                         <div className='fw-bold'>
-                                            {review.user.name}
+                                            {review?.user?.name}
                                         </div>
                                         <div className='reviewRatingButton d-flex flex-row align-items-start gap-2'>
                                             {Array.from({ length: review.rate })?.map((_, index) => (
@@ -207,7 +207,7 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading }) 
                                         ))}
                                     </div>
                                     <div className='review-container-date'>
-                                        {formatDate(review.updated_at)}, {formatTime(review.updated_at)}
+                                        {formatDate(review?.updated_at)}, {formatTime(review?.updated_at)}
                                     </div>
                                 </div>
                             </>
