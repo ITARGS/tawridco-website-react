@@ -3,13 +3,11 @@ import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import '../category/category.css';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineArrowRight } from 'react-icons/ai';
 import Slider from 'react-slick';
-import { ActionTypes } from '../../model/action-type';
 import { setFilterBrands } from '../../model/reducer/productFilterReducer';
-
+import "./brand.css";
 
 const Brand = () => {
   const shop = useSelector(state => state.shop);
@@ -79,23 +77,23 @@ const Brand = () => {
     <>
       {/* {
       shop.shop?.brand && */}
-      <section className="all-brands">
-        <div className="row category_section_header">
+      <section id="all-brands">
+        <div className="row brand_section_header">
           <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
             <div className="title d-md-flex align-items-center ">
               <p>{t('shop_by')} {t('brands')}</p>
-              <Link className='d-none d-md-block' to='/brands'>{t('see_all')} {t('brands')}<AiOutlineArrowRight size={15} className='see_category_arrow' /> </Link>
+              <Link className='d-none d-md-block' to='/brands'>{t('see_all')} {t('brands')}<AiOutlineArrowRight size={15} className='see_brand_arrow' /> </Link>
             </div>
             <div className=' d-md-none'>
-              <Link className='category_button' to='/brands'>{t('see_all')}</Link>
+              <Link className='brand_button' to='/brands'>{t('see_all')}</Link>
             </div>
             <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-              <button className='prev-arrow-category' onClick={handlePrevClick}><FaChevronLeft size={20} /></button>
-              <button className='next-arrow-category' onClick={handleNextClick}><FaChevronRight size={20} /></button>
+              <button className='prev-arrow-brand' onClick={handlePrevClick}><FaChevronLeft size={20} /></button>
+              <button className='next-arrow-brand' onClick={handleNextClick}><FaChevronRight size={20} /></button>
             </div>
           </div>
         </div>
-        <div className='row justify-content-center home' id='allcategories'>
+        <div className='row justify-content-center home allBrandsSlider'>
           <Slider {...settings} ref={sliderRef}>
             {shop.shop?.brands?.map((ctg, index) => (
               <div className="my-3 content" key={index} onClick={() => {

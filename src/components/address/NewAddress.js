@@ -250,92 +250,6 @@ const NewAddress = (props) => {
         })
             .then(response => {
                 if (response.results[0]) {
-                    //get city
-                    // getAvailableCity(response)
-                    //     .then(res => {
-
-                    //         if (res.status === 1) {
-                    //             setlocalLocation({
-                    //                 lat: parseFloat(res.data.latitude),
-                    //                 lng: parseFloat(res.data.longitude),
-                    //             });
-
-                    //             let address = '', country = '', pincode = '', landmark = '', area = '', state_ = '';
-                    //             response.results.forEach((element) => {
-
-                    //                 if (element.address_components.length >= 5) {
-                    //                     element.address_components.forEach((res_add) => {
-                    //                         if (res_add.types.includes('premise') || res_add.types.includes('plus_code') || res_add.types.includes('route')) {
-                    //                             address = res_add.long_name;
-                    //                         }
-                    //                         if (res_add.types.includes("political")) {
-                    //                             landmark = res_add.long_name;
-                    //                         }
-                    //                         if (res_add.types.includes('administrative_area_level_3') || res_add.types.includes('administrative_area_level_2') || res_add.types.includes("sublocality")) {
-                    //                             area = res_add.long_name;
-                    //                         }
-                    //                         if (res_add.types.includes("administrative_area_level_1")) {
-                    //                             state_ = res_add.long_name;
-                    //                         }
-                    //                         if (res_add.types.includes('country')) {
-                    //                             country = res_add.long_name;
-                    //                         }
-                    //                         if (res_add.types.includes('postal_code')) {
-                    //                             pincode = res_add.long_name;
-                    //                         }
-                    //                     });
-                    //                 }
-                    //             });
-
-                    //             if (address === '' || area === '') {
-                    //                 setlocalLocation({
-                    //                     lat: prev_latlng.lat,
-                    //                     lng: prev_latlng.lng
-                    //                 });
-
-                    //                 // setaddressDetails(state => ({
-                    //                 //     ...state,
-                    //                 //     address: address,
-                    //                 //     landmark: landmark,
-                    //                 //     city: res.data.name,
-                    //                 //     area: area,
-                    //                 //     pincode: pincode,
-                    //                 //     state: res.data.state,
-                    //                 // }))
-                    //             }
-                    //             else {
-                    //                 setaddressDetails(state => ({
-                    //                     ...state,
-                    //                     address: address,
-                    //                     landmark: landmark,
-                    //                     city: res.data.name,
-                    //                     area: area,
-                    //                     pincode: pincode,
-                    //                     country: country,
-                    //                     state: state_,
-                    //                 }));
-                    //             }
-                    //             setaddressLoading(false);
-                    //         }
-                    //         else {
-                    //             setaddressLoading(false);
-                    //             setaddressDetails(state => ({
-                    //                 ...state,
-                    //                 address: "",
-                    //                 landmark: "",
-                    //                 city: "",
-                    //                 area: "",
-                    //                 pincode: "",
-                    //                 country: "",
-                    //                 state: "",
-                    //             }));
-                    //             toast.error(res.message);
-                    //         }
-                    //     })
-                    //     .catch(error => console.log("error " + error));
-
-                    // console.log(response.results[0].geometry.location.lat());
-                    // console.log(response.results[0].geometry.location.lng());
                     setlocalLocation({
                         lat: parseFloat(response.results[0].geometry.location.lat()),
                         lng: parseFloat(response.results[0].geometry.location.lng()),
@@ -365,46 +279,12 @@ const NewAddress = (props) => {
                             city = res_add.long_name;
                         }
                     });
-                    // response.results.forEach((element) => {
-
-                    //     if (element.address_components.length >= 5) {
-                    //         element.address_components.forEach((res_add) => {
-                    //             if (res_add.types.includes('premise') || res_add.types.includes('plus_code') || res_add.types.includes('route')) {
-                    //                 address = res_add.long_name;
-                    //             }
-                    //             if (res_add.types.includes("political")) {
-                    //                 landmark = res_add.long_name;
-                    //             }
-                    //             if (res_add.types.includes('administrative_area_level_3') || res_add.types.includes('administrative_area_level_2') || res_add.types.includes("sublocality")) {
-                    //                 area = res_add.long_name;
-                    //             }
-                    //             if (res_add.types.includes("administrative_area_level_1")) {
-                    //                 state_ = res_add.long_name;
-                    //             }
-                    //             if (res_add.types.includes('country')) {
-                    //                 country = res_add.long_name;
-                    //             }
-                    //             if (res_add.types.includes('postal_code')) {
-                    //                 pincode = res_add.long_name;
-                    //             }
-                    //         });
-                    //     }
-                    // });
 
                     if (address === '' || area === '') {
                         setlocalLocation({
                             lat: prev_latlng.lat,
                             lng: prev_latlng.lng
                         });
-                        // setaddressDetails(state => ({
-                        //     ...state,
-                        //     address: address,
-                        //     landmark: landmark,
-                        //     city: res.data.name,
-                        //     area: area,
-                        //     pincode: pincode,
-                        //     state: res.data.state,
-                        // }))
                     }
                     else {
                         setaddressDetails(state => ({
@@ -499,7 +379,6 @@ const NewAddress = (props) => {
             });
     };
 
-
     return (
         <>
             <Modal
@@ -549,7 +428,7 @@ const NewAddress = (props) => {
 
                         {addressLoading
                             ? <div className="d-flex justify-content-center">
-                                <Loader width="500px" height="500px" />
+                                <Loader width="570px" height="675px" />
                             </div>
                             :
                             <>

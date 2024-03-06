@@ -1,4 +1,4 @@
-import '../category/category.css';
+import "./brand.css";
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -25,18 +25,6 @@ const BrandList = () => {
     const [currentPage, setCurrentPage] = useState(1);
 
     const { data, totalData, loading } = useShopByBrands(cookies.get("jwt_token"), limit, offset);
-    // const [brands, setBrands] = useState(null);
-
-
-    // useEffect(() => {
-    //     api.getBrands().then(response => response.json()).then((response) => {
-    //         if (response.status) {
-    //             setBrands(response.data);
-    //         } else {
-    //             toast.error(response.message);
-    //         }
-    //     });
-    // }, []);
 
     const placeHolderImage = (e) => {
 
@@ -66,7 +54,7 @@ const BrandList = () => {
     return (
         <>
 
-            <section id='allcategories'  >
+            <section className='allBrandsSlider'  >
                 <div className='cover'>
                     <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
                     <div className='page-heading'>

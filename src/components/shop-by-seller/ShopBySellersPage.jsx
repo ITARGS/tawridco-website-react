@@ -4,11 +4,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import coverImg from '../../utils/cover-img.jpg';
-import "../category/category.css";
 import useShopBySellers from '../../hooks/useShopBySellers';
 import Cookies from 'universal-cookie';
 import Pagination from 'react-js-pagination';
 import Skeleton from 'react-loading-skeleton';
+import "./shop-by-seller.css";
 
 const ShopBySellersPage = () => {
     const dispatch = useDispatch();
@@ -49,7 +49,7 @@ const ShopBySellersPage = () => {
 
     return (
         <>
-            <section id='allcategories'>
+            <section className='allSellersContainer'>
                 <div className='cover'>
                     <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
                     <div className='page-heading'>

@@ -286,8 +286,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal }) => {
                                                     <Slider {...settings}>
                                                         {section.products.map((product, index) => (
                                                             <div className="row" key={index}>
-                                                                {/* {setSelectedVariant({ ...product.variants[0], pid: product.id })} */}
-                                                                {console.log(product)}
                                                                 <div className="col-md-12">
 
                                                                     <div className='product-card'  >

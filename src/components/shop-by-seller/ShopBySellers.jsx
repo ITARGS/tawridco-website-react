@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import { setFilterBySeller } from '../../model/reducer/productFilterReducer';
+import "./shop-by-seller.css";
+
 
 const ShopBySellers = () => {
     const navigate = useNavigate();
@@ -73,23 +75,23 @@ const ShopBySellers = () => {
 
     return (
         <>
-            <section>
-                <div className="row category_section_header">
+            <section id='all-sellers'>
+                <div className="row seller_section_header">
                     <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
                         <div className="title d-md-flex align-items-center ">
                             <p>{t('shop_by')} {t('sellers')}</p>
-                            <Link className='d-none d-md-block' to='/sellers'>{t('see_all')} {t('sellers')}<AiOutlineArrowRight size={15} className='see_category_arrow' /> </Link>
+                            <Link className='d-none d-md-block' to='/sellers'>{t('see_all')} {t('sellers')}<AiOutlineArrowRight size={15} className='see_sellers_arrow' /> </Link>
                         </div>
                         <div className=' d-md-none'>
                             <Link className='category_button' to='/sellers'>{t('see_all')}</Link>
                         </div>
                         <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                            <button className='prev-arrow-category' onClick={handlePrevClick}><FaChevronLeft size={20} /></button>
-                            <button className='next-arrow-category' onClick={handleNextClick}><FaChevronRight size={20} /></button>
+                            <button className='prev-arrow-seller' onClick={handlePrevClick}><FaChevronLeft size={20} /></button>
+                            <button className='next-arrow-seller' onClick={handleNextClick}><FaChevronRight size={20} /></button>
                         </div>
                     </div>
                 </div>
-                <div className='row justify-content-center home' id='allcategories'>
+                <div className='row justify-content-center home allSellersContainer'>
                     <Slider {...settings} ref={sliderRef}>
                         {shop.shop?.sellers?.map((seller, index) => (
                             <div className="my-3 content" key={index} onClick={() => {
@@ -110,7 +112,7 @@ const ShopBySellers = () => {
 
 
                 </div>
-            </section>
+            </section >
         </>
     );
 };

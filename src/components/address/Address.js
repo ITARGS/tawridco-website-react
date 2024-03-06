@@ -15,7 +15,6 @@ import { setAddress, setSelectedAddress } from "../../model/reducer/addressReduc
 
 const Address = () => {
 
-    //initialize cookies
     const cookies = new Cookies();
     const dispatch = useDispatch();
 
@@ -24,7 +23,6 @@ const Address = () => {
     const [isLoader, setisLoader] = useState(false);
     const address = useSelector(state => state.address);
     const user = useSelector(state => (state.user));
-
 
     const fetchAddress = (token) => {
         api.getAddress(token)
@@ -140,12 +138,6 @@ const Address = () => {
                             ))}
 
                             <div className='address-component new-address'>
-                                {/* <button type='button' onClick={(e) => {
-                                    // dispatch({ type: ActionTypes.SET_SELECTED_ADDRESS, payload: null });
-                                    dispatch(setSelectedAddress({ data: null }));
-                                    setIsAddressSelected(false);
-                                    setShow(true);
-                                }}> */}
                                 <button type='button' onClick={() => {
                                     dispatch(setSelectedAddress({ data: null }));
                                     setIsAddressSelected(false);

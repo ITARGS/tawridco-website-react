@@ -162,11 +162,10 @@
 
 #allcategories .content .card img {
   width: 100%;
-  /* height: 100%; */
-  height: 26rem;
-  /* padding: 15px 15px; 
-  */
+  /* height: 26rem; */
   border-radius: 8px 8px 0px 0px;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
 }
 
 #allcategories .content .card .card-body {
