@@ -337,13 +337,14 @@ const Location = (props) => {
   };
   const { t } = useTranslation();
 
-  useEffect(() => {
-    import('./location.css');
-    if (setting.setting?.default_city) {
-      // closeModalRef.current?.click()
-      props.setLocModal(false);
-    }
-  }, [setting]);
+  // useEffect(() => {
+  //   console.log("Location useEffect Runned");
+  //   import('./location.css');
+  //   if (setting.setting?.default_city) {
+  //     // closeModalRef.current?.click()
+  //     props.setLocModal(false);
+  //   }
+  // }, [setting]);
 
 
   // console.log(isloading);
