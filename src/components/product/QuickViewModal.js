@@ -604,7 +604,7 @@ const QuickViewModal = (props) => {
                                                     {product?.fssai_lic_no &&
                                                         <div className='fssai-details'>
                                                             <div className='image-container'>
-                                                                <img src={product?.fssai_lic_img} alt='fssai-image' />
+                                                                <img src={product?.fssai_lic_img} alt='fssai' />
                                                             </div>
                                                             <div className='fssai-license-no'>
                                                                 <span>
@@ -613,17 +613,16 @@ const QuickViewModal = (props) => {
                                                             </div>
                                                         </div>
                                                     }
-                                                    <div className='product-overview'>
 
-                                                        {productbrand !== "" ? (
-
+                                                    {productbrand?.name ? (
+                                                        <div className='product-overview'>
                                                             <div className='product-tags'>
                                                                 <span className='tag-title'>{t("brand")} :</span>
                                                                 <span className='tag-name'>{productbrand.name} </span>
                                                             </div>
-                                                        ) : ""}
+                                                        </div>
+                                                    ) : ""}
 
-                                                    </div>
                                                     <div className='share-product-container'>
                                                         <span>{t("share_product")} :</span>
 

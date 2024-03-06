@@ -186,7 +186,9 @@ const ProductList2 = React.memo(() => {
     };
 
     useEffect(() => {
-        fetchBrands();
+        if (brands === null) {
+            fetchBrands();
+        }
         if (category.category.length === 0) {
             fetchCategories();
         }
