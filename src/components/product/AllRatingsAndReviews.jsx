@@ -12,7 +12,7 @@ import StarUnfilledSVG from "../../utils/StarUnfilled.svg";
 import { useTranslation } from "react-i18next";
 import Pagination from "react-js-pagination";
 import "./all-ratings.css";
-
+import NoRatingsFound from "../../utils/No_Review_Found.svg";
 
 const AllRatingsAndReviews = () => {
     const { slug } = useParams();
@@ -124,7 +124,7 @@ const AllRatingsAndReviews = () => {
 
                                 <div className='d-flex flex-row justify-content-start align-items-center gap-4 ratingCircleContainer'>
                                     <div className='ratingCircle'>
-                                        {productRating?.average_rating}
+                                        {productRating?.average_rating?.toFixed(2)}
                                     </div>
                                     <div className='d-flex flex-column justify-content-center align-items-center'>
                                         <div className="fs-3">{t("rating")}
@@ -210,21 +210,21 @@ const AllRatingsAndReviews = () => {
                         </div>
 
 
-                        <div className='col-md-7 px-4 py-5 customerReviewsContainer'>
-                            {productRating?.rating_list.slice(0, limit).map((review) => (
+                        <div className='col-md-7 px-4 py-5  '>
+                            {productRating?.rating_list?.slice(0, limit)?.map((review) => (
                                 <>
                                     <div className='reviewList mb-5' key={review.id}>
                                         <div className='d-flex justify-content-start align-items-center gap-3 review-container-name'>
                                             <div className='fw-bold'>
-                                                {review.user.name}
+                                                {review?.user?.name}
                                             </div>
                                             <div className='reviewRatingButton d-flex flex-row align-items-start gap-2'>
-                                                {Array.from({ length: review.rate })?.map((_, index) => (
+                                                {Array.from({ length: review?.rate })?.map((_, index) => (
                                                     <div key={index} className='text-light'>
                                                         <img src={StarFilledSVG} alt='starFilledLogo' loading='lazy' />
                                                     </div>
                                                 ))}
-                                                {Array.from({ length: 5 - review.rate })?.map((_, index) => (
+                                                {Array.from({ length: 5 - review?.rate })?.map((_, index) => (
                                                     <div key={index} className='text-light'>
                                                         <img src={StarUnfilledSVG} alt='starFilledLogo' loading='lazy' />
                                                     </div>
@@ -234,7 +234,7 @@ const AllRatingsAndReviews = () => {
                                         <div className='review-container-review'>{review.review}</div>
                                         <div className='d-flex justify-content-start flex-row gap-3 pe-5 mb-3'>
                                             {review?.images?.slice(0, imageMappingLength)?.map((image, index) => (
-                                                <div className={index === (imageMappingLength - 1) ? "overlayParent" : ""} key={image.id}>
+                                                <div className={index === (imageMappingLength - 1) ? "overlayParent" : ""} key={image?.id}>
                                                     <img src={image?.image_url} alt='userImage' className='userReviewImages' />
                                                     {(index === (imageMappingLength - 1)) ?
                                                         <div div className='overlay'>
@@ -247,7 +247,7 @@ const AllRatingsAndReviews = () => {
                                             ))}
                                         </div>
                                         <div className='review-container-date'>
-                                            {formatDate(review.updated_at)}, {formatTime(review.updated_at)}
+                                            {formatDate(review?.updated_at)}, {formatTime(review?.updated_at)}
                                         </div>
                                     </div>
                                 </>
@@ -264,7 +264,20 @@ const AllRatingsAndReviews = () => {
                 }
                 {((productRating?.rating_list?.length === 0) && !Loading) ?
                     <div className='d-flex justify-content-center align-items-center noRatingContainer'>
-                        <div>{t("no_ratings_available")}</div>
+                        <div className="col-md-12">
+                            <div className="d-flex flex-row  gap-5 productContainer">
+                                <img src={product?.image_url} alt="productLogo" className="productLogo" />
+                                <div className="d-flex flex-column align-items-start">
+                                    <div className="productName">
+                                        {product?.name}
+                                    </div>
+                                    <div className="productPrice">
+                                        {setting.setting && setting.setting.currency} {product?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="d-flex justify-content-center"><img src={NoRatingsFound} alt="noRatingsFoundImg" /></div>
+                        </div>
                     </div> : null}
             </div>
         </>
