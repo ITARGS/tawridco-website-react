@@ -12,7 +12,7 @@ import axios from 'axios';
 import RateProductStar from "../../utils/stars.svg";
 import { LuStar } from "react-icons/lu";
 import UpdateRatingModal from '../rate-product/UpdateRatingModal';
-
+import { ImCheckboxChecked } from "react-icons/im";
 
 
 
@@ -125,7 +125,6 @@ const OrderDetails = React.memo(() => {
             });
     };
 
-
     return (
         <>
             <section className="order-details-page">
@@ -159,6 +158,7 @@ const OrderDetails = React.memo(() => {
                                                     {/* <th>{t('action')}</th> */}
                                                 </thead>
                                                 <tbody>
+                                                    {/* {console.log(orderData)}     */}
                                                     {orderData?.items?.map((item, index) => {
                                                         return (
                                                             <>
@@ -217,7 +217,7 @@ const OrderDetails = React.memo(() => {
                                                                             }
 
                                                                         </div> */}
-                                                                        <div className="actions-container">
+                                                                        {/* <div className="actions-container">
                                                                             {Number(item?.active_status) <= 6 && item?.return_status === 1 ?
                                                                                 <span className="return">
                                                                                     <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('return')}</button>
@@ -245,7 +245,7 @@ const OrderDetails = React.memo(() => {
                                                                                 </span>
                                                                                 : null
                                                                             }
-                                                                        </div>
+                                                                        </div> */}
 
                                                                     </td>
                                                                     <td>
@@ -310,9 +310,10 @@ const OrderDetails = React.memo(() => {
                                         </span>
                                     </div>
                                     <div className="status-body">
-                                        <div className="checkmark">
-                                            <input type="checkbox" defaultChecked />
-                                        </div>
+                                        {/* <div className="checkmark">
+                                            <input type="checkbox" defaultChecked disabled />
+                                            <ImCheckboxChecked fill='#55AE7B' />
+                                        </div> */}
                                         <div className="order-status-details">
                                             <div className="order-status">
                                                 {`${t('order')} ${orderStatus}`}
@@ -394,6 +395,22 @@ const OrderDetails = React.memo(() => {
                                                     {setting.setting?.currency}{orderData?.total}
                                                 </span>
                                             </div>
+                                            {orderData?.promo_discount ? <div>
+                                                <span>
+                                                    {t('promo_code_discount')}
+                                                </span>
+                                                <span>
+                                                    - {setting.setting?.currency}{orderData?.promo_discount}
+                                                </span>
+                                            </div> : null}
+                                            {orderData?.wallet_balance ? <div>
+                                                <span>
+                                                    {t('wallet_balance_used')}
+                                                </span>
+                                                <span>
+                                                    - {setting.setting?.currency}{orderData?.wallet_balance}
+                                                </span>
+                                            </div> : null}
                                             {orderData?.discount ?
                                                 <div>
                                                     <span>
@@ -433,7 +450,7 @@ const OrderDetails = React.memo(() => {
                 </div>
                 <RateProductModal product_id={ratingProductId} showPdtRatingModal={showPdtRatingModal} setShowPdtRatingModal={setShowPdtRatingModal} />
                 <UpdateRatingModal product_id={ratingProductId} showModal={showRatingEditModal} setShowModal={setShowRatingEditModal} ratingId={editRatingId} setRatingId={setEditRatingId} />
-            </section>
+            </section >
         </>
     );
 });

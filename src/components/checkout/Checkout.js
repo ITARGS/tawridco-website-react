@@ -121,30 +121,30 @@ const Checkout = () => {
     }, [address?.selected_address]);
 
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        const handleMessage = (event) => {
-            if (event.origin === api.getAppUrl()) {
-                if (event.data === "success") {
-                    paypalStatus.current = true;
-                    setShow(true);
-                    setIsOrderPlaced(true);
-                } else {
-                    api.deleteOrder(cookies.get('jwt_token'), orderID);
-                    toast.error("Payment failed");
-                    setIsOrderPlaced(false);
-                }
-            }
-        };
+    //     const handleMessage = (event) => {
+    //         if (event.origin === api.getAppUrl()) {
+    //             if (event.data === "success") {
+    //                 paypalStatus.current = true;
+    //                 setShow(true);
+    //                 setIsOrderPlaced(true);
+    //             } else {
+    //                 api.deleteOrder(cookies.get('jwt_token'), orderID);
+    //                 toast.error("Payment failed");
+    //                 setIsOrderPlaced(false);
+    //             }
+    //         }
+    //     };
 
 
-        window.addEventListener('message', handleMessage);
-        // Clean up by removing the event listener when the component unmounts
-        return () => {
-            window.removeEventListener('message', handleMessage);
-        };
+    //     window.addEventListener('message', handleMessage);
+    //     // Clean up by removing the event listener when the component unmounts
+    //     return () => {
+    //         window.removeEventListener('message', handleMessage);
+    //     };
 
-    }, [window]);
+    // }, [window]);
 
     const [expectedDate, setexpectedDate] = useState(null);
     // const expectedDate = useRef(new Date())
@@ -549,23 +549,24 @@ const Checkout = () => {
                                         var ccavenue_redirect_url = `${res.data.paypal_redirect_url}&&amount=${totalPayment}`;
                                         //var ccavenue_redirect_url = "https://admin.pocketgroceries.in/customer/ccavenue_payment";
 
-                                        var subWindow = window.open(ccavenue_redirect_url, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
-                                        var redirect_url = res.data.paypal_redirect_url;
+                                        var subWindow = window.open(ccavenue_redirect_url, '_parent');
+                                        // var subWindow = window.open(ccavenue_redirect_url, '_parent', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+                                        // var redirect_url = res.data.paypal_redirect_url;
                                         /*subWindow.postMessage('Hello from parent window!', '*');
                                         console.log("redirect_url : ",redirect_url);*/
-                                        const checkChildWindow = setInterval((e) => {
-                                            if (subWindow && subWindow.closed) {
-                                                clearInterval(checkChildWindow);
-                                                // console.log('Child window is closed');
-                                                if (subWindow && subWindow.closed && !paypalStatus.current) {
-                                                    api.deleteOrder(cookies.get('jwt_token'), result.data.order_id);
-                                                    setWalletAmount(user.user.balance);
-                                                    toast.error("Payment failed ");
-                                                    // Perform any actions or display a message here
-                                                }
+                                        // const checkChildWindow = setInterval((e) => {
+                                        //     if (subWindow && subWindow.closed) {
+                                        //         clearInterval(checkChildWindow);
+                                        //         // console.log('Child window is closed');
+                                        //         if (subWindow && subWindow.closed && !paypalStatus.current) {
+                                        //             api.deleteOrder(cookies.get('jwt_token'), result.data.order_id);
+                                        //             setWalletAmount(user.user.balance);
+                                        //             toast.error("Payment failed ");
+                                        //             // Perform any actions or display a message here
+                                        //         }
 
-                                            }
-                                        }, 1500); // Adjust the interval (in milliseconds) as needed
+                                        //     }
+                                        // }, 1500); // Adjust the interval (in milliseconds) as needed
 
                                     } else {
                                         toast.error(res.message);
@@ -584,7 +585,7 @@ const Checkout = () => {
                     .catch(error => console.log(error));
             }
             else if (paymentMethod === 'Wallet') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart?.is_wallet_checked ? cart.checkout.total_amount - walletDeductionAmt : cart.checkout?.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async (result) => {
                         setisLoader(false);
@@ -672,20 +673,24 @@ const Checkout = () => {
                             backdrop="static"
                             keyboard={true}
                             className='success_modal'
-                        >
+                            dialogClassName='successModalDialog'>
                             <Lottie className='lottie-content' animationData={animate1} loop={true}></Lottie>
                             <Modal.Header closeButton className='flex-column-reverse success_header'>
-                                <Modal.Title><Lottie animationData={animate2} loop={false}></Lottie></Modal.Title>
+                                <Modal.Title>
+                                    <Lottie animationData={animate2} loop={false} className='lottie-tick'></Lottie>
+                                </Modal.Title>
                             </Modal.Header>
-                            <Modal.Body className='success_body'>
-                                {t("order_placed_description")}
-                            </Modal.Body>
-                            <Modal.Footer className="success_footer">
-                                <Button variant="primary" onClick={handleClose} className='checkout_btn'>
+                            <Modal.Body className='success_body d-flex flex-column justify-content-center align-items-center'>
+                                <div>
+                                    {t("order_placed_description")}
+                                </div>
+                                <button onClick={handleClose} className='checkout_btn'>
                                     {t("go_to_home")}
-                                </Button>
+                                </button>
+                            </Modal.Body>
+                            {/* <Modal.Footer className="success_footer">
 
-                            </Modal.Footer>
+                            </Modal.Footer> */}
                         </Modal>
                     </>
                     : null}

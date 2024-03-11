@@ -427,13 +427,16 @@
   gap: 8px;
 }
 
-.order-info .order-status-container .status-body .checkmark input {
+/* .order-info .order-status-container .status-body .checkmark input {
   height: 20px;
   width: 20px;
 }
-
 .order-info .order-status-container .status-body .checkmark input:checked {
   accent-color: var(--secondary-color) !important;
+} */
+.order-info .order-status-container .status-body .checkmark > svg {
+  width: 20px;
+  height: 20px;
 }
 
 .order-info

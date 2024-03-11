@@ -521,7 +521,7 @@ const NewAddress = (props) => {
                                                 </label>
                                             </div>
                                             <div className='default-address'>
-                                                <input type="checkbox" className='mx-2' onChange={() => {
+                                                <input type="checkbox" className='mx-2' defaultValue={true} onChange={() => {
                                                     setaddressDetails(state => ({ ...state, is_default: !addressDetails.is_default }));
 
                                                 }} checked={addressDetails.is_default} />

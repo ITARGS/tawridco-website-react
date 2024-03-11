@@ -91,7 +91,7 @@
   "deliver_to": "Deliver to",
   "enter_area": "Enter Area",
   "enter_city": "Enter City",
-  "go_to_home": "Go To Home Page",
+  "go_to_home": "Home",
   "my_account": "My Account",
   "popularity": "Popularity",
   "store_info": "Store Info",
@@ -278,5 +278,13 @@
   "add_to_wallet": "Add money to your Wallet",
   "choose_payment_method": "Choose Payment Method",
   "type_amount": "Type Amount",
-  "paypal": "Paypal"
+  "paypal": "Paypal",
+  "credit": "Credit",
+  "debit": "Debit",
+  "success": "Success",
+  "failed": "Failed", 
+  "promo_code_discount": "Promo Code Discount",
+  "wallet_balance_used": "Wallet Used",
+  "order_paypal_pending_message": "It looks like your PayPal payment is still pending. You'll receive an update from PayPal soon to confirm it.",
+  "wallet_recharge_paypal_pending_message": "It seems your PayPal payment is still pending. Once confirmed, your wallet will be credited with the same amount."
 }

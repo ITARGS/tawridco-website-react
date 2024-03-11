@@ -2,7 +2,7 @@ importScripts('https://www.gstatic.com/firebasejs/3.5.2/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/3.5.2/firebase-messaging.js');
 
 firebase.initializeApp({
-    'messagingSenderId': '75577YOUR3183987'
+    'messagingSenderId': '755773183987'
 });
 
 const messaging = firebase.messaging();
@@ -23,5 +23,5 @@ try {
     });
 
 } catch (error) {
-    console.log(error);
+    console.log("This is an error ->", error);
 }

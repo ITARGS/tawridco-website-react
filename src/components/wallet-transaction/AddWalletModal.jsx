@@ -151,16 +151,18 @@ const AddWalletModal = (props) => {
             },
             callback: async function (response) {
                 console.log(response);
-                await api.addTransaction(cookies.get('jwt_token'), null, response.reference, paymentMethod, "wallet", amount)
+                await api.addTransaction(cookies.get('jwt_token'), null, response.transaction, paymentMethod, "wallet", amount)
                     .then(response => response.json())
                     .then(result => {
                         if (result.status === 1) {
                             console.log(result);
                             toast.success(result.message);
                             dispatch(addUserBalance({ data: parseInt(amount) }));
+                            props.setShowModal(false);
                         }
                         else {
                             toast.error(result.message);
+                            props.setShowModal(false);
                         }
                     })
                     .catch(error => console.log(error));
@@ -224,7 +226,7 @@ const AddWalletModal = (props) => {
                                         {t("choose_payment_method")}
                                     </div>
                                     <div className='d-flex flex-column gap-4'>
-                                        <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                        {/* <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
                                                 <img className='me-2' src={PaypalSVG} alt='paypalSVG' />
                                                 {t("paypal")}
@@ -232,7 +234,7 @@ const AddWalletModal = (props) => {
                                             <div>
                                                 <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("paypal")} />
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
 
@@ -243,7 +245,7 @@ const AddWalletModal = (props) => {
                                                 <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("razorpay")} />
                                             </div>
                                         </div>
-                                        <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                        {/* <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
 
                                                 <img className='me-2' src={PayStackSVG} alt='paystackSVG' />
@@ -252,7 +254,7 @@ const AddWalletModal = (props) => {
                                             <div>
                                                 <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("paystack")} />
                                             </div>
-                                        </div>
+                                        </div> */}
                                         <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
                                                 <img className='me-2' src={StripeSVG} alt='stripeSVG' />
@@ -262,7 +264,7 @@ const AddWalletModal = (props) => {
                                                 <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("stripe")} />
                                             </div>
                                         </div>
-                                        <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                        {/* <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
                                                 <img className='me-2' src={PaytmSVG} alt='paytmSVG' />
                                                 {t("Paytm")}
@@ -270,7 +272,7 @@ const AddWalletModal = (props) => {
                                             <div>
                                                 <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("paytm")} />
                                             </div>
-                                        </div>
+                                        </div> */}
 
                                     </div>
                                 </div>

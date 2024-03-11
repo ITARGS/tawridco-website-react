@@ -200,3 +200,6 @@ input[type="number"] {
   aspect-ratio: 1/1;
   object-fit: contain;
 }
+.cursorPointer {
+  cursor: pointer;
+}

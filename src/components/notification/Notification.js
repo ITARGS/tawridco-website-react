@@ -86,7 +86,7 @@ const Notification = () => {
             <div className='notification-container'>
               <div className="notifications">
                 <div className='heading'> {t("all_notification")}</div>
-                {notification.length !== 0
+                {notification.length === 0
                   ? (<div className='notification-body no-notification'>
                     <img src={No_Notification} className='no-data-img' alt='no-notification'></img>
                     <p>{t("empty_notification_list_message")}</p>

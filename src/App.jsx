@@ -43,6 +43,7 @@ import { setShop } from "./model/reducer/shopReducer";
 import ShopByCountriesPage from './components/shop-by-countries/ShopByCountriesPage';
 import ShopBySellersPage from './components/shop-by-seller/ShopBySellersPage';
 import AllRatingsAndReviews from './components/product/AllRatingsAndReviews';
+import PayPalPaymentHandler from './components/paypalPaymentHandler/PayPalPaymentHandler';
 
 
 
@@ -212,6 +213,7 @@ function App() {
                       <>
                         <Route exact={true} path="/cart" element={<ViewCart />}></Route>
                         <Route exact={true} path="/checkout" element={<Checkout />}></Route>
+                        <Route exact={true} path='/web-payment-status' element={<PayPalPaymentHandler />}></Route>
                         <Route exact={true} path='/wishlist' element={<Wishlist />}></Route>
                         <Route exact={true} path="/profile" element={<ProfileDashboard />}></Route>
                         <Route exact={true} path="/profile/orders" element={<ProfileDashboard showOrders={true} />}></Route>

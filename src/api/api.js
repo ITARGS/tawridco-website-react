@@ -548,6 +548,7 @@ const api = {
         return fetch(appUrl + appSubUrl + "/settings/time_slots", requestOptions);
     },
     placeOrder(token, product_variant_id, quantity, total, delivery_charge, final_total, payment_method, address_id, deliveryTime, promocode_id = 0, wallet_balance, wallet_used) {
+        console.log(token, product_variant_id, quantity, total, delivery_charge, final_total, payment_method, address_id, deliveryTime, promocode_id = 0, wallet_balance, wallet_used);
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
@@ -568,7 +569,7 @@ const api = {
             formdata.append("wallet_used", wallet_used);
         }
         promocode_id !== 0 && formdata.append("promocode_id", promocode_id);
-        payment_method === "COD" ? formdata.append("status", 2) : formdata.append("status", 1);
+        payment_method === "COD" || payment_method === "Wallet" ? formdata.append("status", 2) : formdata.append("status", 1);
 
         var requestOptions = {
             method: 'POST',
@@ -713,6 +714,7 @@ const api = {
         }
         else if (payment_method.toLocaleLowerCase() === 'paypal') {
             formData.append("payment_method", "Paypal");
+            formData.append("request_from", "website");
         }
 
         var requestOptions = {

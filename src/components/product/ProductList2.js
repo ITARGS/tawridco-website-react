@@ -130,29 +130,14 @@ const ProductList2 = React.memo(() => {
                 else {
                     setproductresult([]);
                     settotalProducts(0);
+                    setSizes([]);
                 }
                 setisLoader(false);
             })
             .catch(error => console.log("error ", error));
     };
 
-    const filterByCategory = (category) => {
-        if (category.has_child) {
-            fetchCategories(category.id);
-        } else {
 
-            setcurrPage(1);
-            setoffset(0);
-            if (filter.category_id === category.id) {
-                dispatch(setFilterCategory({ data: null }));
-                // dispatch({ type: ActionTypes.SET_FILTER_CATEGORY, payload: null });
-            }
-            else {
-                dispatch(setFilterCategory({ data: category.id }));
-                // dispatch({ type: ActionTypes.SET_FILTER_CATEGORY, payload: category.id });
-            }
-        }
-    };
 
     const sort_unique_brand_ids = (int_brand_ids) => {
         if (int_brand_ids.length === 0) return int_brand_ids;
@@ -293,7 +278,7 @@ const ProductList2 = React.memo(() => {
         return (
             <>
                 <div className='filter-row'>
-                    <h5 className='product-filter-headline d-flex w-100 align-items-center justify-content-between'>{t("brand")}
+                    <h5 className='product-filter-headline d-flex w-100 align-items-center justify-content-between'>{t("brands")}
                         <span className='btn border-0' onClick={() => {
                             dispatch(setFilterBrands({ data: [] }));
                             dispatch(setFilterCategory({ data: null }));
@@ -329,7 +314,7 @@ const ProductList2 = React.memo(() => {
 
                 </div>
 
-                <div className='filter-row'>
+                {(totalProducts != 0) ? <div className='filter-row'>
                     <h5>{t("filter")} {t("by_price")}</h5>
                     {
                         (minPrice === null || maxPrice === null)
@@ -411,9 +396,9 @@ const ProductList2 = React.memo(() => {
                                 </div>
                             )}
 
-                </div>
+                </div> : null}
 
-                <div className='filter-row' style={{ height: "456px", overflow: "auto" }} >
+                {(sizes?.length !== 0) ? <div className='filter-row' style={{ height: "456px", overflow: "auto" }} >
                     <h2 className='product-filter-headline d-flex w-100 align-items-center justify-content-between'>
                         <span>{t("Filter By Sizes")}</span>
                     </h2>
@@ -441,7 +426,7 @@ const ProductList2 = React.memo(() => {
                             ))
                         )
                     }
-                </div>
+                </div> : null}
             </>
         );
     };
@@ -463,23 +448,6 @@ const ProductList2 = React.memo(() => {
                             //console.log(res);
                             if (res.status === 1) {
                                 setShowModal(false);
-                                // const updatedProduct = productresult.map((product) => {
-                                //     if (product.id === product_id) {
-                                //         return {
-                                //             ...product,
-                                //             variants: product.variants.map((variant) => {
-                                //                 if (variant.id === product_variant_id) {
-                                //                     return {
-                                //                         ...variant,
-                                //                         cart_count: qty, // Increment cart_count by 1
-                                //                     };
-                                //                 }
-                                //                 return variant;
-                                //             }),
-                                //         };
-                                //     }
-                                //     return product;
-                                // });
                                 dispatch(setCart({ data: res }));
                                 setP_id(product_id);
                                 setP_V_id(product_variant_id);

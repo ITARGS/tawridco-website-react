@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import HomeContainer from './homecontainer/HomeContainer';
 import Loader from './loader/Loader';
 import ProductContainer from './product/ProductContainer';
@@ -8,12 +8,15 @@ import { Modal } from 'react-bootstrap';
 
 const MainContainer = () => {
 
-    const dispatch = useDispatch();
-
     const modalRef = useRef();
 
     const setting = useSelector(state => state.setting);
-
+    const shop = useSelector(state => state.shop.shop);
+    console.log(shop.offers);
+    const aboveHomeSlider = shop?.offers?.filter((offer) => offer?.position === "top");
+    const BelowHomeSlider = shop?.offers?.filter((offer) => offer.position === "below_slider");
+    const BelowCategory = shop?.offers?.filter((offer) => offer.position === "below_category");
+    const BelowSectionOfferArray = shop?.offers?.filter((offer) => offer.position === "below_section");
 
     useEffect(() => {
 
@@ -35,8 +38,8 @@ const MainContainer = () => {
                 : (
                     <>
                         <div className='home-page content' style={{ paddingBottom: "5px", minHeight: "75vh" }}>
-                            <HomeContainer />
-                            <ProductContainer showModal={showModal} setShowModal={setShowModal} />
+                            <HomeContainer OfferImagesArray={aboveHomeSlider} BelowSliderOfferArray={BelowHomeSlider} BelowCategoryOfferArray={BelowCategory} />
+                            <ProductContainer showModal={showModal} setShowModal={setShowModal} BelowSectionOfferArray={BelowSectionOfferArray} />
                         </div>
 
                         {parseInt(setting.setting.popup_enabled) === 1 ?

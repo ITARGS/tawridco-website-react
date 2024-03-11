@@ -510,7 +510,7 @@ const ProductDetails = () => {
                             : (
 
                                 <div className='row body-wrapper '>
-                                    <div className="col-xl-6 col-lg-6 col-md-12 col-12">
+                                    <div className="col-xl-4 col-lg-6 col-md-12 col-12">
 
                                         <div className='image-wrapper '>
                                             <div className='main-image col-12 border'>
@@ -519,7 +519,7 @@ const ProductDetails = () => {
 
 
                                             <div className='sub-images-container'>
-                                                {images.length >= 4 ?
+                                                {images.length >= 1 ?
                                                     <>
                                                         <Slider {...settings_subImage} className='imageListSlider'>
                                                             {images.map((image, index) => (
@@ -806,7 +806,7 @@ const ProductDetails = () => {
                                                         >
                                                             <span>
                                                                 <img src={ratingSVG} alt='starLogo' />
-                                                                {productRating?.average_rating}
+                                                                {productRating?.rating_list?.length}
                                                             </span>
                                                         </OverlayTrigger>
                                                     </div> : null}

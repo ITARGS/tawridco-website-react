@@ -99,7 +99,7 @@ const Address = () => {
                                 <div key={index} className='address-component'>
                                     <div className='d-flex justify-content-between'>
                                         <div className='d-flex gap-2 align-items-center justify'>
-                                            <input className="form-input" type="radio" name="AddressRadio" id={`AddressRadioId${index}`} defaultChecked={address.is_default === 1} onChange={() => {
+                                            <input className="form-input" type="radio" name="AddressRadio" id={`AddressRadioId${index}`} defaultChecked={address?.is_default === 1 ? true : index === 0} onChange={() => {
                                                 dispatch(setSelectedAddress({ data: address }));
                                             }} />
                                             <label className="form-check-label" htmlFor={`AddressRadioId${index}`}>
