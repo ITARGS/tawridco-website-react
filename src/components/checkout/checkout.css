@@ -1,6 +1,11 @@
 .lottie-content {
   position: absolute;
   top: 0;
+  width: 170px;
+}
+
+.lottie-tick {
+  width: 180px;
 }
 
 .cover {
@@ -327,7 +332,13 @@
 .FormRow div div input {
   border: 5px solid black;
 }
-
+.successModalDialog {
+  width: 500px !important;
+  height: 500px !important;
+}
+.successModalDialog > .modal-content {
+  height: 100%;
+}
 .success_modal .success_body {
   font-size: 24px;
   border: 0;
@@ -343,13 +354,16 @@
   justify-content: center;
 }
 
-.success_modal .success_footer .checkout_btn {
-  width: 70%;
-  font-size: 14px;
+.success_modal .checkout_btn {
+  width: 50%;
+  height: 25%;
+  font-size: 18px;
   z-index: 9;
   background-color: var(--secondary-color);
+  color: var(--bs-white);
   border: 0;
   font-weight: 700;
+  margin-top: 50px;
 }
 
 .order-container .promo-section {

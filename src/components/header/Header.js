@@ -29,12 +29,15 @@ import { setNotification } from "../../model/reducer/notificationReducer";
 import { setFavourite } from "../../model/reducer/favouriteReducer";
 import { setFilterBrands, setFilterCategory, setFilterMinMaxPrice, setFilterSearch } from "../../model/reducer/productFilterReducer";
 import { Modal } from 'antd';
+// import { Modal } from "react-bootstrap";
+
 import "../location/location.css";
 
 const Header = () => {
 
     const [isLocationPresent, setisLocationPresent] = useState(false);
     const [totalNotification, settotalNotification] = useState(null);
+    const [isDesktopView, setIsDesktopView] = useState(window.innerWidth > 768);
     const [search, setsearch] = useState("");
 
     const locationModalTrigger = useRef();
@@ -76,7 +79,7 @@ const Header = () => {
 
     useEffect(() => {
         if (bodyScroll) {
-            document.body.style.overflow = 'hidden';
+            document.body.style.overflow = 'auto';
             document.body.style.height = '100vh';
         } else {
             document.body.style.overflow = 'auto';
@@ -235,6 +238,23 @@ const Header = () => {
 
         e.target.src = setting.setting?.web_logo;
     };
+    const handleResize = () => {
+        setIsDesktopView(window.innerWidth > 768);
+    };
+    useEffect(() => {
+        handleResize();
+        window.addEventListener('resize', handleResize);
+
+        // Cleanup the event listener when the component unmounts
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
+    // console.log(isDesktopView)
+    const [mobileNavActKey, setMobileNavActKey] = useState(null);
+    const handleMobileNavActKey = (key) => {
+        setMobileNavActKey(key == mobileNavActKey ? null : key);
+    };
     return (
         <>
             {/* sidebar */}
@@ -249,7 +269,7 @@ const Header = () => {
                         <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeSidebarRef}><AiOutlineCloseCircle /></button>
                     </div>
                     <div className="canvas-main">
-                        <div className='site-location'>
+                        <div className={isDesktopView ? "site-location " : "site-location d-none"}>
                             <button whiletap={{ scale: 0.8 }} type='buton' onClick={openCanvasModal} >
                                 <div className='d-flex flex-row gap-2'>
                                     <div className='icon location p-1 m-auto'>
@@ -436,9 +456,9 @@ const Header = () => {
                                 </div> */}
 
                                 <div className='language-container bg-white' >
-                                    <MdGTranslate size={24} />
                                     <Dropdown>
                                         <Dropdown.Toggle>
+                                            <MdGTranslate size={20} className='me-2' />
                                             {languages.current_language && languages.current_language.name}
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu>
@@ -527,8 +547,7 @@ const Header = () => {
                                     </div>
                                 </button>
 
-                                <></>
-                                <div className='header-search rounded-3 '>
+                                <div className={`header-search rounded-3 ${mobileNavActKey == 2 ? "active" : ""}`}>
                                     <form onSubmit={(e) => {
                                         e.preventDefault();
                                         if (search !== "") {
@@ -536,10 +555,10 @@ const Header = () => {
                                             // dispatch(setFilterCategory({ data: null }));
                                             // dispatch(setFilterBrands({ data: [] }));
                                             // dispatch(setFilterMinMaxPrice({ data: null }));
+                                            searchNavTrigger.current.click();
                                             navigate('/products');
                                             // if (curr_url.pathname !== '/products') {
                                             // }
-                                            searchNavTrigger.current.click();
                                         }
 
                                     }}
@@ -666,23 +685,28 @@ const Header = () => {
                                                 }}>
                                                 <IoCartOutline />
                                             </button>
-                                            : <button type='button' whileTap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
-                                                onClick={() => {
-                                                    if (cookies.get('jwt_token') === undefined) {
-                                                        toast.error(t("required_login_message_for_cartRedirect"));
-                                                    }
-                                                    else if (city.city === null) {
-                                                        toast.error("Please Select you delivery location first!");
-                                                    }
-                                                }}>
-                                                <IoCartOutline />
-                                                {cart.cart !== null ?
-                                                    <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
-                                                        {cart.cart.total}
-                                                        <span className="visually-hidden">unread messages</span>
-                                                    </span>
-                                                    : null}
-                                            </button>
+                                            : <>
+                                                <button type='button' className={isDesktopView ? "d-none" : "d-block"} onClick={openCanvasModal}>
+                                                    <GoLocation size={25} style={{ backgroundColor: `var(--second-cards-color)` }} />
+                                                </button>
+                                                <button type='button' whileTap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
+                                                    onClick={() => {
+                                                        if (cookies.get('jwt_token') === undefined) {
+                                                            toast.error(t("required_login_message_for_cartRedirect"));
+                                                        }
+                                                        else if (city.city === null) {
+                                                            toast.error("Please Select you delivery location first!");
+                                                        }
+                                                    }}>
+                                                    <IoCartOutline />
+                                                    {cart.cart !== null ?
+                                                        <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
+                                                            {cart.cart.total}
+                                                            <span className="visually-hidden">unread messages</span>
+                                                        </span>
+                                                        : null}
+                                                </button>
+                                            </>
                                 }
 
                                 {user.status === 'loading'
@@ -721,19 +745,20 @@ const Header = () => {
                     <div className='mobile-nav-wrapper'>
                         <ul>
                             <li className='menu-item'>
-                                <Link to='/products' className={`shop ${curr_url.pathname === '/products' ? 'active' : ''}`} onClick={() => {
-                                    document.getElementsByClassName('shop')[0].classList.add('active');
-                                    if (curr_url.pathname !== '/products') {
-                                        if (curr_url.pathname === '/products') {
-                                            document.getElementsByClassName('filter')[0].classList.remove('active');
-                                        }
-                                        if (curr_url.pathname === '/profile') {
-                                            document.getElementsByClassName('profile-account')[0].classList.remove('active');
-                                        }
-                                        document.getElementsByClassName('wishlist')[0].classList.remove('active');
-                                        document.getElementsByClassName('search')[0].classList.remove('active');
-                                        document.getElementsByClassName('header-search')[0].classList.remove('active');
-                                    }
+                                <Link to='/products' className={`shop ${curr_url.pathname === '/products' && mobileNavActKey == 1 ? 'active' : ''}`} onClick={() => {
+                                    // document.getElementsByClassName('shop')[0].classList.add('active');
+                                    // if (curr_url.pathname !== '/products') {
+                                    //     if (curr_url.pathname === '/products') {
+                                    //         document.getElementsByClassName('filter')[0].classList.remove('active');
+                                    //     }
+                                    //     if (curr_url.pathname === '/profile') {
+                                    //         document.getElementsByClassName('profile-account')[0].classList.remove('active');
+                                    //     }
+                                    //     document.getElementsByClassName('wishlist')[0].classList.remove('active');
+                                    //     document.getElementsByClassName('search')[0].classList.remove('active');
+                                    //     document.getElementsByClassName('header-search')[0].classList.remove('active');
+                                    // }
+                                    handleMobileNavActKey(1);
                                 }}>
                                     <div>
                                         <BsShopWindow />
@@ -743,20 +768,21 @@ const Header = () => {
                             </li>
 
                             <li className='menu-item'>
-                                <button type='button' className='search' ref={searchNavTrigger} onClick={() => {
-
-                                    document.getElementsByClassName('search')[0].classList.toggle('active');
-                                    if (curr_url.pathname === '/products') {
-                                        document.getElementsByClassName('filter')[0].classList.remove('active');
-                                    }
-                                    if (curr_url.pathname === '/profile') {
-                                        document.getElementsByClassName('profile-account')[0].classList.remove('active');
-                                    }
-                                    document.getElementsByClassName('wishlist')[0].classList.remove('active');
-                                    if (curr_url.pathname !== '/products') {
-                                        document.getElementsByClassName('shop')[0].classList.remove('active');
-                                    }
-                                    document.getElementsByClassName('header-search')[0].classList.toggle('active');
+                                <button type='button' className={`search ${mobileNavActKey == 2 ? "active" : ""}`} ref={searchNavTrigger} onClick={() => {
+                                    handleMobileNavActKey(2);
+                                    searchNavTrigger.current.focus();
+                                    // document.getElementsByClassName('header-search')[0].classList.toggle('active');
+                                    // document.getElementsByClassName('search')[0].classList.toggle('active');
+                                    // if (curr_url.pathname === '/products') {
+                                    //     document.getElementsByClassName('filter')[0].classList.remove('active');
+                                    // }
+                                    // if (curr_url.pathname === '/profile') {
+                                    //     document.getElementsByClassName('profile-account')[0].classList.remove('active');
+                                    // }
+                                    // document.getElementsByClassName('wishlist')[0].classList.remove('active');
+                                    // if (curr_url.pathname !== '/products') {
+                                    //     document.getElementsByClassName('shop')[0].classList.remove('active');
+                                    // }
                                 }}>
                                     <div>
                                         <MdSearch />
@@ -767,17 +793,18 @@ const Header = () => {
 
                             {curr_url.pathname === '/products' ? (
                                 <li className='menu-item'>
-                                    <button type='button' className='filter' data-bs-toggle="offcanvas" data-bs-target="#filteroffcanvasExample" aria-controls="filteroffcanvasExample" onClick={() => {
-                                        if (curr_url.pathname === '/profile') {
-                                            document.getElementsByClassName('profile-account')[0].classList.remove('active');
-                                        }
-                                        document.getElementsByClassName('filter')[0].classList.toggle('active');
-                                        document.getElementsByClassName('search')[0].classList.remove('active');
-                                        document.getElementsByClassName('wishlist')[0].classList.remove('active');
-                                        if (curr_url.pathname !== '/products') {
-                                            document.getElementsByClassName('shop')[0].classList.remove('active');
-                                        }
-                                        document.getElementsByClassName('header-search')[0].classList.remove('active');
+                                    <button type='button' className={`filter ${mobileNavActKey == 3 ? "active" : ""}`} data-bs-toggle="offcanvas" data-bs-target="#filteroffcanvasExample" aria-controls="filteroffcanvasExample" onClick={() => {
+                                        // if (curr_url.pathname === '/profile') {
+                                        //     document.getElementsByClassName('profile-account')[0].classList.remove('active');
+                                        // }
+                                        handleMobileNavActKey(3);
+                                        // document.getElementsByClassName('filter')[0].classList.toggle('active');
+                                        // document.getElementsByClassName('search')[0].classList.remove('active');
+                                        // document.getElementsByClassName('wishlist')[0].classList.remove('active');
+                                        // if (curr_url.pathname !== '/products') {
+                                        //     document.getElementsByClassName('shop')[0].classList.remove('active');
+                                        // }
+                                        // document.getElementsByClassName('header-search')[0].classList.remove('active');
                                     }}>
                                         <div>
                                             <FiFilter />
@@ -789,7 +816,7 @@ const Header = () => {
 
                             <li className='menu-item'>
                                 {city.city === null || cookies.get('jwt_token') === undefined
-                                    ? <button type='button' className='wishlist' onClick={() => {
+                                    ? <button type='button' className={`wishlist ${mobileNavActKey == 4 ? "active" : ""}`} onClick={() => {
 
                                         if (cookies.get('jwt_token') === undefined) {
                                             toast.error(t("required_login_message_for_wishlist"));
@@ -798,18 +825,20 @@ const Header = () => {
                                             toast.error("Please Select you delivery location first!");
                                         }
                                         else {
-                                            document.getElementsByClassName('wishlist')[0].classList.toggle('active');
-                                            if (curr_url.pathname === '/products') {
-                                                document.getElementsByClassName('filter')[0].classList.remove('active');
-                                            }
-                                            if (curr_url.pathname === '/profile') {
-                                                document.getElementsByClassName('profile-account')[0].classList.remove('active');
-                                            }
-                                            if (curr_url.pathname !== '/products') {
-                                                document.getElementsByClassName('shop')[0].classList.remove('active');
-                                            }
-                                            document.getElementsByClassName('search')[0].classList.remove('active');
-                                            document.getElementsByClassName('header-search')[0].classList.remove('active');
+                                            handleMobileNavActKey(4);
+                                            navigate("/wishlist");
+                                            // document.getElementsByClassName('wishlist')[0].classList.toggle('active');
+                                            // if (curr_url.pathname === '/products') {
+                                            //     document.getElementsByClassName('filter')[0].classList.remove('active');
+                                            // }
+                                            // if (curr_url.pathname === '/profile') {
+                                            //     document.getElementsByClassName('profile-account')[0].classList.remove('active');
+                                            // }
+                                            // if (curr_url.pathname !== '/products') {
+                                            //     document.getElementsByClassName('shop')[0].classList.remove('active');
+                                            // }
+                                            // document.getElementsByClassName('search')[0].classList.remove('active');
+                                            // document.getElementsByClassName('header-search')[0].classList.remove('active');
                                         }
 
 
@@ -820,7 +849,7 @@ const Header = () => {
                                         </div>
                                         <span>{t("wishList")}</span>
                                     </button>
-                                    : <button type='button' className='wishlist' onClick={() => {
+                                    : <button type='button' className={`wishlist ${mobileNavActKey == 4 ? "active" : ""}`} onClick={() => {
 
                                         if (cookies.get('jwt_token') === undefined) {
                                             toast.error(t("required_login_message_for_cartRedirect"));
@@ -829,22 +858,24 @@ const Header = () => {
                                             toast.error("Please Select you delivery location first!");
                                         }
                                         else {
-                                            document.getElementsByClassName('wishlist')[0].classList.toggle('active');
-                                            if (curr_url.pathname === '/products') {
-                                                document.getElementsByClassName('filter')[0].classList.remove('active');
-                                            }
-                                            if (curr_url.pathname === '/profile') {
-                                                document.getElementsByClassName('profile-account')[0].classList.remove('active');
-                                            }
-                                            if (curr_url.pathname !== '/products') {
-                                                document.getElementsByClassName('shop')[0].classList.remove('active');
-                                            }
-                                            document.getElementsByClassName('search')[0].classList.remove('active');
-                                            document.getElementsByClassName('header-search')[0].classList.remove('active');
+                                            // document.getElementsByClassName('wishlist')[0].classList.toggle('active');
+                                            // if (curr_url.pathname === '/products') {
+                                            //     document.getElementsByClassName('filter')[0].classList.remove('active');
+                                            // }
+                                            // if (curr_url.pathname === '/profile') {
+                                            //     document.getElementsByClassName('profile-account')[0].classList.remove('active');
+                                            // }
+                                            // if (curr_url.pathname !== '/products') {
+                                            //     document.getElementsByClassName('shop')[0].classList.remove('active');
+                                            // }
+                                            // document.getElementsByClassName('search')[0].classList.remove('active');
+                                            // document.getElementsByClassName('header-search')[0].classList.remove('active');
+                                            handleMobileNavActKey(4);
+                                            navigate("/wishlist");
                                         }
-
-
-                                    }} data-bs-toggle="offcanvas" data-bs-target="#favoriteoffcanvasExample" aria-controls="favoriteoffcanvasExample">
+                                    }
+                                    }>
+                                        {/*  data-bs-toggle="offcanvas" data-bs-target="#favoriteoffcanvasExample" aria-controls="favoriteoffcanvasExample" */}
                                         <div>
                                             <IoHeartOutline />
 
@@ -862,8 +893,8 @@ const Header = () => {
 
                             {curr_url.pathname === '/profile' ? (
                                 <li className='menu-item'>
-                                    <button type='button' className='profile-account' onClick={() => {
-
+                                    <button type='button' className={`profile-account user-profile ${mobileNavActKey == 5 ? "active" : ""}`} onClick={() => {
+                                        handleMobileNavActKey(5);
                                         document.getElementsByClassName('profile-account')[0].classList.toggle('active');
                                         document.getElementsByClassName('wishlist')[0].classList.remove('active');
                                         if (curr_url.pathname === '/products') {
@@ -876,9 +907,12 @@ const Header = () => {
                                         document.getElementsByClassName('header-search')[0].classList.remove('active');
 
                                     }} data-bs-toggle="offcanvas" data-bs-target="#profilenavoffcanvasExample" aria-controls="profilenavoffcanvasExample">
-                                        <div>
+                                        {/* <div>
                                             <MdOutlineAccountCircle />
 
+                                        </div> */}
+                                        <div>
+                                            <img src={user?.user?.profile} alt='profile_image' />
                                         </div>
                                         <span>{t("my_account")}</span>
                                     </button>
@@ -889,17 +923,17 @@ const Header = () => {
                                         {user.status === 'loading'
                                             ? (
                                                 <>
-                                                    <button type='button' className='account' data-bs-toggle="modal" data-bs-target="#loginModal" onClick={() => {
-
-                                                        document.getElementsByClassName('wishlist')[0].classList.remove('active');
-                                                        if (curr_url.pathname === '/products') {
-                                                            document.getElementsByClassName('filter')[0].classList.remove('active');
-                                                        }
-                                                        if (curr_url.pathname !== '/products') {
-                                                            document.getElementsByClassName('shop')[0].classList.remove('active');
-                                                        }
-                                                        document.getElementsByClassName('search')[0].classList.remove('active');
-                                                        document.getElementsByClassName('header-search')[0].classList.remove('active');
+                                                    <button type='button' className={`account ${mobileNavActKey == 5 ? "active" : ""}`} data-bs-toggle="modal" data-bs-target="#loginModal" onClick={() => {
+                                                        handleMobileNavActKey(5);
+                                                        // document.getElementsByClassName('wishlist')[0].classList.remove('active');
+                                                        // if (curr_url.pathname === '/products') {
+                                                        //     document.getElementsByClassName('filter')[0].classList.remove('active');
+                                                        // }
+                                                        // if (curr_url.pathname !== '/products') {
+                                                        //     document.getElementsByClassName('shop')[0].classList.remove('active');
+                                                        // }
+                                                        // document.getElementsByClassName('search')[0].classList.remove('active');
+                                                        // document.getElementsByClassName('header-search')[0].classList.remove('active');
 
                                                     }}>
                                                         <div>
@@ -913,19 +947,19 @@ const Header = () => {
                                             )
                                             : (
                                                 <>
-                                                    <Link to='/profile' className='d-flex user-profile gap-1 account' onClick={() => {
+                                                    <Link to='/profile' className={`d-flex user-profile account ${mobileNavActKey == 5 ? "active" : ""}`} onClick={() => {
+                                                        handleMobileNavActKey(5);
+                                                        // document.getElementsByClassName('wishlist')[0].classList.remove('active');
+                                                        // if (curr_url.pathname === '/products') {
+                                                        //     document.getElementsByClassName('filter')[0].classList.remove('active');
+                                                        // }
+                                                        // if (curr_url.pathname !== '/products') {
+                                                        //     document.getElementsByClassName('shop')[0].classList.remove('active');
+                                                        // }
+                                                        // document.getElementsByClassName('search')[0].classList.remove('active');
+                                                        // document.getElementsByClassName('header-search')[0].classList.remove('active');
 
-                                                        document.getElementsByClassName('wishlist')[0].classList.remove('active');
-                                                        if (curr_url.pathname === '/products') {
-                                                            document.getElementsByClassName('filter')[0].classList.remove('active');
-                                                        }
-                                                        if (curr_url.pathname !== '/products') {
-                                                            document.getElementsByClassName('shop')[0].classList.remove('active');
-                                                        }
-                                                        document.getElementsByClassName('search')[0].classList.remove('active');
-                                                        document.getElementsByClassName('header-search')[0].classList.remove('active');
-
-                                                    }}>
+                                                    }} >
                                                         <div className='d-flex flex-column user-info my-auto'>
                                                             <span className='name'> {user.user?.name}</span>
                                                         </div>
@@ -957,6 +991,7 @@ const Header = () => {
                     id="locationModal"
                     centered
                     open={locModal}
+                    transitionName=''
                 >
                     <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
                         showModal={locModal} setLocModal={setLocModal} bodyScroll={setBodyScroll} />

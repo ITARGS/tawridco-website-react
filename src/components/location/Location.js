@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setCity } from '../../model/reducer/locationReducer';
-
 // const libraries = ["places"];
 
 const Location = (props) => {
@@ -338,13 +337,14 @@ const Location = (props) => {
   };
   const { t } = useTranslation();
 
-  useEffect(() => {
-    import('./location.css');
-    if (setting.setting?.default_city) {
-      // closeModalRef.current?.click()
-      props.setLocModal(false);
-    }
-  }, [setting]);
+  // useEffect(() => {
+  //   console.log("Location useEffect Runned");
+  //   import('./location.css');
+  //   if (setting.setting?.default_city) {
+  //     // closeModalRef.current?.click()
+  //     props.setLocModal(false);
+  //   }
+  // }, [setting]);
 
 
   // console.log(isloading);
@@ -439,12 +439,12 @@ const Location = (props) => {
                     )
                     : (
                       <>
-                        <div className='w-100'>
+                        <div className='w-100 mapWrapper'>
 
                           <GoogleMap streetViewControl={false} tilt={true} options={{
                             streetViewControl: false
                           }} zoom={11} center={center} mapContainerStyle={{ height: "400px" }}>
-                            <button className='current-location-click' whiletap={{ scale: 0.6 }} onClick={handleCurrentLocationClick} style={{ position: "relative", zIndex: 10 }}>
+                            <button className='current-location-click' whiletap={{ scale: 0.6 }} onClick={handleCurrentLocationClick} >
                               <BiCurrentLocation className='mx-3' /></button>
                             <MarkerF position={center} draggable={true} onDragStart={onMarkerDragStart} onDragEnd={onMarkerDragEnd}>
                             </MarkerF>

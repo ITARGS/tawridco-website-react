@@ -6,7 +6,7 @@
   bottom: 0;
 }
 
-@media (max-width:479px) {
+@media (max-width: 479px) {
   #footer {
     bottom: 17px;
   }
@@ -19,7 +19,6 @@
   color: var(--text-field-color);
   font-size: 2.3rem;
   font-weight: 600;
-
 }
 
 #footer a,
@@ -68,7 +67,6 @@
   display: flex;
   justify-content: space-between;
   color: var(--text-field-color);
-  ;
   align-items: center;
   padding: 8px 0;
 }
@@ -76,8 +74,6 @@
 #footer .copyright p {
   margin: auto;
   color: var(--text-field-color);
-  ;
-
 }
 
 @media (max-width: 48rem) {
@@ -110,7 +106,6 @@
   display: flex;
   align-items: center;
   color: var(--text-field-color);
-  ;
   gap: 5px;
   font-size: 14px;
   font-weight: 700;
@@ -121,9 +116,8 @@
   border-radius: 5px;
   width: 50px;
   background: var(--text-field-color);
-  ;
   margin: 5px;
-  padding: 8px
+  padding: 8px;
 }
 
 #footer .payment_methods_container .payment_methods img {
@@ -132,13 +126,11 @@
 
 #footer .download_desc p {
   color: var(--text-field-color);
-  ;
   font-size: 16px;
   font-weight: 600;
 }
 
 #footer .app-title {
-
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

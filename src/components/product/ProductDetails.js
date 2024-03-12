@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import './product.css';
-// import { FaRupeeSign } from "react-icons/fa";
 import { BsHeart, BsShare, BsPlus, BsHeartFill } from "react-icons/bs";
 import { BiMinus, BiLink } from 'react-icons/bi';
 import { toast } from 'react-toastify';
 import api from '../../api/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { ActionTypes } from '../../model/action-type';
 import { useNavigate, Link, useParams } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import Slider from 'react-slick';
 import { AiOutlineEye } from 'react-icons/ai';
-import { FaChevronLeft, FaChevronRight, FaRupeeSign } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FacebookIcon, FacebookShareButton, TelegramIcon, TelegramShareButton, WhatsappIcon, WhatsappShareButton } from 'react-share';
 import QuickViewModal from './QuickViewModal';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -21,6 +19,13 @@ import { clearSelectedProduct, setSelectedProduct } from '../../model/reducer/se
 import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
 import { setFavourite } from '../../model/reducer/favouriteReducer';
 import Popup from '../same-seller-popup/Popup';
+import useGetProductRatingsById from '../../hooks/useGetProductRatingsById';
+import { OverlayTrigger, Popover, ProgressBar } from 'react-bootstrap';
+import ratingSVG from "../../utils/rating.svg";
+import ProductDetailsTabs from './ProductDetailsTabs';
+import StarFilledSVG from "../../utils/StarFilled.svg";
+import StarUnfilledSVG from "../../utils/StarUnfilled.svg";
+
 
 const ProductDetails = () => {
 
@@ -36,9 +41,9 @@ const ProductDetails = () => {
     const favorite = useSelector(state => (state.favourite));
 
     useEffect(() => {
+        window.scrollTo({ top: 0 });
         return () => {
             dispatch(clearSelectedProduct({ data: null }));
-            //dispatch({ type: ActionTypes.CLEAR_SELECTED_PRODUCT, payload: null });
             setproductcategory({});
             setproductbrand({});
         };
@@ -217,6 +222,7 @@ const ProductDetails = () => {
         slidesToShow: 3,
         initialSlide: 0,
         // centerMargin: "10px",
+        horizontal: true,
         margin: "20px",
         prevArrow: (
             <button
@@ -262,8 +268,10 @@ const ProductDetails = () => {
             },
         ],
     };
-
-
+    const [limit, setLimit] = useState(12);
+    const [offset, setOffset] = useState(0);
+    const { productRating, totalData, loading: Loading, error } = useGetProductRatingsById(cookies.get("jwt_token"), productdata?.id, limit, offset);
+    // console.log(productRating);
     //for product variants dropdown in product card
 
 
@@ -396,6 +404,93 @@ const ProductDetails = () => {
     const placeHolderImage = (e) => {
         e.target.src = setting.setting?.web_logo;
     };
+    const calculatePercentage = (totalRating, starWiseRating) => {
+        const percentage = (starWiseRating * 100) / totalRating;
+        return percentage;
+    };
+    const popover = (
+        <Popover>
+            <Popover.Body className='ratingPopOverBody'>
+                <div className='d-flex flex-row justify-content-start align-items-center ratingCircleContainer'>
+                    <div className='ratingCircle'>
+                        {productRating?.average_rating}
+                    </div>
+                    <div className='d-flex flex-column justify-content-center align-items-center'>
+                        <div>{t("rating")}
+                        </div>
+                        <div className='fw-bold'>
+                            {totalData}
+                        </div>
+                    </div>
+                </div>
+                <div className='d-flex justify-content-start align-items-center gap-4'>
+                    {t("5")}
+                    <div className='d-flex gap-1'>
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                    </div>
+                    <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.five_star_rating))} className='ratingBar' />
+                    <div>
+                        {productRating?.five_star_rating}
+                    </div>
+                </div>
+                <div className='d-flex justify-content-start align-items-center mt-3 gap-4'>
+                    {t("4")}
+                    <div className='d-flex gap-1'>
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                    </div>
+                    <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.four_star_rating))} className='ratingBar' />
+                    <div>
+                        {productRating?.four_star_rating}
+                    </div>
+                </div>
+                <div className='d-flex justify-content-start align-items-center mt-3 gap-4'>
+                    {t("3")}
+                    <div className='d-flex gap-1'>
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                    </div>
+                    <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.three_star_rating))} className='ratingBar' />
+                    <div>{productRating?.three_star_rating}</div>
+                </div>
+                <div className='d-flex justify-content-start align-items-center mt-3 gap-4'>
+                    {t("2")}
+                    <div className='d-flex gap-1'>
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                    </div>
+                    <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.two_star_rating))} className='ratingBar' />
+                    <div>{productRating?.two_star_rating}</div>
+                </div>
+                <div className='d-flex justify-content-start align-items-center mt-3 gap-4'>
+                    {t("1")}
+                    <div className='d-flex gap-1'>
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                    </div>
+                    <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.one_star_rating))} className='ratingBar' />
+                    <div>{productRating?.one_star_rating}</div>
+                </div>
+            </Popover.Body>
+        </Popover>
+    );
+
     return (
         <>
             {loading && <Loader screen="full" background="none" />}
@@ -406,9 +501,10 @@ const ProductDetails = () => {
 
                         {product.selectedProduct_id === null || Object.keys(productdata).length === 0 || Object.keys(productSize).length === 0 ? (
                             <div className="d-flex justify-content-center">
-                                <div className="spinner-border" role="status">
+                                {/* <div className="spinner-border" role="status">
                                     <span className="visually-hidden">Loading...</span>
-                                </div>
+                                </div> */}
+                                <Loader width={"100%"} height={"600px"} />
                             </div>
                         )
                             : (
@@ -418,34 +514,22 @@ const ProductDetails = () => {
 
                                         <div className='image-wrapper '>
                                             <div className='main-image col-12 border'>
-                                                <img onError={placeHolderImage} src={mainimage} alt='main-product' className='col-12' style={{ width: '85%' }} />
+                                                <img onError={placeHolderImage} src={mainimage} alt='main-product' className='col-12' />
                                             </div>
 
 
                                             <div className='sub-images-container'>
-                                                {images.length >= 4 ?
+                                                {images.length >= 1 ?
                                                     <>
-                                                        <Slider {...settings_subImage}>
-                                                            <>
-                                                                <div >
-                                                                    <div className={`sub-image border `}>
-
-                                                                        <img onError={placeHolderImage} src={mainimage} className='col-12' alt="product" onClick={() => {
-                                                                            setmainimage(mainimage);
-                                                                        }}></img>
-                                                                    </div>
+                                                        <Slider {...settings_subImage} className='imageListSlider'>
+                                                            {images.map((image, index) => (
+                                                                <div className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
+                                                                    <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
+                                                                        setmainimage(image);
+                                                                    }} />
                                                                 </div>
-                                                                {images.map((image, index) => (
-                                                                    <div key={index} >
-                                                                        <div className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
 
-                                                                            <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
-                                                                                setmainimage(image);
-                                                                            }}></img>
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
-                                                            </>
+                                                            ))}
                                                         </Slider>
 
 
@@ -463,7 +547,7 @@ const ProductDetails = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-xl-8 col-lg-6 col-md-12 col-12">
+                                    <div className="col-xl-6 col-lg-6 col-md-12 col-12">
                                         <div className='detail-wrapper'>
                                             <div className='top-section'>
                                                 <p className='product_name'>{productdata.name}</p>
@@ -481,9 +565,6 @@ const ProductDetails = () => {
                                                         </div>
                                                     )} */}
                                                 <div className='d-flex flex-row gap-2 align-items-center my-1'>
-                                                    {/* <span id={`price-section`} className="d-flex align-items-center">
-                                                    <p id='fa-rupee' className='m-0'><FaRupeeSign fill='var(--secondary-color)' /></p> {productdata.variants[0].discounted_price}
-                                                </span> */}
                                                     <div id="price-section" className='d-flex flex-row gap-2 align-items-center my-1'>
                                                         {setting.setting && setting.setting.currency}<p id='fa-rupee' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price == 0 ? selectedVariant.price.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price.toFixed(setting.setting && setting.setting.decimal_point)) : (productdata.variants[0].discounted_price === 0 ? productdata.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : productdata.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point))}</p>
                                                     </div>
@@ -492,8 +573,6 @@ const ProductDetails = () => {
 
                                             </div>
                                             <div className='bottom-section'>
-                                                {/* <p>{t("product_variants")}</p> */}
-
                                                 <div className='d-flex gap-3 bottom-section-content'>
                                                     <div className='variants'>
 
@@ -501,12 +580,11 @@ const ProductDetails = () => {
                                                             {productdata.variants.map((variant, index) => {
                                                                 return (
                                                                     <>
-                                                                        <div className="variant-section ">
+                                                                        <div className="variant-section">
                                                                             <div className={`variant-element ${variant_index === variant.id ? 'active' : ''}  ${Number(productdata.is_unlimited_stock) ? "" : (variant.cart_count >= variant.stock ? "out_of_stock" : "")} `} key={index}>
                                                                                 <label className="element_container " htmlFor={`variant${index}`}>
                                                                                     <div className="top-section">
-
-                                                                                        <input type="radio" name="variant" id={`variant${index}`} checked={variant_index === variant.id} disabled={Number(productdata.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)} />
+                                                                                        <input type="radio" name="variant" id={`variant${index}`} checked={variant_index == variant.id} disabled={Number(productdata.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)} />
                                                                                     </div>
                                                                                     <div className="h-100">
                                                                                         <span className="d-flex align-items-center flex-column">{variant.measurement} {variant.stock_unit_name} </span>
@@ -704,19 +782,34 @@ const ProductDetails = () => {
                                                         </div>
                                                     </div>
                                                 }
-                                                <div className='product-overview'>
-                                                    <div className='product-seller'>
-                                                        <span className='seller-title'>{t("brand")}:</span>
-                                                        <span className='seller-name'>{productbrand?.name} </span>
-                                                    </div>
-                                                    {/* {productdata.tags !== "" ? (
+                                                {productbrand.name &&
+                                                    <div className='product-overview'>
+                                                        <div className='product-seller'>
+                                                            <span className='seller-title'>{t("brand")}:</span>
+                                                            <span className='seller-name'>{productbrand?.name} </span>
+                                                        </div>
+                                                        {/* {productdata.tags !== "" ? (
 
                                                         <div className='product-tags'>
                                                             <span className='tag-title'>{t("product_tags")}:</span>
                                                             <span className='tag-name'>{productdata.tags} </span>
                                                         </div>
                                                     ) : ""} */}
-                                                </div>
+                                                    </div>}
+                                                {productRating?.rating_list?.length !== 0 ?
+                                                    <div>
+                                                        <OverlayTrigger
+                                                            trigger="click"
+                                                            placement="bottom-start"
+                                                            overlay={popover}
+                                                            rootClose={true}
+                                                        >
+                                                            <span>
+                                                                <img src={ratingSVG} alt='starLogo' />
+                                                                {productRating?.rating_list?.length}
+                                                            </span>
+                                                        </OverlayTrigger>
+                                                    </div> : null}
                                                 <div className="share-product-container">
                                                     <span>{t("share_product")}:</span>
 
@@ -740,12 +833,7 @@ const ProductDetails = () => {
 
                     </div>
 
-                    <div className='description-wrapper'>
-                        <h5 className='title'>{t("product_desc_title")}</h5>
-
-                        <div className='description' dangerouslySetInnerHTML={{ __html: productdata.description }}>
-                        </div>
-                    </div>
+                    <ProductDetailsTabs productdata={productdata} productRating={productRating} totalData={totalData} loading={Loading} />
 
                     <div className='related-product-wrapper'>
                         <h5>{t("related_product")}</h5>
@@ -778,6 +866,7 @@ const ProductDetails = () => {
 
                                                             <img onError={placeHolderImage} src={related_product.image_url} alt={related_product.slug} className='card-img-top' onClick={() => {
                                                                 navigate(`/product/${related_product.slug}`);
+                                                                window.scrollTo({ top: 0, behavior: "smooth" });
                                                                 // dispatch({ type: ActionTypes.SET_SELECTED_PRODUCT, payload: related_product.id });
                                                                 dispatch(setSelectedProduct({ data: related_product.id }));
                                                                 getProductDatafromApi();
@@ -802,7 +891,7 @@ const ProductDetails = () => {
                                                         window.scrollTo({ top: 0, behavior: 'smooth' });
 
                                                     }} >
-                                                        <h3>{product.name}</h3>
+                                                        <h3>{related_product.name}</h3>
                                                         <div className='price'>
 
                                                             <span id={`price${index}-section`} className="d-flex align-items-center"><p id='relatedproduct-fa-rupee' className='m-0'>{setting.setting && setting.setting.currency}</p>{related_product.variants[0].discounted_price === 0 ? related_product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : related_product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)} </span>
@@ -969,6 +1058,8 @@ const ProductDetails = () => {
 
                         </div>
                     </div>
+
+
                     <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} setP_V_id={setP_V_id} setP_id={setP_id} />
                     <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} cookies={cookies} toast={toast} city={city} />
                 </div>

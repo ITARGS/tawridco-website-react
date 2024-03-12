@@ -7,15 +7,28 @@ import api from '../../api/api';
 import Cookies from 'universal-cookie';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import RateProductModal from '../rate-product/RateProductModal';
 import axios from 'axios';
+import RateProductStar from "../../utils/stars.svg";
+import { LuStar } from "react-icons/lu";
+import UpdateRatingModal from '../rate-product/UpdateRatingModal';
+import { ImCheckboxChecked } from "react-icons/im";
 
-const OrderDetails = () => {
+
+
+const OrderDetails = React.memo(() => {
     const { t } = useTranslation();
 
     const setting = useSelector(state => state.setting);
+    const user = useSelector(state => state?.user?.user);
+    // console.log(user);
 
     const [orderData, setOrderData] = useState(null);
     const [orderStatus, setOrderStatus] = useState(t("recieved"));
+    const [showPdtRatingModal, setShowPdtRatingModal] = useState(false);
+    const [ratingProductId, setRatingProductId] = useState(0);
+    const [editRatingId, setEditRatingId] = useState(0);
+    const [showRatingEditModal, setShowRatingEditModal] = useState(false);
 
     const urlParams = useParams();
 
@@ -59,7 +72,7 @@ const OrderDetails = () => {
     useEffect(() => {
         fetchOrderDetails();
         // console.log(orderData, 'orderDaraaa')
-    }, []);
+    }, [editRatingId]);
 
 
     const getInvoice = async (Oid) => {
@@ -103,7 +116,7 @@ const OrderDetails = () => {
             .then((response) => {
                 if (response.status) {
                     response.data && setOrderData(response.data);
-                    console.log(response.data, "update_order_status");
+                    // console.log(response.data, "update_order_status");
                     toast.success(response.message);
                 }
 
@@ -111,7 +124,6 @@ const OrderDetails = () => {
                 console.error(error);
             });
     };
-
 
     return (
         <>
@@ -142,10 +154,11 @@ const OrderDetails = () => {
                                                 <thead>
                                                     <th>{t('product')}</th>
                                                     <th>{t('price')}</th>
+                                                    <th>{t('rating')}</th>
                                                     {/* <th>{t('action')}</th> */}
                                                 </thead>
                                                 <tbody>
-                                                    {/* console.log(item, 'orderItem'); */}
+                                                    {/* {console.log(orderData)} */}
                                                     {orderData?.items?.map((item, index) => {
                                                         return (
                                                             <>
@@ -204,7 +217,7 @@ const OrderDetails = () => {
                                                                             }
 
                                                                         </div> */}
-                                                                        <div className="actions-container">
+                                                                        {/* <div className="actions-container">
                                                                             {Number(item?.active_status) <= 6 && item?.return_status === 1 ?
                                                                                 <span className="return">
                                                                                     <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('return')}</button>
@@ -232,8 +245,35 @@ const OrderDetails = () => {
                                                                                 </span>
                                                                                 : null
                                                                             }
-                                                                        </div>
+                                                                        </div> */}
 
+                                                                    </td>
+                                                                    <td>
+                                                                        <div className='rateProductText' >
+                                                                            {item.item_rating.find((rating) => rating.user.id === user.id) ?
+                                                                                <div className='pb-4' onClick={() => {
+                                                                                    setRatingProductId(item.product_id);
+                                                                                    setShowRatingEditModal(true);
+                                                                                    setEditRatingId(item.item_rating.find((rating) => rating.user.id === user.id)?.id);
+                                                                                }}>
+                                                                                    <span className='me-2' >
+                                                                                        {t("you_rated")}
+                                                                                    </span>
+                                                                                    <span className="userRatedStarContainer">
+                                                                                        <LuStar fill='white' stroke='white' />
+                                                                                        {item?.item_rating?.find((rating) => rating?.user?.id === user?.id)?.rate}
+                                                                                    </span>
+                                                                                </div>
+                                                                                :
+                                                                                <div className='rateProductText' onClick={() => {
+                                                                                    setRatingProductId(item.product_id);
+                                                                                    setShowPdtRatingModal(true);
+                                                                                }}>
+                                                                                    <img className='me-2' src={RateProductStar} alt='rateProductStar' />
+                                                                                    {t("review_and_rating")}
+                                                                                </div>
+                                                                            }
+                                                                        </div>
                                                                     </td>
                                                                 </tr>
                                                             </>
@@ -270,9 +310,10 @@ const OrderDetails = () => {
                                         </span>
                                     </div>
                                     <div className="status-body">
-                                        <div className="checkmark">
-                                            <input type="checkbox" defaultChecked />
-                                        </div>
+                                        {/* <div className="checkmark">
+                                            <input type="checkbox" defaultChecked disabled />
+                                            <ImCheckboxChecked fill='#55AE7B' />
+                                        </div> */}
                                         <div className="order-status-details">
                                             <div className="order-status">
                                                 {`${t('order')} ${orderStatus}`}
@@ -354,6 +395,22 @@ const OrderDetails = () => {
                                                     {setting.setting?.currency}{orderData?.total}
                                                 </span>
                                             </div>
+                                            {orderData?.promo_discount ? <div>
+                                                <span>
+                                                    {t('promo_code_discount')}
+                                                </span>
+                                                <span>
+                                                    - {setting.setting?.currency}{orderData?.promo_discount}
+                                                </span>
+                                            </div> : null}
+                                            {orderData?.wallet_balance ? <div>
+                                                <span>
+                                                    {t('wallet_balance_used')}
+                                                </span>
+                                                <span>
+                                                    - {setting.setting?.currency}{orderData?.wallet_balance}
+                                                </span>
+                                            </div> : null}
                                             {orderData?.discount ?
                                                 <div>
                                                     <span>
@@ -391,9 +448,11 @@ const OrderDetails = () => {
                         </div>
                     </div>
                 </div>
-            </section>
+                <RateProductModal product_id={ratingProductId} showPdtRatingModal={showPdtRatingModal} setShowPdtRatingModal={setShowPdtRatingModal} />
+                <UpdateRatingModal product_id={ratingProductId} showModal={showRatingEditModal} setShowModal={setShowRatingEditModal} ratingId={editRatingId} setRatingId={setEditRatingId} />
+            </section >
         </>
     );
-};
+});
 
 export default OrderDetails;

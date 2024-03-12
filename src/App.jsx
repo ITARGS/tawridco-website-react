@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect } from 'react';
 import { Route, Routes } from "react-router-dom";
 import Header from "./components/header/Header";
 import MainContainer from "./components/MainContainer";
@@ -8,7 +8,6 @@ import { Footer } from "./components/footer/Footer";
 import ProfileDashboard from './components/profile/ProfileDashboard';
 import Cookies from 'universal-cookie';
 import { useDispatch, useSelector } from 'react-redux';
-import { ActionTypes } from './model/action-type';
 import api from './api/api';
 
 //react-toast
@@ -16,7 +15,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
 
 import ShowAllCategories from './components/category/ShowAllCategories';
-import ProductList from './components/product/ProductList';
 import ProductList2 from './components/product/ProductList2';
 import ProductDetails from './components/product/ProductDetails';
 import ViewCart from './components/cart/ViewCart';
@@ -42,8 +40,10 @@ import { setLanguage } from './model/reducer/languageReducer';
 import { setSetting } from './model/reducer/settingReducer';
 import { setCartPromo } from './model/reducer/cartReducer';
 import { setShop } from "./model/reducer/shopReducer";
-import CategoryChild from './components/category/CategoryChild';
-import "./components/location/location.css";
+import ShopByCountriesPage from './components/shop-by-countries/ShopByCountriesPage';
+import ShopBySellersPage from './components/shop-by-seller/ShopBySellersPage';
+import AllRatingsAndReviews from './components/product/AllRatingsAndReviews';
+import PayPalPaymentHandler from './components/paypalPaymentHandler/PayPalPaymentHandler';
 
 
 
@@ -65,7 +65,6 @@ function App() {
       getCurrentUser(cookies.get('jwt_token'));
     } else {
       dispatch(logoutAuth({ data: null }));
-      // dispatch({ type: ActionTypes.LOGOUT_AUTH, payload: null });
     }
     getSetting();
   }, []);
@@ -77,7 +76,6 @@ function App() {
         document.documentElement.dir = result?.data?.type;
         if (result.status === 1) {
           if (!language.current_language) {
-            // dispatch({ type: ActionTypes.SET_LANGUAGE, payload: result.data });
             dispatch(setLanguage({ data: result.data }));
 
           } else {
@@ -106,7 +104,6 @@ function App() {
       .then(response => response.json())
       .then(result => {
         if (result.status === 1) {
-          // dispatch({ type: ActionTypes.SET_CURRENT_USER, payload: result.user });
           dispatch(setCurrentUser({ data: result.user }));
         }
       });
@@ -116,7 +113,6 @@ function App() {
     await api.getSettings().then(response => response.json())
       .then(result => {
         if (result.status === 1) {
-          // dispatch({ type: ActionTypes.SET_SETTING, payload: result.data });
           dispatch(setSetting({ data: result.data }));
         }
       })
@@ -124,22 +120,21 @@ function App() {
   };
 
   useEffect(() => {
-    const fetchShop = (city_id, latitude, longitude) => {
-      api.getShop(city_id, latitude, longitude, cookies.get('jwt_token'))
+    const fetchShop = (latitude, longitude) => {
+      api.getShop(latitude, longitude, cookies.get('jwt_token'))
         .then(response => response.json())
         .then(result => {
           if (result.status === 1) {
             dispatch(setShop({ data: result.data }));
-            // dispatch({ type: ActionTypes.SET_SHOP, payload: result.data });
           }
         });
 
     };
     if (city.city !== null) {
-      fetchShop(city.city.id, city.city.latitude, city.city.longitude);
+      fetchShop(city.city.latitude, city.city.longitude);
     }
     else {
-      fetchShop(setting?.setting?.default_city_id, setting?.setting?.map_latitude, setting?.setting?.map_longitude);
+      fetchShop(setting?.setting?.map_latitude, setting?.setting?.map_longitude);
     }
   }, [city, cart, setting]);
 
@@ -218,6 +213,7 @@ function App() {
                       <>
                         <Route exact={true} path="/cart" element={<ViewCart />}></Route>
                         <Route exact={true} path="/checkout" element={<Checkout />}></Route>
+                        <Route exact={true} path='/web-payment-status' element={<PayPalPaymentHandler />}></Route>
                         <Route exact={true} path='/wishlist' element={<Wishlist />}></Route>
                         <Route exact={true} path="/profile" element={<ProfileDashboard />}></Route>
                         <Route exact={true} path="/profile/orders" element={<ProfileDashboard showOrders={true} />}></Route>
@@ -227,10 +223,10 @@ function App() {
                         <Route exact={true} path="/profile/address" element={<ProfileDashboard showAddress={true} />}></Route>
                         <Route exact={true} path="/notification" element={<Notification />}></Route>
                         <Route exact={true} path='/categories' element={<ShowAllCategories />}></Route>
-                        {/* <Route exact={true} path='/products' element={<ProductList />}></Route> */}
                         <Route exact={true} path='/products' element={<ProductList2 />}></Route>
                         <Route exact={true} path='/product' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
+                        <Route exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} ></Route>
                         <Route exact={true} path='/about' element={<About />}></Route>
                         <Route exact={true} path='/contact' element={<Contact />}></Route>
                         <Route exact={true} path='/faq' element={<FAQ />}></Route>
@@ -238,16 +234,20 @@ function App() {
                         <Route exact={true} path='/policy/:policy_type' element={<Policy />}></Route>
                         <Route exact={true} path="" element={<MainContainer />}></Route>
                         <Route exact={true} path='/brands' element={<BrandList />} />
+                        <Route exact={true} path='/countries' element={<ShopByCountriesPage />} />
+                        <Route exact={true} path='/sellers' element={<ShopBySellersPage />} />
                       </>
                       :
                       <>
 
                         <Route exact={true} path='/categories' element={<ShowAllCategories />}></Route>
                         <Route exact={true} path='/brands' element={<BrandList />} />
-                        {/* <Route exact={true} path='/products' element={<ProductList />}></Route> */}
+                        <Route exact={true} path='/countries' element={<ShopByCountriesPage />} />
+                        <Route exact={true} path='/sellers' element={<ShopBySellersPage />} />
                         <Route exact={true} path='/products' element={<ProductList2 />}></Route>
                         <Route exact={true} path='/product' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
+                        <Route exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} ></Route>
                         <Route exact={true} path='/about' element={<About />}></Route>
                         <Route exact={true} path='/contact' element={<Contact />}></Route>
                         <Route exact={true} path='/faq' element={<FAQ />}></Route>

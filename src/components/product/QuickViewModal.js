@@ -246,12 +246,12 @@ const QuickViewModal = (props) => {
     };
 
     const settings_subImage = {
-
         infinite: false,
         slidesToShow: 3,
         initialSlide: 0,
         // centerMargin: "10px",
-        margin: "20px",
+        //         margin: "20px",
+        rows: 1,
         prevArrow: (
             <button
                 type="button"
@@ -343,29 +343,25 @@ const QuickViewModal = (props) => {
                                     <div className='row body-wrapper'>
                                         <div className="col-xl-4 col-lg-6 col-md-12 col-12">
                                             <div className='image-wrapper'>
-                                                <div className='main-image col-12 border'>
-                                                    <img onError={placeHolderImage} src={mainimage} alt='main-product' className='col-12' style={{ width: '85%' }} />
+                                                <div className='main-image border'>
+                                                    <img onError={placeHolderImage} src={mainimage} alt='main-product' className='col-12' />
                                                 </div>
 
 
                                                 <div className='sub-images-container row'>
-                                                    {product.images.length >= 4 ?
-                                                        <>
-                                                            <Slider {...settings_subImage}>
-                                                                {product.images.map((image, index) => (
-                                                                    <div key={index} >
-                                                                        <div className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
-
-                                                                            <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
-                                                                                setmainimage(image);
-                                                                            }}></img>
-                                                                        </div>
-                                                                    </div>
-                                                                ))}
-                                                            </Slider>
+                                                    {product.images.length >= 1 ?
+                                                        <Slider  {...settings_subImage}>
+                                                            {product.images.map((image, index) => (
+                                                                <div className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
+                                                                    <img onError={placeHolderImage} src={image} className='col-12 w-100' alt="product" onClick={() => {
+                                                                        setmainimage(image);
+                                                                    }}></img>
+                                                                </div>
+                                                            ))}
+                                                        </Slider>
 
 
-                                                        </> :
+                                                        :
                                                         <>
                                                             {product.images.map((image, index) => (
                                                                 <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
@@ -604,7 +600,7 @@ const QuickViewModal = (props) => {
                                                     {product?.fssai_lic_no &&
                                                         <div className='fssai-details'>
                                                             <div className='image-container'>
-                                                                <img src={product?.fssai_lic_img} alt='fssai-image' />
+                                                                <img src={product?.fssai_lic_img} alt='fssai' />
                                                             </div>
                                                             <div className='fssai-license-no'>
                                                                 <span>
@@ -613,17 +609,16 @@ const QuickViewModal = (props) => {
                                                             </div>
                                                         </div>
                                                     }
-                                                    <div className='product-overview'>
 
-                                                        {productbrand !== "" ? (
-
+                                                    {productbrand?.name ? (
+                                                        <div className='product-overview'>
                                                             <div className='product-tags'>
                                                                 <span className='tag-title'>{t("brand")} :</span>
                                                                 <span className='tag-name'>{productbrand.name} </span>
                                                             </div>
-                                                        ) : ""}
+                                                        </div>
+                                                    ) : ""}
 
-                                                    </div>
                                                     <div className='share-product-container'>
                                                         <span>{t("share_product")} :</span>
 

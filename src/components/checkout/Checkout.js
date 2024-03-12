@@ -100,50 +100,51 @@ const Checkout = () => {
     }, []);
 
     useEffect(() => {
-        api.getCart(cookies.get('jwt_token'), address?.selected_address?.latitude, address?.selected_address?.longitude, 1)
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    setCodAllow(1);
-                    dispatch(setCartCheckout({ data: result.data }));
-                    dispatch(setWallet({ data: 0 }));
-                    if (cart?.promo_code) {
-                        setTotalPayment(result.data.total_amount - cart?.promo_code?.discount);
+        if (address?.selected_address?.latitude && address?.selected_address?.longitude)
+            api.getCart(cookies.get('jwt_token'), address?.selected_address?.latitude, address?.selected_address?.longitude, 1)
+                .then(response => response.json())
+                .then(result => {
+                    if (result.status === 1) {
+                        setCodAllow(1);
+                        dispatch(setCartCheckout({ data: result.data }));
+                        dispatch(setWallet({ data: 0 }));
+                        if (cart?.promo_code) {
+                            setTotalPayment(result.data.total_amount - cart?.promo_code?.discount);
+                        }
+                        else {
+                            setTotalPayment(result.data.total_amount);
+                        }
                     }
-                    else {
-                        setTotalPayment(result.data.total_amount);
-                    }
-                }
 
-            })
-            .catch(error => console.log(error));
+                })
+                .catch(error => console.log(error));
     }, [address?.selected_address]);
 
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        const handleMessage = (event) => {
-            if (event.origin === api.getAppUrl()) {
-                if (event.data === "success") {
-                    paypalStatus.current = true;
-                    setShow(true);
-                    setIsOrderPlaced(true);
-                } else {
-                    api.deleteOrder(cookies.get('jwt_token'), orderID);
-                    toast.error("Payment failed");
-                    setIsOrderPlaced(false);
-                }
-            }
-        };
+    //     const handleMessage = (event) => {
+    //         if (event.origin === api.getAppUrl()) {
+    //             if (event.data === "success") {
+    //                 paypalStatus.current = true;
+    //                 setShow(true);
+    //                 setIsOrderPlaced(true);
+    //             } else {
+    //                 api.deleteOrder(cookies.get('jwt_token'), orderID);
+    //                 toast.error("Payment failed");
+    //                 setIsOrderPlaced(false);
+    //             }
+    //         }
+    //     };
 
 
-        window.addEventListener('message', handleMessage);
-        // Clean up by removing the event listener when the component unmounts
-        return () => {
-            window.removeEventListener('message', handleMessage);
-        };
+    //     window.addEventListener('message', handleMessage);
+    //     // Clean up by removing the event listener when the component unmounts
+    //     return () => {
+    //         window.removeEventListener('message', handleMessage);
+    //     };
 
-    }, [window]);
+    // }, [window]);
 
     const [expectedDate, setexpectedDate] = useState(null);
     // const expectedDate = useRef(new Date())
@@ -331,7 +332,7 @@ const Checkout = () => {
             callback: async function (response) {
 
                 setloadingPlaceOrder(true);
-                await api.addTransaction(cookies.get('jwt_token'), orderid, response.reference, paymentMethod)
+                await api.addTransaction(cookies.get('jwt_token'), orderid, response.reference, paymentMethod, "order")
                     .then(response => response.json())
                     .then(result => {
                         setloadingPlaceOrder(false);
@@ -399,7 +400,7 @@ const Checkout = () => {
             }
             else if (paymentMethod === 'COD') {
                 // place order
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async (result) => {
                         setisLoader(false);
@@ -424,13 +425,13 @@ const Checkout = () => {
                     });
             }
             else if (paymentMethod === 'Razorpay') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge - walletDeductionAmt) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
 
                         // fetchOrders();
                         if (result.status === 1) {
-                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Razorpay")
+                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Razorpay", "order")
                                 .then(resp => resp.json())
                                 .then(res => {
                                     setisLoader(false);
@@ -461,7 +462,7 @@ const Checkout = () => {
                     .catch(error => console.log(error));
             }
             else if (paymentMethod === 'Paystack') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(result => {
                         // fetchOrders();
@@ -483,13 +484,13 @@ const Checkout = () => {
             }
             else if (paymentMethod === "Stripe") {
                 setStripeModalShow(true);
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge - walletDeductionAmt) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
                         if (result.status === 1) {
 
 
-                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, 'Stripe')
+                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, 'Stripe', "order")
                                 .then(resp => resp.json())
                                 .then(res => {
                                     if (res.status) {
@@ -523,15 +524,16 @@ const Checkout = () => {
                 setloadingPlaceOrder(false);
             }
             else if (paymentMethod === 'Paypal') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge - walletDeductionAmt) : cart.checkout.total_amount - walletDeductionAmt, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
                         // fetchOrders();
                         if (result.status === 1) {
                             setOrderID(result.data.order_id);
-                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Paypal")
+                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Paypal", "order")
                                 .then(resp => resp.json())
                                 .then(res => {
+                                    console.log(res.data);
                                     // console.log(res.data.paypal_redirect_url)
                                     setisLoader(false);
 
@@ -547,23 +549,24 @@ const Checkout = () => {
                                         var ccavenue_redirect_url = `${res.data.paypal_redirect_url}&&amount=${totalPayment}`;
                                         //var ccavenue_redirect_url = "https://admin.pocketgroceries.in/customer/ccavenue_payment";
 
-                                        var subWindow = window.open(ccavenue_redirect_url, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
-                                        var redirect_url = res.data.paypal_redirect_url;
+                                        var subWindow = window.open(ccavenue_redirect_url, '_parent');
+                                        // var subWindow = window.open(ccavenue_redirect_url, '_parent', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
+                                        // var redirect_url = res.data.paypal_redirect_url;
                                         /*subWindow.postMessage('Hello from parent window!', '*');
                                         console.log("redirect_url : ",redirect_url);*/
-                                        const checkChildWindow = setInterval((e) => {
-                                            if (subWindow && subWindow.closed) {
-                                                clearInterval(checkChildWindow);
-                                                // console.log('Child window is closed');
-                                                if (subWindow && subWindow.closed && !paypalStatus.current) {
-                                                    api.deleteOrder(cookies.get('jwt_token'), result.data.order_id);
-                                                    setWalletAmount(user.user.balance);
-                                                    toast.error("Payment failed ");
-                                                    // Perform any actions or display a message here
-                                                }
+                                        // const checkChildWindow = setInterval((e) => {
+                                        //     if (subWindow && subWindow.closed) {
+                                        //         clearInterval(checkChildWindow);
+                                        //         // console.log('Child window is closed');
+                                        //         if (subWindow && subWindow.closed && !paypalStatus.current) {
+                                        //             api.deleteOrder(cookies.get('jwt_token'), result.data.order_id);
+                                        //             setWalletAmount(user.user.balance);
+                                        //             toast.error("Payment failed ");
+                                        //             // Perform any actions or display a message here
+                                        //         }
 
-                                            }
-                                        }, 1500); // Adjust the interval (in milliseconds) as needed
+                                        //     }
+                                        // }, 1500); // Adjust the interval (in milliseconds) as needed
 
                                     } else {
                                         toast.error(res.message);
@@ -582,7 +585,7 @@ const Checkout = () => {
                     .catch(error => console.log(error));
             }
             else if (paymentMethod === 'Wallet') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async (result) => {
                         setisLoader(false);
@@ -670,20 +673,24 @@ const Checkout = () => {
                             backdrop="static"
                             keyboard={true}
                             className='success_modal'
-                        >
+                            dialogClassName='successModalDialog'>
                             <Lottie className='lottie-content' animationData={animate1} loop={true}></Lottie>
                             <Modal.Header closeButton className='flex-column-reverse success_header'>
-                                <Modal.Title><Lottie animationData={animate2} loop={false}></Lottie></Modal.Title>
+                                <Modal.Title>
+                                    <Lottie animationData={animate2} loop={false} className='lottie-tick'></Lottie>
+                                </Modal.Title>
                             </Modal.Header>
-                            <Modal.Body className='success_body'>
-                                {t("order_placed_description")}
-                            </Modal.Body>
-                            <Modal.Footer className="success_footer">
-                                <Button variant="primary" onClick={handleClose} className='checkout_btn'>
+                            <Modal.Body className='success_body d-flex flex-column justify-content-center align-items-center'>
+                                <div>
+                                    {t("order_placed_description")}
+                                </div>
+                                <button onClick={handleClose} className='checkout_btn'>
                                     {t("go_to_home")}
-                                </Button>
+                                </button>
+                            </Modal.Body>
+                            {/* <Modal.Footer className="success_footer">
 
-                            </Modal.Footer>
+                            </Modal.Footer> */}
                         </Modal>
                     </>
                     : null}
@@ -805,8 +812,7 @@ const Checkout = () => {
                                                 </div>
                                             </div>
                                         </div> */}
-
-                                        <div className="promo-section">
+                                        {user?.user?.balance > 0 ? <div className="promo-section">
                                             <div className="heading">
                                                 <span>{t("Wallet")}</span>
                                             </div>
@@ -834,7 +840,7 @@ const Checkout = () => {
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> : null}
 
                                         {isFullWalletPay ? <></> :
                                             <div className='payment-wrapper checkout-component'>

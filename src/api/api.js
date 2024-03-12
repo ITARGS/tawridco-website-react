@@ -105,7 +105,7 @@ const api = {
         return fetch(url, requestOptions);
 
     },
-    getShop(city_id, latitiude, longitude, token = "") {
+    getShop(latitiude, longitude, token = "") {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
@@ -116,7 +116,7 @@ const api = {
             headers: myHeaders,
             redirect: 'follow'
         };
-        var params = { city_id: city_id, latitude: latitiude, longitude: longitude };
+        var params = { latitude: latitiude, longitude: longitude };
         var url = new URL(appUrl + appSubUrl + "/shop");
         for (let k in params) {
             url.searchParams.append(k, params[k]);
@@ -548,6 +548,7 @@ const api = {
         return fetch(appUrl + appSubUrl + "/settings/time_slots", requestOptions);
     },
     placeOrder(token, product_variant_id, quantity, total, delivery_charge, final_total, payment_method, address_id, deliveryTime, promocode_id = 0, wallet_balance, wallet_used) {
+        // console.log(token, product_variant_id, quantity, total, delivery_charge, final_total, payment_method, address_id, deliveryTime, promocode_id, wallet_balance, wallet_used);
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
@@ -568,7 +569,7 @@ const api = {
             formdata.append("wallet_used", wallet_used);
         }
         promocode_id !== 0 && formdata.append("promocode_id", promocode_id);
-        payment_method === "COD" ? formdata.append("status", 2) : formdata.append("status", 1);
+        payment_method === "COD" || payment_method === "Wallet" ? formdata.append("status", 2) : formdata.append("status", 1);
 
         var requestOptions = {
             method: 'POST',
@@ -663,14 +664,22 @@ const api = {
 
         return fetch(appUrl + appSubUrl + "/invoice_download", requestOptions);
     },
-    addTransaction(token, order_id, transaction_id, transaction_method) {
+    addTransaction(token, order_id, transaction_id, transaction_method, type, wallet_amount) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append('Authorization', token_prefix + token);
         var formData = new FormData();
-        formData.append('order_id', order_id);
+        if (order_id) {
+            formData.append('order_id', order_id);
+        }
         formData.append('transaction_id', transaction_id);
         formData.append('payment_method', transaction_method);
+        if (type) {
+            formData.append("type", type);
+        }
+        if (wallet_amount) {
+            formData.append("wallet_amount", wallet_amount);
+        }
         formData.append('device_type', 'web');
         formData.append('app_version', '1.0');
 
@@ -683,12 +692,20 @@ const api = {
         return fetch(appUrl + appSubUrl + "/add_transaction", requestOptions);
 
     },
-    initiate_transaction(token, order_id, payment_method) {
+    initiate_transaction(token, order_id, payment_method, type, wallet_amount) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append('Authorization', token_prefix + token);
         var formData = new FormData();
-        formData.append('order_id', order_id);
+        if (order_id) {
+            formData.append('order_id', order_id);
+        }
+        if (type) {
+            formData.append("type", type);
+        }
+        if (wallet_amount) {
+            formData.append("wallet_amount", wallet_amount);
+        }
         if (payment_method.toLocaleLowerCase() === 'razorpay') {
             formData.append("payment_method", "Razorpay");
         }
@@ -697,6 +714,7 @@ const api = {
         }
         else if (payment_method.toLocaleLowerCase() === 'paypal') {
             formData.append("payment_method", "Paypal");
+            formData.append("request_from", "website");
         }
 
         var requestOptions = {
@@ -717,6 +735,7 @@ const api = {
         // formData.append("razorpay_order_id", razorpay_order_id);
         // formData.append("razorpay_payment_id", razorpay_payment_id);
         // formData.append("razorpay_signature", razorpay_signature);
+        formData.append('type', 'order');
         formData.append('payment_method', 'Razorpay');
         formData.append('device_type', 'web');
         formData.append('app_version', '1.0');
@@ -854,6 +873,146 @@ const api = {
         };
 
         return fetch(appUrl + appSubUrl + "/update_order_status", requestOptions);
+    },
+    getProductRatings(token, product_id, limit, offset) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+        var params = {
+            product_id: product_id,
+            limit,
+            offset
+        };
+        var url = new URL(appUrl + appSubUrl + "/products/ratings_list");
+        for (let k in params) {
+            url.searchParams.append(k, params[k]);
+        };
+
+        return fetch(url, requestOptions);
+    },
+    addProductRating(token, product_id, rate, review, images) {
+        // console.log(product_id, rate, review, images);
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+
+        var data = new FormData();
+        data.append("product_id", product_id);
+        data.append("rate", rate);
+        data.append("review", review);
+
+        for (let i = 0; i < images.length; i++) {
+            data.append(`image[${i}]`, images[i]);
+        }
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            redirect: 'follow',
+            body: data
+        };
+
+        return fetch(appUrl + appSubUrl + "/products/rating/add", requestOptions);
+    }, getProductRatingById(token, ratingId) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+        var data = new FormData();
+        data.append("id", ratingId);
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            redirect: 'follow',
+            body: data
+        };
+
+        return fetch(appUrl + appSubUrl + "/products/rating/edit", requestOptions);
+    },
+    updateProductRating(token, ratingId, rate, review, images, deleteImageIds) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+        var data = new FormData();
+        data.append("id", ratingId);
+        data.append("rate", rate);
+        data.append("review", review);
+        data.append("deleteImageIds", `[${deleteImageIds}]`);
+        for (let i = 0; i < images.length; i++) {
+            data.append(`image[${i}]`, images[i]);
+        }
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            redirect: 'follow',
+            body: data
+        };
+
+        return fetch(appUrl + appSubUrl + "/products/rating/update", requestOptions);
+    },
+    getShopBySellers(token, latitude, longitude, limit, offset) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+        let params = {
+            latitude: latitude,
+            longitude: longitude,
+            limit: limit,
+            offset: offset
+        };
+        let url = new URL(appUrl + appSubUrl + "/sellers");
+        for (let p in params) {
+            url.searchParams.append(p, params[p]);
+        }
+        return fetch(url, requestOptions);
+    },
+    getShopByCountries(token, limit, offset) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+        let params = {
+            limit: limit,
+            offset: offset
+        };
+        let url = new URL(appUrl + appSubUrl + "/countries");
+        for (let p in params) {
+            url.searchParams.append(p, params[p]);
+        }
+        return fetch(url, requestOptions);
+    },
+    getShopByBrands(token, limit, offset) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+        var requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+        let params = {
+            limit: limit,
+            offset: offset
+        };
+        let url = new URL(appUrl + appSubUrl + "/brands");
+        for (let p in params) {
+            url.searchParams.append(p, params[p]);
+        }
+        return fetch(url, requestOptions);
     }
 
 };

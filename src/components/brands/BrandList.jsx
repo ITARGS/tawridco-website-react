@@ -1,36 +1,36 @@
-import '../category/category.css';
-import React, { useEffect, useState } from 'react';
+import "./brand.css";
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import api from '../../api/api';
-import { ActionTypes } from '../../model/action-type';
 import coverImg from '../../utils/cover-img.jpg';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
 import { setFilterBrands } from "../../model/reducer/productFilterReducer";
+import Pagination from 'react-js-pagination';
+import Cookies from 'universal-cookie';
+import useShopByBrands from '../../hooks/useShopByBrands';
+import Skeleton from 'react-loading-skeleton';
+
+
 const BrandList = () => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const { t } = useTranslation();
+    const cookies = new Cookies();
+
     const setting = useSelector(state => state.setting);
     const filter = useSelector(state => state.productFilter);
 
-    const [brands, setBrands] = useState(null);
+    const [limit, setLimit] = useState(12);
+    const [offset, setOffset] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
 
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    useEffect(() => {
-        api.getBrands().then(response => response.json()).then((response) => {
-            if (response.status) {
-                setBrands(response.data);
-            } else {
-                toast.error(response.message);
-            }
-        });
+    const { data, totalData, loading } = useShopByBrands(cookies.get("jwt_token"), limit, offset);
 
-
-    }, []);
     const placeHolderImage = (e) => {
 
         e.target.src = setting.setting?.web_logo;
     };
+
     const sort_unique_brand_ids = (int_brand_ids) => {
         if (int_brand_ids.length === 0) return int_brand_ids;
         int_brand_ids = int_brand_ids.sort(function (a, b) { return a * 1 - b * 1; });
@@ -42,30 +42,40 @@ const BrandList = () => {
         }
         return ret;
     };
-    const { t } = useTranslation();
-    return (
-        <section id='allcategories'  >
-            <div className='cover'>
-                <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
-                <div className='page-heading'>
-                    <h5>{t("brands")}</h5>
-                    <p><Link to="/" className='text-light text-decoration-none'>{t("home")} /</Link> <span>{t("brands")}</span></p>
-                </div>
-            </div>
 
-            <div className='container' style={{ padding: "30px 0" }}>
-                {!brands
-                    ? (
-                        <div className="d-flex justify-content-center">
-                            <div className="spinner-border" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
+    const handlePageChange = (pageNo) => {
+        setCurrentPage(pageNo);
+        setOffset(pageNo * limit - limit);
+    };
+
+    const placeholderItems = Array.from({ length: 12 }).map((_, index) => index);
+
+
+    return (
+        <>
+
+            <section className='allBrandsSlider'  >
+                <div className='cover'>
+                    <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
+                    <div className='page-heading'>
+                        <h5>{t("brands")}</h5>
+                        <p><Link to="/" className='text-light text-decoration-none'>{t("home")} /</Link> <span>{t("brands")}</span></p>
+                    </div>
+                </div>
+
+                <div className='container' style={{ padding: "30px 0" }}>
+                    {loading ?
+                        <div className='row justify-content-center mx-3'>
+                            {placeholderItems.map((index) => (
+                                <div key={index} className='col-md-3 col-lg-2 col-6 col-sm-3 my-3'>
+                                    <Skeleton height={250} />
+                                </div>
+                            ))}
                         </div>
-                    )
-                    : (
-                        <div className='row justify-content-center'>
-                            {brands?.map((ctg, index) => (
-                                <div className="col-md-4 col-lg-3 col-6  my-3 content" key={index} onClick={() => {
+                        :
+                        <div className='row justify-content-center mx-3'>
+                            {data?.map((ctg, index) => (
+                                <div className="col-md-3 col-lg-2 col-6 col-sm-3 my-3 content" key={index} onClick={() => {
 
                                     // setSelectedBrands((prev) => [...prev, ...brand.id])
                                     var brand_ids = [...filter.brand_ids];
@@ -84,7 +94,7 @@ const BrandList = () => {
                                 }}>
 
                                     <div className='card'>
-                                        <img onError={placeHolderImage} className='card-img-top' src={ctg.image_url} alt='' />
+                                        <img onError={placeHolderImage} className='card-img-top' src={ctg.image_url} alt='' loading='lazy' />
                                         <div className='card-body' style={{ cursor: "pointer" }} >
                                             <p>{ctg.name} </p>
                                         </div>
@@ -92,9 +102,22 @@ const BrandList = () => {
                                 </div>
                             ))}
                         </div>
-                    )}
-            </div>
-        </section>
+
+                    }
+
+                    {(limit < totalData) &&
+                        <Pagination
+                            activePage={currentPage}
+                            itemsCountPerPage={limit}
+                            totalItemsCount={totalData}
+                            pageRangeDisplayed={5}
+                            onChange={handlePageChange.bind(this)}
+                        />
+                    }
+                </div>
+            </section>
+        </>
+
     );
 
 };

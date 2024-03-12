@@ -11,7 +11,9 @@ const initialState = {
     price_filter: null,
     sort_filter: 'new',  //new,old,high,low,discount,popular
     section_products: null,
-    search_sizes: []
+    search_sizes: [],
+    seller_slug: "",
+    country_id: ""
 };
 
 export const productFilterReducer = createSlice({
@@ -44,6 +46,12 @@ export const productFilterReducer = createSlice({
         },
         setFilterProductSizes: (state, action) => {
             state.search_sizes = action.payload.data;
+        },
+        setFilterBySeller: (state, action) => {
+            state.seller_slug = action.payload.data;
+        },
+        setFilterByCountry: (state, action) => {
+            state.country_id = action.payload.data;
         }
 
     }
@@ -103,7 +111,9 @@ export const {
     setFilterSection,
     setFilterSort,
     setFilterView,
-    setFilterProductSizes
+    setFilterProductSizes,
+    setFilterByCountry,
+    setFilterBySeller
 } = productFilterReducer.actions;
 
 export default productFilterReducer.reducer;

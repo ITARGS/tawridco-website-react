@@ -11,10 +11,7 @@ import { BsHeart, BsShare, BsPlus, BsHeartFill } from "react-icons/bs";
 import { BiMinus, BiLink } from 'react-icons/bi';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
 import Cookies from 'universal-cookie';
-import { ActionTypes } from '../../model/action-type';
-
 import QuickViewModal from './QuickViewModal';
 import Offers from '../offer/Offers';
 import { FacebookIcon, FacebookShareButton, TelegramIcon, TelegramShareButton, WhatsappIcon, WhatsappShareButton } from 'react-share';
@@ -24,13 +21,14 @@ import { useTranslation } from 'react-i18next';
 import { setCart, setSellerFlag } from "../../model/reducer/cartReducer";
 import { setFavourite } from "../../model/reducer/favouriteReducer";
 import { setProductSizes } from "../../model/reducer/productSizesReducer";
-import { setFilterSection } from '../../model/reducer/productFilterReducer';
+import { setFilterCategory, setFilterSection } from '../../model/reducer/productFilterReducer';
 import Popup from "../same-seller-popup/Popup";
+import { LuStar } from 'react-icons/lu';
 
 
 
 
-const ProductContainer = React.memo(({ showModal, setShowModal }) => {
+const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOfferArray }) => {
 
     //initialize cookies
     const cookies = new Cookies();
@@ -285,8 +283,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal }) => {
                                                     <Slider {...settings}>
                                                         {section.products.map((product, index) => (
                                                             <div className="row" key={index}>
-                                                                {/* {setSelectedVariant({ ...product.variants[0], pid: product.id })} */}
-
                                                                 <div className="col-md-12">
 
                                                                     <div className='product-card'  >
@@ -315,8 +311,18 @@ const ProductContainer = React.memo(({ showModal, setShowModal }) => {
                                                                                 }
                                                                             </div>
                                                                         </Link>
-
+                                                                        {/* {console.log(product)} */}
                                                                         <div className="card-body product-card-body p-3" >
+                                                                            <div className='ratings d-flex align-items-center'>
+                                                                                <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                <LuStar className='me-4' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                <div>
+                                                                                    {product?.rating_count}
+                                                                                </div>
+                                                                            </div>
                                                                             <h3>{product.name}</h3>
                                                                             <div className='price'>
 
@@ -483,11 +489,12 @@ const ProductContainer = React.memo(({ showModal, setShowModal }) => {
                                         <Offers />
                                         </div>
                                     )} */}
-                                            {index0 === shop.shop.sections.length - 1 && (
+
+                                            {/* {index0 === shop.shop.sections.length - 1 && (
                                                 <div className='product_section row flex-column' id='offers'>
                                                     <Offers />
                                                 </div>
-                                            )}
+                                            )} */}
                                         </div>
                                     );
                                 }
@@ -509,8 +516,21 @@ const ProductContainer = React.memo(({ showModal, setShowModal }) => {
                     <Offers />
                     </div>
                 </div> */}
+                {BelowSectionOfferArray?.map((offer) => (
+                    <div className='col-md-12 p-0 col-12 my-5' onClick={() => {
+                        if (offer?.category) {
+                            dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
+                            navigate("/products");
+                        } else if (offer?.product) {
+                            navigate(`/product/${offer.product.slug}`);
+                        } else if (offer?.offer_url) {
+                            window.open(offer?.offer_url, "_blank");
+                        }
+                    }}>
+                        <img className={`${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "200px" }} />
+                    </div>
+                ))}
             </div>
-
         </section>
     );
 });

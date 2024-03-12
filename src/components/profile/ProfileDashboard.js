@@ -431,13 +431,13 @@ const ProfileDashboard = (props) => {
                         <div className='container py-5'>
                             <div className='content-container row'>
 
-                                <div className='sidebar hide-mobile-screen col-3'>
+                                <div className='sidebar hide-mobile-screen col-md-2 col-3'>
 
                                     {profileNav()}
 
 
                                 </div>
-                                <div className='table-content col-md-9   '>
+                                <div className='table-content col-md-9 col-sm-12   '>
                                     <h4>{t("profile_info")}</h4>
 
 

@@ -47,15 +47,10 @@ const Category = () => {
             );
     };
     const selectCategory = (category) => {
-        if (category.has_child) {
-            fetchCategory(category.id);
-            navigate('/products');
-        }
-        else {
-            dispatch(setFilterCategory({ data: category.id }));
-            // dispatch({ type: ActionTypes.SET_FILTER_CATEGORY, payload: category.id });
-            navigate('/products');
-        }
+        dispatch(setFilterCategory({ data: category.id }));
+        // dispatch({ type: ActionTypes.SET_FILTER_CATEGORY, payload: category.id });
+        navigate('/products');
+
     };
     const settings = {
         infinite: false,
