@@ -158,7 +158,7 @@ const OrderDetails = React.memo(() => {
                                                     {/* <th>{t('action')}</th> */}
                                                 </thead>
                                                 <tbody>
-                                                    {/* {console.log(orderData)}     */}
+                                                    {/* {console.log(orderData)} */}
                                                     {orderData?.items?.map((item, index) => {
                                                         return (
                                                             <>

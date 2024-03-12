@@ -548,7 +548,7 @@ const api = {
         return fetch(appUrl + appSubUrl + "/settings/time_slots", requestOptions);
     },
     placeOrder(token, product_variant_id, quantity, total, delivery_charge, final_total, payment_method, address_id, deliveryTime, promocode_id = 0, wallet_balance, wallet_used) {
-        console.log(token, product_variant_id, quantity, total, delivery_charge, final_total, payment_method, address_id, deliveryTime, promocode_id = 0, wallet_balance, wallet_used);
+        // console.log(token, product_variant_id, quantity, total, delivery_charge, final_total, payment_method, address_id, deliveryTime, promocode_id, wallet_balance, wallet_used);
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);

@@ -12,7 +12,6 @@ const MainContainer = () => {
 
     const setting = useSelector(state => state.setting);
     const shop = useSelector(state => state.shop.shop);
-    console.log(shop.offers);
     const aboveHomeSlider = shop?.offers?.filter((offer) => offer?.position === "top");
     const BelowHomeSlider = shop?.offers?.filter((offer) => offer.position === "below_slider");
     const BelowCategory = shop?.offers?.filter((offer) => offer.position === "below_category");

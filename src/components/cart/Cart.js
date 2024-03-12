@@ -311,7 +311,7 @@ const Cart = () => {
                                                         <span>{t("sub_total")}</span>
                                                         <div className='d-flex align-items-center' style={{ fontSize: "14px" }}>
                                                             {setting.setting && setting.setting.currency}
-                                                            <span>{(cart.cart?.data?.sub_total.toFixed(setting.setting?.decimal_point))}</span>
+                                                            <span>{(cart?.promo_code?.discount ? (cart.cart?.data?.sub_total - cart?.promo_code?.discount).toFixed(setting.setting?.decimal_point) : cart.cart?.data?.sub_total.toFixed(setting.setting?.decimal_point))}</span>
                                                         </div>
                                                     </div>
 
