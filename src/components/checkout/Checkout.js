@@ -1109,7 +1109,7 @@ const Checkout = () => {
                         ? <Loader width='100%' height='100%' />
                         :
                         <Elements stripe={stripePromise} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment}>
-                            <InjectCheckout setShow={setStripeModalShow} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment}
+                            <InjectCheckout setIsOrderPlaced={setIsOrderPlaced} setShow={setStripeModalShow} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment}
                                 setWalletAmount={setWalletAmount} walletAmount={user?.user?.balance}
                                 walletDeductionAmt={walletDeductionAmt}
                             />
