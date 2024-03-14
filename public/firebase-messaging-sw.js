@@ -1,21 +1,27 @@
-importScripts('https://www.gstatic.com/firebasejs/3.5.2/firebase-app.js');
-importScripts('https://www.gstatic.com/firebasejs/3.5.2/firebase-messaging.js');
+importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js');
+importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js');
+
 
 firebase.initializeApp({
-    'messagingSenderId': '755773183987'
+    apiKey: '__FIREBASE_API__',
+    authDomain: '__FIREBASE_AUTH_DOMAIN__',
+    projectId: '__FIREBASE_PROJECT_ID__',
+    storageBucket: '__FIREBASE_STORAGE_BUCKET__',
+    messagingSenderId: '__FIREBASE_MESSAGING_SENDER_ID__',
+    appId: '__FIREBASE_APP_ID__',
+    measurementId: '__FIREBASE_MEASUREMENT_ID__',
 });
 
 const messaging = firebase.messaging();
 
 try {
-
     messaging.setBackgroundMessageHandler(function (payload) {
-        let data = JSON.parse(payload.data.data);
-        const notificationTitle = data.title;
+        let data = JSON.parse(payload?.data?.data);
+        const notificationTitle = data?.title;
         const notificationOptions = {
-            body: data.body,
+            body: data?.message,
             icon: './logo.png',
-            image: data.image
+            image: data?.image
         };
 
         return self.registration.showNotification(notificationTitle,

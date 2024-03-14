@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import coverImg from '../../utils/cover-img.jpg';
 import { useTranslation } from 'react-i18next';
-import { setFilterBrands } from "../../model/reducer/productFilterReducer";
+import { setFilterBrands, setFilterByCountry, setFilterBySeller, setFilterCategory } from "../../model/reducer/productFilterReducer";
 import Pagination from 'react-js-pagination';
 import Cookies from 'universal-cookie';
 import useShopByBrands from '../../hooks/useShopByBrands';
@@ -89,7 +89,6 @@ const BrandList = () => {
 
                                     const sorted_brand_ids = sort_unique_brand_ids(brand_ids);
                                     dispatch(setFilterBrands({ data: sorted_brand_ids }));
-                                    // dispatch({ type: ActionTypes.SET_FILTER_BRANDS, payload: sorted_brand_ids });
                                     navigate('/products');
                                 }}>
 

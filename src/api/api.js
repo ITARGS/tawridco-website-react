@@ -259,7 +259,7 @@ const api = {
         //console.log(filters);
         if (filters !== undefined) {
             for (const filter in filters) {
-                if (filters[filter] !== null && filters[filter] !== 0 || filters[filter]?.length > 0 || filter == 'offset' || filter == 'min_price') {
+                if ((filters[filter] !== null && filters[filter] !== undefined && filters[filter] !== "") || filters[filter]?.length > 0) {
                     formdata.append(filter, filters[filter]);
                 }
                 if (filters[filter] === "sizes") {
@@ -1013,6 +1013,25 @@ const api = {
             url.searchParams.append(p, params[p]);
         }
         return fetch(url, requestOptions);
+    },
+    getProductRatingImages(token, product_id, limit, offset) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+
+        var data = new FormData();
+        data.append("product_id", product_id);
+        data.append("limit", limit);
+        data.append("offset", offset);
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            redirect: 'follow',
+            body: data
+        };
+
+        return fetch(appUrl + appSubUrl + "/products/rating/image_list", requestOptions);
     }
 
 };

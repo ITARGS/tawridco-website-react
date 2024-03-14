@@ -891,17 +891,20 @@ input::placeholder {
   flex-direction: column;
 }
 
-.product-details-view .detail-wrapper .top-section p {
+.product-details-view .detail-wrapper .top-section .product_name {
+  margin-bottom: 12px;
   color: var(--secondary-color);
   text-align: left;
-  font: normal normal bold 36px/8px;
-  font-size: 36px;
+  font-size: 30px;
   font-weight: bold;
   letter-spacing: 0px;
   opacity: 1;
-  margin-bottom: 0;
+  line-height: 38px;
 }
-
+/* .product-details-view .detail-wrapper .top-section #price-section-quickview {
+  color: var(--secondary-color) !important;
+  font-size: 20px;
+} */
 .product-details-view .detail-wrapper .top-section .product-brand {
   margin-top: 15px;
   margin-bottom: 15px;
@@ -915,16 +918,17 @@ input::placeholder {
 }
 
 .product-details-view .detail-wrapper .top-section #price-section {
-  font-size: 32px;
-  font-weight: 1000;
+  font-size: 22px;
+  font-weight: 800;
   display: flex;
   align-items: center;
-  color: var(--secondary-color);
+  color: var(--secondary-color) !important;
   text-align: left;
-  font: normal normal bold 32px/10px;
   letter-spacing: 0px;
 }
-
+.product-details-view .detail-wrapper .top-section #price-section #fa-rupee {
+  color: var(--secondary-color) !important;
+}
 .product-details-view .detail-row .top-section .price::before,
 .product-details-view .detail-row .top-section .not-price::before {
   content: "\20B9";
@@ -1282,10 +1286,12 @@ input::placeholder {
   display: flex;
   align-items: baseline !important;
   font-weight: 700;
-  font-size: 36px;
-  color: var(--secondary-color);
+  font-size: 20px;
+  color: var(--secondary-color) !important;
 }
-
+.product-details-view #price-section-quickview #priceContainer {
+  color: var(--secondary-color) !important  ;
+}
 .product-details-view .body-wrapper .detail-wrapper .bottom-section .dropdown {
   width: 100%;
 }
@@ -1668,7 +1674,12 @@ input::placeholder {
   margin: -5px;
 }
 
-button:disabled {
+/* button:disabled {
+  background-color: #ddd;
+  cursor: default !important;
+  color: #000 !important;
+} */
+.buttonDisabled {
   background-color: #ddd;
   cursor: default !important;
   color: #000 !important;

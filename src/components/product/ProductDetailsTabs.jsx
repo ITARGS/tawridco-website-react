@@ -7,14 +7,19 @@ import { ProgressBar } from 'react-bootstrap';
 import StarFilledSVG from "../../utils/StarFilled.svg";
 import StarUnfilledSVG from "../../utils/StarUnfilled.svg";
 import { formatDate, formatTime } from '../../utils/formatDate';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import NoRatingFoundSVG from "../../utils/No_Review_Found.svg";
+import LightBox from '../lightbox/LightBox';
 
-const ProductDetailsTabs = ({ productdata, productRating, totalData, loading }) => {
+const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ratingImages, totalImages }) => {
     const { t } = useTranslation();
     const { slug } = useParams();
     const [activeKey, setActiveKey] = useState("1");
+    const [open, setOpen] = useState(false);
+    const [lightBoxImages, setLightBoxImages] = useState([]);
     const [imageMappingLength, setImageMappingLength] = useState(5);
+    const navigate = useNavigate();
+
     const handleOnChange = (key) => {
         setActiveKey(key);
     };
@@ -52,7 +57,12 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading }) 
             window.removeEventListener("resize", adjustImageLengthAccWindowSize);
         };
     }, []);
-
+    const [currImageIndex, setCurrImageIndex] = useState(-1);
+    const handleImageClick = (images, imageIndex) => {
+        setLightBoxImages(images.map((image) => ({ src: image?.image_url ? image?.image_url : image })));
+        setCurrImageIndex(imageIndex);
+        setOpen(true);
+    };
     const items = [{
         key: "1",
         label: <h3 className={activeKey == "1" ? "productTabActive" : "description-header"}>{t("product_desc_title")}</h3>,
@@ -166,6 +176,33 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading }) 
                             </div>
 
                         </div>
+
+                        {(ratingImages?.length > 0) ?
+                            <>
+                                <h5 className='title'>{t("customer_photos")}</h5>
+                                <div className='d-flex flex-row flex-wrap justify-content-start gap-3 ratingImagesContainer' key={"ratingImagesContainer"} >
+                                    {ratingImages?.slice(0, 8)?.map((image, index) => (
+                                        <div className={index === (ratingImages?.length - 1 || 7) ? "overlayParent cursorPointer" : ""} key={`${image}-${index}`}
+                                            onClick={() => {
+                                                if (index === (ratingImages?.length - 1 || 7)) {
+                                                    navigate(`/product/${slug}/rating-images`);
+                                                } else {
+                                                    handleImageClick(ratingImages?.slice(0, 8), index);
+                                                }
+                                            }}>
+                                            <img src={image} alt='ratingImg' className='cursorPointer' />
+                                            {index === (ratingImages?.length - 1 || 7) ?
+                                                <div className='overlay'><Link to={`/product/${slug}/rating-images`} style={{ textDecoration: "none", color: "white" }}>
+                                                    {(totalImages !== ratingImages?.length && (totalImages - ratingImages?.length - 1) !== 0) ? `+${(totalImages - ratingImages?.length)}` : null}
+                                                </Link>
+                                                </div>
+                                                : null}
+                                        </div>
+                                    ))}
+                                    <LightBox imageIndex={currImageIndex} open={open} setOpen={setOpen} images={lightBoxImages} />
+                                </div>
+                            </>
+                            : null}
                     </div>
 
 
@@ -194,10 +231,11 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading }) 
                                     <div className='review-container-review'>{review.review}</div>
                                     <div className='d-flex justify-content-start flex-row gap-3 pe-5 mb-3'>
                                         {review?.images?.slice(0, imageMappingLength)?.map((image, index) => (
-                                            <div className={index === (imageMappingLength - 1) ? "overlayParent" : ""} key={image.id}>
-                                                <img src={image?.image_url} alt='userImage' className='userReviewImages' />
+                                            <div className={index === (imageMappingLength - 1) ? "overlayParent" : ""} key={image.id}
+                                                onClick={() => handleImageClick(review?.images?.slice(0, imageMappingLength), index)}>
+                                                <img src={image?.image_url} alt='userImage' className='userReviewImages cursorPointer' />
                                                 {(index === (imageMappingLength - 1)) ?
-                                                    <div div className='overlay'>
+                                                    <div className='overlay'>
                                                         +{(parseInt(review?.images?.length) - imageMappingLength)}
                                                     </div>
                                                     :
@@ -237,7 +275,9 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading }) 
                     components: {
                         Tabs: {
                             inkBarColor: "none",
-                            itemSelectedColor: "black !important"
+                            itemSelectedColor: "white !important",
+                            itemHoverColor: "none",
+                            itemActiveColor: "none",
                         },
                     },
                 }}
@@ -248,4 +288,4 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading }) 
     );
 };
 
-export default ProductDetailsTabs;;;;;
+export default ProductDetailsTabs;

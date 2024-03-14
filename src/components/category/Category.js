@@ -126,8 +126,8 @@ const Category = () => {
                                     <Link className='category_button' to='/categories'>{t('see_all')}</Link>
                                 </div>
                                 <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                                    <button className='prev-arrow-category' onClick={handlePrevClick}><FaChevronLeft size={20} /></button>
-                                    <button className='next-arrow-category' onClick={handleNextClick}><FaChevronRight size={20} /></button>
+                                    <button className='prev-arrow-category' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
+                                    <button className='next-arrow-category' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button>
                                 </div>
                             </div>
                         </div>

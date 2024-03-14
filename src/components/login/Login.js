@@ -29,19 +29,35 @@ import { setCurrentUser } from '../../model/reducer/authReducer';
 const Login = (props) => {
     const { auth, firebase, messaging } = FirebaseData();
     const setting = useSelector(state => (state.setting));
-
     const [fcm, setFcm] = useState('');
 
-    // useEffect(() => {
-    //     try {
-    //         setting.setting?.firebase && messaging && messaging?.getToken().then((res) => {
-    //             setFcm(res);
-    //         });
+    useEffect(() => {
+        const initializeFirebaseMessaging = async () => {
+            if (setting?.setting && messaging) {
+                try {
+                    const permission = await Notification.requestPermission();
+                    if (permission === "granted") {
+                        const currentToken = await messaging.getToken();
+                        if (currentToken) {
+                            setFcm(currentToken);
+                        } else {
+                            // console.log("No registration token available");
+                        }
+                    } else {
+                        setFcm("");
+                        // console.log("Notification permission denied");
+                    }
+                } catch (error) {
+                    console.log("An error occurred:", error);
+                }
+            }
+        };
 
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }, [messaging, setting]);
+        if (setting.setting?.firebase) {
+            initializeFirebaseMessaging();
+        }
+    }, [setting]);
+    // console.log(fcm);
 
     //initialize Cookies
     const cookies = new Cookies();
@@ -90,7 +106,11 @@ const Login = (props) => {
     useEffect(() => {
         if (firebase && auth && window.recaptchaVerifier && setting.setting.firebase) {
             if (window.recaptchaVerifier) {
-                window.recaptchaVerifier.clear();
+                try {
+                    window.recaptchaVerifier?.clear();
+                } catch (err) {
+                    console.log(err?.message);
+                }
             }
 
         }

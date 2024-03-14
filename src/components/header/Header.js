@@ -266,14 +266,14 @@ const Header = () => {
                             <img src={setting.setting && setting.setting.web_settings.web_logo} height="70px" alt="logo"></img>
                         </div>
 
-                        <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeSidebarRef}><AiOutlineCloseCircle /></button>
+                        <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeSidebarRef}><AiOutlineCloseCircle fill='black' /></button>
                     </div>
                     <div className="canvas-main">
                         <div className={isDesktopView ? "site-location " : "site-location d-none"}>
                             <button whiletap={{ scale: 0.8 }} type='buton' onClick={openCanvasModal} >
                                 <div className='d-flex flex-row gap-2'>
                                     <div className='icon location p-1 m-auto'>
-                                        <GoLocation />
+                                        <GoLocation fill='black' />
                                     </div>
                                     <div className='d-flex flex-column flex-grow-1'>
                                         <span className='location-description'>{t("deliver_to")} <IoMdArrowDropdown /></span>
@@ -530,7 +530,7 @@ const Header = () => {
                                 <button whiletap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile' onClick={openModal}>
                                     <div className='d-flex flex-row gap-2'>
                                         <div className='icon location p-1 m-auto'>
-                                            <GoLocation />
+                                            <GoLocation fill='black' />
                                         </div>
                                         <div className='d-flex flex-column flex-grow-1 align-items-start' >
                                             <span className='location-description'>{t('deliver_to')} <IoMdArrowDropdown /></span>

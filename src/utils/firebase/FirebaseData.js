@@ -4,6 +4,7 @@ import "firebase/compat/messaging";
 import { onMessage } from 'firebase/messaging';
 import { useSelector } from "react-redux";
 import Loader from "../../components/loader/Loader";
+import { toast } from "react-toastify";
 
 const FirebaseData = () => {
 
@@ -42,12 +43,12 @@ const FirebaseData = () => {
   const auth = firebase.auth();
 
   const messaging = firebase.messaging();
-
-  onMessage(messaging, (payload) => {
-    console.log('Message received. ', payload);
-    // ...
+  messaging.onMessage(function (payload) {
+    // console.log("Message ->", payload);
+    let data = JSON.parse(payload?.data?.data);
+    // console.log(data);
+    new Notification(data?.title, { body: data?.message, icon: data?.image || setting?.setting?.web_settings?.web_logo });
   });
-
   return { auth, firebase, messaging };
 };
 

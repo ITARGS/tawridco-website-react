@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Route, Routes } from "react-router-dom";
 import Header from "./components/header/Header";
 import MainContainer from "./components/MainContainer";
@@ -12,7 +12,7 @@ import api from './api/api';
 
 //react-toast
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 
 import ShowAllCategories from './components/category/ShowAllCategories';
 import ProductList2 from './components/product/ProductList2';
@@ -38,16 +38,14 @@ import BrandList from './components/brands/BrandList';
 import { logoutAuth, setCurrentUser } from "./model/reducer/authReducer";
 import { setLanguage } from './model/reducer/languageReducer';
 import { setSetting } from './model/reducer/settingReducer';
-import { setCartPromo } from './model/reducer/cartReducer';
 import { setShop } from "./model/reducer/shopReducer";
 import ShopByCountriesPage from './components/shop-by-countries/ShopByCountriesPage';
 import ShopBySellersPage from './components/shop-by-seller/ShopBySellersPage';
 import AllRatingsAndReviews from './components/product/AllRatingsAndReviews';
+import AllRatingImages from './components/product/AllRatingImages';
 import PayPalPaymentHandler from './components/paypalPaymentHandler/PayPalPaymentHandler';
 
-
-
-function App() {
+const App = () => {
   //initialize cookies
   const cookies = new Cookies();
 
@@ -227,6 +225,7 @@ function App() {
                         <Route exact={true} path='/product' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} ></Route>
+                        <Route exact={true} path='/product/:slug/rating-images' element={<AllRatingImages />}></Route>
                         <Route exact={true} path='/about' element={<About />}></Route>
                         <Route exact={true} path='/contact' element={<Contact />}></Route>
                         <Route exact={true} path='/faq' element={<FAQ />}></Route>
@@ -248,6 +247,7 @@ function App() {
                         <Route exact={true} path='/product' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} ></Route>
+                        <Route exact={true} path='/product/:slug/rating-images' element={<AllRatingImages />}></Route>
                         <Route exact={true} path='/about' element={<About />}></Route>
                         <Route exact={true} path='/contact' element={<Contact />}></Route>
                         <Route exact={true} path='/faq' element={<FAQ />}></Route>
@@ -270,11 +270,11 @@ function App() {
           <Footer />
 
 
-          <ToastContainer toastClassName='toast-container-class' />
+          <ToastContainer bodyStyle={{ color: "#000" }} toastClassName='toast-container-class' />
         </div>
       </AnimatePresence>
     </>
   );
-}
+};
 
 export default App;

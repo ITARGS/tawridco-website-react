@@ -25,6 +25,7 @@ import ratingSVG from "../../utils/rating.svg";
 import ProductDetailsTabs from './ProductDetailsTabs';
 import StarFilledSVG from "../../utils/StarFilled.svg";
 import StarUnfilledSVG from "../../utils/StarUnfilled.svg";
+import useGetProductRatingImages from '../../hooks/useGetProductRatingImages';
 
 
 const ProductDetails = () => {
@@ -271,10 +272,7 @@ const ProductDetails = () => {
     const [limit, setLimit] = useState(12);
     const [offset, setOffset] = useState(0);
     const { productRating, totalData, loading: Loading, error } = useGetProductRatingsById(cookies.get("jwt_token"), productdata?.id, limit, offset);
-    // console.log(productRating);
-    //for product variants dropdown in product card
-
-
+    const { ratingImages, totalImages } = useGetProductRatingImages(cookies.get("jwt_token"), productdata?.id, 8, offset);
 
     useEffect(() => {
         if (productdata && selectedVariant === null && productdata.variants) {
@@ -413,7 +411,7 @@ const ProductDetails = () => {
             <Popover.Body className='ratingPopOverBody'>
                 <div className='d-flex flex-row justify-content-start align-items-center ratingCircleContainer'>
                     <div className='ratingCircle'>
-                        {productRating?.average_rating}
+                        {productRating?.average_rating?.toFixed(2)}
                     </div>
                     <div className='d-flex flex-column justify-content-center align-items-center'>
                         <div>{t("rating")}
@@ -510,7 +508,7 @@ const ProductDetails = () => {
                             : (
 
                                 <div className='row body-wrapper '>
-                                    <div className="col-xl-4 col-lg-6 col-md-12 col-12">
+                                    <div className="col-xl-3 col-lg-4 col-md-12 col-12">
 
                                         <div className='image-wrapper '>
                                             <div className='main-image col-12 border'>
@@ -547,7 +545,7 @@ const ProductDetails = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-xl-6 col-lg-6 col-md-12 col-12">
+                                    <div className="col-xl-9 col-lg-8 col-md-12 col-12">
                                         <div className='detail-wrapper'>
                                             <div className='top-section'>
                                                 <p className='product_name'>{productdata.name}</p>
@@ -574,13 +572,13 @@ const ProductDetails = () => {
                                             </div>
                                             <div className='bottom-section'>
                                                 <div className='d-flex gap-3 bottom-section-content'>
-                                                    <div className='variants'>
+                                                    <div className='variants' key={"productVariantContainer"}>
 
-                                                        <div className="row">
+                                                        <div className="row" key={"variants"}>
                                                             {productdata.variants.map((variant, index) => {
                                                                 return (
                                                                     <>
-                                                                        <div className="variant-section">
+                                                                        <div className="variant-section" key={variant?.id}>
                                                                             <div className={`variant-element ${variant_index === variant.id ? 'active' : ''}  ${Number(productdata.is_unlimited_stock) ? "" : (variant.cart_count >= variant.stock ? "out_of_stock" : "")} `} key={index}>
                                                                                 <label className="element_container " htmlFor={`variant${index}`}>
                                                                                     <div className="top-section">
@@ -833,7 +831,14 @@ const ProductDetails = () => {
 
                     </div>
 
-                    <ProductDetailsTabs productdata={productdata} productRating={productRating} totalData={totalData} loading={Loading} />
+                    <ProductDetailsTabs
+                        productdata={productdata}
+                        productRating={productRating}
+                        totalData={totalData}
+                        loading={Loading}
+                        ratingImages={ratingImages}
+                        totalImages={totalImages}
+                    />
 
                     <div className='related-product-wrapper'>
                         <h5>{t("related_product")}</h5>
@@ -1006,7 +1011,7 @@ const ProductDetails = () => {
                                                                     }}><BsPlus size={20} fill='#fff' /> </button>
                                                                 </div>
                                                             </> : <>
-                                                                <button type="button" id={`Add-to-cart-section${index}`} className='w-100 h-100 add-to-cart active' onClick={() => {
+                                                                <button type="button" id={`Add-to-cart-section${index}`} className={`w-100 h-100 add-to-cart active ${(!Number(related_product.is_unlimited_stock) && (related_product.variants[0].stock <= 0)) ? "buttonDisabled" : ""} `} onClick={() => {
                                                                     if (cookies.get('jwt_token') !== undefined) {
 
                                                                         if (cart.cart && cart.cart.data.cart.some(element => element.product_id === related_product.id) && cart.cart.data.cart.some(element => element.product_variant_id === related_product.variants[0].id)) {

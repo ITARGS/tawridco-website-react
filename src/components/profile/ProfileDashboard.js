@@ -418,7 +418,7 @@ const ProfileDashboard = (props) => {
                                 <button type="button" ref={closeCanvas} className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" onClick={() => {
                                     document.getElementsByClassName('profile-account')[0]?.classList.remove('active');
 
-                                }}><AiOutlineCloseCircle /></button>
+                                }}><AiOutlineCloseCircle fill='black' /></button>
                             </div>
                             <div className='sidebar'>
                                 {profileNav()}

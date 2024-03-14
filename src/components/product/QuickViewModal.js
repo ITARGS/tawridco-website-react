@@ -383,7 +383,7 @@ const QuickViewModal = (props) => {
                                                     <div className="d-flex flex-row gap-2 align-items-center my-1">
 
                                                         <div id="price-section-quickview" className='d-flex flex-row gap-2 align-items-center my-1'>
-                                                            {setting.setting && setting.setting.currency}<p id='fa-rupee' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price === 0 ? selectedVariant.price?.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price?.toFixed(setting.setting && setting.setting.decimal_point)) : (product.variants[0].discounted_price === 0 ? product.variants[0].price?.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price?.toFixed(setting.setting && setting.setting.decimal_point))}</p>
+                                                            {setting.setting && setting.setting.currency}<p id='priceContainer' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price === 0 ? selectedVariant.price?.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price?.toFixed(setting.setting && setting.setting.decimal_point)) : (product.variants[0].discounted_price === 0 ? product.variants[0].price?.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price?.toFixed(setting.setting && setting.setting.decimal_point))}</p>
                                                         </div>
                                                     </div>
 

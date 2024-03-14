@@ -25,12 +25,24 @@ export const productFilterReducer = createSlice({
         },
         setFilterSection: (state, action) => {
             state.section_id = action.payload.data;
+            state.category_id = null;
+            state.country_id = "";
+            state.seller_slug = "";
+            state.brand_ids = [];
         },
         setFilterBrands: (state, action) => {
             state.brand_ids = action.payload.data;
+            state.category_id = null;
+            state.country_id = "";
+            state.seller_slug = "";
+            state.section_id = null;
         },
         setFilterCategory: (state, action) => {
             state.category_id = action.payload.data;
+            state.brand_ids = [];
+            state.country_id = "";
+            state.seller_slug = "";
+            state.section_id = null;
         },
         setFilterView: (state, action) => {
             state.grid_view = action.payload.data;
@@ -49,57 +61,20 @@ export const productFilterReducer = createSlice({
         },
         setFilterBySeller: (state, action) => {
             state.seller_slug = action.payload.data;
+            state.brand_ids = [];
+            state.country_id = "";
+            state.category_id = "";
+            state.section_id = null;
         },
         setFilterByCountry: (state, action) => {
             state.country_id = action.payload.data;
+            state.brand_ids = [];
+            state.seller_slug = "";
+            state.category_id = "";
+            state.section_id = null;
         }
 
     }
-    // switch (type) {
-    //     case ActionTypes.SET_FILTER_SEARCH:
-    //         return {
-    //             ...state,
-    //             search: payload,
-    //         };
-    //     case ActionTypes.SET_FILTER_SECTION:
-    //         return {
-    //             ...state,
-    //             section_id: payload,
-    //         };
-    //     case ActionTypes.SET_FILTER_BRANDS:
-    //         return {
-    //             ...state,
-    //             brand_ids: payload,
-    //         };
-
-    //     case ActionTypes.SET_FILTER_CATEGORY:
-    //         return {
-    //             ...state,
-    //             category_id: payload,
-    //         };
-    //     case ActionTypes.SET_FILTER_VIEW:
-    //         return {
-    //             ...state,
-    //             grid_view: payload,
-    //         };
-    //     case ActionTypes.SET_FILTER_MIN_MAX_PRICE:
-    //         return {
-    //             ...state,
-    //             price_filter: payload,
-    //         };
-    //     case ActionTypes.SET_FILTER_SORT:
-    //         return {
-    //             ...state,
-    //             sort_filter: payload,
-    //         };
-    //     case ActionTypes.SET_FILTER_PRODUCTS:
-    //         return {
-    //             ...state,
-    //             section_products: payload,
-    //         };
-    //     default:
-    //         return state;
-    // }
 });
 
 export const {

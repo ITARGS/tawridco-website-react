@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineArrowRight } from 'react-icons/ai';
 import Slider from 'react-slick';
-import { setFilterBrands } from '../../model/reducer/productFilterReducer';
+import { setFilterBrands, setFilterByCountry, setFilterBySeller, setFilterCategory } from '../../model/reducer/productFilterReducer';
 import "./brand.css";
 
 const Brand = () => {
@@ -88,8 +88,8 @@ const Brand = () => {
               <Link className='brand_button' to='/brands'>{t('see_all')}</Link>
             </div>
             <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-              <button className='prev-arrow-brand' onClick={handlePrevClick}><FaChevronLeft size={20} /></button>
-              <button className='next-arrow-brand' onClick={handleNextClick}><FaChevronRight size={20} /></button>
+              <button className='prev-arrow-brand' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
+              <button className='next-arrow-brand' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button>
             </div>
           </div>
         </div>

@@ -88,8 +88,8 @@ const ShopByCountries = () => {
                             <Link className='country_button' to='/countries'>{t('see_all')}</Link>
                         </div>
                         <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                            <button className='prev-arrow-country' onClick={handlePrevClick}><FaChevronLeft size={20} /></button>
-                            <button className='next-arrow-country' onClick={handleNextClick}><FaChevronRight size={20} /></button>
+                            <button className='prev-arrow-country' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
+                            <button className='next-arrow-country' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button>
                         </div>
                     </div>
                 </div>

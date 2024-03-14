@@ -32,18 +32,23 @@ const PayPalPaymentHandler = () => {
     const timeout = useRef();
 
     useEffect(() => {
-        try {
-            api.removeCart(cookies.get("jwt_token")).then((res) => res.json()).then((result) => {
-                if (result?.status === 1) {
-                    dispatch(setCart({ data: null }));
-                    dispatch(setCartCheckout({ data: null }));
-                }
-                // console.log(result);
-            });
-        } catch (err) {
-            console.log(err.message);
+        if (queryParamsObj.type === "wallet") {
+
         }
-        toast.success(t("order_paypal_pending_message"));
+        else {
+            try {
+                api.removeCart(cookies.get("jwt_token")).then((res) => res.json()).then((result) => {
+                    if (result?.status === 1) {
+                        dispatch(setCart({ data: null }));
+                        dispatch(setCartCheckout({ data: null }));
+                    }
+                    // console.log(result);
+                });
+            } catch (err) {
+                console.log(err.message);
+            }
+            toast.success(t("order_paypal_pending_message"));
+        }
         interval.current = setInterval(() => {
             setTimer(prev => prev - 1);
         }, 1000);

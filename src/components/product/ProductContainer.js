@@ -313,7 +313,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                         </Link>
                                                                         {/* {console.log(product)} */}
                                                                         <div className="card-body product-card-body p-3" >
-                                                                            <div className='ratings d-flex align-items-center'>
+                                                                            {product?.rating_count > 0 ? <div className='ratings d-flex align-items-center'>
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
@@ -322,7 +322,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                 <div>
                                                                                     {product?.rating_count}
                                                                                 </div>
-                                                                            </div>
+                                                                            </div> : null}
                                                                             <h3>{product.name}</h3>
                                                                             <div className='price'>
 

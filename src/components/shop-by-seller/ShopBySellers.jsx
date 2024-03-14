@@ -86,8 +86,8 @@ const ShopBySellers = () => {
                             <Link className='category_button' to='/sellers'>{t('see_all')}</Link>
                         </div>
                         <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                            <button className='prev-arrow-seller' onClick={handlePrevClick}><FaChevronLeft size={20} /></button>
-                            <button className='next-arrow-seller' onClick={handleNextClick}><FaChevronRight size={20} /></button>
+                            <button className='prev-arrow-seller' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
+                            <button className='next-arrow-seller' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button>
                         </div>
                     </div>
                 </div>

@@ -174,21 +174,22 @@ const ProductList2 = React.memo(() => {
         if (brands === null) {
             fetchBrands();
         }
-        if (category.category.length === 0) {
+        if (category?.category?.length === 0) {
             fetchCategories();
         }
         if (location.pathname === "/products")
             filterProductsFromApi({
-                category_id: filter.category_id,
-                brand_ids: filter.brand_ids.toString(),
-                sort: filter.sort_filter,
-                search: filter.search,
+                category_id: filter?.category_id,
+                brand_ids: filter?.brand_ids.toString(),
+                sort: filter?.sort_filter,
+                search: filter?.search,
                 limit: total_products_per_page,
-                sizes: filter?.search_sizes.filter(obj => obj.checked).map(obj => obj["size"]).join(","),
+                sizes: filter?.search_sizes?.filter(obj => obj.checked).map(obj => obj["size"]).join(","),
                 offset: offset,
-                unit_ids: filter?.search_sizes.filter(obj => obj.checked).map(obj => obj["unit_id"]).join(","),
+                unit_ids: filter?.search_sizes?.filter(obj => obj.checked).map(obj => obj["unit_id"]).join(","),
                 seller_slug: filter?.seller_slug,
-                country_id: filter?.country_id
+                country_id: filter?.country_id,
+                section_id: filter?.section_id
             });
 
     }, [filter.search, filter.category_id, filter.brand_ids, filter.sort_filter, filter?.search_sizes]);
@@ -197,16 +198,17 @@ const ProductList2 = React.memo(() => {
         FilterProductByPrice({
             min_price: filter.price_filter?.min_price,
             max_price: filter.price_filter?.max_price,
-            category_id: filter.category_id,
-            brand_ids: filter.brand_ids.toString(),
-            sort: filter.sort_filter,
-            search: filter.search,
-            sizes: filter?.search_sizes.filter(obj => obj.checked).map(obj => obj["size"]).join(","),
+            category_id: filter?.category_id,
+            brand_ids: filter?.brand_ids?.toString(),
+            sort: filter?.sort_filter,
+            search: filter?.search,
+            sizes: filter?.search_sizes?.filter(obj => obj.checked).map(obj => obj["size"]).join(","),
             limit: total_products_per_page,
             offset: offset,
-            unit_ids: filter?.search_sizes.filter(obj => obj.checked).map(obj => obj["unit_id"]).join(","),
+            unit_ids: filter?.search_sizes?.filter(obj => obj.checked).map(obj => obj["unit_id"]).join(","),
             seller_slug: filter?.seller_slug,
-            country_id: filter?.country_id
+            country_id: filter?.country_id,
+            section_id: filter?.section_id
         });
     }, [filter?.price_filter, offset, cart?.cart]);
 
@@ -554,7 +556,7 @@ const ProductList2 = React.memo(() => {
                             <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeCanvas} onClick={() => {
 
 
-                            }}><AiOutlineCloseCircle /></button>
+                            }}><AiOutlineCloseCircle fill='black'/></button>
                         </div>
                         {Filter()}
                     </div>
@@ -788,14 +790,14 @@ const ProductList2 = React.memo(() => {
 
 
                                                                         <div className="card-body product-card-body p-3" >
-                                                                            <div>
+                                                                            {product?.rating_count ? <div>
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-3' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                {product.average_rating.toFixed(2)}
-                                                                            </div>
+                                                                                {product?.rating_count}
+                                                                            </div> : null}
                                                                             <h3 onClick={(e) => {
                                                                                 e.preventDefault();
                                                                                 dispatch(setSelectedProduct({ data: product.id }));
@@ -1024,7 +1026,7 @@ const ProductList2 = React.memo(() => {
 
                 </div>
 
-            </section >
+            </section>
         </>
 
     );
