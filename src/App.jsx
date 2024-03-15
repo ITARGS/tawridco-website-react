@@ -183,10 +183,6 @@ const App = () => {
 }
   `;
 
-  // useEffect(() => {
-  //    dispatch(setCartPromo({ data: null }));
-  //    dispatch({ type: ActionTypes.SET_CART_PROMO, payload: null });
-  // }, [cart.cart]);
 
   return (
     <>
@@ -206,7 +202,6 @@ const App = () => {
               <main id='main' className="main-app">
                 <Suspense fallback={<Loader screen={"full"} />} key={"reactSuspense"}>
                   <Routes >
-                    {/* {user.user && user.user} */}
                     {user.user ?
                       <>
                         <Route exact={true} path="/cart" element={<ViewCart />}></Route>

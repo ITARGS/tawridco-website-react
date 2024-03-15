@@ -164,7 +164,7 @@ const Cart = () => {
 
             <div className='cart-sidebar-header'>
                 <h5>{t("your_cart")}</h5>
-                <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeCanvas}><AiOutlineCloseCircle /></button>
+                <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeCanvas}><AiOutlineCloseCircle fill='black'/></button>
             </div>
 
             {iscartEmpty ? (

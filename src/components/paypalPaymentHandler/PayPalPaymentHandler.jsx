@@ -33,7 +33,7 @@ const PayPalPaymentHandler = () => {
 
     useEffect(() => {
         if (queryParamsObj.type === "wallet") {
-
+            toast.success(t("wallet_recharge_paypal_pending_message"));
         }
         else {
             try {
@@ -75,7 +75,6 @@ const PayPalPaymentHandler = () => {
 
     return (
         <>
-
             <div className='container d-flex flex-column align-items-center mt-5 payment-container' >
                 <Lottie animationData={animate2} loop={false} className='lottie-tick'></Lottie>
                 <Lottie className='lottie-content' animationData={animate1} loop={true}></Lottie>

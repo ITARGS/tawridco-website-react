@@ -233,7 +233,7 @@ const ProductDetails = () => {
                     setmainimage(e.target.value);
                 }}
             >
-                <FaChevronLeft size={30} className="prev-arrow" />
+                <FaChevronLeft fill='black' size={30} className="prev-arrow" />
             </button>
         ),
         nextArrow: (
@@ -245,7 +245,7 @@ const ProductDetails = () => {
                 }}
             >
                 <FaChevronRight
-                    color="#f7f7f7"
+                    fill='black'
                     size={30}
                     className="next-arrow"
                 />
@@ -862,7 +862,7 @@ const ProductDetails = () => {
                                                         setselectedProduct(related_product);
                                                         setP_id(related_product.id); setP_V_id(related_product.variants[0].id); setQnty(related_product.variants[0].cart_count + 1);
                                                     }} >
-                                                        <AiOutlineEye
+                                                        <AiOutlineEye fill='black'
                                                         />
                                                     </span>
                                                     <Link to={`/product/${related_product.slug}`}>

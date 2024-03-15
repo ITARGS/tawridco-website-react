@@ -30,7 +30,6 @@ import { setFavourite } from "../../model/reducer/favouriteReducer";
 import { setFilterBrands, setFilterCategory, setFilterMinMaxPrice, setFilterSearch } from "../../model/reducer/productFilterReducer";
 import { Modal } from 'antd';
 // import { Modal } from "react-bootstrap";
-
 import "../location/location.css";
 
 const Header = () => {
@@ -712,13 +711,12 @@ const Header = () => {
                                 {user.status === 'loading'
                                     ? (
                                         <div className='hide-mobile-screen px-3'>
-                                            <div whiletap={{ scale: 0.6 }} className='d-flex flex-row user-profile gap-1' data-bs-toggle="modal" data-bs-target="#loginModal">
+                                            <div whiletap={{ scale: 0.6 }} className='d-flex flex-row user-profile gap-1' onClick={() => setShowModal(true)}>
                                                 <div className='d-flex align-items-center user-info my-auto'>
                                                     <span className='btn-success'><IoPersonOutline className='user_icon' /></span>
                                                     <span className='pe-3'>{t("login")}</span>
                                                 </div>
                                             </div>
-
                                         </div>
                                     )
                                     : (
@@ -983,7 +981,7 @@ const Header = () => {
 
                 {/* login modal */}
 
-                <Login modal_id='loginModal' />
+                <Login show={showModal} setShow={setShowModal} />
 
                 {/* location modal */}
                 <Modal

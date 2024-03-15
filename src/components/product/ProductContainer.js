@@ -294,7 +294,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                 }}
                                                                             />
                                                                         </span>
-                                                                        <Link to={`/product/${product.slug}`}>
+                                                                        <Link to={`/product/${product.slug}`} className='text-decoration-none text-reset'>
 
                                                                             <div className='image-container' >
 
@@ -310,50 +310,48 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                     </div>
                                                                                 }
                                                                             </div>
-                                                                        </Link>
-                                                                        {/* {console.log(product)} */}
-                                                                        <div className="card-body product-card-body p-3" >
-                                                                            {product?.rating_count > 0 ? <div className='ratings d-flex align-items-center'>
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-4' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <div>
-                                                                                    {product?.rating_count}
-                                                                                </div>
-                                                                            </div> : null}
-                                                                            <h3>{product.name}</h3>
-                                                                            <div className='price'>
-
-                                                                                <span id={`price${index}${index0}-section`} className="d-flex align-items-center">
-                                                                                    <p id='fa-rupee' className='m-0 ' style={{ color: "var(--secondary-color)" }}>{setting.setting && setting.setting.currency}</p> {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                                </span>
-
-                                                                            </div>
-                                                                            <div className='product_varients_drop'>
-                                                                                <input type="hidden" name={`select-product${index}${index0}-variant-id`} id={`select-product${index}${index0}-variant-id`} value={selectedVariant.pid === product.id ? selectedVariant.id : product.variants[0].id} />
-                                                                                {/* {console.log(product, product.variants)} */}
-                                                                                {product.variants.length > 1 ? <>
-                                                                                    <div className='variant_selection' onClick={() => { setselectedProduct(product); setShowModal(true); setP_id(product.id); setP_V_id(product.variants[0].id); setQnty(product.variants[0].cart_count + 1); }} >
-                                                                                        <span>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} </>}</span>
-                                                                                        <IoIosArrowDown />
+                                                                            {/* {console.log(product)} */}
+                                                                            <div className="card-body product-card-body p-3" >
+                                                                                {product?.rating_count > 0 ? <div className='ratings d-flex align-items-center'>
+                                                                                    <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                    <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                    <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                    <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                    <LuStar className='me-4' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                    <div>
+                                                                                        {product?.rating_count}
                                                                                     </div>
-                                                                                </>
-                                                                                    :
+                                                                                </div> : null}
+                                                                                <h3>{product.name}</h3>
+                                                                                <div className='price'>
+                                                                                    <span id={`price${index}${index0}-section`} className="d-flex align-items-center">
+                                                                                        <p id='fa-rupee' className='m-0 ' style={{ color: "var(--secondary-color)" }}>{setting.setting && setting.setting.currency}</p> {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                    </span>
 
-                                                                                    <>
+                                                                                </div>
+                                                                                <div className='product_varients_drop'>
+                                                                                    <input type="hidden" name={`select-product${index}${index0}-variant-id`} id={`select-product${index}${index0}-variant-id`} value={selectedVariant.pid === product.id ? selectedVariant.id : product.variants[0].id} />
+                                                                                    {/* {console.log(product, product.variants)} */}
+                                                                                    {product.variants.length > 1 ? <>
+                                                                                        <div className='variant_selection' onClick={() => { setselectedProduct(product); setShowModal(true); setP_id(product.id); setP_V_id(product.variants[0].id); setQnty(product.variants[0].cart_count + 1); }} >
+                                                                                            <span>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} </>}</span>
+                                                                                            <IoIosArrowDown />
+                                                                                        </div>
+                                                                                    </>
+                                                                                        :
 
-                                                                                        {/* {document.getElementById()} */}
-                                                                                        <span className={`variant_value select-arrow ${product.variants[0].stock > 0 ? '' : ''}`}>{product.variants[0].measurement + " " + product.variants[0].stock_unit_name}
-                                                                                        </span>
-                                                                                    </>}
+                                                                                        <>
+
+                                                                                            {/* {document.getElementById()} */}
+                                                                                            <span className={`variant_value select-arrow ${product.variants[0].stock > 0 ? '' : ''}`}>{product.variants[0].measurement + " " + product.variants[0].stock_unit_name}
+                                                                                            </span>
+                                                                                        </>}
 
 
 
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-
+                                                                        </Link>
                                                                         <div className='d-flex flex-row border-top product-card-footer'>
                                                                             <div className='border-end'>
                                                                                 {
@@ -483,25 +481,24 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
 
 
                                             </div>
-
-                                            {/* {shop.shop.offers.some((item) => item.section_position === index0) && (
-                                        <div className='product_section row flex-column' id='offers'>
-                                        <Offers />
-                                        </div>
-                                    )} */}
-
-                                            {/* {index0 === shop.shop.sections.length - 1 && (
-                                                <div className='product_section row flex-column' id='offers'>
-                                                    <Offers />
+                                            {BelowSectionOfferArray?.filter((offer) => offer?.section?.title == section?.title)?.map((offer) => (
+                                                <div className='col-md-12 p-0 col-12 my-5' onClick={() => {
+                                                    if (offer?.category) {
+                                                        dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
+                                                        navigate("/products");
+                                                    } else if (offer?.product) {
+                                                        navigate(`/product/${offer.product.slug}`);
+                                                    } else if (offer?.offer_url) {
+                                                        window.open(offer?.offer_url, "_blank");
+                                                    }
+                                                }}>
+                                                    <img className={`${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "auto", borderRadius: "10px" }} />
                                                 </div>
-                                            )} */}
+                                            ))}
                                         </div>
                                     );
                                 }
-                            }
-
-                            )
-
+                            })
                             }
                             <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} setP_id={setP_id} setP_V_id={setP_V_id} />
                             <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} setisLoader={setisLoader} cookies={cookies} toast={toast} city={city} />
@@ -510,26 +507,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
 
                     )
                 }
-                {/* {offerConatiner === 1 ? <Offers /> : null} */}
-                {/* <div>
-                    <div className="product_container">
-                    <Offers />
-                    </div>
-                </div> */}
-                {BelowSectionOfferArray?.map((offer) => (
-                    <div className='col-md-12 p-0 col-12 my-5' onClick={() => {
-                        if (offer?.category) {
-                            dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
-                            navigate("/products");
-                        } else if (offer?.product) {
-                            navigate(`/product/${offer.product.slug}`);
-                        } else if (offer?.offer_url) {
-                            window.open(offer?.offer_url, "_blank");
-                        }
-                    }}>
-                        <img className={`${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "200px" }} />
-                    </div>
-                ))}
             </div>
         </section>
     );

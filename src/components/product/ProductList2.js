@@ -556,7 +556,7 @@ const ProductList2 = React.memo(() => {
                             <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeCanvas} onClick={() => {
 
 
-                            }}><AiOutlineCloseCircle fill='black'/></button>
+                            }}><AiOutlineCloseCircle fill='black' /></button>
                         </div>
                         {Filter()}
                     </div>
@@ -651,7 +651,7 @@ const ProductList2 = React.memo(() => {
 
                                                                             />
                                                                         </span>
-                                                                        <Link to={`/product/${product.slug}`}>
+                                                                        <Link to={`/product/${product.slug}`} className='text-decoration-none text-reset'>
                                                                             <div className={`image-container  ${!filter.grid_view ? 'border-end col-3 ' : 'col-12'}`} >
                                                                                 <img onError={placeHolderImage} src={product.image_url} alt={product.slug} className='card-img-top' onClick={(e) => {
                                                                                     e.preventDefault();
