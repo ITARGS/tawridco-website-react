@@ -790,13 +790,13 @@ const ProductList2 = React.memo(() => {
 
 
                                                                         <div className="card-body product-card-body p-3" >
-                                                                            {product?.rating_count ? <div>
+                                                                                {product?.rating_count ? <div>
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-3' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                {product?.rating_count}
+                                                                                ({product?.rating_count})
                                                                             </div> : null}
                                                                             <h3 onClick={(e) => {
                                                                                 e.preventDefault();

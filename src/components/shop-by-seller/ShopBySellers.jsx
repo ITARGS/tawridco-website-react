@@ -75,44 +75,45 @@ const ShopBySellers = () => {
 
     return (
         <>
-            <section id='all-sellers'>
-                <div className="row seller_section_header">
-                    <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
-                        <div className="title d-md-flex align-items-center ">
-                            <p>{t('shop_by')} {t('sellers')}</p>
-                            <Link className='d-none d-md-block' to='/sellers'>{t('see_all')} {t('sellers')}<AiOutlineArrowRight size={15} className='see_sellers_arrow' /> </Link>
-                        </div>
-                        <div className=' d-md-none'>
-                            <Link className='category_button' to='/sellers'>{t('see_all')}</Link>
-                        </div>
-                        <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                            <button className='prev-arrow-seller' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
-                            <button className='next-arrow-seller' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button>
+            {(shop?.shop?.is_seller_section_in_homepage && (shop?.shop?.sellers?.length > 0)) ?
+                <section id='all-sellers'>
+                    <div className="row seller_section_header">
+                        <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
+                            <div className="title d-md-flex align-items-center ">
+                                <p>{t('shop_by')} {t('sellers')}</p>
+                                <Link className='d-none d-md-block' to='/sellers'>{t('see_all')} {t('sellers')}<AiOutlineArrowRight size={15} className='see_sellers_arrow' /> </Link>
+                            </div>
+                            <div className=' d-md-none'>
+                                <Link className='category_button' to='/sellers'>{t('see_all')}</Link>
+                            </div>
+                            <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
+                                <button className='prev-arrow-seller' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
+                                <button className='next-arrow-seller' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className='row justify-content-center home allSellersContainer'>
-                    <Slider {...settings} ref={sliderRef}>
-                        {shop.shop?.sellers?.map((seller, index) => (
-                            <div className="my-3 content" key={index} onClick={() => {
-                                dispatch(setFilterBySeller({ data: seller?.store_name }));
-                                navigate('/products');
-                            }}>
+                    <div className='row justify-content-center home allSellersContainer'>
+                        <Slider {...settings} ref={sliderRef}>
+                            {shop.shop?.sellers?.map((seller, index) => (
+                                <div className="my-3 content" key={index} onClick={() => {
+                                    dispatch(setFilterBySeller({ data: seller?.store_name }));
+                                    navigate('/products');
+                                }}>
 
 
-                                <div className='card'>
-                                    <img onError={placeHolderImage} className='card-img-top' src={seller.logo_url} alt='country' loading='lazy' />
-                                    <div className='card-body' style={{ cursor: "pointer" }} >
-                                        <p>{seller.store_name} </p>
+                                    <div className='card'>
+                                        <img onError={placeHolderImage} className='card-img-top' src={seller.logo_url} alt='country' loading='lazy' />
+                                        <div className='card-body' style={{ cursor: "pointer" }} >
+                                            <p>{seller.store_name} </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </Slider>
+                            ))}
+                        </Slider>
 
 
-                </div>
-            </section >
+                    </div>
+                </section> : null}
         </>
     );
 };

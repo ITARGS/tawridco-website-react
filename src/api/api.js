@@ -251,13 +251,13 @@ const api = {
         var myHeaders = new Headers();
         //console.log("getProductbyFilter API ->", filters);
         myHeaders.append(access_key_param, access_key);
-        myHeaders.append("Authorization", token_prefix + token);
+        token && myHeaders.append("Authorization", token_prefix + token);
         var formdata = new FormData();
         formdata.append("city_id", city_id);
         formdata.append("latitude", latitude);
         formdata.append("longitude", longitude);
         //console.log(filters);
-        if (filters !== undefined) {
+        if (filters !== undefined) {        
             for (const filter in filters) {
                 if ((filters[filter] !== null && filters[filter] !== undefined && filters[filter] !== "") || filters[filter]?.length > 0) {
                     formdata.append(filter, filters[filter]);
@@ -844,7 +844,7 @@ const api = {
 
         return fetch(url, requestOptions);
     },
-    updateOrderStatus(token, order_id, order_item_id, status) {
+    updateOrderStatus(token, order_id, order_item_id, status, return_reason) {
         // 1:Payment Pending
         // 2:Received
         // 3:Processed
@@ -864,6 +864,8 @@ const api = {
         data.append('status', status);
         data.append('device_type', "website");
         data.append('app_version', "1.9.2 ");
+        return_reason !== undefined && data.append("reason", return_reason);
+
 
         var requestOptions = {
             method: 'POST',

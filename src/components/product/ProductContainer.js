@@ -319,7 +319,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                     <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                     <LuStar className='me-4' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                     <div>
-                                                                                        {product?.rating_count}
+                                                                                        ({product?.rating_count})
                                                                                     </div>
                                                                                 </div> : null}
                                                                                 <h3>{product.name}</h3>

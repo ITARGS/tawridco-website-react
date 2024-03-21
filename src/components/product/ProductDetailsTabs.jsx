@@ -182,18 +182,18 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
                                 <h5 className='title'>{t("customer_photos")}</h5>
                                 <div className='d-flex flex-row flex-wrap justify-content-start gap-3 ratingImagesContainer' key={"ratingImagesContainer"} >
                                     {ratingImages?.slice(0, 8)?.map((image, index) => (
-                                        <div className={index === (ratingImages?.length - 1 || 7) ? "overlayParent cursorPointer" : ""} key={`${image}-${index}`}
+                                        <div className={index == 7 ? "overlayParent cursorPointer" : ""} key={`${image}-${index}`}
                                             onClick={() => {
-                                                if (index === (ratingImages?.length - 1 || 7)) {
-                                                    navigate(`/product/${slug}/rating-images`);
+                                                if (index === 7) {
+                                                    navigate(`/product/${slug}/rating-and-reviews`);
                                                 } else {
                                                     handleImageClick(ratingImages?.slice(0, 8), index);
                                                 }
                                             }}>
                                             <img src={image} alt='ratingImg' className='cursorPointer' />
-                                            {index === (ratingImages?.length - 1 || 7) ?
-                                                <div className='overlay'><Link to={`/product/${slug}/rating-images`} style={{ textDecoration: "none", color: "white" }}>
-                                                    {(totalImages !== ratingImages?.length && (totalImages - ratingImages?.length - 1) !== 0) ? `+${(totalImages - ratingImages?.length)}` : null}
+                                            {index == 7 ?
+                                                <div className='overlay'><Link to={`/product/${slug}/rating-and-reviews`} style={{ textDecoration: "none", color: "white" }}>
+                                                    {(totalImages != ratingImages?.length && (totalImages - ratingImages?.length - 1) != 0) ? `+${(totalImages - ratingImages?.length)}` : null}
                                                 </Link>
                                                 </div>
                                                 : null}
@@ -232,10 +232,16 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
                                     <div className='d-flex justify-content-start flex-row gap-3 pe-5 mb-3'>
                                         {review?.images?.slice(0, imageMappingLength)?.map((image, index) => (
                                             <div className={index === (imageMappingLength - 1) ? "overlayParent" : ""} key={image.id}
-                                                onClick={() => handleImageClick(review?.images?.slice(0, imageMappingLength), index)}>
+                                                onClick={() => {
+                                                    if (index === (imageMappingLength - 1)) {
+                                                        navigate(`/product/${slug}/rating-and-reviews`);
+                                                    } else {
+                                                        handleImageClick(ratingImages?.slice(0, imageMappingLength), index);
+                                                    }
+                                                }}>
                                                 <img src={image?.image_url} alt='userImage' className='userReviewImages cursorPointer' />
                                                 {(index === (imageMappingLength - 1)) ?
-                                                    <div className='overlay'>
+                                                    <div className='overlay cursorPointer'>
                                                         +{(parseInt(review?.images?.length) - imageMappingLength)}
                                                     </div>
                                                     :

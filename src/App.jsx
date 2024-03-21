@@ -220,7 +220,7 @@ const App = () => {
                         <Route exact={true} path='/product' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} ></Route>
-                        <Route exact={true} path='/product/:slug/rating-images' element={<AllRatingImages />}></Route>
+                        {/* <Route exact={true} path='/product/:slug/rating-images' element={<AllRatingImages />}></Route> */}
                         <Route exact={true} path='/about' element={<About />}></Route>
                         <Route exact={true} path='/contact' element={<Contact />}></Route>
                         <Route exact={true} path='/faq' element={<FAQ />}></Route>
@@ -242,7 +242,7 @@ const App = () => {
                         <Route exact={true} path='/product' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
                         <Route exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} ></Route>
-                        <Route exact={true} path='/product/:slug/rating-images' element={<AllRatingImages />}></Route>
+                        {/* <Route exact={true} path='/product/:slug/rating-images' element={<AllRatingImages />}></Route> */}
                         <Route exact={true} path='/about' element={<About />}></Route>
                         <Route exact={true} path='/contact' element={<Contact />}></Route>
                         <Route exact={true} path='/faq' element={<FAQ />}></Route>

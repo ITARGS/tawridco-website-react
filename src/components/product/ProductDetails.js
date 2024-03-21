@@ -26,6 +26,7 @@ import ProductDetailsTabs from './ProductDetailsTabs';
 import StarFilledSVG from "../../utils/StarFilled.svg";
 import StarUnfilledSVG from "../../utils/StarUnfilled.svg";
 import useGetProductRatingImages from '../../hooks/useGetProductRatingImages';
+import { LuStar } from 'react-icons/lu';
 
 
 const ProductDetails = () => {
@@ -896,6 +897,16 @@ const ProductDetails = () => {
                                                         window.scrollTo({ top: 0, behavior: 'smooth' });
 
                                                     }} >
+                                                        {related_product?.rating_count > 0 ? <div className='ratings d-flex align-items-center' style={{ fontSize: "14px" }}>
+                                                            <LuStar className='me-1' style={related_product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                            <LuStar className='me-1' style={related_product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                            <LuStar className='me-1' style={related_product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                            <LuStar className='me-1' style={related_product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                            <LuStar className='me-4' style={related_product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                            <div>
+                                                                ({related_product?.rating_count})
+                                                            </div>
+                                                        </div> : null}
                                                         <h3>{related_product.name}</h3>
                                                         <div className='price'>
 

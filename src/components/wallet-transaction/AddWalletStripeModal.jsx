@@ -28,7 +28,7 @@ const CARD_OPTIONS = {
 };
 
 const StripeModal = (props) => {
-    console.log(props);
+    // console.log(props);
     const cookies = new Cookies();
 
     const dispatch = useDispatch();

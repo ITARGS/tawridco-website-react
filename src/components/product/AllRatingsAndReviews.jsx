@@ -13,13 +13,16 @@ import { useTranslation } from "react-i18next";
 import Pagination from "react-js-pagination";
 import "./all-ratings.css";
 import NoRatingsFound from "../../utils/No_Review_Found.svg";
+import useGetProductRatingImages from "../../hooks/useGetProductRatingImages";
+import AllImagesModal from "./AllImagesModal";
+import LightBox from "../lightbox/LightBox";
 
 const AllRatingsAndReviews = () => {
     const { slug } = useParams();
     const cookies = new Cookies();
     const { t } = useTranslation();
 
-    const city = useSelector(state => state.city);
+    // const city = useSelector(state => state.city);
     const setting = useSelector(state => state.setting);
 
     const [currPage, setCurrPage] = useState(1);
@@ -29,11 +32,25 @@ const AllRatingsAndReviews = () => {
     const [product, setProduct] = useState("");
     const [imageMappingLength, setImageMappingLength] = useState(5);
 
+    const [currImageIndex, setCurrImageIndex] = useState(-1);
+    const [userImages, setUserImages] = useState(null);
+    const [show, setShow] = useState(false);
+
+    const [productRating, setProductRating] = useState(null);
+    const [totalData, setTotalData] = useState(0);
+    const [Loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [ratingImages, setRatingImages] = useState([]);
+    const [totalImages, setTotalImages] = useState(0);
+    const [imageLoading, setImageLoading] = useState(false);
+
+    const [lightBoxImages, setLightBoxImages] = useState([]);
+    const [open, setOpen] = useState(false);
+
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
-        const getProductData = async () => {
-
-            await api.getProductbyFilter(city.city?.id, city.city?.latitude, city.city?.longitude, { slug: slug }, cookies.get('jwt_token'))
+        const GetProductData = async () => {
+            await api.getProductbyFilter(setting?.setting?.default_city?.id, setting.setting?.default_city?.latitude, setting.setting?.default_city?.longitude, { slug: slug }, null)
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
@@ -45,15 +62,45 @@ const AllRatingsAndReviews = () => {
                 })
                 .catch(error => console.log(error));
         };
-        getProductData();
-    }, [slug]);
+        GetProductData();
+    }, [setting?.setting?.default_city, slug]);
 
-    const { productRating, totalData, loading: Loading, error } = useGetProductRatingsById(cookies.get("jwt_token"), productId, limit, offset);
+
+    const fetchProductRatingById = async () => {
+        setLoading(true);
+        try {
+            const response = await api.getProductRatings(cookies.get("jwt_token"), productId, limit, offset);
+            const result = await response.json();
+            setProductRating(result.data);
+            setTotalData(result.total);
+        } catch (err) {
+            setError(err.message);
+        }
+        setLoading(false);
+    };
+    const fetchProductRatingImages = async () => {
+        setImageLoading(true);
+        try {
+            const response = await api.getProductRatingImages(cookies.get("jwt_token"), productId, limit, offset);
+            const result = await response.json();
+            setRatingImages(result.data);
+            setTotalImages(result.total);
+        } catch (err) {
+            setError(err.message);
+        }
+        setImageLoading(false);
+    };
+
+    useEffect(() => {
+        fetchProductRatingById();
+        fetchProductRatingImages();
+    }, [productId]);
 
     const calculatePercentage = (totalRating, starWiseRating) => {
         const percentage = (starWiseRating * 100) / totalRating;
         return percentage;
     };
+
     const handlePageChange = (pageNum) => {
         window.scrollTo({ top: 0, behavior: "smooth" });
         setCurrPage(pageNum);
@@ -84,13 +131,18 @@ const AllRatingsAndReviews = () => {
                 setImageMappingLength(7);
             }
         };
-
         window.addEventListener("resize", adjustImageLengthAccWindowSize);
-
         return () => {
             window.removeEventListener("resize", adjustImageLengthAccWindowSize);
         };
     }, []);
+
+
+    const handleImageClick = (images, imageIndex) => {
+        setLightBoxImages(images.map((image) => ({ src: image?.image_url ? image?.image_url : image })));
+        setCurrImageIndex(imageIndex);
+        setOpen(true);
+    };
     return (
         <>
 
@@ -119,7 +171,6 @@ const AllRatingsAndReviews = () => {
                                 </div>
                             </div>
                             <h5 className='title'>{t("rating_and_reviews")}</h5>
-
                             <div className='row justify-content-between ratingContainer'>
 
                                 <div className='d-flex flex-row justify-content-start align-items-center gap-4 ratingCircleContainer'>
@@ -205,12 +256,37 @@ const AllRatingsAndReviews = () => {
                                     </div>
 
                                 </div>
-
                             </div>
+                            <h5 className="mt-5 allImagesTitle">{t("all_customer_photos")}</h5>
+                            {imageLoading ?
+                                <Loader width={"100%"} height={"500px"} />
+                                : null}
+                            {(ratingImages?.length !== 0 && !imageLoading) ?
+                                <div className='d-flex flex-row flex-wrap justify-content-start allRatingImagesContainer my-4'>
+                                    {ratingImages?.slice(0, 8)?.map((image, index) => (
+                                        <div key={`${image}-${index}`} className={index === 7 ? "overlayParent cursorPointer" : ""}
+                                            onClick={() => {
+                                                if (index < 7) {
+                                                    handleImageClick(ratingImages?.slice(0, 8), index);
+                                                } else {
+                                                    setShow(true);
+                                                }
+                                            }}>
+                                            <img src={image} alt='ratingImg' className='cursorPointer' loading='lazy' />
+                                            {index === 7 ?
+                                                <div className='overlay'>
+                                                    {(totalImages !== ratingImages?.length && (totalImages - ratingImages?.length - 1) !== 0) ? `+${(totalImages - ratingImages?.length)}` : null}
+                                                </div>
+                                                : null}
+                                        </div>
+                                    ))}
+                                    <LightBox open={open} setOpen={setOpen} images={lightBoxImages} imageIndex={currImageIndex} />
+                                </div>
+                                : null}
                         </div>
 
 
-                        <div className='col-md-7 px-4 py-5  '>
+                        <div className='col-md-7 px-4 py-5 '>
                             {productRating?.rating_list?.slice(0, limit)?.map((review) => (
                                 <>
                                     <div className='reviewList mb-5' key={review.id}>
@@ -234,7 +310,16 @@ const AllRatingsAndReviews = () => {
                                         <div className='review-container-review'>{review.review}</div>
                                         <div className='d-flex justify-content-start flex-row gap-3 pe-5 mb-3'>
                                             {review?.images?.slice(0, imageMappingLength)?.map((image, index) => (
-                                                <div className={index === (imageMappingLength - 1) ? "overlayParent" : ""} key={image?.id}>
+                                                <div className={index === (imageMappingLength - 1) ? "overlayParent cursorPointer" : "cursorPointer"} key={image?.id}
+                                                    onClick={() => {
+                                                        if (index < imageMappingLength - 1) {
+                                                            handleImageClick(review?.images?.slice(0, imageMappingLength), index);
+                                                        } else {
+                                                            setShow(true);
+                                                            setUserImages(review?.images);
+                                                            setCurrImageIndex(index);
+                                                        }
+                                                    }}>
                                                     <img src={image?.image_url} alt='userImage' className='userReviewImages' />
                                                     {(index === (imageMappingLength - 1)) ?
                                                         <div div className='overlay'>
@@ -280,6 +365,7 @@ const AllRatingsAndReviews = () => {
                         </div>
                     </div> : null}
             </div>
+            <AllImagesModal show={show} setShow={setShow} totalImages={totalImages} product_id={productId} index={currImageIndex} setIndex={setCurrImageIndex} userImages={userImages} setUserImages={setUserImages} />
         </>
 
 

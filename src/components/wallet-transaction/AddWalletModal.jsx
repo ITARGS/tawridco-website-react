@@ -83,12 +83,12 @@ const AddWalletModal = (props) => {
             image: setting.setting && setting.setting.web_settings.web_logo,
             order_id: razorpay_transaction_id,
             handler: async (res) => {
-                console.log(res);
+                // console.log(res);
                 if (res.razorpay_payment_id) {
                     await api.addTransaction(cookies.get('jwt_token'), null, razorpay_transaction_id, "Razorpay", "wallet", amount)
                         .then(response => response.json())
                         .then(result => {
-                            console.log(result);
+                            // console.log(result);
                             if (result.status === 1) {
                                 props.setShowModal(false);
                                 toast.success(result.message);
