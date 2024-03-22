@@ -164,7 +164,7 @@ const Cart = () => {
 
             <div className='cart-sidebar-header'>
                 <h5>{t("your_cart")}</h5>
-                <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeCanvas}><AiOutlineCloseCircle fill='black'/></button>
+                <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeCanvas}><AiOutlineCloseCircle fill='black' /></button>
             </div>
 
             {iscartEmpty ? (
@@ -273,11 +273,11 @@ const Cart = () => {
                                     {/* Apply Promo Code */}
                                     <div className="promo-wrapper">
                                         <div className="promo-container">
-                                            <div className="promo-button d-flex justify-content-between align-items-center d-lg-flex pb-4 mb-4" style={{ borderBottom: '1px solid lightgrey' }}>
+                                            <div className=" d-flex justify-content-between align-items-center d-lg-flex pb-4 mb-4" style={{ borderBottom: '1px solid lightgrey' }}>
                                                 <span className=""
                                                     style={{ fontSize: "16px" }}>{t("have_coupon")}</span>
-                                                <button className="btn" onClick={() => setShowPromoOffcanvas(true)}
-                                                    style={{ backgroundColor: '#33a36b', color: 'white', fontSize: '14px' }}
+                                                <button className="btn promo-button" onClick={() => setShowPromoOffcanvas(true)}
+                                                // style={{ backgroundColor: '#33a36b', color: 'white', fontSize: '14px' }}
                                                 >{t("view_coupon")}</button>
                                             </div>
                                             {cart.cart && cart.promo_code ?

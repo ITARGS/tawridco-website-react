@@ -202,7 +202,7 @@
   display: flex;
   width: 100px;
   align-items: center;
-  border-radius: 8px;
+  border-radius: var(--bd-radius-5);
   background: var(--secondary-color-light);
   justify-content: space-between;
 }
@@ -219,7 +219,7 @@
   width: 20px;
   font-size: 1.755rem;
   background: var(--secondary-color);
-  border-radius: 5px;
+  /* border-radius: 5px; */
 }
 
 .cart-sidebar-container
@@ -341,7 +341,13 @@
   color: var(--bs-red);
   cursor: pointer;
 }
-
+.cart-sidebar-footer .promo-wrapper .promo-container .promo-button {
+  background-color: var(--secondary-color);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: var(--bd-radius-5);
+}
 .viewcart {
   min-height: 75vh;
 }
@@ -522,7 +528,7 @@
 
 .view-cart-container .viewcart-product-wrapper tbody .quantity button {
   background: var(--secondary-color);
-  border-radius: 5px;
+  /* border-radius: 5px; */
   padding: 4px 6px;
 }
 
@@ -549,7 +555,7 @@
   text-align: center;
   background: var(--secondary-color);
   padding: 5px;
-  border-radius: 8px 8px 0 0;
+  border-radius: 8px 8px 0px 0px;
 }
 
 .billing .promo-section .promo-wrapper {
@@ -567,12 +573,12 @@
 }
 
 .billing .promo-section .promo-wrapper .promo-container .promo-button button {
-  background-color: var(--second-cards-color);
+  background-color: var(--secondary-color);
   padding: 8px;
   border-radius: 5px;
-  border: 2px solid #ddd;
   font-size: 14px;
-  color: #000;
+  color: var(--bs-white);
+  font-weight: 700;
 }
 
 .billing .promo-section .promo-wrapper .promo-container .promo-code {
@@ -636,13 +642,18 @@
 }
 
 .view-cart-container .cart-summary-wrapper .summary .button-container {
-  background: var(--secondary-color);
-  border-radius: 8px;
-  margin-top: 30px;
+  /* background: var(--secondary-color); */
+  /* border-radius: 8px; */
+  /* margin-top: 30px; */
   text-align: center;
 }
-.view-cart-container .cart-summary-wrapper .summary .button-container span {
-  color: #fff;
+.view-cart-container .cart-summary-wrapper .summary .button-container button {
+  color: var(--bs-white);
+  background-color: var(--secondary-color);
+  font-weight: 700;
+  padding: 8px;
+  border-radius: var(--bd-radius-5);
+  font-size: 14px;
 }
 .view-cart-container .cart-summary-wrapper .summary .button-container a {
   padding: 5px 15px;

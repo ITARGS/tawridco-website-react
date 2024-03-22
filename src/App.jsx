@@ -171,6 +171,16 @@ const App = () => {
     --bd-radius-5: 5px;
     --bd-radius-10: 10px;
   }
+  [data-bs-theme="dark"]{
+    --body-background: #141414;
+    --primary-color: white;
+    --secondary-color:${setting.setting && setting.setting.web_settings.dark_color};
+    --sub-text-color: #8b8b8b;
+    --second-cards-color: black;
+    --text-field-color: white;
+    --gray-hover-color: #dcdcdc;
+
+  }
   input[type="radio"]:checked {
     background-color: var(--secondary-color); /* Change background color when checked */
     padding: 3px;

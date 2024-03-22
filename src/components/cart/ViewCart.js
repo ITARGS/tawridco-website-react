@@ -274,7 +274,7 @@ const ViewCart = () => {
                                         </table>
                                     </div>
                                     <div className="billing col-3">
-                                        <div className="promo-section">
+                                        <div className="promo-section mb-3">
 
                                             <div className="heading">
                                                 <span>{t("coupon")}</span>
@@ -283,7 +283,7 @@ const ViewCart = () => {
                                                 <div className="promo-container">
                                                     <div className="promo-button ">
                                                         <span className="">{t("have_coupon")}</span>
-                                                        <button className="btn btn-primary" onClick={() => setShowPromoOffcanvas(true)}>{t("view_coupon")}</button>
+                                                        <button className="btn" onClick={() => setShowPromoOffcanvas(true)}>{t("view_coupon")}</button>
                                                     </div>
                                                     {cart.cart && cart.promo_code ?
                                                         <>
@@ -359,8 +359,8 @@ const ViewCart = () => {
                                                         </div>
 
 
-                                                        <div className='button-container'>
-                                                            <span style={{ cursor: "pointer" }} onClick={stockValidation} className='checkout'>{t("proceed_to_checkout")}</span>
+                                                        <div className='d-flex justify-content-center mt-3 button-container'>
+                                                            <button type='button' style={{ cursor: "pointer" }} onClick={stockValidation} className='checkout'>{t("proceed_to_checkout")}</button>
                                                         </div>
 
                                                     </div>)}
