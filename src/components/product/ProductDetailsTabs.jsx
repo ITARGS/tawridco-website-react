@@ -10,15 +10,20 @@ import { formatDate, formatTime } from '../../utils/formatDate';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import NoRatingFoundSVG from "../../utils/No_Review_Found.svg";
 import LightBox from '../lightbox/LightBox';
+import AllImagesModal from './AllImagesModal';
 
 const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ratingImages, totalImages }) => {
     const { t } = useTranslation();
     const { slug } = useParams();
+    const navigate = useNavigate();
+
     const [activeKey, setActiveKey] = useState("1");
     const [open, setOpen] = useState(false);
     const [lightBoxImages, setLightBoxImages] = useState([]);
     const [imageMappingLength, setImageMappingLength] = useState(5);
-    const navigate = useNavigate();
+    const [show, setShow] = useState(false);
+    const [userImages, setUserImages] = useState(null);
+    // console.log(productdata);
 
     const handleOnChange = (key) => {
         setActiveKey(key);
@@ -185,16 +190,16 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
                                         <div className={index == 7 ? "overlayParent cursorPointer" : ""} key={`${image}-${index}`}
                                             onClick={() => {
                                                 if (index === 7) {
-                                                    navigate(`/product/${slug}/rating-and-reviews`);
+                                                    // navigate(`/product/${slug}/rating-and-reviews`);
+                                                    setShow(true);
                                                 } else {
                                                     handleImageClick(ratingImages?.slice(0, 8), index);
                                                 }
                                             }}>
                                             <img src={image} alt='ratingImg' className='cursorPointer' />
                                             {index == 7 ?
-                                                <div className='overlay'><Link to={`/product/${slug}/rating-and-reviews`} style={{ textDecoration: "none", color: "white" }}>
+                                                <div className='overlay'>
                                                     {(totalImages != ratingImages?.length && (totalImages - ratingImages?.length - 1) != 0) ? `+${(totalImages - ratingImages?.length)}` : null}
-                                                </Link>
                                                 </div>
                                                 : null}
                                         </div>
@@ -234,9 +239,12 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
                                             <div className={index === (imageMappingLength - 1) ? "overlayParent" : ""} key={image.id}
                                                 onClick={() => {
                                                     if (index === (imageMappingLength - 1)) {
-                                                        navigate(`/product/${slug}/rating-and-reviews`);
+                                                        // navigate(`/product/${slug}/rating-and-reviews`);
+                                                        setShow(true);
+                                                        setUserImages(review?.images);
+                                                        setCurrImageIndex(index);
                                                     } else {
-                                                        handleImageClick(ratingImages?.slice(0, imageMappingLength), index);
+                                                        handleImageClick(review?.images?.slice(0, imageMappingLength), index);
                                                     }
                                                 }}>
                                                 <img src={image?.image_url} alt='userImage' className='userReviewImages cursorPointer' />
@@ -271,6 +279,7 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
                     <div className='noRatingFoundText'>
                         {t("no_ratings_available_yet")}</div>
                 </div> : null}
+            <AllImagesModal show={show} setShow={setShow} totalImages={totalImages} product_id={productdata?.id} index={currImageIndex} setIndex={setCurrImageIndex} userImages={userImages} setUserImages={setUserImages} />
         </div>
     }];
 
@@ -290,6 +299,7 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
             >
                 <Tabs items={items} activeKey={activeKey} onChange={handleOnChange} />
             </ConfigProvider>
+
         </div>
     );
 };

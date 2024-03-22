@@ -789,8 +789,8 @@ const ProductList2 = React.memo(() => {
                                                                         </Link>
 
 
-                                                                        <div className="card-body product-card-body p-3" >
-                                                                                {product?.rating_count ? <div>
+                                                                        <div className="card-body product-card-body p-3">
+                                                                            {product?.rating_count ? <div>
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                 <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />

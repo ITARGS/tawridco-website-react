@@ -203,3 +203,7 @@ input[type="number"] {
 .cursorPointer {
   cursor: pointer;
 }
+
+.offerImages {
+  border-radius: var(--bd-radius-10);
+}

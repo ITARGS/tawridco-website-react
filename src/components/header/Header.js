@@ -567,7 +567,7 @@ const Header = () => {
                                             id="search-box"
                                             value={search}
                                             placeholder={t('enter_text_to_search_products')}
-                                            className='rounded-5'
+                                            className=''
                                             onChange={(e) => {
                                                 setsearch(e.target.value);
                                             }}

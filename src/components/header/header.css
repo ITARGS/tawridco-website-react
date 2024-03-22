@@ -193,16 +193,16 @@
   height: 56px;
   /* border: 1px solid; */
   border: 1px solid #141a1f80;
-  border-radius: 10px !important;
+  border-radius: 8px !important;
 }
 
 .site-header .header-main .header-search input[type="search"] {
+  font-size: 14px;
+  height: 41px;
   padding-left: 1.875rem;
-  padding-right: 3.75rem;
-  height: 3.75rem;
   width: 100%;
-  font-size: 1.7rem;
-  color: black;
+  margin-left: 5px;
+  border-radius: 5px;
 }
 .site-header .header-main .header-search input[type="search"]::placeholder {
   text-align: start !important;

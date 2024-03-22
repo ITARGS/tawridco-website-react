@@ -107,7 +107,7 @@ const ProductDetails = () => {
     };
 
     const getProductDatafromApi = (id) => {
-        api.getProductbyId(city.city?.latitude, city.city?.longitude, id?.id ? id.id : product.selectedProduct_id, cookies.get('jwt_token'))
+        api.getProductbyId(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, id?.id ? id.id : product.selectedProduct_id, cookies.get('jwt_token'))
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -127,12 +127,12 @@ const ProductDetails = () => {
     };
 
 
-
+    console.log(setting?.setting?.default_city);
 
     useEffect(() => {
         const getProductData = async () => {
 
-            await api.getProductbyFilter(city.city?.id, city.city?.latitude, city.city?.longitude, { slug: slug }, cookies.get('jwt_token'))
+            await api.getProductbyFilter(city.city?.id ? city?.city?.id : setting?.setting?.default_city?.id, city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, { slug: slug }, cookies.get('jwt_token'))
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
@@ -147,12 +147,12 @@ const ProductDetails = () => {
         };
         getProductData();
 
-    }, [slug]);
+    }, [setting?.setting?.default_city, slug]);
 
     useEffect(() => {
         if (Object.keys(productdata).length !== 0) {
 
-            api.getProductbyFilter(city.city?.id, city.city?.latitude, city.city?.longitude, {
+            api.getProductbyFilter(city.city?.id ? city?.city?.id : setting?.setting?.default_city?.id, city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, {
                 category_id: productdata.category_id,
             }, cookies.get('jwt_token'))
                 .then(response => response.json())
@@ -805,7 +805,7 @@ const ProductDetails = () => {
                                                         >
                                                             <span>
                                                                 <img src={ratingSVG} alt='starLogo' />
-                                                                {productRating?.rating_list?.length}
+                                                                {totalData}
                                                             </span>
                                                         </OverlayTrigger>
                                                     </div> : null}
@@ -888,14 +888,11 @@ const ProductDetails = () => {
 
                                                     <div className="card-body product-card-body p-3" onClick={() => {
                                                         dispatch(setSelectedProduct({ data: related_product.id }));
-                                                        // dispatch({ type: ActionTypes.SET_SELECTED_PRODUCT, payload: related_product.id });
                                                         setSelectedVariant(null);
                                                         setQuantity(0);
                                                         getProductDatafromApi();
                                                         navigate(`/product/${related_product.slug}`);
-
                                                         window.scrollTo({ top: 0, behavior: 'smooth' });
-
                                                     }} >
                                                         {related_product?.rating_count > 0 ? <div className='ratings d-flex align-items-center' style={{ fontSize: "14px" }}>
                                                             <LuStar className='me-1' style={related_product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />

@@ -201,12 +201,12 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
         // Add custom navigation buttons using Font Awesome icons
         prevArrow: (
             <button type="button" className="slick-prev">
-                <FaChevronLeft size={30} className="prev-arrow" />
+                <FaChevronLeft fill='black' size={30} className="prev-arrow" />
             </button>
         ),
         nextArrow: (
             <button type="button" className="slick-next">
-                <FaChevronRight color='#f7f7f7' size={30} className='next-arrow' />
+                <FaChevronRight fill='black' size={30} className='next-arrow' />
             </button>
         ),
         responsive: [
@@ -285,15 +285,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                             <div className="row" key={index}>
                                                                 <div className="col-md-12">
 
-                                                                    <div className='product-card'  >
-                                                                        <span className='border border-light rounded-circle p-2 px-3' id='aiEye'>
-                                                                            <AiOutlineEye
-                                                                                onClick={() => {
-                                                                                    setselectedProduct(product); setShowModal(true);
-                                                                                    setP_id(product.id); setP_V_id(product.variants[0].id); setQnty(product.variants[0].cart_count + 1);
-                                                                                }}
-                                                                            />
-                                                                        </span>
+                                                                    <div className='product-card'>
                                                                         <Link to={`/product/${product.slug}`} className='text-decoration-none text-reset'>
 
                                                                             <div className='image-container' >
@@ -304,6 +296,14 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                     onClick={() => {
 
                                                                                     }} />
+                                                                                <span className='border border-light rounded-circle p-2 px-3' id='aiEye'>
+                                                                                    <AiOutlineEye
+                                                                                        onClick={() => {
+                                                                                            setselectedProduct(product); setShowModal(true);
+                                                                                            setP_id(product.id); setP_V_id(product.variants[0].id); setQnty(product.variants[0].cart_count + 1);
+                                                                                        }}
+                                                                                    />
+                                                                                </span>
                                                                                 {!Number(product.is_unlimited_stock) && parseInt(product.variants[0].status) === 0 &&
                                                                                     <div className="out_of_stockOverlay">
                                                                                         <p className="out_of_stockText">{t("out_of_stock")}</p>
@@ -492,7 +492,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                         window.open(offer?.offer_url, "_blank");
                                                     }
                                                 }}>
-                                                    <img className={`${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "auto", borderRadius: "10px" }} />
+                                                    <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "auto", borderRadius: "10px" }} />
                                                 </div>
                                             ))}
                                         </div>

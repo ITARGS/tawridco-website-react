@@ -81,7 +81,7 @@ const AllRatingsAndReviews = () => {
     const fetchProductRatingImages = async () => {
         setImageLoading(true);
         try {
-            const response = await api.getProductRatingImages(cookies.get("jwt_token"), productId, limit, offset);
+            const response = await api.getProductRatingImages(cookies.get("jwt_token"), productId, limit, 0);
             const result = await response.json();
             setRatingImages(result.data);
             setTotalImages(result.total);
@@ -90,9 +90,11 @@ const AllRatingsAndReviews = () => {
         }
         setImageLoading(false);
     };
-
     useEffect(() => {
         fetchProductRatingById();
+    }, [productId, offset]);
+    useEffect(() => {
+
         fetchProductRatingImages();
     }, [productId]);
 
@@ -102,6 +104,7 @@ const AllRatingsAndReviews = () => {
     };
 
     const handlePageChange = (pageNum) => {
+        console.log(pageNum);
         window.scrollTo({ top: 0, behavior: "smooth" });
         setCurrPage(pageNum);
         setOffset(pageNum * limit - limit);

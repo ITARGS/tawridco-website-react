@@ -137,6 +137,7 @@
   text-decoration: none;
   margin-left: 10px;
   background-color: var(--secondary-color);
+  border-radius: 5px;
 }
 .login button[type="submit"]:hover {
   background-color: var(--secondary-color);

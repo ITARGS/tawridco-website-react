@@ -246,6 +246,8 @@
   width: 100%;
   color: var(--text-field-color);
   padding: 8px 0;
+  font-size: 14px;
+  font-weight: bolder;
 }
 
 @media screen and (max-width: 64rem) {

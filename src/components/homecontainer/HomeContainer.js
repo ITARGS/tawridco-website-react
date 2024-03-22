@@ -29,7 +29,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                         window.open(offer?.offer_url, "_blank");
                     }
                 }}>
-                    <img className={`${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "200px" }} />
+                    <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "200px" }} />
                 </div>
             ))}
 
@@ -50,7 +50,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                         window.open(offer?.offer_url, "_blank");
                     }
                 }}>
-                    <img className={`${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "200px" }} />
+                    <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "200px" }} />
                 </div>
             ))}
 
@@ -76,7 +76,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                         window.open(offer?.offer_url, "_blank");
                     }
                 }}>
-                    <img className={`${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "200px" }} />
+                    <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "200px" }} />
                 </div>
             ))}
             {shop.shop?.is_brand_section_in_homepage ?

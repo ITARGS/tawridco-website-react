@@ -166,6 +166,10 @@ const App = () => {
     --primary-color-dark: #e5e5e5;
     --gray-hover-color: #dcdcdc;
     --bg-danger: rgba(209, 31, 31, 0.3);
+
+    --bd-radius-8: 8px;
+    --bd-radius-5: 5px;
+    --bd-radius-10: 10px;
   }
   input[type="radio"]:checked {
     background-color: var(--secondary-color); /* Change background color when checked */
