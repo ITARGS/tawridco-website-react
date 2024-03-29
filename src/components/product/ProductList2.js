@@ -46,7 +46,7 @@ const ProductList2 = React.memo(() => {
     const favorite = useSelector(state => (state.favourite));
     const setting = useSelector(state => (state.setting));
     const cart = useSelector(state => (state.cart));
-    const share_parent_url = `${setting.setting && setting.setting.web_settings.website_url}product/`;
+    const share_parent_url = `${setting.setting && setting.setting.web_settings.website_url}/product/`;
 
     const [productresult, setproductresult] = useState([]);
     const [brands, setbrands] = useState(null);

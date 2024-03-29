@@ -42,7 +42,6 @@ const PayPalPaymentHandler = () => {
                         dispatch(setCart({ data: null }));
                         dispatch(setCartCheckout({ data: null }));
                     }
-                    // console.log(result);
                 });
             } catch (err) {
                 console.log(err.message);
@@ -54,7 +53,7 @@ const PayPalPaymentHandler = () => {
         }, 1000);
         timeout.current = setTimeout(() => {
             navigate("/");
-        }, 5000);
+        }, 6000);
         return () => {
             clearInterval(interval.current);
             clearTimeout(timeout);

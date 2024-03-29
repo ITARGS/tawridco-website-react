@@ -127,8 +127,7 @@ const ProductDetails = () => {
     };
 
 
-    console.log(setting?.setting?.default_city);
-
+    
     useEffect(() => {
         const getProductData = async () => {
 

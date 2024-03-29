@@ -549,7 +549,7 @@ const Checkout = () => {
                                         var ccavenue_redirect_url = `${res.data.paypal_redirect_url}&&amount=${totalPayment}`;
                                         //var ccavenue_redirect_url = "https://admin.pocketgroceries.in/customer/ccavenue_payment";
 
-                                        var subWindow = window.open(ccavenue_redirect_url, '_blank');
+                                        var subWindow = window.open(ccavenue_redirect_url, '_parent');
                                         // var subWindow = window.open(ccavenue_redirect_url, '_parent', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
                                         // var redirect_url = res.data.paypal_redirect_url;
                                         /*subWindow.postMessage('Hello from parent window!', '*');

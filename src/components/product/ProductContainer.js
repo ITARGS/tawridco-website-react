@@ -286,6 +286,14 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                 <div className="col-md-12">
 
                                                                     <div className='product-card'>
+                                                                        <span className='border border-light rounded-circle p-2 px-3' id='aiEye'>
+                                                                            <AiOutlineEye
+                                                                                onClick={() => {
+                                                                                    setselectedProduct(product); setShowModal(true);
+                                                                                    setP_id(product.id); setP_V_id(product.variants[0].id); setQnty(product.variants[0].cart_count + 1);
+                                                                                }}
+                                                                            />
+                                                                        </span>
                                                                         <Link to={`/product/${product.slug}`} className='text-decoration-none text-reset'>
 
                                                                             <div className='image-container' >
@@ -296,14 +304,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                     onClick={() => {
 
                                                                                     }} />
-                                                                                <span className='border border-light rounded-circle p-2 px-3' id='aiEye'>
-                                                                                    <AiOutlineEye
-                                                                                        onClick={() => {
-                                                                                            setselectedProduct(product); setShowModal(true);
-                                                                                            setP_id(product.id); setP_V_id(product.variants[0].id); setQnty(product.variants[0].cart_count + 1);
-                                                                                        }}
-                                                                                    />
-                                                                                </span>
                                                                                 {!Number(product.is_unlimited_stock) && parseInt(product.variants[0].status) === 0 &&
                                                                                     <div className="out_of_stockOverlay">
                                                                                         <p className="out_of_stockText">{t("out_of_stock")}</p>
