@@ -103,7 +103,7 @@ const StripeModal = (props) => {
             // Redirect the customer to a success page
             // window.location.href = '/success';
             // props.setShow(false)
-            await api.addTransaction(cookies.get('jwt_token'), orderID, props.transaction_id, "Stripe")
+            await api.addTransaction(cookies.get('jwt_token'), orderID, props.transaction_id, "Stripe", "order")
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {

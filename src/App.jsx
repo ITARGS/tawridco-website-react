@@ -44,6 +44,7 @@ import ShopBySellersPage from './components/shop-by-seller/ShopBySellersPage';
 import AllRatingsAndReviews from './components/product/AllRatingsAndReviews';
 import AllRatingImages from './components/product/AllRatingImages';
 import PayPalPaymentHandler from './components/paypalPaymentHandler/PayPalPaymentHandler';
+import jsonFile from "./utils/en.json";
 
 const App = () => {
   //initialize cookies
@@ -74,8 +75,25 @@ const App = () => {
         document.documentElement.dir = result?.data?.type;
         if (result.status === 1) {
           if (!language.current_language) {
-            dispatch(setLanguage({ data: result.data }));
-
+            // console.log(result.data);
+            if (result.data !== undefined) {
+              dispatch(setLanguage({ data: result.data }));
+            }
+            else {
+              dispatch(setLanguage({
+                data: {
+                  "id": 15,
+                  "name": "English",
+                  "code": "en",
+                  "type": "LTR",
+                  "system_type": 3,
+                  "is_default": 1,
+                  "json_data": jsonFile,
+                  "display_name": "English",
+                  "system_type_name": "Website"
+                }
+              }));
+            }
           } else {
             document.documentElement.dir = language.current_language.type ? language.current_language.type : "LTR";
           }
@@ -85,14 +103,13 @@ const App = () => {
   }, []);
 
 
-  let translateFile = typeof (language.current_language?.json_data) === "object" ? language.current_language?.json_data : language.current_language?.json_data[0];
-
+  let translateFile = typeof (language?.current_language?.json_data) === "object" ? language?.current_language?.json_data : jsonFile;
   i18next.use(initReactI18next)
     .init({
       resources: {
         en: { translation: translateFile }
       },
-      lng: language.current_language?.code,
+      lng: language?.current_language?.code,
       fallbackLng: "en",
     });
 

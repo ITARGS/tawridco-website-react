@@ -291,5 +291,6 @@
   "return_order_item": "Return Order Item",
   "return_reason": "Return reason :",
   "write_return_reason": "Write return reason...",
-  "request_a_return": "Request a return"
+  "request_a_return": "Request a return",
+  "please_type_return_reason": "Please type a return reason."
 }

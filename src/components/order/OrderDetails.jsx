@@ -122,8 +122,13 @@ const OrderDetails = React.memo(() => {
                     fetchOrderDetails();
                     // response.data && setOrderData(response.data);
                     // console.log(response.data, "update_order_status");
-                    setShowReturnModal(false);
                     toast.success(response.message);
+                    setShowReturnModal(false);
+                } else if (response.message == "This Order Item is already Returned!") {
+                    fetchOrderDetails();
+                    toast.error(response.message);
+                } else {
+                    toast.info(response.message);
                 }
                 setShowReturnModal(false);
             }).catch((error) => {
@@ -294,17 +299,34 @@ const OrderDetails = React.memo(() => {
                                                                             <AiOutlineCloseCircle className='cursorPointer' size={28} fill='black' onClick={() => setShowReturnModal(false)} />
                                                                         </Modal.Header>
                                                                         <Modal.Body className='returnProductModalBody'>
-                                                                            <div className='d-flex flex-column justify-content-center'>
-                                                                                <label htmlFor='reasonTextArea' className='my-3 reasonLabel'>
-                                                                                    {t("return_reason")}
-                                                                                </label>
-                                                                                <textarea ref={returnRef} id="reasonTextArea" rows={8} name='reasonTextArea' placeholder={t("write_return_reason")} className='reasonTextArea my-4' />
-                                                                            </div>
-                                                                            <div className='d-flex justify-content-end mt-4'>
-                                                                                <button type='button' className='returnSubmitBtn' onClick={() => handleUpdateStatus(item?.id, 8, returnRef.current.value)}>
-                                                                                    {t("request_a_return")}
-                                                                                </button>
-                                                                            </div>
+                                                                            <form onSubmit={(e) => {
+                                                                                e.preventDefault();
+                                                                                // if (!returnRef.current.value.trim()) {
+                                                                                //     toast.error(t('please_type_return_reason'));
+                                                                                //     return; // Don't proceed further if the textarea is empty
+                                                                                // }
+                                                                                handleUpdateStatus(item?.id, 8, returnRef.current.value);
+                                                                            }}>
+                                                                                <div className='d-flex flex-column justify-content-center'>
+                                                                                    <label htmlFor='reasonTextArea' className='my-3 reasonLabel'>
+                                                                                        {t("return_reason")}
+                                                                                    </label>
+                                                                                    <textarea
+                                                                                        ref={returnRef}
+                                                                                        id="reasonTextArea"
+                                                                                        rows={8}
+                                                                                        name='reasonTextArea'
+                                                                                        placeholder={t("write_return_reason")}
+                                                                                        className='reasonTextArea my-4'
+                                                                                        required
+                                                                                    />
+                                                                                </div>
+                                                                                <div className='d-flex justify-content-end mt-4'>
+                                                                                    <button type='submit' className='returnSubmitBtn'>
+                                                                                        {t("request_a_return")}
+                                                                                    </button>
+                                                                                </div>
+                                                                            </form>
                                                                         </Modal.Body>
                                                                     </Modal>
                                                                     : null}
