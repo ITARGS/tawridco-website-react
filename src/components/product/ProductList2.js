@@ -27,7 +27,7 @@ import Popup from "../same-seller-popup/Popup";
 import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
 import { setFavourite } from '../../model/reducer/favouriteReducer';
 import { LuStar } from 'react-icons/lu';
-
+import "./product.css";
 
 const ProductList2 = React.memo(() => {
     const total_products_per_page = 12;
@@ -218,7 +218,7 @@ const ProductList2 = React.memo(() => {
 
 
     const FilterProductByPrice = async (filter) => {
-        // setisLoader(true);
+        setisLoader(true);
         await api.getProductbyFilter(city?.city?.id, city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
             .then(response => response.json())
             .then(result => {
@@ -230,7 +230,7 @@ const ProductList2 = React.memo(() => {
                     setproductresult([]);
                     settotalProducts(0);
                 }
-                // setisLoader(false);
+                setisLoader(false);
             })
             .catch(error => console.log("error ", error));
     };
@@ -316,7 +316,7 @@ const ProductList2 = React.memo(() => {
 
                 </div>
 
-                {(totalProducts != 0) ? <div className='filter-row'>
+                {minPrice !== null && maxPrice !== null ? <div className='filter-row'>
                     <h5>{t("filter")} {t("by_price")}</h5>
                     {
                         (minPrice === null || maxPrice === null)
@@ -362,7 +362,7 @@ const ProductList2 = React.memo(() => {
                                                         borderRadius: '4px',
                                                         background: getTrackBackground({
                                                             values,
-                                                            colors: ['white', '#51BD88', 'white'],
+                                                            colors: ['white', `var(--secondary-color)`, 'white'],
                                                             min: minPrice,
                                                             max: maxPrice,
 
@@ -397,10 +397,9 @@ const ProductList2 = React.memo(() => {
                                     />
                                 </div>
                             )}
-
                 </div> : null}
 
-                {(sizes?.length !== 0) ? <div className='filter-row' style={{ height: "456px", overflow: "auto" }} >
+                {(sizes?.length !== 0) ? <div className='filter-row'  >
                     <h2 className='product-filter-headline d-flex w-100 align-items-center justify-content-between'>
                         <span>{t("Filter By Sizes")}</span>
                     </h2>
@@ -408,14 +407,14 @@ const ProductList2 = React.memo(() => {
                         ?
                         (<Loader />)
                         :
-                        (
-                            sizes.map((size, index) => (
+                        (<div id='filterBySizeContainer'>
+                            {sizes.map((size, index) => (
                                 <div
                                     whiletap={{ scale: 0.8 }}
                                     onClick={() => {
                                         closeCanvas.current.click();
-                                    }} className={`d-flex justify-content-between align-items-center filter-bar`} key={index}>
-                                    <div className='d-flex gap-3'>
+                                    }} className={`d-flex justify-content-between align-items-center px-4 filter-bar`} key={index}>
+                                    <div className='d-flex'>
                                         <p>{size.size} {size.short_code}</p>
                                     </div>
                                     <input type='checkbox'
@@ -425,7 +424,8 @@ const ProductList2 = React.memo(() => {
                                         }}
                                     />
                                 </div>
-                            ))
+                            ))}
+                        </div>
                         )
                     }
                 </div> : null}
@@ -545,7 +545,7 @@ const ProductList2 = React.memo(() => {
     return (
         <>
             <section id="productlist" className='container' onContextMenu={() => { return false; }}>
-                <div className='row' id='products'>
+                <div className='row justify-content-center' id='products'>
 
                     <div className="hide-desktop col-3 offcanvas offcanvas-start" tabIndex="-1" id="filteroffcanvasExample" aria-labelledby="filteroffcanvasExampleLabel" >
                         <div className="canvas-header">
@@ -634,10 +634,10 @@ const ProductList2 = React.memo(() => {
                                         {productresult.length > 0
                                             ? (
                                                 <div className='h-100 productList_content'>
-                                                    <div className="row flex-wrap">
+                                                    <div className="row justify-content-center flex-wrap">
                                                         {productresult.map((product, index) => (
                                                             <>
-                                                                <div key={index} className={`${!filter.grid_view ? 'col-12 list-view ' : 'col-md-6 col-sm-6 col-lg-3 '}`}>
+                                                                <div key={index} className={`${!filter.grid_view ? 'col-12 list-view ' : 'col-md-6 col-sm-6 col-lg-3 col-12'}`}>
                                                                     <div className={`product-card my-3 ${filter.grid_view ? "flex-column " : "my-3"}`}>
                                                                         <span className='border border-light rounded-circle p-2 px-3' id='aiEye' onClick={(e) => {
                                                                             e.preventDefault();
@@ -786,76 +786,92 @@ const ProductList2 = React.memo(() => {
                                                                                         </div>
                                                                                     </div></>}
                                                                             </div>
-                                                                        </Link>
 
 
-                                                                        <div className="card-body product-card-body p-3">
-                                                                            {product?.rating_count ? <div>
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-3' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                ({product?.rating_count})
-                                                                            </div> : null}
-                                                                            <h3 onClick={(e) => {
-                                                                                e.preventDefault();
-                                                                                dispatch(setSelectedProduct({ data: product.id }));
-                                                                                setSelectedProductId(product.id);
-                                                                                navigate('/product');
-                                                                            }} >{product.name}
-                                                                            </h3>
-                                                                            <div className='price'>
-                                                                                {filter.grid_view ? <>
-                                                                                    <span id={`price${index}-section`} className="d-flex align-items-center"><p id={`fa-rupee${index}`}>{setting.setting && setting.setting.currency}</p> {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                                    <div className='product_varients_drop'>
-                                                                                        <input type="hidden" name={`default-variant-id`} id={`productlist${index}-variant-id`} />
-
-                                                                                        {product.variants.length > 1 ? <>
-                                                                                            <div className='variant_selection' onClick={(e) => {
-                                                                                                e.preventDefault(); setselectedProduct(product); setShowModal(true);
-                                                                                                setP_id(product.id);
-                                                                                                setP_V_id(product.variants[0].id);
-                                                                                                setQnty(product.variants[0].cart_count + 1);
-                                                                                            }} >
-                                                                                                <span className='product_list_dropdown_span'>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} </>}</span>
-                                                                                                <IoIosArrowDown />
-                                                                                            </div>
-                                                                                        </>
-                                                                                            :
-
-                                                                                            <>
-                                                                                                <p id={`default-product${index}-variant`} value={product.variants[0].id} className='variant_value select-arrow'>{product.variants[0].measurement + " " + product.variants[0].stock_unit_name}
+                                                                            <div className={`card-body product-card-body p-3`}>
+                                                                                {product?.rating_count ? <div>
+                                                                                    <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                    <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                    <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                    <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                    <LuStar className='me-3' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                                                    ({product?.rating_count})
+                                                                                </div> : null}
+                                                                                <h3 onClick={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    dispatch(setSelectedProduct({ data: product.id }));
+                                                                                    setSelectedProductId(product.id);
+                                                                                    navigate(`/product/${product?.slug}`);
+                                                                                }} >{product.name}
+                                                                                </h3>
+                                                                                {console.log("Product Price ->", product.variants[0]?.price,)}
+                                                                                {console.log("Discounted Price ->", product.variants[0].discounted_price)}
+                                                                                <div className='price'>
+                                                                                    {filter.grid_view ? <>
+                                                                                        <span id={`price${index}-section`} className="d-flex align-items-center">
+                                                                                            <p id={`fa-rupee${index}`}>
+                                                                                                {setting.setting && setting.setting.currency}
+                                                                                            </p>
+                                                                                            {product.variants[0].discounted_price === 0 ?
+                                                                                                product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) :
+                                                                                                product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                        </span>
+                                                                                        {product?.variants[0]?.price ?
+                                                                                            <span id={`price${index}-section`} className="d-flex align-items-center" >
+                                                                                                <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
+                                                                                                    {product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
                                                                                                 </p>
-                                                                                            </>}
-                                                                                    </div>
-                                                                                </> : <>
-                                                                                    <div className='product_varients_drop d-flex align-items-center'>
-                                                                                        {product.variants.length > 1 ? <>
-                                                                                            <div className='variant_selection' onClick={(e) => {
-                                                                                                e.preventDefault(); setselectedProduct(product); setShowModal(true); setP_id(product.id);
-                                                                                                setP_V_id(product.variants[0].id);
-                                                                                                setQnty(product.variants[0].cart_count + 1);
-                                                                                            }} >
-                                                                                                <span className='product_list_dropdown_span'>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} Rs.<span className="original-price" id={`dropDown-Toggle${index}`}>{product.variants[0].toFixed(setting.setting && setting.setting.decimal_point)}</span></>}</span>
-                                                                                                <IoIosArrowDown />
-                                                                                            </div>
-                                                                                        </>
-                                                                                            :
+                                                                                            </span>
+                                                                                            : null}
+                                                                                        <div className='product_varients_drop'>
+                                                                                            <input type="hidden" name={`default-variant-id`} id={`productlist${index}-variant-id`} />
 
-                                                                                            <>
-                                                                                                <p id={`default-product${index}-variant`} value={product.variants[0].id} className='variant_value select-arrow'>{product.variants[0].measurement + " " + product.variants[0].stock_unit_name}
-                                                                                                </p>
-                                                                                            </>}
-                                                                                        <span id={`price${index}-section`} className="d-flex align-items-center"><p id='fa-rupee'>{setting.setting && setting.setting.currency}</p> {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                                    </div>
-                                                                                    <p className="product_list_description" >
+                                                                                            {product.variants.length > 1 ? <>
+                                                                                                <div className='variant_selection' onClick={(e) => {
+                                                                                                    e.preventDefault(); setselectedProduct(product); setShowModal(true);
+                                                                                                    setP_id(product.id);
+                                                                                                    setP_V_id(product.variants[0].id);
+                                                                                                    setQnty(product.variants[0].cart_count + 1);
+                                                                                                }} >
+                                                                                                    <span className='product_list_dropdown_span'>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} </>}</span>
+                                                                                                    <IoIosArrowDown />
+                                                                                                </div>
+                                                                                            </>
+                                                                                                :
 
-                                                                                    </p>
-                                                                                </>}
+                                                                                                <>
+                                                                                                    <p id={`default-product${index}-variant`} value={product.variants[0].id} className='variant_value select-arrow'>{product.variants[0].measurement + " " + product.variants[0].stock_unit_name}
+                                                                                                    </p>
+                                                                                                </>}
+                                                                                        </div>
+                                                                                    </> : <>
+                                                                                        <div className='product_varients_drop d-flex align-items-center'>
+                                                                                            {product.variants.length > 1 ? <>
+                                                                                                <div className='variant_selection' onClick={(e) => {
+                                                                                                    e.preventDefault(); setselectedProduct(product); setShowModal(true); setP_id(product.id);
+                                                                                                    setP_V_id(product.variants[0].id);
+                                                                                                    setQnty(product.variants[0].cart_count + 1);
+                                                                                                }} >
+                                                                                                    <span className='product_list_dropdown_span'>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} Rs.<span className="original-price" id={`dropDown-Toggle${index}`}>{product.variants[0].toFixed(setting.setting && setting.setting.decimal_point)}</span></>}</span>
+                                                                                                    <IoIosArrowDown />
+                                                                                                </div>
+                                                                                            </>
+                                                                                                :
+
+                                                                                                <>
+                                                                                                    <p id={`default-product${index}-variant`} value={product.variants[0].id} className='variant_value select-arrow'>{product.variants[0].measurement + " " + product.variants[0].stock_unit_name}
+                                                                                                    </p>
+                                                                                                </>}
+                                                                                            <span id={`price${index}-section`} className="d-flex align-items-center"><p id='fa-rupee'>{setting.setting && setting.setting.currency}</p> {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                                        </div>
+                                                                                        <p className="product_list_description" >
+
+                                                                                        </p>
+                                                                                    </>}
+                                                                                </div>
+
                                                                             </div>
-
-                                                                        </div>
+                                                                        </Link>
                                                                         {filter.grid_view ? <>
 
                                                                             <div className='d-flex flex-row border-top product-card-footer'>
@@ -1024,9 +1040,9 @@ const ProductList2 = React.memo(() => {
                         </div>
                     </div>
 
-                </div>
+                </div >
 
-            </section>
+            </section >
         </>
 
     );

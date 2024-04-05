@@ -327,7 +327,13 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                     <span id={`price${index}${index0}-section`} className="d-flex align-items-center">
                                                                                         <p id='fa-rupee' className='m-0 ' style={{ color: "var(--secondary-color)" }}>{setting.setting && setting.setting.currency}</p> {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
                                                                                     </span>
-
+                                                                                    {product?.variants[0]?.price ?
+                                                                                        <span id={`price${index}-section`} className="d-flex align-items-center" >
+                                                                                            <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
+                                                                                                {product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                            </p>
+                                                                                        </span>
+                                                                                        : null}
                                                                                 </div>
                                                                                 <div className='product_varients_drop'>
                                                                                     <input type="hidden" name={`select-product${index}${index0}-variant-id`} id={`select-product${index}${index0}-variant-id`} value={selectedVariant.pid === product.id ? selectedVariant.id : product.variants[0].id} />
@@ -492,14 +498,13 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                         window.open(offer?.offer_url, "_blank");
                                                     }
                                                 }}>
-                                                    <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "auto", borderRadius: "10px" }} />
+                                                    <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "200px", borderRadius: "10px" }} />
                                                 </div>
                                             ))}
                                         </div>
                                     );
                                 }
-                            })
-                            }
+                            })}
                             <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} setP_id={setP_id} setP_V_id={setP_V_id} />
                             <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} setisLoader={setisLoader} cookies={cookies} toast={toast} city={city} />
                         </>

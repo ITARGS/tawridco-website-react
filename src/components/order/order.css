@@ -230,6 +230,7 @@
 
 .order-container .container-body {
   margin: 20px 0;
+  overflow: scroll;
 }
 
 .order-container .container-body .table-container thead {

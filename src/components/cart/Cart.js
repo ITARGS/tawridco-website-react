@@ -251,8 +251,17 @@ const Cart = () => {
                                                 </div>
 
                                                 <div className='cart-card-end'>
-                                                    <div className='d-flex align-items-center' style={{ fontSize: "14px", color: "var(--secondary-color)" }}>
-                                                        {setting.setting && setting.setting.currency} <span id={`price${index}-cart-sidebar`}> {(product.discounted_price == 0 ? (product.price * product.qty).toFixed(setting.setting && setting.setting.decimal_point) : (product.discounted_price * product.qty).toFixed(setting.setting && setting.setting.decimal_point))}</span>
+                                                    <div className='d-flex flex-column align-items-center' style={{ fontSize: "14px", color: "var(--secondary-color)" }}>
+                                                        <span id={`price${index}-cart-sidebar`}>
+                                                            {setting.setting && setting.setting.currency}
+                                                            {(product.discounted_price == 0 ? (product.price * product.qty).toFixed(setting.setting && setting.setting.decimal_point) : (product.discounted_price * product.qty).toFixed(setting.setting && setting.setting.decimal_point))}</span>
+                                                        {product?.price ?
+                                                            <span id={`price${index}-section`} className="d-flex align-items-center" >
+                                                                <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
+                                                                    {product?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                </p>
+                                                            </span>
+                                                            : null}
                                                     </div>
 
                                                     <button type='button' className='remove-product' onClick={() => {

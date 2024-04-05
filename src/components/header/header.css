@@ -119,7 +119,11 @@
   position: relative;
   margin-right: 1.875rem;
 }
-
+.site-header .header-main .site-brand .desktop-logo,
+.site-header .header-main .site-brand .mobile-logo {
+  width: 100%;
+  height: 70px;
+}
 .site-location {
   background-color: var(--second-cards-color);
   position: relative;

@@ -459,7 +459,13 @@ input::placeholder {
   padding: 10px;
   border-radius: 10px;
 }
-
+#productlist #filterBySizeContainer {
+  overflow: auto;
+  height: 450px;
+}
+#filteroffcanvasExample {
+  overflow: auto;
+}
 #productlist .row .filter-row > div {
   padding: 5px;
   cursor: pointer;

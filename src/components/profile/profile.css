@@ -36,7 +36,14 @@
   flex-direction: column;
   align-items: center;
 }
-
+#profile .sidebar .basicInfo-container .walletContainer {
+  gap: 15px;
+  font-size: 14px;
+}
+#profile .sidebar .basicInfo-container .userName,
+#profile .sidebar .basicInfo-container .userEmail {
+  font-size: 12px;
+}
 #profile .sidebar .navigation-container {
   display: flex;
   flex-direction: column;

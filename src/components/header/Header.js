@@ -496,9 +496,8 @@ const Header = () => {
 
 
                                 <Link to='/' className='site-brand' style={curr_url.pathname === '/profile' ? { marginLeft: '4px' } : null}>
-                                    <img src={setting.setting && setting.setting.web_settings.web_logo} height="70px" alt="logo" className='desktop-logo hide-mobile' />
-                                    <img src={setting.setting && setting.setting.web_settings.web_logo} height="70px" alt="logo" className='mobile-logo hide-desktop' />
-
+                                    <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='desktop-logo hide-mobile' />
+                                    <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='mobile-logo hide-desktop' />
                                 </Link>
                             </div>
 
@@ -759,7 +758,7 @@ const Header = () => {
                                     handleMobileNavActKey(1);
                                 }}>
                                     <div>
-                                        <BsShopWindow />
+                                        <BsShopWindow fill='black' />
                                     </div>
                                     <span>{t("shop")}</span>
                                 </Link>

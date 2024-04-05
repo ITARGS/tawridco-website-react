@@ -848,10 +848,10 @@ const Checkout = () => {
 
                                                 {setting?.payment_setting.cod_payment_method === "1" && codAllow == 1
                                                     ? (
-                                                        <label className="form-check-label" htmlFor='cod'>
+                                                        <label className="form-check-label cursorPointer" htmlFor='cod'>
                                                             <div className='payment-selector'>
+                                                                <img src={cod} alt='cod' />
                                                                 <div className="">
-                                                                    <img src={cod} alt='cod' />
                                                                     <span>{t("cash_on_delivery")}</span>
                                                                 </div>
                                                                 <input type="radio" name="payment-method" id='cod' defaultChecked={true} onChange={() => {
@@ -863,10 +863,10 @@ const Checkout = () => {
 
                                                 {setting.payment_setting.razorpay_payment_method === "1"
                                                     ? (
-                                                        <label className="form-check-label" htmlFor='razorpay'>
+                                                        <label className="form-check-label cursorPointer" htmlFor='razorpay'>
                                                             <div className='payment-selector'>
+                                                                <img src={rozerpay} alt='cod' />
                                                                 <div className="">
-                                                                    <img src={rozerpay} alt='cod' />
                                                                     <span>{t("razorpay")}</span>
                                                                 </div>
                                                                 <input type="radio" name="payment-method" id='razorpay' onChange={() => {
@@ -878,10 +878,10 @@ const Checkout = () => {
 
                                                 {setting.payment_setting.paystack_payment_method === "1"
                                                     ? (
-                                                        <label className="form-check-label" htmlFor='paystack'>
+                                                        <label className="form-check-label cursorPointer" htmlFor='paystack'>
                                                             <div className='payment-selector'>
+                                                                <img src={paystack} alt='cod' />
                                                                 <div className="">
-                                                                    <img src={paystack} alt='cod' />
                                                                     <span>{t("paystack")}</span>
                                                                 </div>
                                                                 <input type="radio" name="payment-method" id='paystack' onChange={() => {
@@ -893,10 +893,10 @@ const Checkout = () => {
 
                                                 {setting.payment_setting.stripe_payment_method === "1"
                                                     ? (
-                                                        <label className="form-check-label" htmlFor='stripe'>
+                                                        <label className="form-check-label cursorPointer" htmlFor='stripe'>
                                                             <div className='payment-selector'>
+                                                                <img src={Stripe} alt='stripe' />
                                                                 <div className="">
-                                                                    <img src={Stripe} alt='stripe' />
                                                                     <span className='ps-2'> {t("stripe")}</span>
                                                                 </div>
                                                                 <input type="radio" name="payment-method" id='stripe' onChange={() => {
@@ -909,10 +909,10 @@ const Checkout = () => {
                                                 {setting.payment_setting.paypal_payment_method === "1"
                                                     ? (
                                                         <>
-                                                            <label className="form-check-label" htmlFor='paypal'>
+                                                            <label className="form-check-label cursorPointer" htmlFor='paypal'>
                                                                 <div className='payment-selector'>
+                                                                    <img src={paypal} alt='paypal' />
                                                                     <div className="">
-                                                                        <img src={paypal} alt='paypal' />
                                                                         <span>{t("paypal")}</span>
                                                                     </div>
                                                                     <input type="radio" name="payment-method" id='paypal' onChange={() => {

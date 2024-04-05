@@ -112,8 +112,8 @@ const ProductDetails = () => {
             .then(result => {
                 if (result.status === 1) {
                     setproductdata(result.data);
-                    !variant_index && setVariantIndex(result.data.variants[0]?.id);
-                    variant_index ? setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index)) : setSelectedVariant(result.data.variants[0]);
+                    setVariantIndex(result.data.variants[0]?.id);
+                    setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index) ? result.data.variants.find((element) => element.id == variant_index) : result.data.variants[0]);
                     setmainimage(result.data.image_url);
                     setimages(result.data.images);
                     getCategoryDetails(result.data.category_id);
@@ -127,7 +127,7 @@ const ProductDetails = () => {
     };
 
 
-    
+
     useEffect(() => {
         const getProductData = async () => {
 
@@ -178,12 +178,12 @@ const ProductDetails = () => {
         initialSlide: 0,
         prevArrow: (
             <button type="button" className="slick-prev">
-                <FaChevronLeft size={30} className="prev-arrow" />
+                <FaChevronLeft fill='black' size={30} className="prev-arrow" />
             </button>
         ),
         nextArrow: (
             <button type="button" className="slick-next">
-                <FaChevronRight color='#f7f7f7' size={30} className='next-arrow' />
+                <FaChevronRight fill='black' size={30} className='next-arrow' />
             </button>
         ),
         responsive: [
@@ -907,7 +907,13 @@ const ProductDetails = () => {
                                                         <div className='price'>
 
                                                             <span id={`price${index}-section`} className="d-flex align-items-center"><p id='relatedproduct-fa-rupee' className='m-0'>{setting.setting && setting.setting.currency}</p>{related_product.variants[0].discounted_price === 0 ? related_product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : related_product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)} </span>
-
+                                                            {related_product?.variants[0]?.price ?
+                                                                <span id={`price${index}-section`} className="d-flex align-items-center" >
+                                                                    <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
+                                                                        {related_product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                    </p>
+                                                                </span>
+                                                                : null}
                                                         </div>
                                                         <div className='product_varients_drop'>
                                                             {related_product.variants.length > 1 ?
