@@ -20,7 +20,16 @@
   text-decoration: none;
   margin-left: 10px;
 }
-
+#all-countries .countries_section_header .country_button {
+  border-radius: 8px;
+  font-size: 14px;
+  /* padding: 8px 16px; */
+  padding: 7px;
+  text-decoration: none;
+  background-color: var(--secondary-color);
+  text-align: center;
+  color: var(--text-field-color) !important;
+}
 #all-countries .countries_section_header .prev-arrow-country {
   position: relative;
   display: inline-block;
@@ -54,6 +63,12 @@
   visibility: visible;
   border-radius: 100%;
   transition: all 300ms linear;
+}
+
+@media screen and (max-width: 320px) {
+  #all-countries .countries_section_header a {
+    margin-left: 0px !important;
+  }
 }
 [dir="rtl"] #all-countries .countries_section_header .see_countries_arrow {
   transform: rotate(180deg);

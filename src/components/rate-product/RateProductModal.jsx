@@ -41,6 +41,11 @@ const RateProductModal = (props) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        console.log(props.product_id, activeIndex, review, files);
+        if (activeIndex === null) {
+            toast.error(t("product_rating_is_required"));
+            return;
+        }
         try {
             const response = await api.addProductRating(cookies.get("jwt_token"), props.product_id, activeIndex, review, files);
             const result = await response.json();
@@ -55,7 +60,6 @@ const RateProductModal = (props) => {
             setFiles([]);
         } catch (err) {
             toast.error(err.message);
-
         }
     };
 
@@ -122,6 +126,7 @@ const RateProductModal = (props) => {
                             <p className="modalSubHeading">{t("product_review")} :</p>
                             <div className="">
                                 <textarea
+                                    required
                                     name="productReview"
                                     className="reviewTextArea"
                                     rows={5}

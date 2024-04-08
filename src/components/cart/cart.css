@@ -270,8 +270,7 @@
   font-size: 14px;
   background: var(--bs-red);
   padding: 4px 12px;
-  border-radius: 8px;
-
+  border-radius: var(--bd-radius-5);
   width: 100%;
 }
 
@@ -308,7 +307,7 @@
   padding: 5px 15px;
   text-decoration: none;
 
-  border-radius: 8px;
+  border-radius: var(--bd-radius-5);
   font-weight: bolder;
 }
 
@@ -519,7 +518,7 @@
 }
 
 .view-cart-container .viewcart-product-wrapper tbody .quantity > div {
-  border-radius: 6px;
+  border-radius: var(--bd-radius-5);
   border: 1px solid var(--secondary-color);
   display: flex;
   width: fit-content;

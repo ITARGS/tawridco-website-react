@@ -167,7 +167,6 @@ const ProductList2 = React.memo(() => {
         const sorted_brand_ids = sort_unique_brand_ids(brand_ids);
 
         dispatch(setFilterBrands({ data: sorted_brand_ids }));
-        // dispatch({ type: ActionTypes.SET_FILTER_BRANDS, payload: sorted_brand_ids });
     };
 
     useEffect(() => {
@@ -218,7 +217,7 @@ const ProductList2 = React.memo(() => {
 
 
     const FilterProductByPrice = async (filter) => {
-        setisLoader(true);
+        // setisLoader(true);
         await api.getProductbyFilter(city?.city?.id, city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
             .then(response => response.json())
             .then(result => {
@@ -230,7 +229,7 @@ const ProductList2 = React.memo(() => {
                     setproductresult([]);
                     settotalProducts(0);
                 }
-                setisLoader(false);
+                // setisLoader(false);
             })
             .catch(error => console.log("error ", error));
     };
@@ -621,7 +620,7 @@ const ProductList2 = React.memo(() => {
                                             <div className='row flex-wrap'>
                                                 {placeholderItems.map((index) => (
                                                     <div key={index} className={`${!filter.grid_view ? 'col-12 list-view ' : 'col-md-6 col-sm-6 col-lg-3 flex-column mt-3'}`}>
-                                                        <Skeleton height={289} className='mt-3 ' borderRadius={8} />
+                                                        <Skeleton height={330} className='mt-3' borderRadius={8} />
                                                     </div>
                                                 ))}
                                             </div>
@@ -796,7 +795,7 @@ const ProductList2 = React.memo(() => {
                                                                                     <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                     <LuStar className='me-3' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                     ({product?.rating_count})
-                                                                                </div> : null}
+                                                                                </div> : <div style={{ height: "24px" }}></div>}
                                                                                 <h3 onClick={(e) => {
                                                                                     e.preventDefault();
                                                                                     dispatch(setSelectedProduct({ data: product.id }));
@@ -804,8 +803,6 @@ const ProductList2 = React.memo(() => {
                                                                                     navigate(`/product/${product?.slug}`);
                                                                                 }} >{product.name}
                                                                                 </h3>
-                                                                                {console.log("Product Price ->", product.variants[0]?.price,)}
-                                                                                {console.log("Discounted Price ->", product.variants[0].discounted_price)}
                                                                                 <div className='price'>
                                                                                     {filter.grid_view ? <>
                                                                                         <span id={`price${index}-section`} className="d-flex align-items-center">

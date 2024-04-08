@@ -260,7 +260,7 @@ const QuickViewModal = (props) => {
                     setmainimage(e.target.value);
                 }}
             >
-                <FaChevronLeft size={30} className="prev-arrow" />
+                <FaChevronLeft fill='black' size={30} className="prev-arrow" />
             </button>
         ),
         nextArrow: (
@@ -271,7 +271,7 @@ const QuickViewModal = (props) => {
                     setmainimage(e.target.value);
                 }}
             >
-                <FaChevronRight color="#f7f7f7" size={30} className="next-arrow" />
+                <FaChevronRight fill='black' size={30} className="next-arrow" />
             </button>
         ),
         responsive: [

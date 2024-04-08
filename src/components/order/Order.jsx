@@ -314,7 +314,6 @@ const Order = () => {
                     <div className='modal-dialog'>
                         <div className="modal-content" style={{ borderRadius: "10px", maxWidth: "100%", padding: "30px 15px", zIndex: -2 }}>
                             <div id="mainContentTrack">
-                                {console.log(element)}
                                 <section className="track" id="printMe">
                                     <div className="d-flex justify-content-between align-items-center mx-5">
                                         <h5 className="page-header">{setting.setting?.app_name}</h5>

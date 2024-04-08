@@ -17,3 +17,13 @@ export function formatTime(isoDate) {
     const formattedHours = (hours % 12 === 0 ? 12 : hours % 12).toString().padStart(2, "0");
     return `${formattedHours}:${minutes} ${period}`;
 }
+export function formatNotificationDate(dateTimeString) {
+    // Split the date and time parts
+    const [datePart, timePart] = dateTimeString.split(' ');
+
+    // Split the date into year, month, and day
+    const [year, month, day] = datePart.split('-');
+
+    // Format the date as DD-MM-YYYY and retain the time part
+    return `${day}-${month}-${year} ${timePart}`;
+};

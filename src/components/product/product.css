@@ -32,7 +32,8 @@
   border-radius: 8px 0px 0px 8px;
   width: 40px;
   height: 80px;
-  right: -20px;
+  /* right: -20px; */
+  left: 25px;
   top: -250%;
   padding: 8px;
   box-shadow: 4px 0px 100px 5px rgba(0, 0, 0, 0.2);
@@ -49,7 +50,7 @@
   border-radius: 0pc 8px 8px 0px;
   width: 40px;
   height: 80px;
-  right: -20px;
+  right: 0px;
   top: -250%;
   padding: 8px;
   box-shadow: 4px 0px 100px 5px rgba(0, 0, 0, 0.05);
@@ -58,19 +59,19 @@
 
 @media (max-width: 467px) {
   .next-arrow {
-    right: -10;
+    /* right: -10px; */
   }
 
   .prev-arrow {
-    right: -25px;
+    /* right: -25px; */
   }
 }
 @media (min-width: 1300px) {
   .prev-arrow {
-    right: -42px !important;
+    /* right: -42px !important; */
   }
   .next-arrow {
-    right: -10px !important;
+    /* right: -10px !important; */
   }
 }
 
@@ -258,7 +259,7 @@ a:focus .product-card {
 }
 
 .product-card .product-card-body {
-  height: 20%;
+  height: 136px;
 }
 
 .product-card .product-card-body h3 {
@@ -738,12 +739,17 @@ input::placeholder {
   position: relative;
 }
 
-.related-product-container .slick-arrow.slick-next .next-arrow,
-.related-product-container .slick-arrow.slick-prev .prev-arrow {
+.related-product-container .slick-arrow.slick-next .next-arrow {
   width: 40px;
   height: 80px;
   top: -30px;
   right: -10px;
+}
+.related-product-container .slick-arrow.slick-prev .prev-arrow {
+  width: 40px;
+  height: 80px;
+  top: -30px;
+  left: 0px;
 }
 
 .product-details-view .slick-arrow.slick-next {

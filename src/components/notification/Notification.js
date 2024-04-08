@@ -8,10 +8,10 @@ import Cookies from 'universal-cookie';
 import Loader from '../loader/Loader';
 import coverImg from '../../utils/cover-img.jpg';
 import No_Notification from '../../utils/zero-state-screens/No_Notification.svg';
-import { ActionTypes } from '../../model/action-type';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { setNotification } from '../../model/reducer/notificationReducer';
+import { formatNotificationDate } from '../../utils/formatDate';
 
 const Notification = () => {
   const user = useSelector(state => (state.user));
@@ -36,7 +36,6 @@ const Notification = () => {
       .then(result => {
         if (result.status === 1) {
           setisLoader(false);
-          // dispatch({ type: ActionTypes.SET_NOTIFICATION, payload: result.data });
           dispatch(setNotification({ data: result.data }));
           setnotifications(result.data);
           settotalNotification(result.total);
@@ -101,6 +100,9 @@ const Notification = () => {
                               <div className='content'>
                                 <p className='title'>{ntf.title}</p>
                                 <p>{ntf.message}</p>
+                              </div>
+                              <div className='d-flex align-items-center'>
+                                {formatNotificationDate(ntf.date_sent)}
                               </div>
                             </div>
                           ))}

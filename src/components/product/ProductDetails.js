@@ -21,12 +21,12 @@ import { setFavourite } from '../../model/reducer/favouriteReducer';
 import Popup from '../same-seller-popup/Popup';
 import useGetProductRatingsById from '../../hooks/useGetProductRatingsById';
 import { OverlayTrigger, Popover, ProgressBar } from 'react-bootstrap';
-import ratingSVG from "../../utils/rating.svg";
 import ProductDetailsTabs from './ProductDetailsTabs';
 import StarFilledSVG from "../../utils/StarFilled.svg";
 import StarUnfilledSVG from "../../utils/StarUnfilled.svg";
 import useGetProductRatingImages from '../../hooks/useGetProductRatingImages';
 import { LuStar } from 'react-icons/lu';
+// import ratingSVG from "../../utils/rating.svg";
 
 
 const ProductDetails = () => {
@@ -208,9 +208,8 @@ const ProductDetails = () => {
             {
                 breakpoint: 425,
                 settings: {
-                    slidesToShow: 1.5,
-                    dots: true,
-                    arrows: false,
+                    slidesToShow: 1,
+                    arrows: true,
                 }
             }
         ]
@@ -562,10 +561,18 @@ const ProductDetails = () => {
                                                             </span>
                                                         </div>
                                                     )} */}
-                                                <div className='d-flex flex-row gap-2 align-items-center my-1'>
+                                                <div className='d-flex flex-column gap-2 align-items-start my-1'>
                                                     <div id="price-section" className='d-flex flex-row gap-2 align-items-center my-1'>
                                                         {setting.setting && setting.setting.currency}<p id='fa-rupee' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price == 0 ? selectedVariant.price.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price.toFixed(setting.setting && setting.setting.decimal_point)) : (productdata.variants[0].discounted_price === 0 ? productdata.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : productdata.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point))}</p>
                                                     </div>
+                                                    {selectedVariant?.price ?
+                                                        <div>
+                                                            <p className='fw-normal text-decoration-line-through' style={{ color: "var(--sub-text-color)", fontSize: "16px" }}>
+                                                                {setting.setting && setting.setting.currency}
+                                                                {selectedVariant?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                            </p>
+                                                        </div>
+                                                        : null}
                                                     <input type="hidden" id="productdetail-selected-variant-id" name="variant" value={selectedVariant ? selectedVariant.id : productdata.variants[0].id} />
                                                 </div>
 
@@ -795,16 +802,21 @@ const ProductDetails = () => {
                                                     ) : ""} */}
                                                     </div>}
                                                 {productRating?.rating_list?.length !== 0 ?
-                                                    <div>
+                                                    <div className='mt-3 cursorPointer'>
                                                         <OverlayTrigger
                                                             trigger="click"
                                                             placement="bottom-start"
                                                             overlay={popover}
                                                             rootClose={true}
                                                         >
+                                                            {/* {console.log(productRating)} */}
                                                             <span>
-                                                                <img src={ratingSVG} alt='starLogo' />
-                                                                {totalData}
+                                                                <LuStar className='me-1' style={productRating?.average_rating >= 1 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
+                                                                <LuStar className='me-1' style={productRating?.average_rating >= 2 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
+                                                                <LuStar className='me-1' style={productRating?.average_rating >= 3 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
+                                                                <LuStar className='me-1' style={productRating?.average_rating >= 4 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
+                                                                <LuStar className='me-3' style={productRating?.average_rating >= 5 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
+                                                                ({totalData})
                                                             </span>
                                                         </OverlayTrigger>
                                                     </div> : null}
@@ -885,7 +897,7 @@ const ProductDetails = () => {
                                                         </div>
                                                     </Link>
 
-                                                    <div className="card-body product-card-body p-3" onClick={() => {
+                                                    <div className="d-flex flex-column justify-content-end card-body product-card-body p-3" onClick={() => {
                                                         dispatch(setSelectedProduct({ data: related_product.id }));
                                                         setSelectedVariant(null);
                                                         setQuantity(0);

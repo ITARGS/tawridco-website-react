@@ -20,7 +20,16 @@
   text-decoration: none;
   margin-left: 10px;
 }
-
+#all-brands .brand_section_header .brand_button {
+  border-radius: 8px;
+  font-size: 14px;
+  /* padding: 8px 16px; */
+  padding: 7px;
+  text-decoration: none;
+  background-color: var(--secondary-color);
+  text-align: center;
+  color: var(--text-field-color) !important;
+}
 #all-brands .brand_section_header .prev-arrow-brand {
   position: relative;
   display: inline-block;

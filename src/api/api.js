@@ -257,7 +257,7 @@ const api = {
         formdata.append("latitude", latitude);
         formdata.append("longitude", longitude);
         //console.log(filters);
-        if (filters !== undefined) {        
+        if (filters !== undefined) {
             for (const filter in filters) {
                 if ((filters[filter] !== null && filters[filter] !== undefined && filters[filter] !== "") || filters[filter]?.length > 0) {
                     formdata.append(filter, filters[filter]);
@@ -909,7 +909,7 @@ const api = {
         data.append("rate", rate);
         data.append("review", review);
 
-        for (let i = 0; i < images.length; i++) {
+        for (let i = 0; i < images?.length; i++) {
             data.append(`image[${i}]`, images[i]);
         }
         var requestOptions = {

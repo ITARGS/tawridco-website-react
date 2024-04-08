@@ -31,7 +31,8 @@ const OrderDetails = React.memo(() => {
     const [ratingProductId, setRatingProductId] = useState(0);
     const [editRatingId, setEditRatingId] = useState(0);
     const [showRatingEditModal, setShowRatingEditModal] = useState(false);
-    const [showReturnModal, setShowReturnModal] = useState(false);
+    // const [showReturnModal, setShowReturnModal] = useState(false);
+    const [showReturnModal, setShowReturnModal] = useState(Array(orderData?.items?.length).fill(false));
     const urlParams = useParams();
 
     useEffect(() => {
@@ -231,7 +232,11 @@ const OrderDetails = React.memo(() => {
                                                                         <div className="actions-container">
                                                                             {Number(item?.active_status) == 6 && item?.return_status == 1 ?
                                                                                 <span className="return">
-                                                                                    <button onClick={() => setShowReturnModal(true)}>{t('return')}</button>
+                                                                                    <button onClick={() => setShowReturnModal(prevState => {
+                                                                                        const newState = [...prevState];
+                                                                                        newState[index] = true;
+                                                                                        return newState;
+                                                                                    })}>{t('return')}</button>
                                                                                 </span>
                                                                                 : null
                                                                             }
@@ -286,50 +291,60 @@ const OrderDetails = React.memo(() => {
                                                                         </div>
                                                                     </td>
                                                                 </tr>
-                                                                {showReturnModal ?
-                                                                    <Modal
-                                                                        size='md'
-                                                                        show={showReturnModal}
-                                                                        centered
-                                                                        onHide={() => setShowReturnModal(false)}
-                                                                        backdrop="static"
-                                                                    >
-                                                                        <Modal.Header className='d-flex justify-content-between returnProductModalHeader'>
-                                                                            <h5 className='title'>{t("return_order_item")}</h5>
-                                                                            <AiOutlineCloseCircle className='cursorPointer' size={28} fill='black' onClick={() => setShowReturnModal(false)} />
-                                                                        </Modal.Header>
-                                                                        <Modal.Body className='returnProductModalBody'>
-                                                                            <form onSubmit={(e) => {
-                                                                                e.preventDefault();
-                                                                                // if (!returnRef.current.value.trim()) {
-                                                                                //     toast.error(t('please_type_return_reason'));
-                                                                                //     return; // Don't proceed further if the textarea is empty
-                                                                                // }
-                                                                                handleUpdateStatus(item?.id, 8, returnRef.current.value);
-                                                                            }}>
-                                                                                <div className='d-flex flex-column justify-content-center'>
-                                                                                    <label htmlFor='reasonTextArea' className='my-3 reasonLabel'>
-                                                                                        {t("return_reason")}
-                                                                                    </label>
-                                                                                    <textarea
-                                                                                        ref={returnRef}
-                                                                                        id="reasonTextArea"
-                                                                                        rows={8}
-                                                                                        name='reasonTextArea'
-                                                                                        placeholder={t("write_return_reason")}
-                                                                                        className='reasonTextArea my-4'
-                                                                                        required
-                                                                                    />
-                                                                                </div>
-                                                                                <div className='d-flex justify-content-end mt-4'>
-                                                                                    <button type='submit' className='returnSubmitBtn'>
-                                                                                        {t("request_a_return")}
-                                                                                    </button>
-                                                                                </div>
-                                                                            </form>
-                                                                        </Modal.Body>
-                                                                    </Modal>
-                                                                    : null}
+                                                                {
+                                                                    showReturnModal[index] ?
+                                                                        <Modal
+                                                                            size='md'
+                                                                            show={showReturnModal[index]}
+                                                                            centered
+                                                                            // onHide={() => setShowReturnModal(false)}
+                                                                            onHide={() => setShowReturnModal(prevState => {
+                                                                                const newState = [...prevState];
+                                                                                newState[index] = false;
+                                                                                return newState;
+                                                                            })}
+                                                                            backdrop="static"
+                                                                        >
+                                                                            <Modal.Header className='d-flex justify-content-between returnProductModalHeader'>
+                                                                                <h5 className='title'>{t("return_order_item")}</h5>
+                                                                                <AiOutlineCloseCircle className='cursorPointer' size={28} fill='black' onClick={() => setShowReturnModal(prevState => {
+                                                                                    const newState = [...prevState];
+                                                                                    newState[index] = false;
+                                                                                    return newState;
+                                                                                })} />
+                                                                            </Modal.Header>
+                                                                            <Modal.Body className='returnProductModalBody'>
+                                                                                <form onSubmit={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    // if (!returnRef.current.value.trim()) {
+                                                                                    //     toast.error(t('please_type_return_reason'));
+                                                                                    //     return; // Don't proceed further if the textarea is empty
+                                                                                    // }
+                                                                                    handleUpdateStatus(item?.id, 8, returnRef.current.value);
+                                                                                }}>
+                                                                                    <div className='d-flex flex-column justify-content-center'>
+                                                                                        <label htmlFor='reasonTextArea' className='my-3 reasonLabel'>
+                                                                                            {t("return_reason")}
+                                                                                        </label>
+                                                                                        <textarea
+                                                                                            ref={returnRef}
+                                                                                            id="reasonTextArea"
+                                                                                            rows={8}
+                                                                                            name='reasonTextArea'
+                                                                                            placeholder={t("write_return_reason")}
+                                                                                            className='reasonTextArea my-4'
+                                                                                            required
+                                                                                        />
+                                                                                    </div>
+                                                                                    <div className='d-flex justify-content-end mt-4'>
+                                                                                        <button type='submit' className='returnSubmitBtn'>
+                                                                                            {t("request_a_return")}
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </form>
+                                                                            </Modal.Body>
+                                                                        </Modal>
+                                                                        : null}
                                                             </>
 
                                                         );
@@ -503,11 +518,11 @@ const OrderDetails = React.memo(() => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div >
 
                 <RateProductModal product_id={ratingProductId} showPdtRatingModal={showPdtRatingModal} setShowPdtRatingModal={setShowPdtRatingModal} />
                 <UpdateRatingModal product_id={ratingProductId} showModal={showRatingEditModal} setShowModal={setShowRatingEditModal} ratingId={editRatingId} setRatingId={setEditRatingId} />
-            </section>
+            </section >
         </>
     );
 });

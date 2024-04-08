@@ -84,7 +84,7 @@ const ShopBySellers = () => {
                                 <Link className='d-none d-md-block' to='/sellers'>{t('see_all')} {t('sellers')}<AiOutlineArrowRight size={15} className='see_sellers_arrow' /> </Link>
                             </div>
                             <div className=' d-md-none'>
-                                <Link className='category_button' to='/sellers'>{t('see_all')}</Link>
+                                <Link className='seller_button' to='/sellers'>{t('see_all')}</Link>
                             </div>
                             <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
                                 <button className='prev-arrow-seller' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>

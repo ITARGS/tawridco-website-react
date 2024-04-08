@@ -21,6 +21,17 @@
   margin-left: 10px;
 }
 
+#all-sellers .seller_section_header .seller_button {
+  border-radius: 8px;
+  font-size: 14px;
+  /* padding: 8px 16px; */
+  padding: 7px;
+  text-decoration: none;
+  background-color: var(--secondary-color);
+  text-align: center;
+  color: var(--text-field-color) !important;
+}
+
 #all-sellers .seller_section_header .prev-arrow-seller {
   position: relative;
   display: inline-block;

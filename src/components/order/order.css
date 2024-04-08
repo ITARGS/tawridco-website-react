@@ -230,9 +230,12 @@
 
 .order-container .container-body {
   margin: 20px 0;
-  overflow: scroll;
 }
-
+@media screen and (min-width: 0px) and (max-width: 430px) {
+  .order-container .container-body {
+    overflow: scroll;
+  }
+}
 .order-container .container-body .table-container thead {
   background-color: var(--secondary-color);
   border-radius: 8px;
