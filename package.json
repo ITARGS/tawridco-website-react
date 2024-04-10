@@ -57,7 +57,8 @@
     "build": "react-scripts build --openssl-legacy-provider",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "postbuild": "node ftp.js"
+    "postbuild": "node ftp.js",
+    "deploy": "node ftp.js"
   },
   "eslintConfig": {
     "extends": [
