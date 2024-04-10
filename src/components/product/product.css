@@ -264,9 +264,6 @@ a:focus .product-card {
   justify-content: end;
   height: 115px;
 }
-.product-card .product-card-body .price {
-  display: flex;
-}
 
 .product-card .product-card-body h3 {
   font-weight: 600;
@@ -1301,7 +1298,7 @@ input::placeholder {
 
 .product-details-view #price-section-quickview {
   display: flex;
-  /* align-items: baseline !important; */
+  /* align-items: baseline !important;:268 */
   font-weight: 700;
   font-size: 20px;
   color: var(--secondary-color) !important;
