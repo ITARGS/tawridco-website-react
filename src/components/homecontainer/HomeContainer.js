@@ -9,7 +9,7 @@ import ShopBySellers from '../shop-by-seller/ShopBySellers';
 import { useNavigate } from 'react-router-dom';
 import { setFilterCategory } from '../../model/reducer/productFilterReducer';
 
-const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryOfferArray }) => {
+const CHomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryOfferArray }) => {
     const shop = useSelector((state) => state.shop);
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -88,20 +88,20 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     </div>
                 </div>
                 : <></>}
-            {shop.shop?.is_country_section_in_homepage &&
+            {shop.shop?.is_country_section_in_homepage ?
                 <div className='category_section'>
                     <div className='container'>
                         <ShopByCountries />
                     </div>
                 </div>
-            }
-            {shop.shop?.is_seller_section_in_homepage &&
+                : <></>}
+            {shop.shop?.is_seller_section_in_homepage ?
                 <div className='category_section'>
                     <div className='container'>
                         <ShopBySellers />
                     </div>
                 </div>
-            }
+                : <></>}
 
 
         </section>
