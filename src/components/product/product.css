@@ -259,7 +259,13 @@ a:focus .product-card {
 }
 
 .product-card .product-card-body {
-  height: 136px;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  height: 115px;
+}
+.product-card .product-card-body .price {
+  display: flex;
 }
 
 .product-card .product-card-body h3 {
@@ -382,7 +388,7 @@ a:focus .product-card {
 .product-card .product-card-body .price span p {
   margin: 0 !important;
   padding: 0 !important;
-  margin-right: 5px !important;
+  margin-right: 8px !important;
   color: var(--secondary-color);
 }
 .product-card .product-card-body .price .discounted-price {
@@ -743,7 +749,7 @@ input::placeholder {
   width: 40px;
   height: 80px;
   top: -30px;
-  right: -10px;
+  right: 0px;
 }
 .related-product-container .slick-arrow.slick-prev .prev-arrow {
   width: 40px;
@@ -1295,7 +1301,7 @@ input::placeholder {
 
 .product-details-view #price-section-quickview {
   display: flex;
-  align-items: baseline !important;
+  /* align-items: baseline !important; */
   font-weight: 700;
   font-size: 20px;
   color: var(--secondary-color) !important;

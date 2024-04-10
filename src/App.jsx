@@ -296,7 +296,7 @@ const App = () => {
           <Footer />
 
 
-          <ToastContainer bodyStyle={{ color: "#000" }} toastClassName='toast-container-class' />
+          <ToastContainer bodyStyle={{ color: "#000" }} className={"toastContainer"} toastClassName='toast-container-class' />
         </div>
       </AnimatePresence>
     </>

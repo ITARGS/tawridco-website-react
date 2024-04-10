@@ -565,7 +565,7 @@ const ProductDetails = () => {
                                                     <div id="price-section" className='d-flex flex-row gap-2 align-items-center my-1'>
                                                         {setting.setting && setting.setting.currency}<p id='fa-rupee' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price == 0 ? selectedVariant.price.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price.toFixed(setting.setting && setting.setting.decimal_point)) : (productdata.variants[0].discounted_price === 0 ? productdata.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : productdata.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point))}</p>
                                                     </div>
-                                                    {selectedVariant?.price ?
+                                                    {(selectedVariant?.price && (selectedVariant?.discounted_price !== 0)) && (selectedVariant?.price !== selectedVariant?.discounted_price) ?
                                                         <div>
                                                             <p className='fw-normal text-decoration-line-through' style={{ color: "var(--sub-text-color)", fontSize: "16px" }}>
                                                                 {setting.setting && setting.setting.currency}
@@ -918,14 +918,19 @@ const ProductDetails = () => {
                                                         <h3>{related_product.name}</h3>
                                                         <div className='price'>
 
-                                                            <span id={`price${index}-section`} className="d-flex align-items-center"><p id='relatedproduct-fa-rupee' className='m-0'>{setting.setting && setting.setting.currency}</p>{related_product.variants[0].discounted_price === 0 ? related_product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : related_product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)} </span>
-                                                            {related_product?.variants[0]?.price ?
-                                                                <span id={`price${index}-section`} className="d-flex align-items-center" >
-                                                                    <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
-                                                                        {related_product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                    </p>
-                                                                </span>
-                                                                : null}
+                                                            <span id={`price${index}-section`} className="d-flex align-items-center">
+                                                                <p id='relatedproduct-fa-rupee' className='m-0'>
+                                                                    {setting.setting && setting.setting.currency}
+                                                                    {related_product.variants[0].discounted_price === 0 ? related_product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : related_product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                </p>
+                                                                {(related_product?.variants[0]?.price && (related_product?.variants[0]?.discounted_price != 0)) && (related_product?.variants[0]?.price !== related_product?.variants[0]?.discounted_price) ?
+                                                                    <span id={`price${index}-section`} className="d-flex align-items-center" >
+                                                                        <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
+                                                                            {related_product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                        </p>
+                                                                    </span>
+                                                                    : null}
+                                                            </span>
                                                         </div>
                                                         <div className='product_varients_drop'>
                                                             {related_product.variants.length > 1 ?

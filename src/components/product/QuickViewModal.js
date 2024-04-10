@@ -70,7 +70,7 @@ const QuickViewModal = (props) => {
                     setproduct(result.data);
                     setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
                     setmainimage(result.data.image_url);
-                    selectedVariant && setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id === variant_index));
+                    setSelectedVariant((result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index)) || result.data.variants?.[0]);
                 }
             })
             .catch(error => console.log(error));
@@ -84,7 +84,7 @@ const QuickViewModal = (props) => {
                     setproduct(result.data);
                     setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
                     setmainimage(result.data.image_url);
-                    selectedVariant && setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id === variant_index));
+                    setSelectedVariant((result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index)) || result.data.variants?.[0]);
                     // console.log("fetchProduct Variant Func Called -> ", result.data);
                     // !variant_index && setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
                     // setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index));
@@ -383,7 +383,17 @@ const QuickViewModal = (props) => {
                                                     <div className="d-flex flex-row gap-2 align-items-center my-1">
 
                                                         <div id="price-section-quickview" className='d-flex flex-row gap-2 align-items-center my-1'>
-                                                            {setting.setting && setting.setting.currency}<p id='priceContainer' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price === 0 ? selectedVariant.price?.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price?.toFixed(setting.setting && setting.setting.decimal_point)) : (product.variants[0].discounted_price === 0 ? product.variants[0].price?.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price?.toFixed(setting.setting && setting.setting.decimal_point))}</p>
+                                                            {setting.setting && setting.setting.currency}
+                                                            <p id='priceContainer' className='m-0'>
+                                                                {selectedVariant ? (selectedVariant.discounted_price === 0 ? selectedVariant.price?.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price?.toFixed(setting.setting && setting.setting.decimal_point)) : (product.variants[0].discounted_price === 0 ? product.variants[0].price?.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price?.toFixed(setting.setting && setting.setting.decimal_point))}
+                                                            </p>
+                                                            {console.log(selectedVariant?.price)}
+                                                            {(selectedVariant?.price && (selectedVariant?.discounted_price !== 0)) && (selectedVariant?.price !== selectedVariant?.discounted_price) ?
+                                                                <p className='fw-normal text-decoration-line-through' style={{ color: "var(--sub-text-color)", fontSize: "16px", marginTop: "5px" }}>
+                                                                    {setting.setting && setting.setting.currency}
+                                                                    {selectedVariant?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                </p>
+                                                                : null}
                                                         </div>
                                                     </div>
 

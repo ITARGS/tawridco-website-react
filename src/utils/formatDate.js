@@ -25,5 +25,5 @@ export function formatNotificationDate(dateTimeString) {
     const [year, month, day] = datePart.split('-');
 
     // Format the date as DD-MM-YYYY and retain the time part
-    return `${day}-${month}-${year} ${timePart}`;
+    return `${day}-${month}-${year}`;
 };

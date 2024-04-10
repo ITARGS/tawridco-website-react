@@ -920,19 +920,22 @@ const Header = () => {
                                         {user.status === 'loading'
                                             ? (
                                                 <>
-                                                    <button type='button' className={`account ${mobileNavActKey == 5 ? "active" : ""}`} data-bs-toggle="modal" data-bs-target="#loginModal" onClick={() => {
-                                                        handleMobileNavActKey(5);
-                                                        // document.getElementsByClassName('wishlist')[0].classList.remove('active');
-                                                        // if (curr_url.pathname === '/products') {
-                                                        //     document.getElementsByClassName('filter')[0].classList.remove('active');
-                                                        // }
-                                                        // if (curr_url.pathname !== '/products') {
-                                                        //     document.getElementsByClassName('shop')[0].classList.remove('active');
-                                                        // }
-                                                        // document.getElementsByClassName('search')[0].classList.remove('active');
-                                                        // document.getElementsByClassName('header-search')[0].classList.remove('active');
+                                                    <button type='button' className={`account ${mobileNavActKey == 5 ? "active" : ""}`}
+                                                        // data-bs-toggle="modal" data-bs-target="#loginModal"
+                                                        onClick={() => {
+                                                            setShowModal(true);
+                                                            handleMobileNavActKey(5);
+                                                            // document.getElementsByClassName('wishlist')[0].classList.remove('active');
+                                                            // if (curr_url.pathname === '/products') {
+                                                            //     document.getElementsByClassName('filter')[0].classList.remove('active');
+                                                            // }
+                                                            // if (curr_url.pathname !== '/products') {
+                                                            //     document.getElementsByClassName('shop')[0].classList.remove('active');
+                                                            // }
+                                                            // document.getElementsByClassName('search')[0].classList.remove('active');
+                                                            // document.getElementsByClassName('header-search')[0].classList.remove('active');
 
-                                                    }}>
+                                                        }}>
                                                         <div>
                                                             <BiUserCircle />
                                                         </div>

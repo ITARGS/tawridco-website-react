@@ -310,7 +310,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                 }
                                                                             </div>
                                                                             {/* {console.log(product)} */}
-                                                                            <div className="d-flex flex-column justify-content-end card-body product-card-body p-3" >
+                                                                            <div className="card-body product-card-body p-3" >
                                                                                 {product?.rating_count > 0 ? <div className='ratings d-flex align-items-center'>
                                                                                     <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                     <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
@@ -324,15 +324,18 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                 <h3>{product.name}</h3>
                                                                                 <div className='price'>
                                                                                     <span id={`price${index}${index0}-section`} className="d-flex align-items-center">
-                                                                                        <p id='fa-rupee' className='m-0 ' style={{ color: "var(--secondary-color)" }}>{setting.setting && setting.setting.currency}</p> {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                        <p id='fa-rupee' className='m-0'>
+                                                                                            {setting.setting && setting.setting.currency}
+                                                                                            {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                        </p>
+                                                                                        {(product?.variants[0]?.price && (product?.variants[0]?.discounted_price != 0)) && (product?.variants[0]?.price !== product?.variants[0]?.discounted_price) ?
+                                                                                            <span id={`price${index}-section`} className="d-flex align-items-center" >
+                                                                                                <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
+                                                                                                    {product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                                </p>
+                                                                                            </span>
+                                                                                            : null}
                                                                                     </span>
-                                                                                    {product?.variants[0]?.price ?
-                                                                                        <span id={`price${index}-section`} className="d-flex align-items-center" >
-                                                                                            <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
-                                                                                                {product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                                            </p>
-                                                                                        </span>
-                                                                                        : null}
                                                                                 </div>
                                                                                 <div className='product_varients_drop'>
                                                                                     <input type="hidden" name={`select-product${index}${index0}-variant-id`} id={`select-product${index}${index0}-variant-id`} value={selectedVariant.pid === product.id ? selectedVariant.id : product.variants[0].id} />

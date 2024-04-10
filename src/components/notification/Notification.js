@@ -101,8 +101,11 @@ const Notification = () => {
                                 <p className='title'>{ntf.title}</p>
                                 <p>{ntf.message}</p>
                               </div>
-                              <div className='d-flex align-items-center'>
-                                {formatNotificationDate(ntf.date_sent)}
+                              <div className='d-flex flex-column justify-content-center'>
+                                <span>
+                                  {formatNotificationDate(ntf.date_sent)}
+                                </span>
+                                <span>{ntf.date_sent.split(" ")[1]}</span>
                               </div>
                             </div>
                           ))}

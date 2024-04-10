@@ -787,7 +787,7 @@ const ProductList2 = React.memo(() => {
                                                                             </div>
 
 
-                                                                            <div className={`card-body product-card-body p-3`}>
+                                                                            <div className="h-0 card-body product-card-body p-3 ">
                                                                                 {product?.rating_count ? <div>
                                                                                     <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                     <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
@@ -795,7 +795,7 @@ const ProductList2 = React.memo(() => {
                                                                                     <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                     <LuStar className='me-3' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
                                                                                     ({product?.rating_count})
-                                                                                </div> : <div style={{ height: "24px" }}></div>}
+                                                                                </div> : null}
                                                                                 <h3 onClick={(e) => {
                                                                                     e.preventDefault();
                                                                                     dispatch(setSelectedProduct({ data: product.id }));
@@ -804,22 +804,22 @@ const ProductList2 = React.memo(() => {
                                                                                 }} >{product.name}
                                                                                 </h3>
                                                                                 <div className='price'>
-                                                                                    {filter.grid_view ? <>
+                                                                                    {filter.grid_view ? <div>
                                                                                         <span id={`price${index}-section`} className="d-flex align-items-center">
                                                                                             <p id={`fa-rupee${index}`}>
                                                                                                 {setting.setting && setting.setting.currency}
+                                                                                                {product.variants[0].discounted_price === 0 ?
+                                                                                                    product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) :
+                                                                                                    product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
                                                                                             </p>
-                                                                                            {product.variants[0].discounted_price === 0 ?
-                                                                                                product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) :
-                                                                                                product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                            {(product?.variants[0]?.price && (product?.variants[0]?.discounted_price != 0)) && (product?.variants[0]?.price !== product?.variants[0]?.discounted_price) ?
+                                                                                                <span id={`price${index}-section`} className="d-flex align-items-center" >
+                                                                                                    <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
+                                                                                                        {product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                                    </p>
+                                                                                                </span>
+                                                                                                : null}
                                                                                         </span>
-                                                                                        {product?.variants[0]?.price ?
-                                                                                            <span id={`price${index}-section`} className="d-flex align-items-center" >
-                                                                                                <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
-                                                                                                    {product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                                                </p>
-                                                                                            </span>
-                                                                                            : null}
                                                                                         <div className='product_varients_drop'>
                                                                                             <input type="hidden" name={`default-variant-id`} id={`productlist${index}-variant-id`} />
 
@@ -841,30 +841,31 @@ const ProductList2 = React.memo(() => {
                                                                                                     </p>
                                                                                                 </>}
                                                                                         </div>
-                                                                                    </> : <>
-                                                                                        <div className='product_varients_drop d-flex align-items-center'>
-                                                                                            {product.variants.length > 1 ? <>
-                                                                                                <div className='variant_selection' onClick={(e) => {
-                                                                                                    e.preventDefault(); setselectedProduct(product); setShowModal(true); setP_id(product.id);
-                                                                                                    setP_V_id(product.variants[0].id);
-                                                                                                    setQnty(product.variants[0].cart_count + 1);
-                                                                                                }} >
-                                                                                                    <span className='product_list_dropdown_span'>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} Rs.<span className="original-price" id={`dropDown-Toggle${index}`}>{product.variants[0].toFixed(setting.setting && setting.setting.decimal_point)}</span></>}</span>
-                                                                                                    <IoIosArrowDown />
-                                                                                                </div>
-                                                                                            </>
-                                                                                                :
+                                                                                    </div>
+                                                                                        : <>
+                                                                                            <div className='product_varients_drop d-flex align-items-center'>
+                                                                                                {product.variants.length > 1 ? <>
+                                                                                                    <div className='variant_selection' onClick={(e) => {
+                                                                                                        e.preventDefault(); setselectedProduct(product); setShowModal(true); setP_id(product.id);
+                                                                                                        setP_V_id(product.variants[0].id);
+                                                                                                        setQnty(product.variants[0].cart_count + 1);
+                                                                                                    }} >
+                                                                                                        <span className='product_list_dropdown_span'>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} Rs.<span className="original-price" id={`dropDown-Toggle${index}`}>{product.variants[0].toFixed(setting.setting && setting.setting.decimal_point)}</span></>}</span>
+                                                                                                        <IoIosArrowDown />
+                                                                                                    </div>
+                                                                                                </>
+                                                                                                    :
 
-                                                                                                <>
-                                                                                                    <p id={`default-product${index}-variant`} value={product.variants[0].id} className='variant_value select-arrow'>{product.variants[0].measurement + " " + product.variants[0].stock_unit_name}
-                                                                                                    </p>
-                                                                                                </>}
-                                                                                            <span id={`price${index}-section`} className="d-flex align-items-center"><p id='fa-rupee'>{setting.setting && setting.setting.currency}</p> {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                                        </div>
-                                                                                        <p className="product_list_description" >
+                                                                                                    <>
+                                                                                                        <p id={`default-product${index}-variant`} value={product.variants[0].id} className='variant_value select-arrow'>{product.variants[0].measurement + " " + product.variants[0].stock_unit_name}
+                                                                                                        </p>
+                                                                                                    </>}
+                                                                                                <span id={`price${index}-section`} className="d-flex align-items-center"><p id='fa-rupee'>{setting.setting && setting.setting.currency}</p> {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                                            </div>
+                                                                                            <p className="product_list_description" >
 
-                                                                                        </p>
-                                                                                    </>}
+                                                                                            </p>
+                                                                                        </>}
                                                                                 </div>
 
                                                                             </div>

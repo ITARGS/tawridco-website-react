@@ -182,3 +182,8 @@
   font-size: 14px;
   background-color: var(--container-bg);
 }
+@media (min-width: 0px) and (max-width: 420px) {
+  .login .body img {
+    width: 200px !important;
+  }
+}

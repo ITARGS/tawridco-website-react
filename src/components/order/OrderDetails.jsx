@@ -166,11 +166,10 @@ const OrderDetails = React.memo(() => {
                                                 <thead>
                                                     <th>{t('product')}</th>
                                                     <th>{t('price')}</th>
-                                                    <th>{t('rating')}</th>
+                                                    {orderData?.active_status >= 6 ? <th>{t('rating')}</th> : null}
                                                     {/* <th>{t('action')}</th> */}
                                                 </thead>
                                                 <tbody>
-                                                    {/* {console.log(orderData)} */}
                                                     {orderData?.items?.map((item, index) => {
                                                         return (
                                                             <>
@@ -263,7 +262,7 @@ const OrderDetails = React.memo(() => {
                                                                         </div>
 
                                                                     </td>
-                                                                    <td>
+                                                                    {Number(item?.active_status) >= 6 ? <td>
                                                                         <div className='rateProductText' >
                                                                             {item.item_rating.find((rating) => rating.user.id === user.id) ?
                                                                                 <div className='pb-4' onClick={() => {
@@ -289,7 +288,7 @@ const OrderDetails = React.memo(() => {
                                                                                 </div>
                                                                             }
                                                                         </div>
-                                                                    </td>
+                                                                    </td> : null}
                                                                 </tr>
                                                                 {
                                                                     showReturnModal[index] ?
