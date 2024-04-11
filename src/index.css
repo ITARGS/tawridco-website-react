@@ -206,4 +206,6 @@ input[type="number"] {
 
 .offerImages {
   border-radius: var(--bd-radius-10);
+  width: 100%;
+  height: auto;
 }
