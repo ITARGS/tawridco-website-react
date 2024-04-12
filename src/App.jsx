@@ -216,90 +216,140 @@ const App = () => {
 
 
   return (
-    <>
 
+    // <AnimatePresence>
+    //   <style>{RootCss}</style>
+    //   <div className="h-auto">
+    //     <Header />
+    //     <NewUserModal />
 
+    //     <main id='main' className="main-app">
+    //       <Suspense fallback={<Loader screen={"full"} />}>
+    //         <Routes>
+    //           {user.user ?
+    //             <>
+    //               <Route key={"cart"} exact={true} path="/cart" element={<ViewCart />} />
+    //               <Route key={"checkout"} exact={true} path="/checkout" element={<Checkout />} />
+    //               <Route key={"web-payment-status"} exact={true} path='/web-payment-status' element={<PayPalPaymentHandler />} />
+    //               <Route key={"wishlist"} exact={true} path='/wishlist' element={<Wishlist />} />
+    //               <Route key={"profile"} exact={true} path="/profile" element={<ProfileDashboard />} />
+    //               <Route key={"profile-orders"} exact={true} path="/profile/orders" element={<ProfileDashboard showOrders={true} />} />
+    //               <Route key={"order-details"} exact={true} path="/profile/orders/:id" element={<OrderDetails />} />
+    //               <Route key={"profile-transaction"} exact={true} path="/profile/transactions" element={<ProfileDashboard showTransaction={true} />} />
+    //               <Route key={"profile-wallet-transactions"} exact={true} path="/profile/wallet-transaction" element={<ProfileDashboard showWalletTransaction={true} />} />
+    //               <Route key={"address"} exact={true} path="/profile/address" element={<ProfileDashboard showAddress={true} />} />
+    //               <Route key={"notification"} exact={true} path="/notification" element={<Notification />} />
+    //               <Route key={"categories"} exact={true} path='/categories' element={<ShowAllCategories />} />
+    //               <Route key={"products"} exact={true} path='/products' element={<ProductList2 />} />
+    //               <Route key={"product-slug"} exact={true} path='/product/:slug' element={<ProductDetails />} />
+    //               <Route key={"rating-and-reviews"} exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} />
+    //               <Route key={"about"} exact={true} path='/about' element={<About />} />
+    //               <Route key={"contact"} exact={true} path='/contact' element={<Contact />} />
+    //               <Route key={"faq"} exact={true} path='/faq' element={<FAQ />} />
+    //               <Route key={"terms"} exact={true} path='/terms' element={<Terms />} />
+    //               <Route key={"policy"} exact={true} path='/policy/:policy_type' element={<Policy />} />
+    //               <Route key={"home"} exact={true} path="" element={<MainContainer />} />
+    //               <Route key={"brands"} exact={true} path='/brands' element={<BrandList />} />
+    //               <Route key={"countries"} exact={true} path='/countries' element={<ShopByCountriesPage />} />
+    //               <Route key={"sellers"} exact={true} path='/sellers' element={<ShopBySellersPage />} />
+    //               {/* <Route exact={true} path='/product' element={<ProductDetails />} /> */}
+    //               {/* <Route exact={true} path='/product/:slug/rating-images' element={<AllRatingImages />}/> */}
+    //             </>
+    //             :
+    //             <>
+    //               <Route key={"categories"} exact={true} path='/categories' element={<ShowAllCategories />} />
+    //               <Route key={"brands"} exact={true} path='/brands' element={<BrandList />} />
+    //               <Route key={"countries"} exact={true} path='/countries' element={<ShopByCountriesPage />} />
+    //               <Route key={"sellers"} exact={true} path='/sellers' element={<ShopBySellersPage />} />
+    //               <Route key={"products"} exact={true} path='/products' element={<ProductList2 />} />
+    //               <Route key={"product-details"} exact={true} path='/product/:slug' element={<ProductDetails />} />
+    //               <Route key={"rating-and-reviews"} exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} />
+    //               <Route key={"about"} exact={true} path='/about' element={<About />} />
+    //               <Route key={"contact"} exact={true} path='/contact' element={<Contact />} />
+    //               <Route key={"faq"} exact={true} path='/faq' element={<FAQ />} />
+    //               <Route key={"terms"} exact={true} path='/terms' element={<Terms />} />
+    //               <Route key={"policy"} exact={true} path='/policy/:policy_type' element={<Policy />} />
+    //               <Route key={"home"} exact={true} path="" element={<MainContainer />} />
+    //               {/* <Route exact={true} path='/product' element={<ProductDetails />} /> */}
+    //               {/* <Route exact={true} path='/product/:slug/rating-images' element={<AllRatingImages />} /> */}
+    //             </>
+    //           }
+    //           <Route key={"404-page"} exact={true} path='*' element={<NotFound />}></Route>
 
-      <AnimatePresence>
-        <style>{RootCss}</style>
-        <div className="h-auto">
+    //         </Routes>
+    //       </Suspense>
 
-          <Header key={"header"} />
+    //       <ScrollTop></ScrollTop>
+    //     </main>
+    //     <Footer />
 
-          <NewUserModal key={"newUserModal"} />
-          {
-            <>
+    //     <ToastContainer bodyStyle={{ color: "#000" }} className={"toastContainer"} toastClassName='toast-container-class' />
+    //   </div>
+    // </AnimatePresence>
 
-              <main id='main' className="main-app">
-                <Suspense fallback={<Loader screen={"full"} />} key={"reactSuspense"}>
-                  <Routes >
-                    {user.user ?
-                      <>
-                        <Route exact={true} path="/cart" element={<ViewCart />}></Route>
-                        <Route exact={true} path="/checkout" element={<Checkout />}></Route>
-                        <Route exact={true} path='/web-payment-status' element={<PayPalPaymentHandler />}></Route>
-                        <Route exact={true} path='/wishlist' element={<Wishlist />}></Route>
-                        <Route exact={true} path="/profile" element={<ProfileDashboard />}></Route>
-                        <Route exact={true} path="/profile/orders" element={<ProfileDashboard showOrders={true} />}></Route>
-                        <Route exact={true} path="/profile/orders/:id" element={<OrderDetails />}></Route>
-                        <Route exact={true} path="/profile/transactions" element={<ProfileDashboard showTransaction={true} />}></Route>
-                        <Route exact={true} path="/profile/wallet-transaction" element={<ProfileDashboard showWalletTransaction={true} />}></Route>
-                        <Route exact={true} path="/profile/address" element={<ProfileDashboard showAddress={true} />}></Route>
-                        <Route exact={true} path="/notification" element={<Notification />}></Route>
-                        <Route exact={true} path='/categories' element={<ShowAllCategories />}></Route>
-                        <Route exact={true} path='/products' element={<ProductList2 />}></Route>
-                        <Route exact={true} path='/product' element={<ProductDetails />}></Route>
-                        <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
-                        <Route exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} ></Route>
-                        {/* <Route exact={true} path='/product/:slug/rating-images' element={<AllRatingImages />}></Route> */}
-                        <Route exact={true} path='/about' element={<About />}></Route>
-                        <Route exact={true} path='/contact' element={<Contact />}></Route>
-                        <Route exact={true} path='/faq' element={<FAQ />}></Route>
-                        <Route exact={true} path='/terms' element={<Terms />}></Route>
-                        <Route exact={true} path='/policy/:policy_type' element={<Policy />}></Route>
-                        <Route exact={true} path="" element={<MainContainer />}></Route>
-                        <Route exact={true} path='/brands' element={<BrandList />} />
-                        <Route exact={true} path='/countries' element={<ShopByCountriesPage />} />
-                        <Route exact={true} path='/sellers' element={<ShopBySellersPage />} />
-                      </>
-                      :
-                      <>
+    <AnimatePresence>
+      <style key={"override-style"}>{RootCss}</style>
+      <div key={"home-container"} className="h-auto">
+        <Header key="header" />
+        <NewUserModal key="newUserModal" />
 
-                        <Route exact={true} path='/categories' element={<ShowAllCategories />}></Route>
-                        <Route exact={true} path='/brands' element={<BrandList />} />
-                        <Route exact={true} path='/countries' element={<ShopByCountriesPage />} />
-                        <Route exact={true} path='/sellers' element={<ShopBySellersPage />} />
-                        <Route exact={true} path='/products' element={<ProductList2 />}></Route>
-                        <Route exact={true} path='/product' element={<ProductDetails />}></Route>
-                        <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
-                        <Route exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} ></Route>
-                        {/* <Route exact={true} path='/product/:slug/rating-images' element={<AllRatingImages />}></Route> */}
-                        <Route exact={true} path='/about' element={<About />}></Route>
-                        <Route exact={true} path='/contact' element={<Contact />}></Route>
-                        <Route exact={true} path='/faq' element={<FAQ />}></Route>
-                        <Route exact={true} path='/terms' element={<Terms />}></Route>
-                        <Route exact={true} path='/policy/:policy_type' element={<Policy />}></Route>
-                        <Route exact={true} path="" element={<MainContainer />}></Route>
-                      </>
-                    }
+        <main key={"main-app"} id='main' className="main-app">
+          <Suspense key={"suspense"} fallback={<Loader screen={"full"} />}>
+            <Routes key={"routes"}>
+              {user.user ?
+                <>
+                  <Route key="cart" exact path="/cart" element={<ViewCart />} />
+                  <Route key="checkout" exact path="/checkout" element={<Checkout />} />
+                  <Route key="web-payment-status" exact path='/web-payment-status' element={<PayPalPaymentHandler />} />
+                  <Route key="wishlist" exact path='/wishlist' element={<Wishlist />} />
+                  <Route key="profile" exact path="/profile" element={<ProfileDashboard />} />
+                  <Route key="profile-orders" exact path="/profile/orders" element={<ProfileDashboard showOrders={true} />} />
+                  <Route key="order-details" exact path="/profile/orders/:id" element={<OrderDetails />} />
+                  <Route key="profile-transaction" exact path="/profile/transactions" element={<ProfileDashboard showTransaction={true} />} />
+                  <Route key="profile-wallet-transactions" exact path="/profile/wallet-transaction" element={<ProfileDashboard showWalletTransaction={true} />} />
+                  <Route key="address" exact path="/profile/address" element={<ProfileDashboard showAddress={true} />} />
+                  <Route key="notification" exact path="/notification" element={<Notification />} />
+                  <Route key="categories" exact path='/categories' element={<ShowAllCategories />} />
+                  <Route key="products" exact path='/products' element={<ProductList2 />} />
+                  <Route key="product-details" exact path='/product/:slug' element={<ProductDetails />} />
+                  <Route key="rating-and-reviews" exact path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} />
+                  <Route key="about" exact path='/about' element={<About />} />
+                  <Route key="contact" exact path='/contact' element={<Contact />} />
+                  <Route key="faq" exact path='/faq' element={<FAQ />} />
+                  <Route key="terms" exact path='/terms' element={<Terms />} />
+                  <Route key="policy" exact path='/policy/:policy_type' element={<Policy />} />
+                  <Route key="home" exact path="" element={<MainContainer />} />
+                  <Route key="brands" exact path='/brands' element={<BrandList />} />
+                  <Route key="countries" exact path='/countries' element={<ShopByCountriesPage />} />
+                  <Route key="sellers" exact path='/sellers' element={<ShopBySellersPage />} />
+                </>
+                :
+                <>
+                  <Route key="categories" exact path='/categories' element={<ShowAllCategories />} />
+                  <Route key="brands" exact path='/brands' element={<BrandList />} />
+                  <Route key="countries" exact path='/countries' element={<ShopByCountriesPage />} />
+                  <Route key="sellers" exact path='/sellers' element={<ShopBySellersPage />} />
+                  <Route key="products" exact path='/products' element={<ProductList2 />} />
+                  <Route key="product-details" exact path='/product/:slug' element={<ProductDetails />} />
+                  <Route key="rating-and-reviews" exact path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} />
+                  <Route key="about" exact path='/about' element={<About />} />
+                  <Route key="contact" exact path='/contact' element={<Contact />} />
+                  <Route key="faq" exact path='/faq' element={<FAQ />} />
+                  <Route key="terms" exact path='/terms' element={<Terms />} />
+                  <Route key="policy" exact path='/policy/:policy_type' element={<Policy />} />
+                  <Route key="home" exact path="" element={<MainContainer />} />
+                </>
+              }
+              <Route key="404-page" path='*' element={<NotFound />} />
+            </Routes>
+          </Suspense>
+          <ScrollTop key="scrollTop" />
+        </main>
+        <Footer key="footer" />
+        <ToastContainer key="toastContainer" bodyStyle={{ color: "#000" }} className={"toastContainer"} toastClassName='toast-container-class' />
+      </div>
+    </AnimatePresence>
 
-                    <Route exact={true} path='*' element={<NotFound />}></Route>
-
-                  </Routes>
-                </Suspense>
-
-
-                <ScrollTop></ScrollTop>
-              </main>
-            </>
-          }
-          <Footer />
-
-
-          <ToastContainer bodyStyle={{ color: "#000" }} className={"toastContainer"} toastClassName='toast-container-class' />
-        </div>
-      </AnimatePresence>
-    </>
   );
 };
 

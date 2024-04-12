@@ -976,8 +976,8 @@ const Checkout = () => {
 
 
                                                                                     {paymentMethod === "Stripe" && setting
-                                                                                        ? <motion.button whileTap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
-                                                                                        : <motion.button whileTap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
+                                                                                        ? <motion.button whiletap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
+                                                                                        : <motion.button whiletap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
                                                                                     }
                                                                                 </div>
                                                                             ) : null

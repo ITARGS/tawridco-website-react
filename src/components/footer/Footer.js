@@ -143,20 +143,21 @@ export const Footer = () => {
             </div>
             <div className="footer ">
                 <div className="container flex-sm-row flex-column  bottom-section-footer gap-5">
-                    {setting.setting && setting.setting.social_media.length > 0 &&
-                        <div className="social-media-icons order-sm-0" key={"social-media-icons"}>
+                    {setting.setting && setting.setting.social_media.length > 0 ?
+                        <div className="social-media-icons order-sm-0" key={"icons"} >
                             <span>{t('follow_us')}:
 
                                 {setting.setting.social_media.map((icon, index) => {
                                     return (
-                                        <>
-                                            <a key={index} href={icon.link} className='socical-icons'><i className={`${icon.icon} fa-lg`} style={{ color: "#fff" }}></i></a>
-                                        </>
+                                        <a key={index} href={icon.link} className='socical-icons'>
+                                            <i className={`${icon.icon} fa-lg`} style={{ color: "#fff" }}>
+                                            </i>
+                                        </a>
                                     );
                                 })}
                             </span>
                         </div>
-                    }
+                        : null}
                     <div className="copyright order-sm-1 order-2">
                         <div className="col-xs-12 col-sm-12 col-md-12 mt-2 mt-sm-2 text-center text-white">
                             <span className='company_name'>{setting.setting !== null ? setting.setting.web_settings.copyright_details : "App Name"}</span>

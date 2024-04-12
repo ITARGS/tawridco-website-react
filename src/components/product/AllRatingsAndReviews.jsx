@@ -267,7 +267,7 @@ const AllRatingsAndReviews = () => {
                             {(ratingImages?.length !== 0 && !imageLoading) ?
                                 <div className='d-flex flex-row flex-wrap justify-content-start allRatingImagesContainer my-4'>
                                     {ratingImages?.slice(0, 8)?.map((image, index) => (
-                                        <div key={`${image}-${index}`} className={index === 7 ? "overlayParent cursorPointer" : ""}
+                                        <div key={image} className={index === 7 ? "overlayParent cursorPointer" : ""}
                                             onClick={() => {
                                                 if (index < 7) {
                                                     handleImageClick(ratingImages?.slice(0, 8), index);
@@ -291,54 +291,52 @@ const AllRatingsAndReviews = () => {
 
                         <div className='col-md-7 px-4 py-5 '>
                             {productRating?.rating_list?.slice(0, limit)?.map((review) => (
-                                <>
-                                    <div className='reviewList mb-5' key={review.id}>
-                                        <div className='d-flex justify-content-start align-items-center gap-3 review-container-name'>
-                                            <div className='fw-bold'>
-                                                {review?.user?.name}
-                                            </div>
-                                            <div className='reviewRatingButton d-flex flex-row align-items-start gap-2'>
-                                                {Array.from({ length: review?.rate })?.map((_, index) => (
-                                                    <div key={index} className='text-light'>
-                                                        <img src={StarFilledSVG} alt='starFilledLogo' loading='lazy' />
-                                                    </div>
-                                                ))}
-                                                {Array.from({ length: 5 - review?.rate })?.map((_, index) => (
-                                                    <div key={index} className='text-light'>
-                                                        <img src={StarUnfilledSVG} alt='starFilledLogo' loading='lazy' />
-                                                    </div>
-                                                ))}
-                                            </div>
+                                <div className='reviewList mb-5' key={review.id}>
+                                    <div className='d-flex justify-content-start align-items-center gap-3 review-container-name'>
+                                        <div className='fw-bold'>
+                                            {review?.user?.name}
                                         </div>
-                                        <div className='review-container-review'>{review.review}</div>
-                                        <div className='d-flex justify-content-start flex-row gap-3 pe-5 mb-3'>
-                                            {review?.images?.slice(0, imageMappingLength)?.map((image, index) => (
-                                                <div className={index === (imageMappingLength - 1) ? "overlayParent cursorPointer" : "cursorPointer"} key={image?.id}
-                                                    onClick={() => {
-                                                        if (index < imageMappingLength - 1) {
-                                                            handleImageClick(review?.images?.slice(0, imageMappingLength), index);
-                                                        } else {
-                                                            setShow(true);
-                                                            setUserImages(review?.images);
-                                                            setCurrImageIndex(index);
-                                                        }
-                                                    }}>
-                                                    <img src={image?.image_url} alt='userImage' className='userReviewImages' />
-                                                    {(index === (imageMappingLength - 1)) ?
-                                                        <div div className='overlay'>
-                                                            +{(parseInt(review?.images?.length) - imageMappingLength)}
-                                                        </div>
-                                                        :
-                                                        null}
+                                        <div className='reviewRatingButton d-flex flex-row align-items-start gap-2'>
+                                            {Array.from({ length: review?.rate })?.map((_, index) => (
+                                                <div key={index} className='text-light'>
+                                                    <img src={StarFilledSVG} alt='starFilledLogo' loading='lazy' />
                                                 </div>
-
+                                            ))}
+                                            {Array.from({ length: 5 - review?.rate })?.map((_, index) => (
+                                                <div key={index} className='text-light'>
+                                                    <img src={StarUnfilledSVG} alt='starFilledLogo' loading='lazy' />
+                                                </div>
                                             ))}
                                         </div>
-                                        <div className='review-container-date'>
-                                            {formatDate(review?.updated_at)}, {formatTime(review?.updated_at)}
-                                        </div>
                                     </div>
-                                </>
+                                    <div className='review-container-review'>{review.review}</div>
+                                    <div className='d-flex justify-content-start flex-row gap-3 pe-5 mb-3'>
+                                        {review?.images?.slice(0, imageMappingLength)?.map((image, index) => (
+                                            <div className={index === (imageMappingLength - 1) ? "overlayParent cursorPointer" : "cursorPointer"} key={image?.id}
+                                                onClick={() => {
+                                                    if (index < imageMappingLength - 1) {
+                                                        handleImageClick(review?.images?.slice(0, imageMappingLength), index);
+                                                    } else {
+                                                        setShow(true);
+                                                        setUserImages(review?.images);
+                                                        setCurrImageIndex(index);
+                                                    }
+                                                }}>
+                                                <img src={image?.image_url} alt='userImage' className='userReviewImages' />
+                                                {(index === (imageMappingLength - 1)) ?
+                                                    <div div className='overlay'>
+                                                        +{(parseInt(review?.images?.length) - imageMappingLength)}
+                                                    </div>
+                                                    :
+                                                    null}
+                                            </div>
+
+                                        ))}
+                                    </div>
+                                    <div className='review-container-date'>
+                                        {formatDate(review?.updated_at)}, {formatTime(review?.updated_at)}
+                                    </div>
+                                </div>
                             ))}
                             <Pagination
                                 activePage={currPage}

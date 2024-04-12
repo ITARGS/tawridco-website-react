@@ -14,12 +14,11 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
     const dispatch = useDispatch();
     const navigate = useNavigate();
     return (
-
         // elementor-section-height-min-height elementor-section-items-stretch elementor-section-boxed elementor-section-height-default
         <section id="home" className='home-section container home-element section'>
             {/* Slider & Category */}
             {OfferImagesArray?.map((offer) => (
-                <div className='col-md-12 p-0 col-12 my-5' onClick={() => {
+                <div className='col-md-12 p-0 col-12 my-5' key={offer?.id} onClick={() => {
                     if (offer?.category) {
                         dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
                         navigate("/products");
@@ -40,7 +39,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
             </div>
 
             {BelowSliderOfferArray?.map((offer) => (
-                <div className='col-md-12 p-0 col-12 my-5' onClick={() => {
+                <div className='col-md-12 p-0 col-12 my-5' key={offer?.id} onClick={() => {
                     if (offer?.category) {
                         dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
                         navigate("/products");
@@ -66,7 +65,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
 
 
             {BelowCategoryOfferArray?.map((offer) => (
-                <div className='col-md-12 p-0 col-12 my-5' onClick={() => {
+                <div className='col-md-12 p-0 col-12 my-5' key={offer?.id} onClick={() => {
                     if (offer?.category) {
                         dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
                         navigate("/products");

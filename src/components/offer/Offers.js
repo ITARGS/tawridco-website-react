@@ -17,6 +17,16 @@ const Offers = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
 
+    const CustomPrevButton = ({ currentSlide, slideCount, ...props }) => (
+        <button {...props} type="button" className="slick-prev">
+            <FaChevronLeft size={30} className="prev-arrow" />
+        </button>
+    );
+    const CustomNextButton = ({ currentSlide, slideCount, ...props }) => (
+        <button {...props} type="button" className="slick-next" >
+            <FaChevronRight color='#f7f7f7' size={30} className='next-arrow' />
+        </button>
+    );
     const settings = {
         infinite: false,
         autoplay: true,
@@ -28,16 +38,21 @@ const Offers = () => {
         slidesToShow: 2,
         slidesPerRow: 1,
         initialSlide: 0,
-        prevArrow: (
-            <button type="button" className="slick-prev">
-                <FaChevronLeft size={30} className="prev-arrow" />
-            </button>
-        ),
-        nextArrow: (
-            <button type="button" className="slick-next">
-                <FaChevronRight color='#f7f7f7' size={30} className='next-arrow' />
-            </button>
-        ),
+        prevArrow:
+            // (
+            //     <button type="button" className="slick-prev">
+            //         <FaChevronLeft size={30} className="prev-arrow" />
+            //     </button>
+            // )
+            <CustomPrevButton />
+        ,
+        nextArrow:
+            // (
+            //     <button type="button" className="slick-next" >
+            //         <FaChevronRight color='#f7f7f7' size={30} className='next-arrow' />
+            //     </button>
+            // )
+            <CustomNextButton />,
         // Add custom navigation buttons using Font Awesome icons
         responsive: [
             {

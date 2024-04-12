@@ -687,7 +687,7 @@ const Header = () => {
                                                 <button type='button' className={isDesktopView ? "d-none" : "d-block"} onClick={openCanvasModal}>
                                                     <GoLocation size={25} style={{ backgroundColor: `var(--second-cards-color)` }} />
                                                 </button>
-                                                <button type='button' whileTap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
+                                                <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
                                                     onClick={() => {
                                                         if (cookies.get('jwt_token') === undefined) {
                                                             toast.error(t("required_login_message_for_cartRedirect"));

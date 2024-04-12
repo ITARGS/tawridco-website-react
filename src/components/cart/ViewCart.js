@@ -264,7 +264,7 @@ const ViewCart = () => {
                                                         </th>
 
                                                         <th className='remove last-column'>
-                                                            <button whileTap={{ scale: 0.8 }} type='button' onClick={() => removefromCart(product.product_id, product.product_variant_id)}>
+                                                            <button whiletap={{ scale: 0.8 }} type='button' onClick={() => removefromCart(product.product_id, product.product_variant_id)}>
                                                                 <RiDeleteBinLine fill='red' fontSize={'2.985rem'} />
                                                             </button>
                                                         </th>

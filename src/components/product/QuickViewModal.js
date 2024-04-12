@@ -352,15 +352,13 @@ const QuickViewModal = (props) => {
                                                     {product.images.length >= 1 ?
                                                         <Slider  {...settings_subImage}>
                                                             {product.images.map((image, index) => (
-                                                                <div className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
+                                                                <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
                                                                     <img onError={placeHolderImage} src={image} className='col-12 w-100' alt="product" onClick={() => {
                                                                         setmainimage(image);
                                                                     }}></img>
                                                                 </div>
                                                             ))}
                                                         </Slider>
-
-
                                                         :
                                                         <>
                                                             {product.images.map((image, index) => (
@@ -387,7 +385,6 @@ const QuickViewModal = (props) => {
                                                             <p id='priceContainer' className='m-0'>
                                                                 {selectedVariant ? (selectedVariant.discounted_price === 0 ? selectedVariant.price?.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price?.toFixed(setting.setting && setting.setting.decimal_point)) : (product.variants[0].discounted_price === 0 ? product.variants[0].price?.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price?.toFixed(setting.setting && setting.setting.decimal_point))}
                                                             </p>
-                                                            {console.log(selectedVariant?.price)}
                                                             {(selectedVariant?.price && (selectedVariant?.discounted_price !== 0)) && (selectedVariant?.price !== selectedVariant?.discounted_price) ?
                                                                 <p className='fw-normal text-decoration-line-through' style={{ color: "var(--sub-text-color)", fontSize: "16px", marginTop: "5px" }}>
                                                                     {setting.setting && setting.setting.currency}
@@ -412,25 +409,21 @@ const QuickViewModal = (props) => {
                                                                 {/* <input type="hidden" name="" value={product.variants[0].id} id='quickview-selected-variant-id' /> */}
                                                                 {product.variants.map((variant, index) => {
                                                                     return (
-                                                                        <>
-                                                                            <div className="variant-section col-2">
-                                                                                <div className={`variant-element ${variant_index === variant.id ? 'active' : ''} ${Number(product.is_unlimited_stock) ? "" : (!variant.status ? "out_of_stock" : "")}`} key={index}>
-                                                                                    <label className="element_container " htmlFor={`variants${index}`}>
-                                                                                        <div className="top-section">
+                                                                        <div className="variant-section col-2" key={variant?.id}>
+                                                                            <div className={`variant-element ${variant_index === variant.id ? 'active' : ''} ${Number(product.is_unlimited_stock) ? "" : (!variant.status ? "out_of_stock" : "")}`} key={index}>
+                                                                                <label className="element_container " htmlFor={`variants${index}`}>
+                                                                                    <div className="top-section">
 
-                                                                                            <input type="radio" name={`variants${index}`} id={`variants${index}`} checked={variant_index === variant.id} disabled={Number(product.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)
-                                                                                            }
-                                                                                            />
-                                                                                        </div>
-                                                                                        <div className="bottom-section">
-                                                                                            <span className="d-flex align-items-center flex-column">{variant.measurement} {variant.stock_unit_name} </span>
-                                                                                        </div>
-                                                                                    </label>
-                                                                                </div>
-
+                                                                                        <input type="radio" name={`variants${index}`} id={`variants${index}`} checked={variant_index === variant.id} disabled={Number(product.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)
+                                                                                        }
+                                                                                        />
+                                                                                    </div>
+                                                                                    <div className="bottom-section">
+                                                                                        <span className="d-flex align-items-center flex-column">{variant.measurement} {variant.stock_unit_name} </span>
+                                                                                    </div>
+                                                                                </label>
                                                                             </div>
-                                                                        </>
-
+                                                                        </div>
                                                                     );
                                                                 })}
                                                             </div>

@@ -172,20 +172,34 @@ const ProductDetails = () => {
 
 
 
+    const CustomPrevButton = ({ currentSlide, slideCount, ...props }) => (
+        <button {...props} type="button" className="slick-prev">
+            <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+        </button>
+    );
+    const CustomNextButton = ({ currentSlide, slideCount, ...props }) => (
+        <button {...props} type="button" className="slick-next">
+            <FaChevronRight fill='black' size={30} className='next-arrow' />
+        </button>
+    );
     const settings = {
         infinite: false,
         slidesToShow: 5,
         initialSlide: 0,
-        prevArrow: (
-            <button type="button" className="slick-prev">
-                <FaChevronLeft fill='black' size={30} className="prev-arrow" />
-            </button>
-        ),
-        nextArrow: (
-            <button type="button" className="slick-next">
-                <FaChevronRight fill='black' size={30} className='next-arrow' />
-            </button>
-        ),
+        prevArrow:
+            // (
+            //     <button type="button" className="slick-prev">
+            //         <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+            //     </button>
+            // ),
+            <CustomPrevButton />,
+        nextArrow:
+            // (
+            //     <button type="button" className="slick-next">
+            //         <FaChevronRight fill='black' size={30} className='next-arrow' />
+            //     </button>
+            // )
+            <CustomNextButton />,
         responsive: [
             {
                 breakpoint: 1199,
@@ -215,9 +229,7 @@ const ProductDetails = () => {
         ]
     };
 
-
     const settings_subImage = {
-
         infinite: false,
         slidesToShow: 3,
         initialSlide: 0,
@@ -225,31 +237,28 @@ const ProductDetails = () => {
         horizontal: true,
         margin: "20px",
         prevArrow: (
-            <button
-                type="button"
+            <button type="button"
                 className="slick-prev"
-                onClick={(e) => {
-                    setmainimage(e.target.value);
-                }}
+            // onClick={(e) => {
+            //     setmainimage(e.target.value);
+            // }}
             >
                 <FaChevronLeft fill='black' size={30} className="prev-arrow" />
-            </button>
-        ),
+            </button>),
         nextArrow: (
             <button
                 type="button"
                 className="slick-next"
-                onClick={(e) => {
-                    setmainimage(e.target.value);
-                }}
+            // onClick={(e) => {
+            //     setmainimage(e.target.value);
+            // }}
             >
                 <FaChevronRight
                     fill='black'
                     size={30}
                     className="next-arrow"
                 />
-            </button>
-        ),
+            </button>),
         responsive: [
             {
                 breakpoint: 1024,
@@ -517,20 +526,17 @@ const ProductDetails = () => {
 
                                             <div className='sub-images-container'>
                                                 {images.length >= 1 ?
-                                                    <>
-                                                        <Slider {...settings_subImage} className='imageListSlider'>
-                                                            {images.map((image, index) => (
-                                                                <div className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
-                                                                    <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
-                                                                        setmainimage(image);
-                                                                    }} />
-                                                                </div>
+                                                    <Slider {...settings_subImage} className='imageListSlider'>
+                                                        {images.map((image, index) => (
+                                                            <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
+                                                                <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
+                                                                    setmainimage(image);
+                                                                }} />
+                                                            </div>
 
-                                                            ))}
-                                                        </Slider>
-
-
-                                                    </> :
+                                                        ))}
+                                                    </Slider>
+                                                    :
                                                     <>
                                                         {images.map((image, index) => (
                                                             <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
@@ -584,22 +590,19 @@ const ProductDetails = () => {
                                                         <div className="row" key={"variants"}>
                                                             {productdata.variants.map((variant, index) => {
                                                                 return (
-                                                                    <>
-                                                                        <div className="variant-section" key={variant?.id}>
-                                                                            <div className={`variant-element ${variant_index === variant.id ? 'active' : ''}  ${Number(productdata.is_unlimited_stock) ? "" : (variant.cart_count >= variant.stock ? "out_of_stock" : "")} `} key={index}>
-                                                                                <label className="element_container " htmlFor={`variant${index}`}>
-                                                                                    <div className="top-section">
-                                                                                        <input type="radio" name="variant" id={`variant${index}`} checked={variant_index == variant.id} disabled={Number(productdata.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)} />
-                                                                                    </div>
-                                                                                    <div className="h-100">
-                                                                                        <span className="d-flex align-items-center flex-column">{variant.measurement} {variant.stock_unit_name} </span>
-                                                                                    </div>
-                                                                                </label>
+                                                                    <div className="variant-section" key={variant?.id}>
+                                                                        <div className={`variant-element ${variant_index === variant.id ? 'active' : ''}  ${Number(productdata.is_unlimited_stock) ? "" : (variant.cart_count >= variant.stock ? "out_of_stock" : "")} `} key={index}>
+                                                                            <label className="element_container " htmlFor={`variant${index}`}>
+                                                                                <div className="top-section">
+                                                                                    <input type="radio" name="variant" id={`variant${index}`} checked={variant_index == variant.id} disabled={Number(productdata.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)} />
+                                                                                </div>
+                                                                                <div className="h-100">
+                                                                                    <span className="d-flex align-items-center flex-column">{variant.measurement} {variant.stock_unit_name} </span>
+                                                                                </div>
+                                                                            </label>
 
-                                                                            </div>
                                                                         </div>
-                                                                    </>
-
+                                                                    </div>
                                                                 );
                                                             })}
                                                         </div>
@@ -863,11 +866,9 @@ const ProductDetails = () => {
                                 </div>
                                 :
                                 <div className="row">
-
                                     <Slider {...settings}>
                                         {relatedProducts.map((related_product, index) => (
-                                            <div className="col-md-3 col-lg-4">
-
+                                            <div className="col-md-3 col-lg-4" key={related_product?.id}>
                                                 <div className='product-card'>
                                                     <span className='border border-light rounded-circle p-2 px-3' id='aiEye' onClick={() => {
                                                         setShowModal(true);

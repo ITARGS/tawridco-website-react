@@ -189,7 +189,16 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
             });
     };
 
-
+    const CustomPrevButton = ({ currentSlide, slideCount, ...props }) => (
+        <button {...props} type="button" className="slick-prev">
+            <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+        </button>
+    );
+    const CustomNextButton = ({ currentSlide, slideCount, ...props }) => (
+        <button {...props} type="button" className="slick-next">
+            <FaChevronRight fill='black' size={30} className='next-arrow' />
+        </button>
+    );
     const settings = {
         infinite: false,
         slidesToShow: 5.5,
@@ -199,16 +208,21 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
         centerMargin: "10px",
         margin: "20px", // set the time interval between slides
         // Add custom navigation buttons using Font Awesome icons
-        prevArrow: (
-            <button type="button" className="slick-prev">
-                <FaChevronLeft fill='black' size={30} className="prev-arrow" />
-            </button>
-        ),
-        nextArrow: (
-            <button type="button" className="slick-next">
-                <FaChevronRight fill='black' size={30} className='next-arrow' />
-            </button>
-        ),
+        prevArrow:
+            // (
+            //     <button type="button" className="slick-prev">
+            //         <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+            //     </button>
+            // )
+            <CustomPrevButton />,
+        nextArrow:
+            // (
+            //     <button type="button" className="slick-next">
+            //         <FaChevronRight fill='black' size={30} className='next-arrow' />
+            //     </button>
+            // )
+            <CustomNextButton />
+        ,
         responsive: [
             {
                 breakpoint: 1024,
@@ -490,7 +504,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
 
                                             </div>
                                             {BelowSectionOfferArray?.filter((offer) => offer?.section?.title == section?.title)?.map((offer) => (
-                                                <div className='col-md-12 p-0 col-12 my-5' onClick={() => {
+                                                <div className='col-md-12 p-0 col-12 my-5' key={offer?.id} onClick={() => {
                                                     if (offer?.category) {
                                                         dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
                                                         navigate("/products");

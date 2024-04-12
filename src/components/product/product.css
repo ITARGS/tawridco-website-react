@@ -18,7 +18,7 @@
 }
 
 .slick-prev {
-  left: -36px !important;
+  /* left: -36px !important; */
   z-index: 10 !important;
 }
 
