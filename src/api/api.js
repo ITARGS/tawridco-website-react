@@ -34,10 +34,8 @@ const api = {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
-        // myHeaders.append("Cookie", "egrocer_session=OqYqjWnvp7vS6R80R2Kv9UdF2uG8kB6wii1myWmu");
 
         var formdata = new FormData();
-        formdata.append("fcm_token", "murarisingh");
 
         var requestOptions = {
             method: 'POST',
@@ -109,7 +107,6 @@ const api = {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
-        // myHeaders.append("Cookie", "egrocer_session=BTDzyPAhuCjTcpOo4I7qTgW9ZM5PzUtUey4rnmlC");
 
         var requestOptions = {
             method: 'GET',
@@ -126,7 +123,6 @@ const api = {
     getBrands() {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
-        // myHeaders.append("Cookie", "egrocer_session=e0DnVi9p5AhGSWDtiOqPIGqIX85hg2BhsnTK7ICf");
 
         // var formdata = new FormData();
 
@@ -143,7 +139,6 @@ const api = {
     getCategory(id = 0) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
-        // myHeaders.append("Cookie", "egrocer_session=t6OYQynGEbA5Yq8lDU3QJdkcoOFLTKaX1UcPTRCN");
 
         var formdata = new FormData();
         formdata.append('category_id', id);
@@ -164,7 +159,6 @@ const api = {
     getSlider() {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
-        // myHeaders.append("Cookie", "egrocer_session=GvRG0oXt9MI5fZds6A8PqCjO4ki9YK1Y7HhsNYpZ");
 
         //var formdata = new FormData();
 
@@ -180,7 +174,6 @@ const api = {
     getOffer() {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
-        // myHeaders.append("Cookie", "egrocer_session=VWx2trOpEJrXgOcGu1TF0SyN4lfQVRdieHDj5HND");
 
         var requestOptions = {
             method: 'GET',
@@ -212,7 +205,6 @@ const api = {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
-        // myHeaders.append("Cookie", "egrocer_session=ZGyZlEheLKDTFHnAsVnSpethgG5vROAwF2PeSUBz");
 
         //var formdata = new FormData();
 
@@ -229,7 +221,6 @@ const api = {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
-        // myHeaders.append("Cookie", "egrocer_session=ZGyZlEheLKDTFHnAsVnSpethgG5vROAwF2PeSUBz");
 
         var formdata = new FormData();
         formdata.append("name", uname);

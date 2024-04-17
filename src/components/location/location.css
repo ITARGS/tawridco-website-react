@@ -200,3 +200,8 @@
     right: 10px;
   }
 }
+@media screen and (max-width: 450px) {
+  .location .body .location-logo {
+    width: 100%;
+  }
+}

@@ -35,32 +35,6 @@ const ViewCart = () => {
     const [isLoader, setisLoader] = useState(false);
     const [showPromoOffcanvas, setShowPromoOffcanvas] = useState(false);
 
-    // useEffect(() => {
-    //     console.log("viewcart useEffect called");
-    //     if (sizes.sizes === null || sizes.status === 'loading') {
-    //         if (city.city !== null && cart.cart !== null) {
-    //             api.getProductbyFilter(city.city.id, city.city.latitude, city.city.longitude)
-    //                 .then(response => response.json())
-    //                 .then(result => {
-    //                     if (result.status === 1) {
-    //                         setproductSizes(result.sizes);
-    //                         dispatch(setProductSizes({ data: result.sizes }));
-    //                     }
-    //                 });
-    //         }
-    //     }
-    //     else {
-    //         setproductSizes(sizes.sizes);
-    //     }
-
-    //     if (cart.cart === null && cart.status === 'fulfill') {
-    //         setiscartEmpty(true);
-    //     }
-    //     else {
-    //         setiscartEmpty(false);
-    //     }
-
-    // }, [cart]);
 
     useEffect(() => {
         api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude, 1)
@@ -364,23 +338,12 @@ const ViewCart = () => {
                                                         </div>
 
                                                     </div>)}
-
-
-
                                         </div>
                                     </div>
                                 </div>
                             </>
                         </>
                     )}
-                    {/* {cart.cart === null || productSizes === null
-                                ? (
-                                     <Loader screen='full' /> 
-
-                                )
-                                : (
-                                   
-                                )} */}
                 </div>
             </div>
             <Promo show={showPromoOffcanvas} setShow={setShowPromoOffcanvas} />

@@ -90,7 +90,7 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
             {((productRating?.rating_list?.length !== 0) && !loading) &&
                 <>
 
-                    <div className='col-md-5 mb-5 pe-4'>
+                    <div className='col-md-4 mb-5 pe-4'>
 
                         <h5 className='title'>{t("rating_and_reviews")}</h5>
 
@@ -111,16 +111,16 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
                             {/* <div className='col-md-4 col-5 border-end'>
                             </div> */}
 
-                            <div className='col-md-8 col-6 starRatingContainer w-100'>
+                            <div className='col-md-4 col-6 starRatingContainer w-100'>
 
                                 <div className='d-flex justify-content-start align-items-center gap-4'>
                                     {t("5")}
                                     <div className='d-flex gap-1'>
                                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                                        {/* <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' /> */}
                                     </div>
                                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.five_star_rating))} className='ratingBar' />
                                     <div>
@@ -131,10 +131,10 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
                                     {t("4")}
                                     <div className='d-flex gap-1'>
                                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                                        {/* <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' /> */}
                                     </div>
                                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.four_star_rating))} className='ratingBar' />
                                     <div>
@@ -145,10 +145,10 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
                                     {t("3")}
                                     <div className='d-flex gap-1'>
                                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                                        {/* <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
-                                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' /> */}
                                     </div>
                                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.three_star_rating))} className='ratingBar' />
                                     <div>{productRating?.three_star_rating}</div>
@@ -157,10 +157,10 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
                                     {t("2")}
                                     <div className='d-flex gap-1'>
                                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                                        {/* <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
                                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
-                                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' /> */}
                                     </div>
                                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.two_star_rating))} className='ratingBar' />
                                     <div>{productRating?.two_star_rating}</div>
@@ -169,10 +169,10 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
                                     {t("1")}
                                     <div className='d-flex gap-1'>
                                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                                        {/* <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
                                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
                                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
-                                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
-                                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' /> */}
                                     </div>
                                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.one_star_rating))} className='ratingBar' />
                                     <div>{productRating?.one_star_rating}</div>

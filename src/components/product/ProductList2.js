@@ -787,13 +787,14 @@ const ProductList2 = React.memo(() => {
 
 
                                                                         <div className="h-0 card-body product-card-body p-3 ">
-                                                                            {product?.rating_count ? <div>
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-3' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                ({product?.rating_count})
+                                                                            {product?.rating_count ? <div className='ratings d-flex align-items-center'>
+                                                                                <LuStar className='me-2' style={{ fill: "#fead0e", stroke: "#fead0e" }} />
+                                                                                <div className='border-end border-2 pe-2 me-2 avgRating'>
+                                                                                    {product?.average_rating?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                </div>
+                                                                                <div>
+                                                                                    {product?.rating_count}
+                                                                                </div>
                                                                             </div> : null}
                                                                             <h3 onClick={(e) => {
                                                                                 e.preventDefault();

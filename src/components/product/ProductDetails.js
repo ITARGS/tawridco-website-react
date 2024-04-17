@@ -26,8 +26,12 @@ import StarFilledSVG from "../../utils/StarFilled.svg";
 import StarUnfilledSVG from "../../utils/StarUnfilled.svg";
 import useGetProductRatingImages from '../../hooks/useGetProductRatingImages';
 import { LuStar } from 'react-icons/lu';
-// import ratingSVG from "../../utils/rating.svg";
-
+import VegIcon from "../../utils/Icons/VegIcon.svg";
+import NonVegIcon from "../../utils/Icons/NonVegIcon.svg";
+import NonCancelable from "../../utils/Icons/NotCancelable.svg";
+import Cancelable from "../../utils/Icons/Cancelable.svg";
+import Returnable from "../../utils/Icons/Returnable.svg";
+import NotReturnable from "../../utils/Icons/NotReturnable.svg";
 
 const ProductDetails = () => {
 
@@ -433,10 +437,10 @@ const ProductDetails = () => {
                     {t("5")}
                     <div className='d-flex gap-1'>
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        {/* <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' /> */}
                     </div>
                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.five_star_rating))} className='ratingBar' />
                     <div>
@@ -447,10 +451,10 @@ const ProductDetails = () => {
                     {t("4")}
                     <div className='d-flex gap-1'>
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        {/* <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' /> */}
                     </div>
                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.four_star_rating))} className='ratingBar' />
                     <div>
@@ -461,10 +465,10 @@ const ProductDetails = () => {
                     {t("3")}
                     <div className='d-flex gap-1'>
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        {/* <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' /> */}
                     </div>
                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.three_star_rating))} className='ratingBar' />
                     <div>{productRating?.three_star_rating}</div>
@@ -473,10 +477,10 @@ const ProductDetails = () => {
                     {t("2")}
                     <div className='d-flex gap-1'>
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        {/* <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' /> */}
                     </div>
                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.two_star_rating))} className='ratingBar' />
                     <div>{productRating?.two_star_rating}</div>
@@ -485,10 +489,10 @@ const ProductDetails = () => {
                     {t("1")}
                     <div className='d-flex gap-1'>
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        {/* <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' /> */}
                     </div>
                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.one_star_rating))} className='ratingBar' />
                     <div>{productRating?.one_star_rating}</div>
@@ -781,7 +785,7 @@ const ProductDetails = () => {
                                                 {productdata?.fssai_lic_no &&
                                                     <div className='fssai-details'>
                                                         <div className='image-container'>
-                                                            <img src={productdata?.fssai_lic_img} />
+                                                            <img src={productdata?.fssai_lic_img} alt='fssai' />
                                                         </div>
                                                         <div className='fssai-license-no'>
                                                             <span>
@@ -813,16 +817,74 @@ const ProductDetails = () => {
                                                             rootClose={true}
                                                         >
                                                             {/* {console.log(productRating)} */}
-                                                            <span>
+                                                            <div className='d-flex justify-content-start align-items-center overlay-content'>
                                                                 <LuStar className='me-1' style={productRating?.average_rating >= 1 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
-                                                                <LuStar className='me-1' style={productRating?.average_rating >= 2 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
-                                                                <LuStar className='me-1' style={productRating?.average_rating >= 3 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
-                                                                <LuStar className='me-1' style={productRating?.average_rating >= 4 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
-                                                                <LuStar className='me-3' style={productRating?.average_rating >= 5 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
-                                                                ({totalData})
-                                                            </span>
+                                                                <span className='pe-2 me-2 border-end border-2'>
+                                                                    {productRating?.average_rating?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                </span>
+                                                                {totalData}
+                                                            </div>
                                                         </OverlayTrigger>
                                                     </div> : null}
+                                                {productdata?.indicator ?
+                                                    productdata?.indicator == 1 ?
+                                                        <div className='d-flex align-items-center mt-3'>
+                                                            <img src={VegIcon} alt='vegIcon' className='me-3' />
+                                                            {t("vegetarian")}
+                                                        </div>
+                                                        :
+                                                        <div className='d-flex align-items-center mt-3'>
+                                                            <img src={NonVegIcon} alt='nonVegIcon' className='me-3' />
+                                                            {t("non-vegetarian")}
+                                                        </div>
+                                                    : null}
+                                                {productdata?.cancelable_status == 1 ?
+                                                    <div className='d-flex align-items-center mt-3'>
+                                                        <img src={Cancelable} alt='cancelableIcon' className='me-3' />
+                                                        {t("cancelable")}
+                                                        {productdata?.till_status == 1 ?
+                                                            t("payment_pending")
+                                                            :
+                                                            null
+                                                        }
+                                                        {productdata?.till_status == 2 ?
+                                                            t("received")
+                                                            :
+                                                            null
+                                                        }
+                                                        {productdata?.till_status == 3 ?
+                                                            t("processed")
+                                                            :
+                                                            null
+                                                        }
+                                                        {productdata?.till_status == 4 ?
+                                                            t("shipped")
+                                                            :
+                                                            null
+                                                        }
+                                                        {productdata?.till_status == 5 ?
+                                                            t("out_for_delivery")
+                                                            :
+                                                            null
+                                                        }
+                                                    </div>
+                                                    :
+                                                    <div className='d-flex align-items-center mt-3'>
+                                                        <img src={NonCancelable} alt='nonCancelableIcon' className='me-3' />
+                                                        {t("non-cancelable")}
+                                                    </div>
+                                                }
+                                                {productdata?.return_status == 1 ?
+                                                    <div className='d-flex align-items-center mt-3'>
+                                                        <img src={Returnable} alt='returnableIcon' className='me-3' />
+                                                        {t("returnable")} {productdata?.return_days} {t("days")}
+                                                    </div>
+                                                    :
+                                                    <div className='d-flex align-items-center mt-3'>
+                                                        <img src={NotReturnable} alt='nonReturnableIcon' className='me-3' />
+                                                        {t("non-returnable")}
+                                                    </div>
+                                                }
                                                 <div className="share-product-container">
                                                     <span>{t("share_product")}:</span>
 
@@ -906,14 +968,13 @@ const ProductDetails = () => {
                                                         navigate(`/product/${related_product.slug}`);
                                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                                     }} >
-                                                        {related_product?.rating_count > 0 ? <div className='ratings d-flex align-items-center' style={{ fontSize: "14px" }}>
-                                                            <LuStar className='me-1' style={related_product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                            <LuStar className='me-1' style={related_product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                            <LuStar className='me-1' style={related_product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                            <LuStar className='me-1' style={related_product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                            <LuStar className='me-4' style={related_product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
+                                                        {related_product?.rating_count > 0 ? <div className='ratings d-flex align-items-center product-card-rating-content' style={{ fontSize: "14px" }}>
+                                                            <LuStar className='me-2' style={{ fill: "#fead0e", stroke: "#fead0e" }} />
+                                                            <div className='border-end border-2 pe-2 me-2 avgRating'>
+                                                                {related_product?.average_rating?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                            </div>
                                                             <div>
-                                                                ({related_product?.rating_count})
+                                                                {related_product?.rating_count}
                                                             </div>
                                                         </div> : null}
                                                         <h3>{related_product.name}</h3>

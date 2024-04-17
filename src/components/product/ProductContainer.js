@@ -325,16 +325,16 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                             </div>
                                                                             {/* {console.log(product)} */}
                                                                             <div className="card-body product-card-body p-3" >
-                                                                                {product?.rating_count > 0 ? <div className='ratings d-flex align-items-center'>
-                                                                                    <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                    <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                    <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                    <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                    <LuStar className='me-4' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                    <div>
-                                                                                        ({product?.rating_count})
-                                                                                    </div>
-                                                                                </div> : null}
+                                                                                {product?.rating_count > 0 ?
+                                                                                    <div className='ratings d-flex align-items-center'>
+                                                                                        <LuStar className='me-2' style={{ fill: "#fead0e", stroke: "#fead0e" }} />
+                                                                                        <div className='border-end border-2 pe-2 me-2 avgRating'>
+                                                                                            {product?.average_rating?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            {product?.rating_count}
+                                                                                        </div>
+                                                                                    </div> : null}
                                                                                 <h3>{product.name}</h3>
                                                                                 <div className='price'>
                                                                                     <span id={`price${index}${index0}-section`} className="d-flex align-items-center">

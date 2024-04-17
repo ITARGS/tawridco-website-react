@@ -21,6 +21,7 @@
   "Paytm": "Paytm",
   "apply": "Apply",
   "brands": "Brands",
+  "brand": "Brand",
   "countries": "Countries",
   "email": "Email",
   "login": "Login",
@@ -293,5 +294,12 @@
   "write_return_reason": "Write return reason...",
   "request_a_return": "Request a return",
   "please_type_return_reason": "Please type a return reason.",
-  "product_rating_is_required": "Product Rating is Required."
+  "product_rating_is_required": "Product Rating is Required.",
+  "vegetarian": "Vegetarian",
+  "non-vegetarian": "Non-Vegetarian",
+  "non-cancelable": "Non-Cancelable",
+  "cancelable": "Product is cancellable till ",
+  "non-returnable": "Non-Returnable",
+  "returnable": "Product is returnable in ",
+  "days": "days"
 }
