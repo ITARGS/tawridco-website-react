@@ -11,6 +11,7 @@ import Stripe from '../../utils/ic_stripe.svg';
 import cod from '../../utils/ic_cod.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import paypal from "../../utils/ic_paypal.svg";
+import Midtrans from "../../utils/Icons/Midtrans.svg";
 import Cookies from 'universal-cookie';
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
@@ -559,7 +560,39 @@ const Checkout = () => {
                 //         .catch(error => console.error(error))
                 // }
 
-            };
+            } else if (paymentMethod == "Midtrans") {
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                    .then(response => response.json())
+                    .then(async result => {
+                        // fetchOrders();
+                        if (result.status === 1) {
+                            setOrderID(result.data.order_id);
+                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Midtrans", "order")
+                                .then(resp => resp.json())
+                                .then(res => {
+                                    console.log(res.data);
+                                    setisLoader(false);
+                                    if (res.status === 1) {
+                                        setloadingPlaceOrder(false);
+                                        setpaymentUrl(res.data.midtrans_redirect_url?.snapUrl);
+                                        dispatch(deductUserBalance({ data: walletDeductionAmt }));
+                                        dispatch(setCartPromo({ data: null }));
+                                        let subWindow = window.open(res.data.midtrans_redirect_url?.snapUrl, '_blank');
+                                    } else {
+                                        toast.error(res.message);
+                                        setloadingPlaceOrder(false);
+                                    }
+                                })
+                                .catch(error => console.error(error));
+                        }
+                        else {
+                            toast.error(result.message);
+                            setloadingPlaceOrder(false);
+                            setisLoader(false);
+                        }
+                    })
+                    .catch(error => console.log(error));
+            }
         }
     };
 
@@ -830,9 +863,18 @@ const Checkout = () => {
 
                                                         </>
                                                     ) : null}
-
-
-                                                {/* {console.log(cart)} */}
+                                                <label className="form-check-label cursorPointer" htmlFor='midtrans'>
+                                                    <div className='payment-selector'>
+                                                        <img src={Midtrans} alt='midtrans' />
+                                                        <div className="">
+                                                            <span>{t("midtrans")}</span>
+                                                        </div>
+                                                        <input type="radio" name="payment-method" id='midtrans' onChange={() => {
+                                                            setpaymentMethod("Midtrans");
+                                                        }} />
+                                                    </div>
+                                                </label>
+                                                {/* {setting?.payment_setting?.} */}
                                             </div>}
 
 

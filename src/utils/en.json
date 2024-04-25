@@ -301,5 +301,6 @@
   "cancelable": "Product is cancellable till ",
   "non-returnable": "Non-Returnable",
   "returnable": "Product is returnable in ",
-  "days": "days"
+  "days": "days",
+  "midtrans": "Midtrans"
 }

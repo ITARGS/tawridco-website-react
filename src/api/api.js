@@ -706,6 +706,9 @@ const api = {
         else if (payment_method.toLocaleLowerCase() === 'paypal') {
             formData.append("payment_method", "Paypal");
             formData.append("request_from", "website");
+        } else if (payment_method.toLocaleLowerCase() === "midtrans") {
+            formData.append("payment_method", "Midtrans");
+            formData.append("request_from", "website");
         }
 
         var requestOptions = {

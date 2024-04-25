@@ -7,6 +7,7 @@ import PaypalSVG from "../../utils/Paypal.svg";
 import PayStackSVG from "../../utils/Paystack.svg";
 import RazorPaySVG from "../../utils/Razorpay.svg";
 import StripeSVG from "../../utils/Stripe.svg";
+import MidtransSVG from "../../utils/Icons/Midtrans.svg";
 import PaytmSVG from "../../utils/Paytm.svg";
 import api from '../../api/api';
 import Cookies from 'universal-cookie';
@@ -169,7 +170,7 @@ const AddWalletModal = (props) => {
         e.preventDefault();
         try {
             let response, result;
-            if (paymentMethod === "paypal" || paymentMethod === "stripe" || paymentMethod === "razorpay") {
+            if (paymentMethod === "paypal" || paymentMethod === "stripe" || paymentMethod === "razorpay" || paymentMethod === "midtrans") {
                 response = await api.initiate_transaction(cookies.get("jwt_token"), null, paymentMethod, "wallet", walletAmount);
                 result = await response.json();
             }
@@ -183,6 +184,8 @@ const AddWalletModal = (props) => {
                 setStripeModalShow(true);
             } else if (paymentMethod === "paypal") {
                 handlePaypalPayment(result?.data?.paypal_redirect_url);
+            } else if (paymentMethod === "midtrans") {
+                window.open(result?.data?.midtrans_redirect_url?.snapUrl, "_blank");
             }
         } catch (err) {
             console.log(err.message);
@@ -224,7 +227,7 @@ const AddWalletModal = (props) => {
                                     <div className='d-flex flex-column gap-4'>
                                         <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
-                                                <img className='me-2' src={PaypalSVG} alt='paypalSVG' />
+                                                <img className='me-3' src={PaypalSVG} alt='paypalSVG' />
                                                 {t("paypal")}
                                             </div>
                                             <div>
@@ -234,7 +237,7 @@ const AddWalletModal = (props) => {
                                         <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
 
-                                                <img className='me-2' src={RazorPaySVG} alt='razorPaySVG' />
+                                                <img className='me-3' src={RazorPaySVG} alt='razorPaySVG' />
                                                 {t("razorpay")}
                                             </div>
                                             <div>
@@ -244,7 +247,7 @@ const AddWalletModal = (props) => {
                                         <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
 
-                                                <img className='me-2' src={PayStackSVG} alt='paystackSVG' />
+                                                <img className='me-3' src={PayStackSVG} alt='paystackSVG' />
                                                 {t("paystack")}
                                             </div>
                                             <div>
@@ -253,11 +256,20 @@ const AddWalletModal = (props) => {
                                         </div>
                                         <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
-                                                <img className='me-2' src={StripeSVG} alt='stripeSVG' />
+                                                <img className='me-3' src={StripeSVG} alt='stripeSVG' />
                                                 {t("stripe")}
                                             </div>
                                             <div>
                                                 <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("stripe")} />
+                                            </div>
+                                        </div>
+                                        <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                            <div>
+                                                <img className='MidtransSVG me-3' src={MidtransSVG} alt='MidtransSVG' />
+                                                {t("midtrans")}
+                                            </div>
+                                            <div>
+                                                <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("midtrans")} />
                                             </div>
                                         </div>
                                         {/* <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>

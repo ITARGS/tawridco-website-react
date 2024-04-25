@@ -100,7 +100,7 @@ const Header = () => {
                 });
             setisLocationPresent(true);
         }
-        else if (setting?.setting && setting.setting?.default_city === undefined && !city?.city) {
+        else if (setting?.setting && setting.setting?.default_city == null && city?.city == null) {
             setLocModal(true);
         }
     }, [setting]);
