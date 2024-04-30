@@ -62,7 +62,7 @@ const App = () => {
   const shop = useSelector((state) => (state.shop));
 
   useEffect(() => {
-    if (cookies.get('jwt_token') !== undefined && user.user === null) {
+    if (cookies.get('jwt_token') !== undefined) {
       getCurrentUser(cookies.get('jwt_token'));
     }
     //  else {
