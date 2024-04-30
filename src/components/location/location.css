@@ -36,7 +36,7 @@
 
 .location .body button:hover {
   background: var(--secondary-color);
-  color: var(--text-field-color);
+  /* color: var(--text-field-color); */
 }
 
 .location .body .oval-continer {
@@ -198,5 +198,10 @@
   .current-location-click {
     top: 55px;
     right: 10px;
+  }
+}
+@media screen and (max-width: 450px) {
+  .location .body .location-logo {
+    width: 100%;
   }
 }

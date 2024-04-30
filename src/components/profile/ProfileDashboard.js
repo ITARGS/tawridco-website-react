@@ -254,13 +254,15 @@ const ProfileDashboard = (props) => {
                             <img onError={placeHolderImage} src={user.user && user.user.profile} alt='logo'></img>
                             <div className="button-container-badge">
                                 <label htmlFor="file">
-                                    <span className="badge-img"><FaEdit size={25} fill='var(--secondary-color)' /></span>
+                                    <input type='file' onChange={(e) => [
+                                        setselectedFile(e.target.files[0])
+                                    ]} className="badge-img" /><FaEdit size={25} fill='var(--secondary-color)' />
                                 </label>
                             </div>
                         </div>
-                        <p>{user.user.name.split(' ')[0]}</p>
-                        <span>{user.user.email}</span>
-                        <div className='image-container d-flex align-items-center mt-4' style={{ gap: "15px" }}>
+                        <p className='userName'>{user.user.name.split(' ')[0]}</p>
+                        <span className='userEmail'>{user.user.email}</span>
+                        <div className='image-container d-flex align-items-center mt-4 walletContainer' >
                             <PiWallet size={35} fill={'var(--secondary-color)'} />
                             {t("Wallet Balance")}
                             <p style={{ color: 'var(--secondary-color' }} className='mb-0'>
@@ -418,7 +420,7 @@ const ProfileDashboard = (props) => {
                                 <button type="button" ref={closeCanvas} className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" onClick={() => {
                                     document.getElementsByClassName('profile-account')[0]?.classList.remove('active');
 
-                                }}><AiOutlineCloseCircle /></button>
+                                }}><AiOutlineCloseCircle fill='black' /></button>
                             </div>
                             <div className='sidebar'>
                                 {profileNav()}

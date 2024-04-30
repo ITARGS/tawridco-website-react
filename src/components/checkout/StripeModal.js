@@ -27,7 +27,7 @@ const CARD_OPTIONS = {
             fontSmoothing: "antialiased",
             ":-webkit-autofill": { color: "#fce883" },
             "::placeholder": { color: "#87bbfd" },
-            border: "2px solid black"
+            // border: "2px solid black"
         },
         invalid: {
             // iconColor: "#ffc7ee",
@@ -103,7 +103,7 @@ const StripeModal = (props) => {
             // Redirect the customer to a success page
             // window.location.href = '/success';
             // props.setShow(false)
-            await api.addTransaction(cookies.get('jwt_token'), orderID, props.transaction_id, "Stripe")
+            await api.addTransaction(cookies.get('jwt_token'), orderID, props.transaction_id, "Stripe", "order")
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
@@ -119,9 +119,7 @@ const StripeModal = (props) => {
                 .catch(error => console.log(error));
             dispatch(deductUserBalance({ data: props.walletDeductionAmt }));
             props.setShow(false);
-            setTimeout(() => {
-                navigate("/");
-            }, 4000);
+            props.setIsOrderPlaced(true);
         } else {
             // Handle other payment status scenarios
             api.deleteOrder(cookies.get('jwt_token'), orderID);
@@ -211,6 +209,7 @@ export default function InjectCheckout(props) {
                 <>
                     <StripeModal stripe={stripe}
                         setShow={props.setShow}
+                        setIsOrderPlaced={props.setIsOrderPlaced}
                         elements={elements}
                         orderID={props.orderID}
                         client_secret={props.client_secret}

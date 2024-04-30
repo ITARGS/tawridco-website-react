@@ -37,16 +37,7 @@ const NewAddress = (props) => {
         address_type: 'Home',
         is_default: false,
     });
-
-    const [isLoaded, setIsLoaded] = useState(false);
-
-
-
-    // useEffect(() => {
-    //     handleCurrentLocationClick();
-    // }, [props.show]);
-
-
+    
     const handleAddnewAddress = (e) => {
         e.preventDefault();
 
@@ -160,7 +151,6 @@ const NewAddress = (props) => {
     };
 
     useEffect(() => {
-        // console.log("In UseEffect Of NewAddress");
         if (props.isAddressSelected && address.selected_address) {
             setaddressDetails({
                 name: address.selected_address.name,
@@ -178,6 +168,12 @@ const NewAddress = (props) => {
 
             });
         }
+        if (!props.isAddressSelected) {
+            setlocalLocation({
+                lat: parseFloat(city.city ? city.city.latitude : 0),
+                lng: parseFloat(city.city ? city.city.longitude : 0),
+            });
+        }
     }, [props.isAddressSelected, address?.selected_address]);
 
     const [isconfirmAddress, setisconfirmAddress] = useState(false);
@@ -191,44 +187,22 @@ const NewAddress = (props) => {
         lng: localLocation.lng,
     }), [localLocation.lat, localLocation.lng]);
 
-    //get available delivery location city
-    const getAvailableCity = async (response) => {
-        var results = response.results;
-        var c, lc, component;
-        var found = false, message = "";
-        for (var r = 0, rl = results.length; r < rl; r += 1) {
-            var flag = false;
-            var result = results[r];
-            for (c = 0, lc = result.address_components.length; c < lc; c += 1) {
-                component = result.address_components[c];
+    useEffect(() => {
+        if (addressDetails.address !== '') {
+            const geocoder = new window.google.maps.Geocoder();
+            const fullAddress = `${addressDetails.address}, ${addressDetails.city}, ${addressDetails.state}, ${addressDetails.country}`;
+            geocoder.geocode({ address: fullAddress }, (results, status) => {
+                if (status === 'OK') {
+                    const location = results[0].geometry.location;
+                    setlocalLocation({ lat: location.lat(), lng: location.lng() });
+                } else {
+                    console.error('Geocode was not successful for the following reason:', status);
+                }
+            });
+        }
+    }, [addressDetails]);
 
-                //confirm city from server
-                const response = await api.getCity(result.geometry.location.lat(), result.geometry.location.lng()).catch(error => console.log("error: ", error));
-                const res = await response.json();
-                if (res.status === 1) {
-                    flag = true;
-                    found = true;
-                    return res;
-                }
-                else {
-                    found = false;
-                    message = res.message;
-                }
-                if (flag === true) {
-                    break;
-                }
-            }
-            if (flag === true) {
-                break;
-            }
-        }
-        if (found === false) {
-            return {
-                status: 0,
-                message: message
-            };
-        }
-    };
+
 
     const onMarkerDragStart = () => {
         setaddressLoading(true);
@@ -410,6 +384,7 @@ const NewAddress = (props) => {
                             });
                             props.setshow(false);
                             setisconfirmAddress(false);
+                            props.setIsAddressSelected(false);
                         }} style={{ width: "30px" }}><AiOutlineCloseCircle /></button>
                     </div>
                 </Modal.Header>

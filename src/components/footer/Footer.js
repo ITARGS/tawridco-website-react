@@ -3,7 +3,6 @@ import './footer.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../../api/api';
-import { ActionTypes } from '../../model/action-type';
 import Loader from '../loader/Loader';
 import paystack_svg from '../../utils/ic_paystack.svg';
 import paypal_svg from '../../utils/ic_paypal.svg';
@@ -20,39 +19,38 @@ export const Footer = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const setting = useSelector(state => (state.setting));
-
+    const shop = useSelector(state => state.shop);
     const { t } = useTranslation();
 
-    const fetchCategory = (id = 0) => {
-        api.getCategory(id)
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    dispatch(setCategory({ data: result.data }));
-                    // dispatch({ type: ActionTypes.SET_CATEGORY, payload: result.data });
-                }
-            })
-            .catch(error => console.log("error ", error));
-    };
+    // const fetchCategory = (id = 0) => {
+    //     api.getCategory(id)
+    //         .then(response => response.json())
+    //         .then(result => {
+    //             if (result.status === 1) {
+    //                 dispatch(setCategory({ data: result.data }));
+    //                 // dispatch({ type: ActionTypes.SET_CATEGORY, payload: result.data });
+    //             }
+    //         })
+    //         .catch(error => console.log("error ", error));
+    // };
 
 
-    useEffect(() => {
-        fetchCategory();
-    }, []);
+    // useEffect(() => {
+    //     fetchCategory();
+    // }, []);
 
-    const category = useSelector((state) => (state.category));
+    // const category = useSelector((state) => (state.category));
 
     const selectCategory = (ctg) => {
-        if (ctg.has_child) {
+        // if (ctg.has_child) {
+        //     // fetchCategory(ctg.id);
+        //     navigate('/products');
+        // } else {
+        dispatch(setFilterCategory({ data: ctg.id }));
+        // dispatch({ type: ActionTypes.SET_FILTER_CATEGORY, payload: ctg.id });
+        navigate('/products');
 
-            fetchCategory(ctg.id);
-            navigate('/products');
-        } else {
-            dispatch(setFilterCategory({ data: ctg.id }));
-            // dispatch({ type: ActionTypes.SET_FILTER_CATEGORY, payload: ctg.id });
-            navigate('/products');
-
-        }
+        // }
     };
 
     return (
@@ -62,14 +60,14 @@ export const Footer = () => {
                     <div className="col-xs-3 col-sm-3 col-md-3 col-12" >
                         <h5>{t('category_footer')}</h5>
 
-                        {category.category === null
+                        {shop?.shop?.categories === null
                             ? (
 
                                 <Loader background='none' width='fit-content' height='fit-content' />
                             )
                             : (
                                 <ul className='category-list'>
-                                    {category.category.map((ctg, index) => (
+                                    {shop?.shop?.categories.map((ctg, index) => (
                                         <li key={index}>
                                             <button className='link' onClick={() => {
                                                 selectCategory(ctg);
@@ -143,20 +141,21 @@ export const Footer = () => {
             </div>
             <div className="footer ">
                 <div className="container flex-sm-row flex-column  bottom-section-footer gap-5">
-                    {setting.setting && setting.setting.social_media.length > 0 &&
-                        <div className="social-media-icons order-sm-0" key={"social-media-icons"}>
+                    {setting.setting && setting.setting.social_media.length > 0 ?
+                        <div className="social-media-icons order-sm-0" key={"icons"} >
                             <span>{t('follow_us')}:
 
                                 {setting.setting.social_media.map((icon, index) => {
                                     return (
-                                        <>
-                                            <a key={index} href={icon.link} className='socical-icons'><i className={`${icon.icon} fa-lg`} style={{ color: "#fff" }}></i></a>
-                                        </>
+                                        <a key={index} href={icon.link} className='socical-icons'>
+                                            <i className={`${icon.icon} fa-lg`} style={{ color: "#fff" }}>
+                                            </i>
+                                        </a>
                                     );
                                 })}
                             </span>
                         </div>
-                    }
+                        : null}
                     <div className="copyright order-sm-1 order-2">
                         <div className="col-xs-12 col-sm-12 col-md-12 mt-2 mt-sm-2 text-center text-white">
                             <span className='company_name'>{setting.setting !== null ? setting.setting.web_settings.copyright_details : "App Name"}</span>

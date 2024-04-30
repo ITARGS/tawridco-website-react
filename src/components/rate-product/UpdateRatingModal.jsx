@@ -41,7 +41,8 @@ const UpdateRatingModal = (props) => {
       setLoading(false);
 
     };
-    fetchRating();
+    if (props.showModal == true)
+      fetchRating();
   }, [props.showModal]);
 
   const handleActive = (index) => {
@@ -69,6 +70,10 @@ const UpdateRatingModal = (props) => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (activeIndex === null) {
+      toast.error(t("product_rating_is_required"));
+      return;
+    }
     try {
       const response = await api.updateProductRating(cookies.get("jwt_token"), props?.ratingId, activeIndex, review, newFiles, deletedImageIds?.join(","));
       const result = await response.json();
@@ -91,8 +96,6 @@ const UpdateRatingModal = (props) => {
   };
   return (
     <>
-
-
       <Modal
         size="md"
         centered
@@ -148,6 +151,7 @@ const UpdateRatingModal = (props) => {
                   <p className="modalSubHeading">{t("product_review")} :</p>
                   <div className="">
                     <textarea
+                      required
                       name="productReview"
                       className="reviewTextArea"
                       value={review}

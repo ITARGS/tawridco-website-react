@@ -9,13 +9,15 @@ import { toast } from 'react-toastify';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setCity } from '../../model/reducer/locationReducer';
-// const libraries = ["places"];
+import { setSetting } from '../../model/reducer/settingReducer';
+import Cookies from 'universal-cookie';
+import { setShop } from '../../model/reducer/shopReducer';
 
 const Location = (props) => {
   const dispatch = useDispatch();
 
   const setting = useSelector(state => (state.setting));
-
+  const cookies = new Cookies();
   const [isloading, setisloading] = useState(false);
   const [currLocationClick, setcurrLocationClick] = useState(false);
   const [isInputFields, setisInputFields] = useState(false);
@@ -37,11 +39,6 @@ const Location = (props) => {
 
   const inputRef = useRef();
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     props.openModal()
-  //   }, 1000);
-  // }, []);
 
   // By Selecting place from input field
 
@@ -77,6 +74,18 @@ const Location = (props) => {
                     distance: res.data.distance
                   }
                 }));
+                const updatedSetting = {
+                  ...setting?.setting,
+                  default_city: {
+                    id: res?.data?.id,
+                    name: city_name,
+                    state: res?.data?.name,
+                    formatted_address: formatted_address,
+                    latitude: res?.data?.latitude,
+                    longitude: res?.data?.longitude
+                  }
+                };
+                dispatch(setSetting({ data: updatedSetting }));
                 setisloading(false);
                 props.setLocModal(false);
                 props.bodyScroll(false);
@@ -283,11 +292,11 @@ const Location = (props) => {
   };
 
   //handle Confirm current location
-  const confirmCurrentLocation = () => {
+  const confirmCurrentLocation = async () => {
     setisloading(true);
 
     fetchCity(localLocation.city, localLocation.lat, localLocation.lng)
-      .then(result => {
+      .then(async (result) => {
         if (result.status === 1) {
           // dispatch({
           //   type: ActionTypes.SET_CITY, payload: {
@@ -323,6 +332,7 @@ const Location = (props) => {
               distance: result.data.distance
             }
           }));
+          fetchShop(result?.data?.latitude, result?.data?.longitude);
           setisloading(false);
           setcurrLocationClick(false);
           props.setisLocationPresent(true);
@@ -334,54 +344,19 @@ const Location = (props) => {
           seterrorMsg(result.message);
         }
       }).catch(error => console.log("error ", error));
+
   };
   const { t } = useTranslation();
 
-  // useEffect(() => {
-  //   console.log("Location useEffect Runned");
-  //   import('./location.css');
-  //   if (setting.setting?.default_city) {
-  //     // closeModalRef.current?.click()
-  //     props.setLocModal(false);
-  //   }
-  // }, [setting]);
-
-
-  // console.log(isloading);
-  const defaultLocationSet = (e) => {
-    e.preventDefault();
-    if (!props.isLocationPresent) {
-
-      const name = setting.setting.default_city.name;
-      const lat = setting.setting.default_city.latitude;
-      const lng = setting.setting.default_city.longitude;
-
-
-      fetchCity(name, lat, lng)
-        .then(result => {
-          if (result.status === 1) {
-            dispatch(setCity({ data: result.data }));
-            // dispatch({ type: ActionTypes.SET_CITY, payload: result.data });
-            props.setisLocationPresent(true);
-            props.setLocModal(false);
-            props.bodyScroll(false);
-
-          }
-          else {
-            console.log(result.message);
-          }
-        }).catch(error => console.log("error ", error));
-      toast.info('Default Delivery Location is Selected!!');
-
-    }
-    else {
-      seterrorMsg("");
-      setisloading(false);
-      setcurrLocationClick(false);
-      setisInputFields(false);
-      setisAddressLoading(false);
-      props.setLocModal(false);
-      props.bodyScroll(false);
+  const fetchShop = async (latitude, longitude) => {
+    try {
+      const response = await api.getShop(latitude, longitude, cookies.get("jwt_token"));
+      const result = await response.json();
+      if (result?.status == 1) {
+        dispatch(setShop({ data: result?.data }));
+      }
+    } catch (error) {
+      console.log(error?.message);
     }
   };
 
@@ -392,9 +367,18 @@ const Location = (props) => {
         <>
           <div className="d-flex flex-row justify-content-between align-items-center header">
             <h5>{t("select_location")}</h5>
-            {setting.setting && setting.setting.default_city || props.isLocationPresent ?
-              <button type="button" className="" onClick={(e) => { defaultLocationSet(e); props.setLocModal(false); }
-              }><AiOutlineCloseCircle /></button>
+            {(setting?.setting && setting?.setting?.default_city) || props.isLocationPresent ?
+              <button type="button" className="" onClick={(e) => {
+                // defaultLocationSet(e);
+                props.setLocModal(false);
+                seterrorMsg("");
+                setisloading(false);
+                setcurrLocationClick(false);
+                setisInputFields(false);
+                setisAddressLoading(false);
+                props.bodyScroll(false);
+              }
+              }><AiOutlineCloseCircle fill='black' /></button>
               : <></>}
           </div>
 

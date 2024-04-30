@@ -25,23 +25,41 @@ import { useTranslation } from 'react-i18next';
 import FirebaseData from '../../utils/firebase/FirebaseData';
 import PhoneInput from 'react-phone-input-2';
 import { setCurrentUser } from '../../model/reducer/authReducer';
+import { Modal } from 'react-bootstrap';
 
-const Login = (props) => {
+const Login = React.memo((props) => {
+
     const { auth, firebase, messaging } = FirebaseData();
     const setting = useSelector(state => (state.setting));
-
     const [fcm, setFcm] = useState('');
 
-    // useEffect(() => {
-    //     try {
-    //         setting.setting?.firebase && messaging && messaging?.getToken().then((res) => {
-    //             setFcm(res);
-    //         });
+    useEffect(() => {
+        const initializeFirebaseMessaging = async () => {
+            if (setting?.setting && messaging) {
+                try {
+                    const permission = await Notification.requestPermission();
+                    if (permission === "granted") {
+                        const currentToken = await messaging.getToken();
+                        if (currentToken) {
+                            setFcm(currentToken);
+                        } else {
+                            // console.log("No registration token available");
+                        }
+                    } else {
+                        setFcm("");
+                        // console.log("Notification permission denied");
+                    }
+                } catch (error) {
+                    console.log("An error occurred:", error);
+                }
+            }
+        };
 
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }, [messaging, setting]);
+        if (setting.setting?.firebase) {
+            initializeFirebaseMessaging();
+        }
+    }, [setting]);
+    // console.log(fcm);
 
     //initialize Cookies
     const cookies = new Cookies();
@@ -90,17 +108,22 @@ const Login = (props) => {
     useEffect(() => {
         if (firebase && auth && window.recaptchaVerifier && setting.setting.firebase) {
             if (window.recaptchaVerifier) {
-                window.recaptchaVerifier.clear();
+                try {
+                    window.recaptchaVerifier?.clear();
+                } catch (err) {
+                    console.log(err?.message);
+                }
             }
 
         }
-        firebase && auth && (window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier("recaptcha-container", {
+        const recaptchaContainer = document.getElementById('recaptcha-container');
+        firebase && auth && !(window.recaptchaVerifier) && (window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(recaptchaContainer, {
             size: "invisible",
             // other options
         }));
         return () => {
             if (window.recaptchaVerifier && setting.setting.firebase) {
-                window.recaptchaVerifier.clear();
+                window.recaptchaVerifier?.clear();
             }
         };
     }, [firebase, auth]);
@@ -189,15 +212,8 @@ const Login = (props) => {
             setError("Invalid Code");
 
         });
-
-
-        // const countrycode = parsePhoneNumber(phonenum).countryCallingCode;
-        // const num = parsePhoneNumber(phonenum).nationalNumber;
-
-
-        // //login call
-        // loginApiCall(phonenum, OTP, countryCode)
     };
+
     const loginApiCall = async (num, Uid, countrycode) => {
         await api.login(num, Uid, countrycode, fcm)
             .then(response => response.json())
@@ -213,7 +229,14 @@ const Login = (props) => {
 
                     getCurrentUser(result.data.access_token);
                     setlocalstorageOTP(Uid);
-                    closeModalRef.current.click();
+                    setError("");
+                    setOTP("");
+                    setPhonenum("");
+                    setcheckboxSelected(false);
+                    setisLoading(false);
+                    setIsOTP(false);
+                    props.setShow(false);
+                    // closeModalRef.current.click();
                 }
                 else {
                     setError(result.message);
@@ -228,16 +251,18 @@ const Login = (props) => {
     };
 
     const handleTerms = () => {
-        if (closeModalRef.current) {
-            Navigate('/terms');
-            closeModalRef.current.click();
-        }
+        props.setShow(false);
+        Navigate('/terms');
+        // if (closeModalRef.current) {
+        //     closeModalRef.current.click();
+        // }
     };
     const handlePolicy = () => {
-        if (closeModalRef.current) {
-            Navigate('/policy/Privacy_Policy');
-            closeModalRef.current.click();
-        }
+        props.setShow(false);
+        Navigate('/policy/Privacy_Policy');
+        // if (closeModalRef.current) {
+        //     closeModalRef.current.click();
+        // }
     };
 
     const handleOnChange = (value, data, event, formattedValue) => {
@@ -251,108 +276,210 @@ const Login = (props) => {
         setOTP("");
     };
     const { t } = useTranslation();
-
-    return (
+    const newReturn = (
         <>
-            <div className="modal fade login" id={props.modal_id} data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="loginLabel" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content" style={{ borderRadius: "10px" }}>
-                        <div className="d-flex flex-row justify-content-between align-items-center header">
-                            <h5>{t("Login")}</h5>
-                            <button type="button" className="" data-bs-dismiss="modal" aria-label="Close" ref={closeModalRef} onClick={() => {
-                                setError("");
-                                setOTP("");
-                                setPhonenum("");
-                                setcheckboxSelected(false);
-                                setisLoading(false);
-                                setIsOTP(false);
-
-                            }}><AiOutlineCloseCircle /></button>
-                        </div>
-                        <div className="modal-body d-flex flex-column gap-3 align-items-center body">
-                            <img src={setting.setting && setting.setting.web_settings.web_logo} alt='logo'></img>
-
-                            {isOTP
-                                ? (
-                                    <>
-                                        <h5>{t("enter_verification_code")}</h5>
-                                        <span>{t("otp_send_message")} <p>{phonenum}</p></span>
-                                    </>
-                                )
-                                : (
-                                    <>
-                                        <h5>{t("Welcome")}</h5>
-                                        <span>{t("login_enter_number")}</span>
-                                    </>
-                                )}
-
-                            {error === ''
-                                ? ""
-                                : <span className='error-msg'>{error}</span>}
-
-                            {isOTP
-                                ? (
-                                    <form className='d-flex flex-column gap-3 form w-100' onSubmit={verifyOTP}>
-                                        {isLoading
-                                            ? (
-                                                <Loader width='100%' height='auto' />
-                                            )
-                                            : null}
-                                        <OTPInput className='otp-container' value={OTP} onChange={setOTP} autoFocus OTPLength={6} otpType="number" disabled={false} />
-                                        <span className='timer'>
-                                            <button onClick={handleLogin} disabled={disabled}>
-                                                {timer === 0 ?
-                                                    `Resend OTP` : <>Resend OTP in : <strong> {formatTime(timer)} </strong> </>}
-                                            </button> </span>
-                                        <span className='button-container d-flex gap-5'>
-
-                                            <button type="submit" className='login-btn' >{t("verify_and_proceed")}</button>
-
-
-                                        </span>
-                                    </form>
-                                )
-                                : (
-                                    <form className='d-flex flex-column gap-3 form' onSubmit={handleLogin}>
-                                        {isLoading
-                                            ? (
-                                                <Loader width='100%' height='auto' />
-                                            )
-                                            : null}
-
-
-                                        <div>
-                                            <PhoneInput
-                                                country={"in"}
-                                                value={phonenum}
-                                                onChange={handleOnChange}
-                                                enableSearch
-                                                disableSearchIcon
-                                                placeholder={t('please_enter_valid_phone_number')}
-                                                disableDropdown={false}
-                                            />
-                                        </div>
-
-
-                                        <span style={{ alignSelf: "baseline" }}>
-                                            <input type="checkbox" className='mx-2' required checked={checkboxSelected} onChange={() => {
-                                                setcheckboxSelected(!checkboxSelected);
-                                            }} />
-                                            {t("agreement_message")} &nbsp;<a onClick={handleTerms}>{t("terms_of_service")}</a> &nbsp;{t("and")}<a onClick={handlePolicy}>&nbsp; {t("privacy_policy")} &nbsp;</a>
-                                        </span>
-                                        <button type='submit'> {t("login_continue")}</button>
-                                    </form>
-                                )}
-
-
-                        </div>
+            <Modal
+                size='md'
+                className='login'
+                show={props.show}
+                centered
+                backdrop="static"
+            >
+                <Modal.Header className='d-flex flex-row justify-content-between align-items-center header'>
+                    <div>
+                        <h5>{t("Login")}</h5>
                     </div>
-                    <div id="recaptcha-container" style={{ display: "none" }}></div>
-                </div>
-            </div>
+                    <AiOutlineCloseCircle type='button' fill='black' size={30} onClick={() => {
+                        setError("");
+                        setOTP("");
+                        setPhonenum("");
+                        setcheckboxSelected(false);
+                        setisLoading(false);
+                        setIsOTP(false);
+                        props.setShow(false);
+                    }} />
+                </Modal.Header>
+                <Modal.Body className='d-flex flex-column gap-3 align-items-center body'>
+                    <img src={setting.setting && setting.setting.web_settings.web_logo} alt='logo'></img>
 
+                    {isOTP
+                        ? (
+                            <>
+                                <h5>{t("enter_verification_code")}</h5>
+                                <span>{t("otp_send_message")} <p>{phonenum}</p></span>
+                            </>
+                        )
+                        : (
+                            <>
+                                <h5>{t("Welcome")}</h5>
+                                <span>{t("login_enter_number")}</span>
+                            </>
+                        )}
+
+                    {error === ''
+                        ? ""
+                        : <span className='error-msg'>{error}</span>}
+
+                    {isOTP
+                        ? (
+                            <form className='d-flex flex-column gap-3 form w-100' onSubmit={verifyOTP}>
+                                {isLoading
+                                    ? (
+                                        <Loader width='100%' height='auto' />
+                                    )
+                                    : null}
+                                <OTPInput className='otp-container' value={OTP} onChange={setOTP} autoFocus OTPLength={6} otpType="number" disabled={false} />
+                                <span className='timer' >
+                                    <button onClick={handleLogin} disabled={disabled}>
+                                        {timer === 0 ?
+                                            `Resend OTP` : <>Resend OTP in : <strong> {formatTime(timer)} </strong> </>}
+                                    </button> </span>
+                                <span className='button-container d-flex gap-5'>
+
+                                    <button type="submit" className='login-btn' >{t("verify_and_proceed")}</button>
+
+
+                                </span>
+                            </form>
+                        )
+                        : (
+                            <form className='d-flex flex-column gap-3 form' onSubmit={handleLogin}>
+                                {isLoading
+                                    ? (
+                                        <Loader width='100%' height='auto' />
+                                    )
+                                    : null}
+
+
+                                <div>
+                                    <PhoneInput
+                                        country={"in"}
+                                        value={phonenum}
+                                        onChange={handleOnChange}
+                                        enableSearch
+                                        disableSearchIcon
+                                        placeholder={t('please_enter_valid_phone_number')}
+                                        disableDropdown={false}
+                                    />
+                                </div>
+
+
+                                <span style={{ alignSelf: "baseline" }}>
+                                    <input type="checkbox" className='mx-2' required checked={checkboxSelected} onChange={() => {
+                                        setcheckboxSelected(!checkboxSelected);
+                                    }} />
+                                    {t("agreement_message")} &nbsp;<a onClick={handleTerms}>{t("terms_of_service")}</a> &nbsp;{t("and")}<a onClick={handlePolicy}>&nbsp; {t("privacy_policy")} &nbsp;</a>
+                                </span>
+                                <button type='submit'> {t("login_continue")}</button>
+                            </form>
+                        )}
+                </Modal.Body>
+            </Modal>
+            <div id="recaptcha-container" style={{ display: "none" }}></div>
         </>
     );
-};
+    return newReturn;
+    // return (
+    //     <>
+    //         <div className="modal fade login" id={props.modal_id} data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="loginLabel" aria-hidden="true">
+    //             <div className="modal-dialog modal-dialog-centered">
+    //                 <div className="modal-content" style={{ borderRadius: "10px" }}>
+    //                     <div className="d-flex flex-row justify-content-between align-items-center header">
+    //                         <h5>{t("Login")}</h5>
+    //                         <button type="button" className="" data-bs-dismiss="modal" aria-label="Close" ref={closeModalRef} onClick={() => {
+    //                             setError("");
+    //                             setOTP("");
+    //                             setPhonenum("");
+    //                             setcheckboxSelected(false);
+    //                             setisLoading(false);
+    //                             setIsOTP(false);
+
+    //                         }}><AiOutlineCloseCircle /></button>
+    //                     </div>
+    //                     <div className="modal-body d-flex flex-column gap-3 align-items-center body">
+    //                         <img src={setting.setting && setting.setting.web_settings.web_logo} alt='logo'></img>
+
+    //                         {isOTP
+    //                             ? (
+    //                                 <>
+    //                                     <h5>{t("enter_verification_code")}</h5>
+    //                                     <span>{t("otp_send_message")} <p>{phonenum}</p></span>
+    //                                 </>
+    //                             )
+    //                             : (
+    //                                 <>
+    //                                     <h5>{t("Welcome")}</h5>
+    //                                     <span>{t("login_enter_number")}</span>
+    //                                 </>
+    //                             )}
+
+    //                         {error === ''
+    //                             ? ""
+    //                             : <span className='error-msg'>{error}</span>}
+
+    //                         {isOTP
+    //                             ? (
+    //                                 <form className='d-flex flex-column gap-3 form w-100' onSubmit={verifyOTP}>
+    //                                     {isLoading
+    //                                         ? (
+    //                                             <Loader width='100%' height='auto' />
+    //                                         )
+    //                                         : null}
+    //                                     <OTPInput className='otp-container' value={OTP} onChange={setOTP} autoFocus OTPLength={6} otpType="number" disabled={false} />
+    //                                     <span className='timer'>
+    //                                         <button onClick={handleLogin} disabled={disabled}>
+    //                                             {timer === 0 ?
+    //                                                 `Resend OTP` : <>Resend OTP in : <strong> {formatTime(timer)} </strong> </>}
+    //                                         </button> </span>
+    //                                     <span className='button-container d-flex gap-5'>
+
+    //                                         <button type="submit" className='login-btn' >{t("verify_and_proceed")}</button>
+
+
+    //                                     </span>
+    //                                 </form>
+    //                             )
+    //                             : (
+    //                                 <form className='d-flex flex-column gap-3 form' onSubmit={handleLogin}>
+    //                                     {isLoading
+    //                                         ? (
+    //                                             <Loader width='100%' height='auto' />
+    //                                         )
+    //                                         : null}
+
+
+    //                                     <div>
+    //                                         <PhoneInput
+    //                                             country={"in"}
+    //                                             value={phonenum}
+    //                                             onChange={handleOnChange}
+    //                                             enableSearch
+    //                                             disableSearchIcon
+    //                                             placeholder={t('please_enter_valid_phone_number')}
+    //                                             disableDropdown={false}
+    //                                         />
+    //                                     </div>
+
+
+    //                                     <span style={{ alignSelf: "baseline" }}>
+    //                                         <input type="checkbox" className='mx-2' required checked={checkboxSelected} onChange={() => {
+    //                                             setcheckboxSelected(!checkboxSelected);
+    //                                         }} />
+    //                                         {t("agreement_message")} &nbsp;<a onClick={handleTerms}>{t("terms_of_service")}</a> &nbsp;{t("and")}<a onClick={handlePolicy}>&nbsp; {t("privacy_policy")} &nbsp;</a>
+    //                                     </span>
+    //                                     <button type='submit'> {t("login_continue")}</button>
+    //                                 </form>
+    //                             )}
+
+
+    //                     </div>
+    //                 </div>
+    //                 <div id="recaptcha-container" style={{ display: "none" }}></div>
+    //             </div>
+    //         </div>
+
+    //     </>
+    // );
+});
 
 export default Login;

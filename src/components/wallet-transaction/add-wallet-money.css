@@ -19,6 +19,10 @@
   gap: 16px;
   border-radius: 4px;
 }
+.addMoneyToWalletModal .paymentContainer .MidtransSVG {
+  width: 20px;
+  height: 20px;
+}
 .addMoneyToWalletModal .payButton {
   margin-top: 10px;
   border-radius: 4px;

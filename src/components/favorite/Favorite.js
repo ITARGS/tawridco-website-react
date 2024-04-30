@@ -149,7 +149,7 @@ const Favorite = React.memo(() => {
         <div tabIndex="-1" className={`cart-sidebar-container offcanvas offcanvas-end`} id="favoriteoffcanvasExample" aria-labelledby="favoriteoffcanvasExampleLabel">
             <div className='cart-sidebar-header'>
                 <h5>{t("saved")}</h5>
-                <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeCanvas}><AiOutlineCloseCircle /></button>
+                <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeCanvas}><AiOutlineCloseCircle fill='black' /></button>
             </div>
 
             {!favorite.favorite

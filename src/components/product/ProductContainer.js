@@ -100,11 +100,8 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                 setP_id(0);
                                 setP_V_id(0);
                                 setQnty(0);
-                                // dispatch({ type: ActionTypes.SET_CART, payloTad: res });
                             }
-
                         });
-
                 }
                 else if (result?.data?.one_seller_error_code == 1) {
                     dispatch(setSellerFlag({ data: 1 }));
@@ -125,14 +122,11 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                         .then(res => {
                             if (res.status === 1) {
                                 dispatch(setCart({ data: res }));
-                                // dispatch({ type: ActionTypes.SET_CART, payload: res });
                             }
                             else {
                                 dispatch(setCart({ data: null }));
-                                // dispatch({ type: ActionTypes.SET_CART, payload: null });
                             }
                         });
-
                 }
                 else {
                     toast.error(result.message);
@@ -152,7 +146,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                         .then(res => {
                             if (res.status === 1) {
                                 dispatch(setFavourite({ data: res }));
-                                // dispatch({ type: ActionTypes.SET_FAVORITE, payload: res });
                             }
                         });
                 }
@@ -175,11 +168,9 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                         .then(res => {
                             if (res.status === 1) {
                                 dispatch(setFavourite({ data: res }));
-                                // dispatch({ type: ActionTypes.SET_FAVORITE, payload: res });
                             }
                             else {
                                 dispatch(setFavourite({ data: null }));
-                                // dispatch({ type: ActionTypes.SET_FAVORITE, payload: null });
                             }
                         });
                 }
@@ -189,7 +180,16 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
             });
     };
 
-
+    const CustomPrevButton = ({ currentSlide, slideCount, ...props }) => (
+        <button {...props} type="button" className="slick-prev">
+            <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+        </button>
+    );
+    const CustomNextButton = ({ currentSlide, slideCount, ...props }) => (
+        <button {...props} type="button" className="slick-next">
+            <FaChevronRight fill='black' size={30} className='next-arrow' />
+        </button>
+    );
     const settings = {
         infinite: false,
         slidesToShow: 5.5,
@@ -199,16 +199,21 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
         centerMargin: "10px",
         margin: "20px", // set the time interval between slides
         // Add custom navigation buttons using Font Awesome icons
-        prevArrow: (
-            <button type="button" className="slick-prev">
-                <FaChevronLeft size={30} className="prev-arrow" />
-            </button>
-        ),
-        nextArrow: (
-            <button type="button" className="slick-next">
-                <FaChevronRight color='#f7f7f7' size={30} className='next-arrow' />
-            </button>
-        ),
+        prevArrow:
+            // (
+            //     <button type="button" className="slick-prev">
+            //         <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+            //     </button>
+            // )
+            <CustomPrevButton />,
+        nextArrow:
+            // (
+            //     <button type="button" className="slick-next">
+            //         <FaChevronRight fill='black' size={30} className='next-arrow' />
+            //     </button>
+            // )
+            <CustomNextButton />
+        ,
         responsive: [
             {
                 breakpoint: 1024,
@@ -225,8 +230,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
             {
                 breakpoint: 425,
                 settings: {
-                    slidesToShow: 1.2,
-
+                    slidesToShow: 1,
                 }
             }
         ]
@@ -285,7 +289,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                             <div className="row" key={index}>
                                                                 <div className="col-md-12">
 
-                                                                    <div className='product-card'  >
+                                                                    <div className='product-card'>
                                                                         <span className='border border-light rounded-circle p-2 px-3' id='aiEye'>
                                                                             <AiOutlineEye
                                                                                 onClick={() => {
@@ -294,7 +298,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                 }}
                                                                             />
                                                                         </span>
-                                                                        <Link to={`/product/${product.slug}`}>
+                                                                        <Link to={`/product/${product.slug}`} className='text-decoration-none text-reset'>
 
                                                                             <div className='image-container' >
 
@@ -310,50 +314,57 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                     </div>
                                                                                 }
                                                                             </div>
-                                                                        </Link>
-                                                                        {/* {console.log(product)} */}
-                                                                        <div className="card-body product-card-body p-3" >
-                                                                            <div className='ratings d-flex align-items-center'>
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 1 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 2 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 3 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-1' style={product?.average_rating >= 4 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <LuStar className='me-4' style={product?.average_rating >= 5 ? { fill: "#fead0e", stroke: "#fead0e" } : {}} />
-                                                                                <div>
-                                                                                    {product?.rating_count}
+                                                                            {/* {console.log(product)} */}
+                                                                            <div className="card-body product-card-body p-3" >
+                                                                                {product?.rating_count > 0 ?
+                                                                                    <div className='ratings d-flex align-items-center'>
+                                                                                        <LuStar className='me-2' style={{ fill: "#fead0e", stroke: "#fead0e" }} />
+                                                                                        <div className='border-end border-2 pe-2 me-2 avgRating'>
+                                                                                            {product?.average_rating?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                        </div>
+                                                                                        <div>
+                                                                                            {product?.rating_count}
+                                                                                        </div>
+                                                                                    </div> : null}
+                                                                                <h3>{product.name}</h3>
+                                                                                <div className='price'>
+                                                                                    <span id={`price${index}${index0}-section`} className="d-flex align-items-center">
+                                                                                        <p id='fa-rupee' className='m-0'>
+                                                                                            {setting.setting && setting.setting.currency}
+                                                                                            {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                        </p>
+                                                                                        {(product?.variants[0]?.price && (product?.variants[0]?.discounted_price != 0)) && (product?.variants[0]?.price !== product?.variants[0]?.discounted_price) ?
+                                                                                            <span id={`price${index}-section`} className="d-flex align-items-center" >
+                                                                                                <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
+                                                                                                    {product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                                </p>
+                                                                                            </span>
+                                                                                            : null}
+                                                                                    </span>
+                                                                                </div>
+                                                                                <div className='product_varients_drop'>
+                                                                                    <input type="hidden" name={`select-product${index}${index0}-variant-id`} id={`select-product${index}${index0}-variant-id`} value={selectedVariant.pid === product.id ? selectedVariant.id : product.variants[0].id} />
+                                                                                    {/* {console.log(product, product.variants)} */}
+                                                                                    {product.variants.length > 1 ? <>
+                                                                                        <div className='variant_selection' onClick={() => { setselectedProduct(product); setShowModal(true); setP_id(product.id); setP_V_id(product.variants[0].id); setQnty(product.variants[0].cart_count + 1); }} >
+                                                                                            <span>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} </>}</span>
+                                                                                            <IoIosArrowDown />
+                                                                                        </div>
+                                                                                    </>
+                                                                                        :
+
+                                                                                        <>
+
+                                                                                            {/* {document.getElementById()} */}
+                                                                                            <span className={`variant_value select-arrow ${product.variants[0].stock > 0 ? '' : ''}`}>{product.variants[0].measurement + " " + product.variants[0].stock_unit_name}
+                                                                                            </span>
+                                                                                        </>}
+
+
+
                                                                                 </div>
                                                                             </div>
-                                                                            <h3>{product.name}</h3>
-                                                                            <div className='price'>
-
-                                                                                <span id={`price${index}${index0}-section`} className="d-flex align-items-center">
-                                                                                    <p id='fa-rupee' className='m-0 ' style={{ color: "var(--secondary-color)" }}>{setting.setting && setting.setting.currency}</p> {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                                </span>
-
-                                                                            </div>
-                                                                            <div className='product_varients_drop'>
-                                                                                <input type="hidden" name={`select-product${index}${index0}-variant-id`} id={`select-product${index}${index0}-variant-id`} value={selectedVariant.pid === product.id ? selectedVariant.id : product.variants[0].id} />
-                                                                                {/* {console.log(product, product.variants)} */}
-                                                                                {product.variants.length > 1 ? <>
-                                                                                    <div className='variant_selection' onClick={() => { setselectedProduct(product); setShowModal(true); setP_id(product.id); setP_V_id(product.variants[0].id); setQnty(product.variants[0].cart_count + 1); }} >
-                                                                                        <span>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} </>}</span>
-                                                                                        <IoIosArrowDown />
-                                                                                    </div>
-                                                                                </>
-                                                                                    :
-
-                                                                                    <>
-
-                                                                                        {/* {document.getElementById()} */}
-                                                                                        <span className={`variant_value select-arrow ${product.variants[0].stock > 0 ? '' : ''}`}>{product.variants[0].measurement + " " + product.variants[0].stock_unit_name}
-                                                                                        </span>
-                                                                                    </>}
-
-
-
-                                                                            </div>
-                                                                        </div>
-
+                                                                        </Link>
                                                                         <div className='d-flex flex-row border-top product-card-footer'>
                                                                             <div className='border-end'>
                                                                                 {
@@ -483,26 +494,24 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
 
 
                                             </div>
-
-                                            {/* {shop.shop.offers.some((item) => item.section_position === index0) && (
-                                        <div className='product_section row flex-column' id='offers'>
-                                        <Offers />
-                                        </div>
-                                    )} */}
-
-                                            {/* {index0 === shop.shop.sections.length - 1 && (
-                                                <div className='product_section row flex-column' id='offers'>
-                                                    <Offers />
+                                            {BelowSectionOfferArray?.filter((offer) => offer?.section?.title == section?.title)?.map((offer) => (
+                                                <div className='col-md-12 p-0 col-12 my-5' key={offer?.id} onClick={() => {
+                                                    if (offer?.category) {
+                                                        dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
+                                                        navigate("/products");
+                                                    } else if (offer?.product) {
+                                                        navigate(`/product/${offer.product.slug}`);
+                                                    } else if (offer?.offer_url) {
+                                                        window.open(offer?.offer_url, "_blank");
+                                                    }
+                                                }}>
+                                                    <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
                                                 </div>
-                                            )} */}
+                                            ))}
                                         </div>
                                     );
                                 }
-                            }
-
-                            )
-
-                            }
+                            })}
                             <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} setP_id={setP_id} setP_V_id={setP_V_id} />
                             <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} setisLoader={setisLoader} cookies={cookies} toast={toast} city={city} />
                         </>
@@ -510,26 +519,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
 
                     )
                 }
-                {/* {offerConatiner === 1 ? <Offers /> : null} */}
-                {/* <div>
-                    <div className="product_container">
-                    <Offers />
-                    </div>
-                </div> */}
-                {BelowSectionOfferArray?.map((offer) => (
-                    <div className='col-md-12 p-0 col-12 my-5' onClick={() => {
-                        if (offer?.category) {
-                            dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
-                            navigate("/products");
-                        } else if (offer?.product) {
-                            navigate(`/product/${offer.product.slug}`);
-                        } else if (offer?.offer_url) {
-                            window.open(offer?.offer_url, "_blank");
-                        }
-                    }}>
-                        <img className={`${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "200px" }} />
-                    </div>
-                ))}
             </div>
         </section>
     );

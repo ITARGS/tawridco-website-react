@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import coverImg from '../../utils/cover-img.jpg';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -13,6 +13,8 @@ import RateProductStar from "../../utils/stars.svg";
 import { LuStar } from "react-icons/lu";
 import UpdateRatingModal from '../rate-product/UpdateRatingModal';
 import { ImCheckboxChecked } from "react-icons/im";
+import { Modal } from 'react-bootstrap';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
 
 
 
@@ -29,7 +31,8 @@ const OrderDetails = React.memo(() => {
     const [ratingProductId, setRatingProductId] = useState(0);
     const [editRatingId, setEditRatingId] = useState(0);
     const [showRatingEditModal, setShowRatingEditModal] = useState(false);
-
+    // const [showReturnModal, setShowReturnModal] = useState(false);
+    const [showReturnModal, setShowReturnModal] = useState(Array(orderData?.items?.length).fill(false));
     const urlParams = useParams();
 
     useEffect(() => {
@@ -69,11 +72,13 @@ const OrderDetails = React.memo(() => {
 
     };
 
+
     useEffect(() => {
         fetchOrderDetails();
         // console.log(orderData, 'orderDaraaa')
     }, [editRatingId]);
 
+    const returnRef = useRef(null);
 
     const getInvoice = async (Oid) => {
         let postData = new FormData();
@@ -110,16 +115,23 @@ const OrderDetails = React.memo(() => {
     };
     const navigate = useNavigate();
 
-    const handleUpdateStatus = async (item_id, status) => {
-        await api.updateOrderStatus(cookies.get('jwt_token'), orderData?.id, item_id, status)
+    const handleUpdateStatus = async (item_id, status, return_reason) => {
+        await api.updateOrderStatus(cookies.get('jwt_token'), orderData?.id, item_id, status, return_reason)
             .then((result) => result.json())
             .then((response) => {
                 if (response.status) {
-                    response.data && setOrderData(response.data);
+                    fetchOrderDetails();
+                    // response.data && setOrderData(response.data);
                     // console.log(response.data, "update_order_status");
                     toast.success(response.message);
+                    setShowReturnModal(false);
+                } else if (response.message == "This Order Item is already Returned!") {
+                    fetchOrderDetails();
+                    toast.error(response.message);
+                } else {
+                    toast.info(response.message);
                 }
-
+                setShowReturnModal(false);
             }).catch((error) => {
                 console.error(error);
             });
@@ -154,11 +166,10 @@ const OrderDetails = React.memo(() => {
                                                 <thead>
                                                     <th>{t('product')}</th>
                                                     <th>{t('price')}</th>
-                                                    <th>{t('rating')}</th>
+                                                    {orderData?.active_status >= 6 ? <th>{t('rating')}</th> : null}
                                                     {/* <th>{t('action')}</th> */}
                                                 </thead>
                                                 <tbody>
-                                                    {/* {console.log(orderData)} */}
                                                     {orderData?.items?.map((item, index) => {
                                                         return (
                                                             <>
@@ -201,9 +212,9 @@ const OrderDetails = React.memo(() => {
                                                                                     <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancel')}</button>
                                                                                 </span>
                                                                                 : <></>
-                                                                                
+
                                                                             }
-                                                                            {!Number(item?.active_status === 7 && item?.active_status === '7')  ?
+                                                                            {!Number(item?.active_status === 7 && item?.active_status === '7') ?
                                                                                 <span className="cancel">
                                                                                     <button onClick={() => handleUpdateStatus(item?.id, 7)}>cancelled</button>
                                                                                 </span>
@@ -217,38 +228,41 @@ const OrderDetails = React.memo(() => {
                                                                             }
 
                                                                         </div> */}
-                                                                        {/* <div className="actions-container">
-                                                                            {Number(item?.active_status) <= 6 && item?.return_status === 1 ?
+                                                                        <div className="actions-container">
+                                                                            {Number(item?.active_status) == 6 && item?.return_status == 1 ?
                                                                                 <span className="return">
-                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('return')}</button>
+                                                                                    <button onClick={() => setShowReturnModal(prevState => {
+                                                                                        const newState = [...prevState];
+                                                                                        newState[index] = true;
+                                                                                        return newState;
+                                                                                    })}>{t('return')}</button>
                                                                                 </span>
                                                                                 : null
                                                                             }
 
-                                                                            {Number(item?.active_status) >= 6 && Number(item?.active_status) <= item?.till_status && item?.cancelable_status === 1 ?
+                                                                            {(Number(item?.active_status) <= 6) && (Number(item?.active_status) <= item?.till_status) && (item?.cancelable_status == 1) ?
                                                                                 <span className="cancel">
                                                                                     <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancel')}</button>
                                                                                 </span>
                                                                                 : null
                                                                             }
-
-                                                                            {Number(item?.active_status) === 7 && item?.active_status === '7' ?
+                                                                            {Number(item?.active_status) == 7 ?
                                                                                 <span className="cancelled">
-                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancelled')}</button>
+                                                                                    <button>{t('cancelled')}</button>
                                                                                 </span>
                                                                                 : null
                                                                             }
 
-                                                                            {Number(item?.active_status) === 8 ?
+                                                                            {Number(item?.active_status) == 8 ?
                                                                                 <span className="returned">
-                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('returned')}</button>
+                                                                                    <button >{t('returned')}</button>
                                                                                 </span>
                                                                                 : null
                                                                             }
-                                                                        </div> */}
+                                                                        </div>
 
                                                                     </td>
-                                                                    <td>
+                                                                    {Number(item?.active_status) >= 6 ? <td>
                                                                         <div className='rateProductText' >
                                                                             {item.item_rating.find((rating) => rating.user.id === user.id) ?
                                                                                 <div className='pb-4' onClick={() => {
@@ -274,10 +288,66 @@ const OrderDetails = React.memo(() => {
                                                                                 </div>
                                                                             }
                                                                         </div>
-                                                                    </td>
+                                                                    </td> : null}
                                                                 </tr>
+                                                                {
+                                                                    showReturnModal[index] ?
+                                                                        <Modal
+                                                                            size='md'
+                                                                            show={showReturnModal[index]}
+                                                                            centered
+                                                                            // onHide={() => setShowReturnModal(false)}
+                                                                            onHide={() => setShowReturnModal(prevState => {
+                                                                                const newState = [...prevState];
+                                                                                newState[index] = false;
+                                                                                return newState;
+                                                                            })}
+                                                                            backdrop="static"
+                                                                        >
+                                                                            <Modal.Header className='d-flex justify-content-between returnProductModalHeader'>
+                                                                                <h5 className='title'>{t("return_order_item")}</h5>
+                                                                                <AiOutlineCloseCircle className='cursorPointer' size={28} fill='black' onClick={() => setShowReturnModal(prevState => {
+                                                                                    const newState = [...prevState];
+                                                                                    newState[index] = false;
+                                                                                    return newState;
+                                                                                })} />
+                                                                            </Modal.Header>
+                                                                            <Modal.Body className='returnProductModalBody'>
+                                                                                <form onSubmit={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    // if (!returnRef.current.value.trim()) {
+                                                                                    //     toast.error(t('please_type_return_reason'));
+                                                                                    //     return; // Don't proceed further if the textarea is empty
+                                                                                    // }
+                                                                                    handleUpdateStatus(item?.id, 8, returnRef.current.value);
+                                                                                }}>
+                                                                                    <div className='d-flex flex-column justify-content-center'>
+                                                                                        <label htmlFor='reasonTextArea' className='my-3 reasonLabel'>
+                                                                                            {t("return_reason")}
+                                                                                        </label>
+                                                                                        <textarea
+                                                                                            ref={returnRef}
+                                                                                            id="reasonTextArea"
+                                                                                            rows={8}
+                                                                                            name='reasonTextArea'
+                                                                                            placeholder={t("write_return_reason")}
+                                                                                            className='reasonTextArea my-4'
+                                                                                            required
+                                                                                        />
+                                                                                    </div>
+                                                                                    <div className='d-flex justify-content-end mt-4'>
+                                                                                        <button type='submit' className='returnSubmitBtn'>
+                                                                                            {t("request_a_return")}
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </form>
+                                                                            </Modal.Body>
+                                                                        </Modal>
+                                                                        : null}
                                                             </>
+
                                                         );
+
                                                     })}
                                                 </tbody>
                                             </table>
@@ -429,7 +499,7 @@ const OrderDetails = React.memo(() => {
                                                     {t('total')}
                                                 </span>
                                                 <span>
-                                                    ${orderData?.final_total}
+                                                    {setting?.setting?.currency}{orderData?.final_total}
                                                 </span>
                                             </div>
                                         </div>
@@ -448,9 +518,10 @@ const OrderDetails = React.memo(() => {
                         </div>
                     </div>
                 </div>
+
                 <RateProductModal product_id={ratingProductId} showPdtRatingModal={showPdtRatingModal} setShowPdtRatingModal={setShowPdtRatingModal} />
                 <UpdateRatingModal product_id={ratingProductId} showModal={showRatingEditModal} setShowModal={setShowRatingEditModal} ratingId={editRatingId} setRatingId={setEditRatingId} />
-            </section >
+            </section>
         </>
     );
 });

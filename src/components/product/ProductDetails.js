@@ -21,11 +21,17 @@ import { setFavourite } from '../../model/reducer/favouriteReducer';
 import Popup from '../same-seller-popup/Popup';
 import useGetProductRatingsById from '../../hooks/useGetProductRatingsById';
 import { OverlayTrigger, Popover, ProgressBar } from 'react-bootstrap';
-import ratingSVG from "../../utils/rating.svg";
 import ProductDetailsTabs from './ProductDetailsTabs';
 import StarFilledSVG from "../../utils/StarFilled.svg";
 import StarUnfilledSVG from "../../utils/StarUnfilled.svg";
-
+import useGetProductRatingImages from '../../hooks/useGetProductRatingImages';
+import { LuStar } from 'react-icons/lu';
+import VegIcon from "../../utils/Icons/VegIcon.svg";
+import NonVegIcon from "../../utils/Icons/NonVegIcon.svg";
+import NonCancelable from "../../utils/Icons/NotCancelable.svg";
+import Cancelable from "../../utils/Icons/Cancelable.svg";
+import Returnable from "../../utils/Icons/Returnable.svg";
+import NotReturnable from "../../utils/Icons/NotReturnable.svg";
 
 const ProductDetails = () => {
 
@@ -39,6 +45,7 @@ const ProductDetails = () => {
     const city = useSelector(state => state.city);
     const setting = useSelector(state => state.setting);
     const favorite = useSelector(state => (state.favourite));
+    const shop = useSelector(state => state.shop);
 
     useEffect(() => {
         window.scrollTo({ top: 0 });
@@ -61,7 +68,7 @@ const ProductDetails = () => {
     const [quantity, setQuantity] = useState([]);
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [selectedProduct, setselectedProduct] = useState({});
-    const [productSizes, setproductSizes] = useState(null);
+    // const [productSizes, setproductSizes] = useState(null);
     const [offerConatiner, setOfferContainer] = useState(0);
     const [variant_index, setVariantIndex] = useState(null);
     const [realted_variant_index, setRelatedVariantIndex] = useState(0);
@@ -87,37 +94,40 @@ const ProductDetails = () => {
             .catch((error) => console.log(error));
     };
 
-    const getBrandDetails = (id) => {
+    // Not Used
+    // const getBrandDetails = (id) => {
 
-        api.getBrands()
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
+    //     api.getBrands()
+    //         .then(response => response.json())
+    //         .then(result => {
+    //             if (result.status === 1) {
 
-                    result.data.forEach(brnd => {
-                        if (brnd.id === id) {
-                            setproductbrand(brnd);
-                        }
-                    });
-                }
-            })
-            .catch((error) => console.log(error));
-    };
+    //                 result.data.forEach(brnd => {
+    //                     if (brnd.id === id) {
+    //                         console.log(brnd);
+    //                         setproductbrand(brnd);
+    //                     }
+    //                 });
+    //             }
+    //         })
+    //         .catch((error) => console.log(error));
+    // };
 
     const getProductDatafromApi = (id) => {
-        api.getProductbyId(city.city?.latitude, city.city?.longitude, id?.id ? id.id : product.selectedProduct_id, cookies.get('jwt_token'))
+        api.getProductbyId(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, id ? id : product.selectedProduct_id, cookies.get('jwt_token'))
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
                     setproductdata(result.data);
-                    !variant_index && setVariantIndex(result.data.variants[0]?.id);
-                    variant_index ? setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index)) : setSelectedVariant(result.data.variants[0]);
+                    setVariantIndex(result.data.variants[0]?.id);
+                    setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index) ? result.data.variants.find((element) => element.id == variant_index) : result.data.variants[0]);
                     setmainimage(result.data.image_url);
                     setimages(result.data.images);
-                    getCategoryDetails(result.data.category_id);
-                    getBrandDetails(result.data.brand_id);
+                    // getCategoryDetails(result.data.category_id);
+                    setproductbrand(shop?.shop?.brands?.find((brand) => brand?.id == result?.data?.brand_id));
+                    // getBrandDetails(result.data.brand_id);
 
-                }
+                };
             })
             .catch(error => console.log(error));
 
@@ -126,17 +136,14 @@ const ProductDetails = () => {
 
 
 
-
     useEffect(() => {
         const getProductData = async () => {
-
-            await api.getProductbyFilter(city.city?.id, city.city?.latitude, city.city?.longitude, { slug: slug }, cookies.get('jwt_token'))
+            await api.getProductbyFilter(city.city?.id ? city?.city?.id : setting?.setting?.default_city?.id, city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, { slug: slug }, cookies.get('jwt_token'))
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
                         dispatch(setSelectedProduct({ data: result?.data[0]?.id }));
-                        // dispatch({ type: ActionTypes.SET_SELECTED_PRODUCT, payload: result.data[0].id });
-                        getProductDatafromApi({ id: result?.data[0]?.id });
+                        getProductDatafromApi(result?.data[0]?.id);
                     }
                     else {
                     }
@@ -145,12 +152,12 @@ const ProductDetails = () => {
         };
         getProductData();
 
-    }, [slug]);
+    }, [setting?.setting?.default_city, slug]);
 
     useEffect(() => {
         if (Object.keys(productdata).length !== 0) {
 
-            api.getProductbyFilter(city.city?.id, city.city?.latitude, city.city?.longitude, {
+            api.getProductbyFilter(city.city?.id ? city?.city?.id : setting?.setting?.default_city?.id, city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, {
                 category_id: productdata.category_id,
             }, cookies.get('jwt_token'))
                 .then(response => response.json())
@@ -158,10 +165,12 @@ const ProductDetails = () => {
                     if (result.status === 1) {
                         setproductSize(result.sizes);
                         setrelatedProducts(result.data);
-
                     }
                 })
                 .catch(error => console.log(error));
+        }
+        if (productdata && selectedVariant === null && productdata.variants) {
+            setSelectedVariant(productdata.variants[0]);
         }
     }, [productdata, cart]);
 
@@ -171,20 +180,34 @@ const ProductDetails = () => {
 
 
 
+    const CustomPrevButton = ({ currentSlide, slideCount, ...props }) => (
+        <button {...props} type="button" className="slick-prev">
+            <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+        </button>
+    );
+    const CustomNextButton = ({ currentSlide, slideCount, ...props }) => (
+        <button {...props} type="button" className="slick-next">
+            <FaChevronRight fill='black' size={30} className='next-arrow' />
+        </button>
+    );
     const settings = {
         infinite: false,
         slidesToShow: 5,
         initialSlide: 0,
-        prevArrow: (
-            <button type="button" className="slick-prev">
-                <FaChevronLeft size={30} className="prev-arrow" />
-            </button>
-        ),
-        nextArrow: (
-            <button type="button" className="slick-next">
-                <FaChevronRight color='#f7f7f7' size={30} className='next-arrow' />
-            </button>
-        ),
+        prevArrow:
+            // (
+            //     <button type="button" className="slick-prev">
+            //         <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+            //     </button>
+            // ),
+            <CustomPrevButton />,
+        nextArrow:
+            // (
+            //     <button type="button" className="slick-next">
+            //         <FaChevronRight fill='black' size={30} className='next-arrow' />
+            //     </button>
+            // )
+            <CustomNextButton />,
         responsive: [
             {
                 breakpoint: 1199,
@@ -207,17 +230,14 @@ const ProductDetails = () => {
             {
                 breakpoint: 425,
                 settings: {
-                    slidesToShow: 1.5,
-                    dots: true,
-                    arrows: false,
+                    slidesToShow: 1,
+                    arrows: true,
                 }
             }
         ]
     };
 
-
     const settings_subImage = {
-
         infinite: false,
         slidesToShow: 3,
         initialSlide: 0,
@@ -225,31 +245,28 @@ const ProductDetails = () => {
         horizontal: true,
         margin: "20px",
         prevArrow: (
-            <button
-                type="button"
+            <button type="button"
                 className="slick-prev"
-                onClick={(e) => {
-                    setmainimage(e.target.value);
-                }}
+            // onClick={(e) => {
+            //     setmainimage(e.target.value);
+            // }}
             >
-                <FaChevronLeft size={30} className="prev-arrow" />
-            </button>
-        ),
+                <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+            </button>),
         nextArrow: (
             <button
                 type="button"
                 className="slick-next"
-                onClick={(e) => {
-                    setmainimage(e.target.value);
-                }}
+            // onClick={(e) => {
+            //     setmainimage(e.target.value);
+            // }}
             >
                 <FaChevronRight
-                    color="#f7f7f7"
+                    fill='black'
                     size={30}
                     className="next-arrow"
                 />
-            </button>
-        ),
+            </button>),
         responsive: [
             {
                 breakpoint: 1024,
@@ -271,17 +288,14 @@ const ProductDetails = () => {
     const [limit, setLimit] = useState(12);
     const [offset, setOffset] = useState(0);
     const { productRating, totalData, loading: Loading, error } = useGetProductRatingsById(cookies.get("jwt_token"), productdata?.id, limit, offset);
-    // console.log(productRating);
-    //for product variants dropdown in product card
+    const { ratingImages, totalImages } = useGetProductRatingImages(cookies.get("jwt_token"), productdata?.id, 8, offset);
 
+    // useEffect(() => {
+    //     if (productdata && selectedVariant === null && productdata.variants) {
+    //         setSelectedVariant(productdata.variants[0]);
+    //     }
 
-
-    useEffect(() => {
-        if (productdata && selectedVariant === null && productdata.variants) {
-            setSelectedVariant(productdata.variants[0]);
-        }
-
-    }, [productdata, cart]);
+    // }, [productdata, cart]);
 
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
@@ -384,16 +398,15 @@ const ProductDetails = () => {
             });
     };
 
-    useEffect(() => {
+    // useEffect(() => {
+    //     if (productdata.length > 0) {
+    //         setSelectedVariant(productdata.varaints[0]);
+    //     }
+    // }, [productdata, cart]);
 
-        if (productdata.length > 0) {
-            setSelectedVariant(productdata.varaints[0]);
-        }
-    }, [productdata, cart]);
-
-    useEffect(() => {
-        // window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [productdata]);
+    // useEffect(() => {
+    // window.scrollTo({ top: 0, behavior: 'smooth' });
+    // }, [productdata]);
 
     const handleVariantChange = (variant, index) => {
         setSelectedVariant(variant);
@@ -413,7 +426,7 @@ const ProductDetails = () => {
             <Popover.Body className='ratingPopOverBody'>
                 <div className='d-flex flex-row justify-content-start align-items-center ratingCircleContainer'>
                     <div className='ratingCircle'>
-                        {productRating?.average_rating}
+                        {productRating?.average_rating?.toFixed(2)}
                     </div>
                     <div className='d-flex flex-column justify-content-center align-items-center'>
                         <div>{t("rating")}
@@ -427,10 +440,10 @@ const ProductDetails = () => {
                     {t("5")}
                     <div className='d-flex gap-1'>
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        {/* <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' /> */}
                     </div>
                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.five_star_rating))} className='ratingBar' />
                     <div>
@@ -441,10 +454,10 @@ const ProductDetails = () => {
                     {t("4")}
                     <div className='d-flex gap-1'>
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        {/* <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' /> */}
                     </div>
                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.four_star_rating))} className='ratingBar' />
                     <div>
@@ -455,10 +468,10 @@ const ProductDetails = () => {
                     {t("3")}
                     <div className='d-flex gap-1'>
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        {/* <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' /> */}
                     </div>
                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.three_star_rating))} className='ratingBar' />
                     <div>{productRating?.three_star_rating}</div>
@@ -467,10 +480,10 @@ const ProductDetails = () => {
                     {t("2")}
                     <div className='d-flex gap-1'>
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        {/* <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' /> */}
                     </div>
                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.two_star_rating))} className='ratingBar' />
                     <div>{productRating?.two_star_rating}</div>
@@ -479,10 +492,10 @@ const ProductDetails = () => {
                     {t("1")}
                     <div className='d-flex gap-1'>
                         <img src={StarFilledSVG} alt='starLogo' loading='lazy' />
+                        {/* <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
                         <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
-                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' />
+                        <img src={StarUnfilledSVG} alt='starLogo' loading='lazy' /> */}
                     </div>
                     <ProgressBar now={Math.floor(calculatePercentage(totalData, productRating?.one_star_rating))} className='ratingBar' />
                     <div>{productRating?.one_star_rating}</div>
@@ -510,7 +523,7 @@ const ProductDetails = () => {
                             : (
 
                                 <div className='row body-wrapper '>
-                                    <div className="col-xl-4 col-lg-6 col-md-12 col-12">
+                                    <div className="col-xl-3 col-lg-4 col-md-12 col-12">
 
                                         <div className='image-wrapper '>
                                             <div className='main-image col-12 border'>
@@ -520,20 +533,17 @@ const ProductDetails = () => {
 
                                             <div className='sub-images-container'>
                                                 {images.length >= 1 ?
-                                                    <>
-                                                        <Slider {...settings_subImage} className='imageListSlider'>
-                                                            {images.map((image, index) => (
-                                                                <div className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
-                                                                    <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
-                                                                        setmainimage(image);
-                                                                    }} />
-                                                                </div>
+                                                    <Slider {...settings_subImage} className='imageListSlider'>
+                                                        {images.map((image, index) => (
+                                                            <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
+                                                                <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
+                                                                    setmainimage(image);
+                                                                }} />
+                                                            </div>
 
-                                                            ))}
-                                                        </Slider>
-
-
-                                                    </> :
+                                                        ))}
+                                                    </Slider>
+                                                    :
                                                     <>
                                                         {images.map((image, index) => (
                                                             <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
@@ -547,7 +557,7 @@ const ProductDetails = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="col-xl-6 col-lg-6 col-md-12 col-12">
+                                    <div className="col-xl-9 col-lg-8 col-md-12 col-12">
                                         <div className='detail-wrapper'>
                                             <div className='top-section'>
                                                 <p className='product_name'>{productdata.name}</p>
@@ -564,37 +574,42 @@ const ProductDetails = () => {
                                                             </span>
                                                         </div>
                                                     )} */}
-                                                <div className='d-flex flex-row gap-2 align-items-center my-1'>
+                                                <div className='d-flex flex-column gap-2 align-items-start my-1'>
                                                     <div id="price-section" className='d-flex flex-row gap-2 align-items-center my-1'>
                                                         {setting.setting && setting.setting.currency}<p id='fa-rupee' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price == 0 ? selectedVariant.price.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price.toFixed(setting.setting && setting.setting.decimal_point)) : (productdata.variants[0].discounted_price === 0 ? productdata.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : productdata.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point))}</p>
                                                     </div>
+                                                    {(selectedVariant?.price && (selectedVariant?.discounted_price !== 0)) && (selectedVariant?.price !== selectedVariant?.discounted_price) ?
+                                                        <div>
+                                                            <p className='fw-normal text-decoration-line-through' style={{ color: "var(--sub-text-color)", fontSize: "16px" }}>
+                                                                {setting.setting && setting.setting.currency}
+                                                                {selectedVariant?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                            </p>
+                                                        </div>
+                                                        : null}
                                                     <input type="hidden" id="productdetail-selected-variant-id" name="variant" value={selectedVariant ? selectedVariant.id : productdata.variants[0].id} />
                                                 </div>
 
                                             </div>
                                             <div className='bottom-section'>
                                                 <div className='d-flex gap-3 bottom-section-content'>
-                                                    <div className='variants'>
+                                                    <div className='variants' key={"productVariantContainer"}>
 
-                                                        <div className="row">
+                                                        <div className="row" key={"variants"}>
                                                             {productdata.variants.map((variant, index) => {
                                                                 return (
-                                                                    <>
-                                                                        <div className="variant-section">
-                                                                            <div className={`variant-element ${variant_index === variant.id ? 'active' : ''}  ${Number(productdata.is_unlimited_stock) ? "" : (variant.cart_count >= variant.stock ? "out_of_stock" : "")} `} key={index}>
-                                                                                <label className="element_container " htmlFor={`variant${index}`}>
-                                                                                    <div className="top-section">
-                                                                                        <input type="radio" name="variant" id={`variant${index}`} checked={variant_index == variant.id} disabled={Number(productdata.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)} />
-                                                                                    </div>
-                                                                                    <div className="h-100">
-                                                                                        <span className="d-flex align-items-center flex-column">{variant.measurement} {variant.stock_unit_name} </span>
-                                                                                    </div>
-                                                                                </label>
+                                                                    <div className="variant-section" key={variant?.id}>
+                                                                        <div className={`variant-element ${variant_index === variant.id ? 'active' : ''}  ${Number(productdata.is_unlimited_stock) ? "" : (variant.cart_count >= variant.stock ? "out_of_stock" : "")} `} key={index}>
+                                                                            <label className="element_container " htmlFor={`variant${index}`}>
+                                                                                <div className="top-section">
+                                                                                    <input type="radio" name="variant" id={`variant${index}`} checked={variant_index == variant.id} disabled={Number(productdata.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)} />
+                                                                                </div>
+                                                                                <div className="h-100">
+                                                                                    <span className="d-flex align-items-center flex-column">{variant.measurement} {variant.stock_unit_name} </span>
+                                                                                </div>
+                                                                            </label>
 
-                                                                            </div>
                                                                         </div>
-                                                                    </>
-
+                                                                    </div>
                                                                 );
                                                             })}
                                                         </div>
@@ -773,7 +788,7 @@ const ProductDetails = () => {
                                                 {productdata?.fssai_lic_no &&
                                                     <div className='fssai-details'>
                                                         <div className='image-container'>
-                                                            <img src={productdata?.fssai_lic_img} />
+                                                            <img src={productdata?.fssai_lic_img} alt='fssai' />
                                                         </div>
                                                         <div className='fssai-license-no'>
                                                             <span>
@@ -782,7 +797,7 @@ const ProductDetails = () => {
                                                         </div>
                                                     </div>
                                                 }
-                                                {productbrand.name &&
+                                                {productbrand?.name ?
                                                     <div className='product-overview'>
                                                         <div className='product-seller'>
                                                             <span className='seller-title'>{t("brand")}:</span>
@@ -795,21 +810,84 @@ const ProductDetails = () => {
                                                             <span className='tag-name'>{productdata.tags} </span>
                                                         </div>
                                                     ) : ""} */}
-                                                    </div>}
+                                                    </div> : null}
                                                 {productRating?.rating_list?.length !== 0 ?
-                                                    <div>
+                                                    <div className='mt-3 cursorPointer'>
                                                         <OverlayTrigger
                                                             trigger="click"
                                                             placement="bottom-start"
                                                             overlay={popover}
                                                             rootClose={true}
                                                         >
-                                                            <span>
-                                                                <img src={ratingSVG} alt='starLogo' />
-                                                                {productRating?.rating_list?.length}
-                                                            </span>
+                                                            {/* {console.log(productRating)} */}
+                                                            <div className='d-flex justify-content-start align-items-center overlay-content'>
+                                                                <LuStar className='me-1' style={productRating?.average_rating >= 1 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
+                                                                <span className='pe-2 me-2 border-end border-2'>
+                                                                    {productRating?.average_rating?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                </span>
+                                                                {totalData}
+                                                            </div>
                                                         </OverlayTrigger>
                                                     </div> : null}
+                                                {productdata?.indicator ?
+                                                    productdata?.indicator == 1 ?
+                                                        <div className='d-flex align-items-center mt-3'>
+                                                            <img src={VegIcon} alt='vegIcon' className='me-3' />
+                                                            {t("vegetarian")}
+                                                        </div>
+                                                        :
+                                                        <div className='d-flex align-items-center mt-3'>
+                                                            <img src={NonVegIcon} alt='nonVegIcon' className='me-3' />
+                                                            {t("non-vegetarian")}
+                                                        </div>
+                                                    : null}
+                                                {productdata?.cancelable_status == 1 ?
+                                                    <div className='d-flex align-items-center mt-3'>
+                                                        <img src={Cancelable} alt='cancelableIcon' className='me-3' />
+                                                        {t("cancelable")}
+                                                        {productdata?.till_status == 1 ?
+                                                            t("payment_pending")
+                                                            :
+                                                            null
+                                                        }
+                                                        {productdata?.till_status == 2 ?
+                                                            t("received")
+                                                            :
+                                                            null
+                                                        }
+                                                        {productdata?.till_status == 3 ?
+                                                            t("processed")
+                                                            :
+                                                            null
+                                                        }
+                                                        {productdata?.till_status == 4 ?
+                                                            t("shipped")
+                                                            :
+                                                            null
+                                                        }
+                                                        {productdata?.till_status == 5 ?
+                                                            t("out_for_delivery")
+                                                            :
+                                                            null
+                                                        }
+                                                    </div>
+                                                    :
+                                                    <div className='d-flex align-items-center mt-3'>
+                                                        <img src={NonCancelable} alt='nonCancelableIcon' className='me-3' />
+                                                        {t("non-cancelable")}
+                                                    </div>
+                                                }
+                                                {productdata?.return_status == 1 ?
+                                                    <div className='d-flex align-items-center mt-3'>
+                                                        <img src={Returnable} alt='returnableIcon' className='me-3' />
+                                                        {t("returnable")} {productdata?.return_days} {t("days")}
+                                                    </div>
+                                                    :
+                                                    <div className='d-flex align-items-center mt-3'>
+                                                        <img src={NotReturnable} alt='nonReturnableIcon' className='me-3' />
+                                                        {t("non-returnable")}
+                                                    </div>
+                                                }
                                                 <div className="share-product-container">
                                                     <span>{t("share_product")}:</span>
 
@@ -833,7 +911,14 @@ const ProductDetails = () => {
 
                     </div>
 
-                    <ProductDetailsTabs productdata={productdata} productRating={productRating} totalData={totalData} loading={Loading} />
+                    <ProductDetailsTabs
+                        productdata={productdata}
+                        productRating={productRating}
+                        totalData={totalData}
+                        loading={Loading}
+                        ratingImages={ratingImages}
+                        totalImages={totalImages}
+                    />
 
                     <div className='related-product-wrapper'>
                         <h5>{t("related_product")}</h5>
@@ -846,18 +931,16 @@ const ProductDetails = () => {
                                 </div>
                                 :
                                 <div className="row">
-
                                     <Slider {...settings}>
                                         {relatedProducts.map((related_product, index) => (
-                                            <div className="col-md-3 col-lg-4">
-
+                                            <div className="col-md-3 col-lg-4" key={related_product?.id}>
                                                 <div className='product-card'>
                                                     <span className='border border-light rounded-circle p-2 px-3' id='aiEye' onClick={() => {
                                                         setShowModal(true);
                                                         setselectedProduct(related_product);
                                                         setP_id(related_product.id); setP_V_id(related_product.variants[0].id); setQnty(related_product.variants[0].cart_count + 1);
                                                     }} >
-                                                        <AiOutlineEye
+                                                        <AiOutlineEye fill='black'
                                                         />
                                                     </span>
                                                     <Link to={`/product/${related_product.slug}`}>
@@ -880,22 +963,39 @@ const ProductDetails = () => {
                                                         </div>
                                                     </Link>
 
-                                                    <div className="card-body product-card-body p-3" onClick={() => {
+                                                    <div className="d-flex flex-column justify-content-end card-body product-card-body p-3" onClick={() => {
                                                         dispatch(setSelectedProduct({ data: related_product.id }));
-                                                        // dispatch({ type: ActionTypes.SET_SELECTED_PRODUCT, payload: related_product.id });
                                                         setSelectedVariant(null);
                                                         setQuantity(0);
                                                         getProductDatafromApi();
                                                         navigate(`/product/${related_product.slug}`);
-
                                                         window.scrollTo({ top: 0, behavior: 'smooth' });
-
                                                     }} >
+                                                        {related_product?.rating_count > 0 ? <div className='ratings d-flex align-items-center product-card-rating-content' style={{ fontSize: "14px" }}>
+                                                            <LuStar className='me-2' style={{ fill: "#fead0e", stroke: "#fead0e" }} />
+                                                            <div className='border-end border-2 pe-2 me-2 avgRating'>
+                                                                {related_product?.average_rating?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                            </div>
+                                                            <div>
+                                                                {related_product?.rating_count}
+                                                            </div>
+                                                        </div> : null}
                                                         <h3>{related_product.name}</h3>
                                                         <div className='price'>
 
-                                                            <span id={`price${index}-section`} className="d-flex align-items-center"><p id='relatedproduct-fa-rupee' className='m-0'>{setting.setting && setting.setting.currency}</p>{related_product.variants[0].discounted_price === 0 ? related_product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : related_product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)} </span>
-
+                                                            <span id={`price${index}-section`} className="d-flex align-items-center">
+                                                                <p id='relatedproduct-fa-rupee' className='m-0'>
+                                                                    {setting.setting && setting.setting.currency}
+                                                                    {related_product.variants[0].discounted_price === 0 ? related_product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : related_product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                </p>
+                                                                {(related_product?.variants[0]?.price && (related_product?.variants[0]?.discounted_price != 0)) && (related_product?.variants[0]?.price !== related_product?.variants[0]?.discounted_price) ?
+                                                                    <span id={`price${index}-section`} className="d-flex align-items-center" >
+                                                                        <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
+                                                                            {related_product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                        </p>
+                                                                    </span>
+                                                                    : null}
+                                                            </span>
                                                         </div>
                                                         <div className='product_varients_drop'>
                                                             {related_product.variants.length > 1 ?
@@ -1006,7 +1106,7 @@ const ProductDetails = () => {
                                                                     }}><BsPlus size={20} fill='#fff' /> </button>
                                                                 </div>
                                                             </> : <>
-                                                                <button type="button" id={`Add-to-cart-section${index}`} className='w-100 h-100 add-to-cart active' onClick={() => {
+                                                                <button type="button" id={`Add-to-cart-section${index}`} className={`w-100 h-100 add-to-cart active ${(!Number(related_product.is_unlimited_stock) && (related_product.variants[0].stock <= 0)) ? "buttonDisabled" : ""} `} onClick={() => {
                                                                     if (cookies.get('jwt_token') !== undefined) {
 
                                                                         if (cart.cart && cart.cart.data.cart.some(element => element.product_id === related_product.id) && cart.cart.data.cart.some(element => element.product_variant_id === related_product.variants[0].id)) {

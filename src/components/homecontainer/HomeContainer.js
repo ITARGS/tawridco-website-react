@@ -14,12 +14,11 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
     const dispatch = useDispatch();
     const navigate = useNavigate();
     return (
-
         // elementor-section-height-min-height elementor-section-items-stretch elementor-section-boxed elementor-section-height-default
         <section id="home" className='home-section container home-element section'>
             {/* Slider & Category */}
             {OfferImagesArray?.map((offer) => (
-                <div className='col-md-12 p-0 col-12 my-5' onClick={() => {
+                <div className='col-md-12 p-0 col-12 my-5' key={offer?.id} onClick={() => {
                     if (offer?.category) {
                         dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
                         navigate("/products");
@@ -29,7 +28,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                         window.open(offer?.offer_url, "_blank");
                     }
                 }}>
-                    <img className={`${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "200px" }} />
+                    <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
                 </div>
             ))}
 
@@ -40,7 +39,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
             </div>
 
             {BelowSliderOfferArray?.map((offer) => (
-                <div className='col-md-12 p-0 col-12 my-5' onClick={() => {
+                <div className='col-md-12 p-0 col-12 my-5' key={offer?.id} onClick={() => {
                     if (offer?.category) {
                         dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
                         navigate("/products");
@@ -50,7 +49,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                         window.open(offer?.offer_url, "_blank");
                     }
                 }}>
-                    <img className={`${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "200px" }} />
+                    <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
                 </div>
             ))}
 
@@ -66,7 +65,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
 
 
             {BelowCategoryOfferArray?.map((offer) => (
-                <div className='col-md-12 p-0 col-12 my-5' onClick={() => {
+                <div className='col-md-12 p-0 col-12 my-5' key={offer?.id} onClick={() => {
                     if (offer?.category) {
                         dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
                         navigate("/products");
@@ -76,7 +75,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                         window.open(offer?.offer_url, "_blank");
                     }
                 }}>
-                    <img className={`${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" style={{ width: "100%", height: "200px" }} />
+                    <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
                 </div>
             ))}
             {shop.shop?.is_brand_section_in_homepage ?
@@ -88,20 +87,20 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     </div>
                 </div>
                 : <></>}
-            {shop.shop?.is_country_section_in_homepage &&
+            {shop.shop?.is_country_section_in_homepage ?
                 <div className='category_section'>
                     <div className='container'>
                         <ShopByCountries />
                     </div>
                 </div>
-            }
-            {shop.shop?.is_seller_section_in_homepage &&
+                : <></>}
+            {shop.shop?.is_seller_section_in_homepage ?
                 <div className='category_section'>
                     <div className='container'>
                         <ShopBySellers />
                     </div>
                 </div>
-            }
+                : <></>}
 
 
         </section>

@@ -32,24 +32,28 @@ const PayPalPaymentHandler = () => {
     const timeout = useRef();
 
     useEffect(() => {
-        try {
-            api.removeCart(cookies.get("jwt_token")).then((res) => res.json()).then((result) => {
-                if (result?.status === 1) {
-                    dispatch(setCart({ data: null }));
-                    dispatch(setCartCheckout({ data: null }));
-                }
-                // console.log(result);
-            });
-        } catch (err) {
-            console.log(err.message);
+        if (queryParamsObj.type === "wallet") {
+            toast.success(t("wallet_recharge_paypal_pending_message"));
         }
-        toast.success(t("order_paypal_pending_message"));
+        else {
+            try {
+                api.removeCart(cookies.get("jwt_token")).then((res) => res.json()).then((result) => {
+                    if (result?.status === 1) {
+                        dispatch(setCart({ data: null }));
+                        dispatch(setCartCheckout({ data: null }));
+                    }
+                });
+            } catch (err) {
+                console.log(err.message);
+            }
+            toast.success(t("order_paypal_pending_message"));
+        }
         interval.current = setInterval(() => {
             setTimer(prev => prev - 1);
         }, 1000);
         timeout.current = setTimeout(() => {
             navigate("/");
-        }, 5000);
+        }, 6000);
         return () => {
             clearInterval(interval.current);
             clearTimeout(timeout);
@@ -70,7 +74,6 @@ const PayPalPaymentHandler = () => {
 
     return (
         <>
-
             <div className='container d-flex flex-column align-items-center mt-5 payment-container' >
                 <Lottie animationData={animate2} loop={false} className='lottie-tick'></Lottie>
                 <Lottie className='lottie-content' animationData={animate1} loop={true}></Lottie>

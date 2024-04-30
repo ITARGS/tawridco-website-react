@@ -231,7 +231,11 @@
 .order-container .container-body {
   margin: 20px 0;
 }
-
+@media screen and (min-width: 0px) and (max-width: 430px) {
+  .order-container .container-body {
+    overflow: scroll;
+  }
+}
 .order-container .container-body .table-container thead {
   background-color: var(--secondary-color);
   border-radius: 8px;
@@ -583,4 +587,34 @@
   background-color: var(--secondary-color);
   color: var(--bs-white);
   border-radius: 2px;
+}
+.returnProductModalBody {
+  height: 400px;
+}
+.returnProductModalBody .reasonTextArea {
+  border: 1px solid lightgrey;
+  width: 100%;
+  border-radius: 5px;
+  padding: 15px;
+  resize: none;
+  font-size: 17px;
+}
+.returnProductModalBody .reasonTextArea::placeholder {
+  text-align: start !important;
+}
+.returnProductModalHeader .title {
+  font-weight: 800;
+  font-size: 2.4rem;
+}
+.returnProductModalBody .returnSubmitBtn {
+  width: 171px;
+  height: 46px;
+  padding: 8px;
+  border-radius: 4px;
+  background-color: #55ae7b;
+  color: var(--bs-white);
+}
+.returnProductModalBody .reasonLabel {
+  font-size: 18px;
+  font-weight: 550;
 }

@@ -7,6 +7,7 @@ import PaypalSVG from "../../utils/Paypal.svg";
 import PayStackSVG from "../../utils/Paystack.svg";
 import RazorPaySVG from "../../utils/Razorpay.svg";
 import StripeSVG from "../../utils/Stripe.svg";
+import MidtransSVG from "../../utils/Icons/Midtrans.svg";
 import PaytmSVG from "../../utils/Paytm.svg";
 import api from '../../api/api';
 import Cookies from 'universal-cookie';
@@ -83,12 +84,12 @@ const AddWalletModal = (props) => {
             image: setting.setting && setting.setting.web_settings.web_logo,
             order_id: razorpay_transaction_id,
             handler: async (res) => {
-                console.log(res);
+                // console.log(res);
                 if (res.razorpay_payment_id) {
                     await api.addTransaction(cookies.get('jwt_token'), null, razorpay_transaction_id, "Razorpay", "wallet", amount)
                         .then(response => response.json())
                         .then(result => {
-                            console.log(result);
+                            // console.log(result);
                             if (result.status === 1) {
                                 props.setShowModal(false);
                                 toast.success(result.message);
@@ -107,8 +108,7 @@ const AddWalletModal = (props) => {
                 confirm_close: true,
                 ondismiss: async (reason) => {
                     if (reason === undefined) {
-                        // handleRazorpayCancel(order_id);
-                        // dispatch(deductUserBalance({ data: walletDeductionAmt ? walletDeductionAmt : 0 }));
+                        props.setShowModal(false);
                     }
                 }
             },
@@ -126,12 +126,11 @@ const AddWalletModal = (props) => {
         };
         const rzpay = new window.Razorpay(options);
         rzpay.on('payment.cancel', function (response) {
-            // alert("Payment Cancelled");
-            // handleRazorpayCancel(order_id);
+            toast.error(response);
+            props.setShowModal(false);
         });
         rzpay.on('payment.failed', function (response) {
             toast.error(response);
-            // api.deleteOrder(cookies.get('jwt_token'), order_id);
         });
         rzpay.open();
     }, [Razorpay]);
@@ -144,18 +143,11 @@ const AddWalletModal = (props) => {
             currency: currency,
             ref: (new Date()).getTime().toString(),
             label: support_email,
-            onClose: function () {
-                // api.deleteOrder(cookies.get('jwt_token'), orderid);
-                // setWalletAmount(user.user.balance);
-                // dispatch(setWallet({ data: 0 }));
-            },
             callback: async function (response) {
-                console.log(response);
-                await api.addTransaction(cookies.get('jwt_token'), null, response.transaction, paymentMethod, "wallet", amount)
+                await api.addTransaction(cookies.get('jwt_token'), null, response.reference, "Paystack", "wallet", amount)
                     .then(response => response.json())
                     .then(result => {
                         if (result.status === 1) {
-                            console.log(result);
                             toast.success(result.message);
                             dispatch(addUserBalance({ data: parseInt(amount) }));
                             props.setShowModal(false);
@@ -166,27 +158,34 @@ const AddWalletModal = (props) => {
                         }
                     })
                     .catch(error => console.log(error));
-
             }
         });
 
         handler.openIframe();
     };
-
+    const handlePaypalPayment = async (redirectUrl) => {
+        const newWindow = window.open(redirectUrl, "_parent");
+    };
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await api.initiate_transaction(cookies.get("jwt_token"), null, paymentMethod, "wallet", walletAmount);
-            const result = await response.json();
+            let response, result;
+            if (paymentMethod === "paypal" || paymentMethod === "stripe" || paymentMethod === "razorpay" || paymentMethod === "midtrans") {
+                response = await api.initiate_transaction(cookies.get("jwt_token"), null, paymentMethod, "wallet", walletAmount);
+                result = await response.json();
+            }
             if (paymentMethod === "razorpay") {
                 handleRazorpayPayment(result?.data?.transaction_id, walletAmount, user?.user?.name, user?.user?.email, user?.user?.mobile, setting.setting?.app_name);
             } else if (paymentMethod === "paystack") {
                 handlePayStackPayment(user?.user?.email, walletAmount, setting.payment_setting.paystack_currency_code, setting.setting.support_email);
             } else if (paymentMethod === "stripe") {
-                console.log(walletAmount);
                 setStripeTransId(result.data?.id);
                 setstripeClientSecret(result.data?.client_secret);
                 setStripeModalShow(true);
+            } else if (paymentMethod === "paypal") {
+                handlePaypalPayment(result?.data?.paypal_redirect_url);
+            } else if (paymentMethod === "midtrans") {
+                window.open(result?.data?.snapUrl, "_blank");
             }
         } catch (err) {
             console.log(err.message);
@@ -226,42 +225,51 @@ const AddWalletModal = (props) => {
                                         {t("choose_payment_method")}
                                     </div>
                                     <div className='d-flex flex-column gap-4'>
-                                        {/* <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                        <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
-                                                <img className='me-2' src={PaypalSVG} alt='paypalSVG' />
+                                                <img className='me-3' src={PaypalSVG} alt='paypalSVG' />
                                                 {t("paypal")}
                                             </div>
                                             <div>
                                                 <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("paypal")} />
                                             </div>
-                                        </div> */}
+                                        </div>
                                         <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
 
-                                                <img className='me-2' src={RazorPaySVG} alt='razorPaySVG' />
+                                                <img className='me-3' src={RazorPaySVG} alt='razorPaySVG' />
                                                 {t("razorpay")}
                                             </div>
                                             <div>
                                                 <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("razorpay")} />
                                             </div>
                                         </div>
-                                        {/* <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                        <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
 
-                                                <img className='me-2' src={PayStackSVG} alt='paystackSVG' />
+                                                <img className='me-3' src={PayStackSVG} alt='paystackSVG' />
                                                 {t("paystack")}
                                             </div>
                                             <div>
                                                 <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("paystack")} />
                                             </div>
-                                        </div> */}
+                                        </div>
                                         <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
-                                                <img className='me-2' src={StripeSVG} alt='stripeSVG' />
+                                                <img className='me-3' src={StripeSVG} alt='stripeSVG' />
                                                 {t("stripe")}
                                             </div>
                                             <div>
                                                 <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("stripe")} />
+                                            </div>
+                                        </div>
+                                        <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                            <div>
+                                                <img className='MidtransSVG me-3' src={MidtransSVG} alt='MidtransSVG' />
+                                                {t("midtrans")}
+                                            </div>
+                                            <div>
+                                                <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("midtrans")} />
                                             </div>
                                         </div>
                                         {/* <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>

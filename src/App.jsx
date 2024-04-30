@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Route, Routes } from "react-router-dom";
 import Header from "./components/header/Header";
 import MainContainer from "./components/MainContainer";
@@ -12,10 +12,10 @@ import api from './api/api';
 
 //react-toast
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 
 import ShowAllCategories from './components/category/ShowAllCategories';
-import ProductList2 from './components/product/ProductList2';
+import ProductList from './components/product/ProductList';
 import ProductDetails from './components/product/ProductDetails';
 import ViewCart from './components/cart/ViewCart';
 import Wishlist from './components/favorite/Wishlist';
@@ -38,16 +38,16 @@ import BrandList from './components/brands/BrandList';
 import { logoutAuth, setCurrentUser } from "./model/reducer/authReducer";
 import { setLanguage } from './model/reducer/languageReducer';
 import { setSetting } from './model/reducer/settingReducer';
-import { setCartPromo } from './model/reducer/cartReducer';
 import { setShop } from "./model/reducer/shopReducer";
 import ShopByCountriesPage from './components/shop-by-countries/ShopByCountriesPage';
 import ShopBySellersPage from './components/shop-by-seller/ShopBySellersPage';
 import AllRatingsAndReviews from './components/product/AllRatingsAndReviews';
+import AllRatingImages from './components/product/AllRatingImages';
 import PayPalPaymentHandler from './components/paypalPaymentHandler/PayPalPaymentHandler';
+import jsonFile from "./utils/en.json";
+import { diffInTime, } from './utils/TimeUtilites';
 
-
-
-function App() {
+const App = () => {
   //initialize cookies
   const cookies = new Cookies();
 
@@ -59,42 +59,60 @@ function App() {
   const user = useSelector(state => (state.user));
   const cart = useSelector(state => (state.cart));
   const language = useSelector((state) => (state.language));
+  const shop = useSelector((state) => (state.shop));
 
   useEffect(() => {
-    if (cookies.get('jwt_token') !== undefined) {
+    if (cookies.get('jwt_token') !== undefined && user.user === null) {
       getCurrentUser(cookies.get('jwt_token'));
-    } else {
-      dispatch(logoutAuth({ data: null }));
     }
+    //  else {
+    //   dispatch(logoutAuth({ data: null }));
+    // }
     getSetting();
   }, []);
 
   useEffect(() => {
-    api.getSystemLanguage(0, 1)
-      .then(response => response.json())
-      .then(result => {
-        document.documentElement.dir = result?.data?.type;
-        if (result.status === 1) {
-          if (!language.current_language) {
-            dispatch(setLanguage({ data: result.data }));
-
-          } else {
-            document.documentElement.dir = language.current_language.type ? language.current_language.type : "LTR";
+    if (language?.current_language === null)
+      api.getSystemLanguage(0, 1)
+        .then(response => response.json())
+        .then(result => {
+          document.documentElement.dir = result?.data?.type;
+          if (result.status === 1) {
+            if (language.current_language === null) {
+              // console.log(result.data);
+              if (result.data !== undefined) {
+                dispatch(setLanguage({ data: result.data }));
+              }
+              else {
+                dispatch(setLanguage({
+                  data: {
+                    "id": 15,
+                    "name": "English",
+                    "code": "en",
+                    "type": "LTR",
+                    "system_type": 3,
+                    "is_default": 1,
+                    "json_data": jsonFile,
+                    "display_name": "English",
+                    "system_type_name": "Website"
+                  }
+                }));
+              }
+            } else {
+              document.documentElement.dir = language.current_language.type ? language.current_language.type : "LTR";
+            }
           }
-          // document.documentElement.dir = result.data.type;
-        }
-      });
+        });
   }, []);
 
 
-  let translateFile = typeof (language.current_language?.json_data) === "object" ? language.current_language?.json_data : language.current_language?.json_data[0];
-
+  let translateFile = typeof (language?.current_language?.json_data) === "object" ? language?.current_language?.json_data : jsonFile;
   i18next.use(initReactI18next)
     .init({
       resources: {
         en: { translation: translateFile }
       },
-      lng: language.current_language?.code,
+      lng: language?.current_language?.code,
       fallbackLng: "en",
     });
 
@@ -110,13 +128,29 @@ function App() {
   };
   //fetching app-settings
   const getSetting = async () => {
-    await api.getSettings().then(response => response.json())
-      .then(result => {
-        if (result.status === 1) {
-          dispatch(setSetting({ data: result.data }));
-        }
-      })
-      .catch(error => console.log(error));
+    if (setting?.setting == null)
+      await api.getSettings().then(response => response.json())
+        .then(result => {
+          if (result.status === 1) {
+            if (result?.data?.default_city == undefined && city?.city) {
+              const updatedSetting = {
+                ...setting?.setting,
+                default_city: {
+                  id: city?.city?.id,
+                  name: city?.city?.name,
+                  state: city?.city?.state,
+                  formatted_address: city?.city?.formatted_address,
+                  latitude: city?.city?.latitude,
+                  longitude: city?.city?.longitude
+                }
+              };
+              dispatch(setSetting({ data: updatedSetting }));
+            } else {
+              dispatch(setSetting({ data: result?.data }));
+            }
+          }
+        })
+        .catch(error => console.log(error));
   };
 
   useEffect(() => {
@@ -128,15 +162,14 @@ function App() {
             dispatch(setShop({ data: result.data }));
           }
         });
-
     };
     if (city.city !== null) {
       fetchShop(city.city.latitude, city.city.longitude);
     }
-    else {
-      fetchShop(setting?.setting?.map_latitude, setting?.setting?.map_longitude);
-    }
-  }, [city, cart, setting]);
+    // else {
+    // fetchShop(setting?.setting?.map_latitude, setting?.setting?.map_longitude);
+    // }
+  }, [city, cart]);
 
 
   useEffect(() => {
@@ -168,6 +201,20 @@ function App() {
     --primary-color-dark: #e5e5e5;
     --gray-hover-color: #dcdcdc;
     --bg-danger: rgba(209, 31, 31, 0.3);
+
+    --bd-radius-8: 8px;
+    --bd-radius-5: 5px;
+    --bd-radius-10: 10px;
+  }
+  [data-bs-theme="dark"]{
+    --body-background: #141414;
+    --primary-color: white;
+    --secondary-color:${setting.setting && setting.setting.web_settings.dark_color};
+    --sub-text-color: #8b8b8b;
+    --second-cards-color: black;
+    --text-field-color: white;
+    --gray-hover-color: #dcdcdc;
+
   }
   input[type="radio"]:checked {
     background-color: var(--secondary-color); /* Change background color when checked */
@@ -185,96 +232,72 @@ function App() {
 }
   `;
 
-  // useEffect(() => {
-  //    dispatch(setCartPromo({ data: null }));
-  //    dispatch({ type: ActionTypes.SET_CART_PROMO, payload: null });
-  // }, [cart.cart]);
 
   return (
-    <>
+    <AnimatePresence>
+      <style key={"override-style"}>{RootCss}</style>
+      <div key={"home-container"} className="h-auto">
+        <Header key="header" />
+        <NewUserModal key="newUserModal" />
 
+        <main key={"main-app"} id='main' className="main-app">
+          <Suspense key={"suspense"} fallback={<Loader screen={"full"} />}>
+            <Routes key={"routes"}>
+              {user.user ?
+                <>
+                  <Route key="cart" exact path="/cart" element={<ViewCart />} />
+                  <Route key="checkout" exact path="/checkout" element={<Checkout />} />
+                  <Route key="web-payment-status" exact path='/web-payment-status' element={<PayPalPaymentHandler />} />
+                  <Route key="wishlist" exact path='/wishlist' element={<Wishlist />} />
+                  <Route key="profile" exact path="/profile" element={<ProfileDashboard />} />
+                  <Route key="profile-orders" exact path="/profile/orders" element={<ProfileDashboard showOrders={true} />} />
+                  <Route key="order-details" exact path="/profile/orders/:id" element={<OrderDetails />} />
+                  <Route key="profile-transaction" exact path="/profile/transactions" element={<ProfileDashboard showTransaction={true} />} />
+                  <Route key="profile-wallet-transactions" exact path="/profile/wallet-transaction" element={<ProfileDashboard showWalletTransaction={true} />} />
+                  <Route key="address" exact path="/profile/address" element={<ProfileDashboard showAddress={true} />} />
+                  <Route key="notification" exact path="/notification" element={<Notification />} />
+                  <Route key="categories" exact path='/categories' element={<ShowAllCategories />} />
+                  <Route key="products" exact path='/products' element={<ProductList />} />
+                  <Route key="product-details" exact path='/product/:slug' element={<ProductDetails />} />
+                  <Route key="rating-and-reviews" exact path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} />
+                  <Route key="about" exact path='/about' element={<About />} />
+                  <Route key="contact" exact path='/contact' element={<Contact />} />
+                  <Route key="faq" exact path='/faq' element={<FAQ />} />
+                  <Route key="terms" exact path='/terms' element={<Terms />} />
+                  <Route key="policy" exact path='/policy/:policy_type' element={<Policy />} />
+                  <Route key="home" exact path="" element={<MainContainer />} />
+                  <Route key="brands" exact path='/brands' element={<BrandList />} />
+                  <Route key="countries" exact path='/countries' element={<ShopByCountriesPage />} />
+                  <Route key="sellers" exact path='/sellers' element={<ShopBySellersPage />} />
+                </>
+                :
+                <>
+                  <Route key="categories" exact path='/categories' element={<ShowAllCategories />} />
+                  <Route key="brands" exact path='/brands' element={<BrandList />} />
+                  <Route key="countries" exact path='/countries' element={<ShopByCountriesPage />} />
+                  <Route key="sellers" exact path='/sellers' element={<ShopBySellersPage />} />
+                  <Route key="products" exact path='/products' element={<ProductList />} />
+                  <Route key="product-details" exact path='/product/:slug' element={<ProductDetails />} />
+                  <Route key="rating-and-reviews" exact path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} />
+                  <Route key="about" exact path='/about' element={<About />} />
+                  <Route key="contact" exact path='/contact' element={<Contact />} />
+                  <Route key="faq" exact path='/faq' element={<FAQ />} />
+                  <Route key="terms" exact path='/terms' element={<Terms />} />
+                  <Route key="policy" exact path='/policy/:policy_type' element={<Policy />} />
+                  <Route key="home" exact path="" element={<MainContainer />} />
+                </>
+              }
+              <Route key="404-page" path='*' element={<NotFound />} />
+            </Routes>
+          </Suspense>
+          <ScrollTop key="scrollTop" />
+        </main>
+        <Footer key="footer" />
+        <ToastContainer key="toastContainer" bodyStyle={{ color: "#000" }} className={"toastContainer"} toastClassName='toast-container-class' />
+      </div>
+    </AnimatePresence>
 
-
-      <AnimatePresence>
-        <style>{RootCss}</style>
-        <div className="h-auto">
-
-          <Header key={"header"} />
-
-          <NewUserModal key={"newUserModal"} />
-          {
-            <>
-
-              <main id='main' className="main-app">
-                <Suspense fallback={<Loader screen={"full"} />} key={"reactSuspense"}>
-                  <Routes >
-                    {/* {user.user && user.user} */}
-                    {user.user ?
-                      <>
-                        <Route exact={true} path="/cart" element={<ViewCart />}></Route>
-                        <Route exact={true} path="/checkout" element={<Checkout />}></Route>
-                        <Route exact={true} path='/web-payment-status' element={<PayPalPaymentHandler />}></Route>
-                        <Route exact={true} path='/wishlist' element={<Wishlist />}></Route>
-                        <Route exact={true} path="/profile" element={<ProfileDashboard />}></Route>
-                        <Route exact={true} path="/profile/orders" element={<ProfileDashboard showOrders={true} />}></Route>
-                        <Route exact={true} path="/profile/orders/:id" element={<OrderDetails />}></Route>
-                        <Route exact={true} path="/profile/transactions" element={<ProfileDashboard showTransaction={true} />}></Route>
-                        <Route exact={true} path="/profile/wallet-transaction" element={<ProfileDashboard showWalletTransaction={true} />}></Route>
-                        <Route exact={true} path="/profile/address" element={<ProfileDashboard showAddress={true} />}></Route>
-                        <Route exact={true} path="/notification" element={<Notification />}></Route>
-                        <Route exact={true} path='/categories' element={<ShowAllCategories />}></Route>
-                        <Route exact={true} path='/products' element={<ProductList2 />}></Route>
-                        <Route exact={true} path='/product' element={<ProductDetails />}></Route>
-                        <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
-                        <Route exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} ></Route>
-                        <Route exact={true} path='/about' element={<About />}></Route>
-                        <Route exact={true} path='/contact' element={<Contact />}></Route>
-                        <Route exact={true} path='/faq' element={<FAQ />}></Route>
-                        <Route exact={true} path='/terms' element={<Terms />}></Route>
-                        <Route exact={true} path='/policy/:policy_type' element={<Policy />}></Route>
-                        <Route exact={true} path="" element={<MainContainer />}></Route>
-                        <Route exact={true} path='/brands' element={<BrandList />} />
-                        <Route exact={true} path='/countries' element={<ShopByCountriesPage />} />
-                        <Route exact={true} path='/sellers' element={<ShopBySellersPage />} />
-                      </>
-                      :
-                      <>
-
-                        <Route exact={true} path='/categories' element={<ShowAllCategories />}></Route>
-                        <Route exact={true} path='/brands' element={<BrandList />} />
-                        <Route exact={true} path='/countries' element={<ShopByCountriesPage />} />
-                        <Route exact={true} path='/sellers' element={<ShopBySellersPage />} />
-                        <Route exact={true} path='/products' element={<ProductList2 />}></Route>
-                        <Route exact={true} path='/product' element={<ProductDetails />}></Route>
-                        <Route exact={true} path='/product/:slug' element={<ProductDetails />}></Route>
-                        <Route exact={true} path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} ></Route>
-                        <Route exact={true} path='/about' element={<About />}></Route>
-                        <Route exact={true} path='/contact' element={<Contact />}></Route>
-                        <Route exact={true} path='/faq' element={<FAQ />}></Route>
-                        <Route exact={true} path='/terms' element={<Terms />}></Route>
-                        <Route exact={true} path='/policy/:policy_type' element={<Policy />}></Route>
-                        <Route exact={true} path="" element={<MainContainer />}></Route>
-                      </>
-                    }
-
-                    <Route exact={true} path='*' element={<NotFound />}></Route>
-
-                  </Routes>
-                </Suspense>
-
-
-                <ScrollTop></ScrollTop>
-              </main>
-            </>
-          }
-          <Footer />
-
-
-          <ToastContainer toastClassName='toast-container-class' />
-        </div>
-      </AnimatePresence>
-    </>
   );
-}
+};
 
 export default App;

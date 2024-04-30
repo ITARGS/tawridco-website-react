@@ -11,6 +11,7 @@ import Stripe from '../../utils/ic_stripe.svg';
 import cod from '../../utils/ic_cod.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import paypal from "../../utils/ic_paypal.svg";
+import Midtrans from "../../utils/Icons/Midtrans.svg";
 import Cookies from 'universal-cookie';
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
@@ -51,6 +52,7 @@ const Checkout = () => {
     const address = useSelector((state) => state.address);
     const user = useSelector(state => (state.user));
     const setting = useSelector(state => (state.setting));
+
     const [paymentUrl, setpaymentUrl] = useState(null);
     const [codAllow, setCodAllow] = useState(0);
     const [totalPayment, setTotalPayment] = useState(null);
@@ -105,7 +107,7 @@ const Checkout = () => {
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
-                        setCodAllow(1);
+                        setCodAllow(result?.data?.cod_allowed);
                         dispatch(setCartCheckout({ data: result.data }));
                         dispatch(setWallet({ data: 0 }));
                         if (cart?.promo_code) {
@@ -120,34 +122,7 @@ const Checkout = () => {
                 .catch(error => console.log(error));
     }, [address?.selected_address]);
 
-
-    // useEffect(() => {
-
-    //     const handleMessage = (event) => {
-    //         if (event.origin === api.getAppUrl()) {
-    //             if (event.data === "success") {
-    //                 paypalStatus.current = true;
-    //                 setShow(true);
-    //                 setIsOrderPlaced(true);
-    //             } else {
-    //                 api.deleteOrder(cookies.get('jwt_token'), orderID);
-    //                 toast.error("Payment failed");
-    //                 setIsOrderPlaced(false);
-    //             }
-    //         }
-    //     };
-
-
-    //     window.addEventListener('message', handleMessage);
-    //     // Clean up by removing the event listener when the component unmounts
-    //     return () => {
-    //         window.removeEventListener('message', handleMessage);
-    //     };
-
-    // }, [window]);
-
     const [expectedDate, setexpectedDate] = useState(null);
-    // const expectedDate = useRef(new Date())
     const checkLastOrderTime = (lastTime) => {
         const currentTime = expectedDate ? expectedDate : new Date();
         if (currentTime > new Date()) {
@@ -211,12 +186,6 @@ const Checkout = () => {
 
     const [Razorpay] = useRazorpay();
     const handleRozarpayPayment = useCallback(async (order_id, razorpay_transaction_id, amount, name, email, mobile, app_name) => {
-        // const amount = total_amount
-        // const name = user.user.name
-        // const email = user.user.email
-        // const mobile = user.user.mobile
-        // console.log("RazorPay Payment Handler Function");
-
         const res = await initializeRazorpay();
 
         if (!res) {
@@ -308,6 +277,7 @@ const Checkout = () => {
             document.body.appendChild(script);
         });
     };
+
     const handleRazorpayCancel = (order_id) => {
         api.deleteOrder(cookies.get('jwt_token'), order_id);
         setWalletDeductionAmt(walletDeductionAmt);
@@ -488,8 +458,6 @@ const Checkout = () => {
                     .then(response => response.json())
                     .then(async result => {
                         if (result.status === 1) {
-
-
                             await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, 'Stripe', "order")
                                 .then(resp => resp.json())
                                 .then(res => {
@@ -500,7 +468,6 @@ const Checkout = () => {
                                         setstripeClientSecret(res.data.client_secret);
                                         setstripeTransactionId(res.data.id);
                                     } else {
-                                        // document.getElementById('stripe-toggle').click()
                                         setIsOrderPlaced(false);
                                         api.deleteOrder(cookies.get('jwt_token'), result.data.order_id);
 
@@ -517,10 +484,6 @@ const Checkout = () => {
                         }
                     })
                     .catch(error => console.log(error));
-
-
-                // setstripeOrderId(400)
-
                 setloadingPlaceOrder(false);
             }
             else if (paymentMethod === 'Paypal') {
@@ -542,32 +505,8 @@ const Checkout = () => {
                                         setpaymentUrl(res.data.paypal_redirect_url);
                                         dispatch(deductUserBalance({ data: walletDeductionAmt }));
                                         dispatch(setCartPromo({ data: null }));
-                                        // window.open(res.data.paypal_redirect_url, '_blank', 'location=yes,height=570,width=520,scrollbars=yes,status=yes')
-                                        // document.getElementById("iframe_id").contentWindow.location.href
-                                        // handleRozarpayyPayment(result.data.order_id, res.data.transaction_id, cart.checkout.total_amount, user.user.name, user.user.email, user.user.mobile, setting.setting.app_name);
-
-                                        var ccavenue_redirect_url = `${res.data.paypal_redirect_url}&&amount=${totalPayment}`;
-                                        //var ccavenue_redirect_url = "https://admin.pocketgroceries.in/customer/ccavenue_payment";
-
-                                        var subWindow = window.open(ccavenue_redirect_url, '_parent');
-                                        // var subWindow = window.open(ccavenue_redirect_url, '_parent', 'location=yes,height=570,width=520,scrollbars=yes,status=yes');
-                                        // var redirect_url = res.data.paypal_redirect_url;
-                                        /*subWindow.postMessage('Hello from parent window!', '*');
-                                        console.log("redirect_url : ",redirect_url);*/
-                                        // const checkChildWindow = setInterval((e) => {
-                                        //     if (subWindow && subWindow.closed) {
-                                        //         clearInterval(checkChildWindow);
-                                        //         // console.log('Child window is closed');
-                                        //         if (subWindow && subWindow.closed && !paypalStatus.current) {
-                                        //             api.deleteOrder(cookies.get('jwt_token'), result.data.order_id);
-                                        //             setWalletAmount(user.user.balance);
-                                        //             toast.error("Payment failed ");
-                                        //             // Perform any actions or display a message here
-                                        //         }
-
-                                        //     }
-                                        // }, 1500); // Adjust the interval (in milliseconds) as needed
-
+                                        let ccavenue_redirect_url = `${res.data.paypal_redirect_url}&&amount=${totalPayment}`;
+                                        let subWindow = window.open(ccavenue_redirect_url, '_parent');
                                     } else {
                                         toast.error(res.message);
                                         setloadingPlaceOrder(false);
@@ -621,7 +560,39 @@ const Checkout = () => {
                 //         .catch(error => console.error(error))
                 // }
 
-            };
+            } else if (paymentMethod == "Midtrans") {
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                    .then(response => response.json())
+                    .then(async result => {
+                        // fetchOrders();
+                        if (result.status === 1) {
+                            setOrderID(result.data.order_id);
+                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Midtrans", "order")
+                                .then(resp => resp.json())
+                                .then(res => {
+                                    console.log(res.data);
+                                    setisLoader(false);
+                                    if (res.status === 1) {
+                                        setloadingPlaceOrder(false);
+                                        setpaymentUrl(res.data.midtrans_redirect_url?.snapUrl);
+                                        dispatch(deductUserBalance({ data: walletDeductionAmt }));
+                                        dispatch(setCartPromo({ data: null }));
+                                        let subWindow = window.open(res.data?.snapUrl, '_blank');
+                                    } else {
+                                        toast.error(res.message);
+                                        setloadingPlaceOrder(false);    
+                                    }
+                                })
+                                .catch(error => console.error(error));
+                        }
+                        else {
+                            toast.error(result.message);
+                            setloadingPlaceOrder(false);
+                            setisLoader(false);
+                        }
+                    })
+                    .catch(error => console.log(error));
+            }
         }
     };
 
@@ -781,37 +752,6 @@ const Checkout = () => {
                                     </div>
 
                                     <div className='order-container'>
-                                        {/* <div className="promo-section">
-
-                                            <div className="heading">
-                                                <span>{t("coupon")}</span>
-                                            </div>
-                                            <div className="promo-wrapper">
-                                                <div className="promo-container">
-                                                    <div className="promo-button d-block d-lg-flex">
-                                                        <span className="">{t("have_coupon")}</span>
-                                                        <button className="btn btn-primary" onClick={() => setShowPromoOffcanvas(true)}>{t("view_coupon")}</button>
-                                                    </div>
-                                                    {cart.cart && cart.promo_code ?
-                                                        <>
-                                                            <div className="promo-code">
-                                                                <div className="">
-                                                                    <span><RiCoupon2Fill size={26} fill='var(--secondary-color)' /></span>
-                                                                </div>
-                                                                <div className="d-flex flex-column">
-                                                                    <span className='promo-name'>{cart.promo_code.promo_code}</span>
-                                                                    <span className='promo-discount-amount'>{cart.promo_code.message}</span>
-                                                                </div>
-                                                                <div className="d-flex flex-column">
-                                                                    <span>{setting.setting && setting.setting.currency} {cart.promo_code.discount}</span>
-                                                                    <span className='promo-remove' onClick={removeCoupon}> {t("remove")}</span>
-                                                                </div>
-                                                            </div>
-                                                        </>
-                                                        : <></>}
-                                                </div>
-                                            </div>
-                                        </div> */}
                                         {user?.user?.balance > 0 ? <div className="promo-section">
                                             <div className="heading">
                                                 <span>{t("Wallet")}</span>
@@ -848,10 +788,10 @@ const Checkout = () => {
 
                                                 {setting?.payment_setting.cod_payment_method === "1" && codAllow == 1
                                                     ? (
-                                                        <label className="form-check-label" htmlFor='cod'>
+                                                        <label className="form-check-label cursorPointer" htmlFor='cod'>
                                                             <div className='payment-selector'>
+                                                                <img src={cod} alt='cod' />
                                                                 <div className="">
-                                                                    <img src={cod} alt='cod' />
                                                                     <span>{t("cash_on_delivery")}</span>
                                                                 </div>
                                                                 <input type="radio" name="payment-method" id='cod' defaultChecked={true} onChange={() => {
@@ -863,10 +803,10 @@ const Checkout = () => {
 
                                                 {setting.payment_setting.razorpay_payment_method === "1"
                                                     ? (
-                                                        <label className="form-check-label" htmlFor='razorpay'>
+                                                        <label className="form-check-label cursorPointer" htmlFor='razorpay'>
                                                             <div className='payment-selector'>
+                                                                <img src={rozerpay} alt='cod' />
                                                                 <div className="">
-                                                                    <img src={rozerpay} alt='cod' />
                                                                     <span>{t("razorpay")}</span>
                                                                 </div>
                                                                 <input type="radio" name="payment-method" id='razorpay' onChange={() => {
@@ -878,10 +818,10 @@ const Checkout = () => {
 
                                                 {setting.payment_setting.paystack_payment_method === "1"
                                                     ? (
-                                                        <label className="form-check-label" htmlFor='paystack'>
+                                                        <label className="form-check-label cursorPointer" htmlFor='paystack'>
                                                             <div className='payment-selector'>
+                                                                <img src={paystack} alt='cod' />
                                                                 <div className="">
-                                                                    <img src={paystack} alt='cod' />
                                                                     <span>{t("paystack")}</span>
                                                                 </div>
                                                                 <input type="radio" name="payment-method" id='paystack' onChange={() => {
@@ -893,10 +833,10 @@ const Checkout = () => {
 
                                                 {setting.payment_setting.stripe_payment_method === "1"
                                                     ? (
-                                                        <label className="form-check-label" htmlFor='stripe'>
+                                                        <label className="form-check-label cursorPointer" htmlFor='stripe'>
                                                             <div className='payment-selector'>
+                                                                <img src={Stripe} alt='stripe' />
                                                                 <div className="">
-                                                                    <img src={Stripe} alt='stripe' />
                                                                     <span className='ps-2'> {t("stripe")}</span>
                                                                 </div>
                                                                 <input type="radio" name="payment-method" id='stripe' onChange={() => {
@@ -909,10 +849,10 @@ const Checkout = () => {
                                                 {setting.payment_setting.paypal_payment_method === "1"
                                                     ? (
                                                         <>
-                                                            <label className="form-check-label" htmlFor='paypal'>
+                                                            <label className="form-check-label cursorPointer" htmlFor='paypal'>
                                                                 <div className='payment-selector'>
+                                                                    <img src={paypal} alt='paypal' />
                                                                     <div className="">
-                                                                        <img src={paypal} alt='paypal' />
                                                                         <span>{t("paypal")}</span>
                                                                     </div>
                                                                     <input type="radio" name="payment-method" id='paypal' onChange={() => {
@@ -923,9 +863,18 @@ const Checkout = () => {
 
                                                         </>
                                                     ) : null}
-
-
-                                                {/* {console.log(cart)} */}
+                                                <label className="form-check-label cursorPointer" htmlFor='midtrans'>
+                                                    <div className='payment-selector'>
+                                                        <img src={Midtrans} alt='midtrans' />
+                                                        <div className="">
+                                                            <span>{t("midtrans")}</span>
+                                                        </div>
+                                                        <input type="radio" name="payment-method" id='midtrans' onChange={() => {
+                                                            setpaymentMethod("Midtrans");
+                                                        }} />
+                                                    </div>
+                                                </label>
+                                                {/* {setting?.payment_setting?.} */}
                                             </div>}
 
 
@@ -1069,8 +1018,8 @@ const Checkout = () => {
 
 
                                                                                     {paymentMethod === "Stripe" && setting
-                                                                                        ? <motion.button whileTap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
-                                                                                        : <motion.button whileTap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
+                                                                                        ? <motion.button whiletap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
+                                                                                        : <motion.button whiletap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
                                                                                     }
                                                                                 </div>
                                                                             ) : null
@@ -1109,7 +1058,7 @@ const Checkout = () => {
                         ? <Loader width='100%' height='100%' />
                         :
                         <Elements stripe={stripePromise} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment}>
-                            <InjectCheckout setShow={setStripeModalShow} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment}
+                            <InjectCheckout setIsOrderPlaced={setIsOrderPlaced} setShow={setStripeModalShow} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment}
                                 setWalletAmount={setWalletAmount} walletAmount={user?.user?.balance}
                                 walletDeductionAmt={walletDeductionAmt}
                             />

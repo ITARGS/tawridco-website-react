@@ -9,7 +9,7 @@
   border: none;
   text-decoration: none;
   /* transition: all 0.2s linear; */
-  color: var(--primary-color);
+  /* color: var(--primary-color); */
 }
 
 *::selection {
@@ -202,4 +202,10 @@ input[type="number"] {
 }
 .cursorPointer {
   cursor: pointer;
+}
+
+.offerImages {
+  border-radius: var(--bd-radius-10);
+  width: 100%;
+  height: auto;
 }

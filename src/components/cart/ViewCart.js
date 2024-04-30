@@ -35,32 +35,6 @@ const ViewCart = () => {
     const [isLoader, setisLoader] = useState(false);
     const [showPromoOffcanvas, setShowPromoOffcanvas] = useState(false);
 
-    // useEffect(() => {
-    //     console.log("viewcart useEffect called");
-    //     if (sizes.sizes === null || sizes.status === 'loading') {
-    //         if (city.city !== null && cart.cart !== null) {
-    //             api.getProductbyFilter(city.city.id, city.city.latitude, city.city.longitude)
-    //                 .then(response => response.json())
-    //                 .then(result => {
-    //                     if (result.status === 1) {
-    //                         setproductSizes(result.sizes);
-    //                         dispatch(setProductSizes({ data: result.sizes }));
-    //                     }
-    //                 });
-    //         }
-    //     }
-    //     else {
-    //         setproductSizes(sizes.sizes);
-    //     }
-
-    //     if (cart.cart === null && cart.status === 'fulfill') {
-    //         setiscartEmpty(true);
-    //     }
-    //     else {
-    //         setiscartEmpty(false);
-    //     }
-
-    // }, [cart]);
 
     useEffect(() => {
         api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude, 1)
@@ -264,7 +238,7 @@ const ViewCart = () => {
                                                         </th>
 
                                                         <th className='remove last-column'>
-                                                            <button whileTap={{ scale: 0.8 }} type='button' onClick={() => removefromCart(product.product_id, product.product_variant_id)}>
+                                                            <button whiletap={{ scale: 0.8 }} type='button' onClick={() => removefromCart(product.product_id, product.product_variant_id)}>
                                                                 <RiDeleteBinLine fill='red' fontSize={'2.985rem'} />
                                                             </button>
                                                         </th>
@@ -274,7 +248,7 @@ const ViewCart = () => {
                                         </table>
                                     </div>
                                     <div className="billing col-3">
-                                        <div className="promo-section">
+                                        <div className="promo-section mb-3">
 
                                             <div className="heading">
                                                 <span>{t("coupon")}</span>
@@ -283,7 +257,7 @@ const ViewCart = () => {
                                                 <div className="promo-container">
                                                     <div className="promo-button ">
                                                         <span className="">{t("have_coupon")}</span>
-                                                        <button className="btn btn-primary" onClick={() => setShowPromoOffcanvas(true)}>{t("view_coupon")}</button>
+                                                        <button className="btn" onClick={() => setShowPromoOffcanvas(true)}>{t("view_coupon")}</button>
                                                     </div>
                                                     {cart.cart && cart.promo_code ?
                                                         <>
@@ -359,28 +333,17 @@ const ViewCart = () => {
                                                         </div>
 
 
-                                                        <div className='button-container'>
-                                                            <span style={{ cursor: "pointer" }} onClick={stockValidation} className='checkout'>{t("proceed_to_checkout")}</span>
+                                                        <div className='d-flex justify-content-center mt-3 button-container'>
+                                                            <button type='button' style={{ cursor: "pointer" }} onClick={stockValidation} className='checkout'>{t("proceed_to_checkout")}</button>
                                                         </div>
 
                                                     </div>)}
-
-
-
                                         </div>
                                     </div>
                                 </div>
                             </>
                         </>
                     )}
-                    {/* {cart.cart === null || productSizes === null
-                                ? (
-                                     <Loader screen='full' /> 
-
-                                )
-                                : (
-                                   
-                                )} */}
                 </div>
             </div>
             <Promo show={showPromoOffcanvas} setShow={setShowPromoOffcanvas} />

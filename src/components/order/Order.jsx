@@ -314,7 +314,6 @@ const Order = () => {
                     <div className='modal-dialog'>
                         <div className="modal-content" style={{ borderRadius: "10px", maxWidth: "100%", padding: "30px 15px", zIndex: -2 }}>
                             <div id="mainContentTrack">
-
                                 <section className="track" id="printMe">
                                     <div className="d-flex justify-content-between align-items-center mx-5">
                                         <h5 className="page-header">{setting.setting?.app_name}</h5>
@@ -326,7 +325,11 @@ const Order = () => {
                                             <div className="d-flex my-4 align-items-center">
                                                 <div className="col-sm-4 bg-white track-col"> <span className="rounded-circle px-3 pt-2 fs-2 track-order-icon btn " style={{ background: "var(--secondary-color-light)" }}><i className="bi bi-cart "></i></span></div>
                                                 <span className=""> {t("order_status_display_name_recieved")}</span>
-                                                <ProgressBar className='orderProgressBar' now={element && element.active_status === "2" ? 23 : element.active_status === "5" ? 77 : element.active_status === "4" ? 57 : element.active_status === "6" ? 100 : 0} />
+                                                <ProgressBar className='orderProgressBar' now={element ? element?.active_status === "2" ? 0 :
+                                                    element.active_status === "4" ? 27 :
+                                                        element.active_status === "5" ? 67 :
+                                                            element.active_status === "6" ? 100 :
+                                                                0 : 0} />
                                             </div>
                                             {/* <div className="progress flex-column col-sm-3" role="progressbar" aria-label="Basic example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
 
@@ -336,15 +339,15 @@ const Order = () => {
                                                         height: element && element.active_status === "2" ? "23%" : element.active_status === "5" ? "77%" : element.active_status === "4" ? "57%" : element.active_status === "6" ? "100%" : "0%"
                                                     }}></div>
                                                 </div> */}
-                                            <div className="d-flex my-4 align-items-center">
+                                            <div className={`d-flex my-4 align-items-center ${element?.active_status >= "4" ? "visible" : "invisible"}`}>
                                                 <div className="col-sm-4 bg-white track-col"> <span className="rounded-circle px-3 pt-2 fs-2 track-order-icon btn " style={{ background: "var(--secondary-color-light)" }}><i className="bi bi-truck "></i></span></div>
                                                 <span> {t("order_status_display_name_shipped")}</span>
                                             </div>
-                                            <div className="d-flex my-4 align-items-center">
+                                            <div className={`d-flex my-4 align-items-center ${element?.active_status >= "5" ? "visible" : "invisible"}`}>
                                                 <div className="col-sm-4 bg-white track-col"> <span className="rounded-circle px-3 pt-2 fs-2 btn track-order-icon " style={{ background: "var(--secondary-color-light)" }}><i className="bi bi-bus-front "></i></span></div>
                                                 <span> {t("order_status_display_name_out_for_delivery")}</span>
                                             </div>
-                                            <div className="d-flex my-4 align-items-center">
+                                            <div className={`d-flex my-4 align-items-center ${element?.active_status >= "6" ? "visible" : "invisible"}`}>
                                                 <div className="col-sm-4 bg-white track-col"> <span className="rounded-circle px-3 pt-2 fs-2 btn track-order-icon " style={{ background: "var(--secondary-color-light)" }}><i className="bi bi-check "></i></span></div>
                                                 <span> {t("order_status_display_name_delivered")}</span>
                                             </div>

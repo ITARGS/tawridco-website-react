@@ -101,84 +101,72 @@ const Category = () => {
     };
     return (
         <>
-            {shop.shop === null
-                ? (
-                    <></>
-                    // <Shimmer height={360} width={400}></Shimmer>
-                )
-                : (
-                    <>
-                        {/* <div whileTap={{ scale: 0.9 }} type='button' className='expand-category'
-                            data-bs-toggle="" data-bs-target="#expandCategory" aria-expanded="false" aria-controls="collapseExample"
-                        >
-                            <div>
-                                <BsGrid3X3GapFill fill='white' fontSize={"3rem"} />
+            {(shop?.shop?.is_category_section_in_homepage && (shop?.shop?.categories?.length > 0))
+                ?
+                <>
+                    <div className="row category_section_header">
+                        <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
+                            <div className="title d-md-flex align-items-center ">
+                                <p>{t('shop_by')} {t('categories')}</p>
+                                <Link className='d-none d-md-block' to='/categories'>{t('see_all')} {t('categories')}<AiOutlineArrowRight size={15} className='see_category_arrow' /> </Link>
                             </div>
-                            <span>browse all categories</span>
-                        </div> */}
-                        <div className="row category_section_header">
-                            <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
-                                <div className="title d-md-flex align-items-center ">
-                                    <p>{t('shop_by')} {t('categories')}</p>
-                                    <Link className='d-none d-md-block' to='/categories'>{t('see_all')} {t('categories')}<AiOutlineArrowRight size={15} className='see_category_arrow' /> </Link>
-                                </div>
-                                <div className=' d-md-none'>
-                                    <Link className='category_button' to='/categories'>{t('see_all')}</Link>
-                                </div>
-                                <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                                    <button className='prev-arrow-category' onClick={handlePrevClick}><FaChevronLeft size={20} /></button>
-                                    <button className='next-arrow-category' onClick={handleNextClick}><FaChevronRight size={20} /></button>
-                                </div>
+                            <div className=' d-md-none'>
+                                <Link className='category_button' to='/categories'>{t('see_all')}</Link>
+                            </div>
+                            <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
+                                <button className='prev-arrow-category' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
+                                <button className='next-arrow-category' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button>
                             </div>
                         </div>
-                        <div className="caegory_section_content">
+                    </div>
+                    <div className="caegory_section_content">
 
-                            <div className='row ' id="expandCategory">
-                                <Slider {...settings} ref={sliderRef}>
+                        <div className='row ' id="expandCategory">
+                            <Slider {...settings} ref={sliderRef}>
 
-                                    {
-                                        shop.shop?.categories?.map((ctg, index) => (
-                                            <div className="col-md-12" key={index}>
+                                {
+                                    shop.shop?.categories?.map((ctg, index) => (
+                                        <div className="col-md-12" key={index}>
 
-                                                <div className='category-container '>
+                                            <div className='category-container '>
 
-                                                    {ctg.has_child
-                                                        ? (
-                                                            <Card onClick={() => selectCategory(ctg)}>
-                                                                <Card.Img onError={placeHolderImage} variant='top' src={ctg.image_url} alt={ctg.subtitle} className='card-img-top category_image' />
-                                                                <Card.Body className='card-body'>
-                                                                    <Card.Title className="card-title">{ctg.name}</Card.Title>
-                                                                </Card.Body>
-                                                            </Card>
+                                                {ctg.has_child
+                                                    ? (
+                                                        <Card onClick={() => selectCategory(ctg)}>
+                                                            <Card.Img onError={placeHolderImage} variant='top' src={ctg.image_url} alt={ctg.subtitle} className='card-img-top category_image' />
+                                                            <Card.Body className='card-body'>
+                                                                <Card.Title className="card-title">{ctg.name}</Card.Title>
+                                                            </Card.Body>
+                                                        </Card>
 
-                                                        )
-                                                        : (
+                                                    )
+                                                    : (
 
 
-                                                            <Card onClick={() => selectCategory(ctg)}>
-                                                                <Card.Img onError={placeHolderImage} variant='top' src={ctg.image_url} alt={ctg.subtitle} className='card-img-top category_image' />
-                                                                <Card.Body className='card-body'>
-                                                                    <Card.Title className="card-title">{ctg.name}</Card.Title>
-                                                                </Card.Body>
-                                                            </Card>
+                                                        <Card onClick={() => selectCategory(ctg)}>
+                                                            <Card.Img onError={placeHolderImage} variant='top' src={ctg.image_url} alt={ctg.subtitle} className='card-img-top category_image' />
+                                                            <Card.Body className='card-body'>
+                                                                <Card.Title className="card-title">{ctg.name}</Card.Title>
+                                                            </Card.Body>
+                                                        </Card>
 
-                                                        )}
-
-                                                </div>
+                                                    )}
 
                                             </div>
 
-                                        ))
-                                    }
+                                        </div>
+
+                                    ))
+                                }
 
 
-                                </Slider>
-                            </div>
+                            </Slider>
                         </div>
+                    </div>
 
 
-                    </>
-                )}
+                </>
+                : null}
         </>
     );
 };

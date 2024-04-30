@@ -77,42 +77,43 @@ const ShopByCountries = () => {
 
     return (
         <>
-            <section id='all-countries'>
-                <div className="row countries_section_header">
-                    <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
-                        <div className="title d-md-flex align-items-center ">
-                            <p>{t('shop_by')} {t('countries')}</p>
-                            <Link className='d-none d-md-block' to='/countries'>{t('see_all')} {t('countries')}<AiOutlineArrowRight size={15} className='see_countries_arrow' /> </Link>
-                        </div>
-                        <div className=' d-md-none'>
-                            <Link className='country_button' to='/countries'>{t('see_all')}</Link>
-                        </div>
-                        <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                            <button className='prev-arrow-country' onClick={handlePrevClick}><FaChevronLeft size={20} /></button>
-                            <button className='next-arrow-country' onClick={handleNextClick}><FaChevronRight size={20} /></button>
+            {(shop?.shop?.is_country_section_in_homepage && (shop?.shop?.countries?.length > 0)) ?
+                <section id='all-countries'>
+                    <div className="row countries_section_header">
+                        <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
+                            <div className="title d-md-flex align-items-center ">
+                                <p>{t('shop_by')} {t('countries')}</p>
+                                <Link className='d-none d-md-block' to='/countries'>{t('see_all')} {t('countries')}<AiOutlineArrowRight size={15} className='see_countries_arrow' /> </Link>
+                            </div>
+                            <div className=' d-md-none'>
+                                <Link className='country_button' to='/countries'>{t('see_all')}</Link>
+                            </div>
+                            <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
+                                <button className='prev-arrow-country' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
+                                <button className='next-arrow-country' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div className='row justify-content-center home allCountriesContainer'>
-                    <Slider {...settings} ref={sliderRef}>
-                        {shop.shop?.countries?.map((country, index) => (
-                            <div className="my-3 content" key={index} onClick={() => {
-                                dispatch(setFilterByCountry({ data: country?.id }));
-                                navigate('/products');
-                            }}>
-                                <div className='card'>
-                                    <img onError={placeHolderImage} className='card-img-top' src={`${process.env.REACT_APP_API_URL}/storage/${country.logo}`} alt='sellers' loading='lazy' />
-                                    <div className='card-body' style={{ cursor: "pointer" }} >
-                                        <p>{country.name} </p>
+                    <div className='row justify-content-center home allCountriesContainer'>
+                        <Slider {...settings} ref={sliderRef}>
+                            {shop.shop?.countries?.map((country, index) => (
+                                <div className="my-3 content" key={index} onClick={() => {
+                                    dispatch(setFilterByCountry({ data: country?.id }));
+                                    navigate('/products');
+                                }}>
+                                    <div className='card'>
+                                        <img onError={placeHolderImage} className='card-img-top' src={`${process.env.REACT_APP_API_URL}/storage/${country.logo}`} alt='sellers' loading='lazy' />
+                                        <div className='card-body' style={{ cursor: "pointer" }} >
+                                            <p>{country.name} </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        ))}
-                    </Slider>
+                            ))}
+                        </Slider>
 
 
-                </div>
-            </section>
+                    </div>
+                </section> : null}
         </>
     );
 };
