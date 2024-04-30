@@ -577,10 +577,10 @@ const Checkout = () => {
                                         setpaymentUrl(res.data.midtrans_redirect_url?.snapUrl);
                                         dispatch(deductUserBalance({ data: walletDeductionAmt }));
                                         dispatch(setCartPromo({ data: null }));
-                                        let subWindow = window.open(res.data.midtrans_redirect_url?.snapUrl, '_blank');
+                                        let subWindow = window.open(res.data?.snapUrl, '_blank');
                                     } else {
                                         toast.error(res.message);
-                                        setloadingPlaceOrder(false);
+                                        setloadingPlaceOrder(false);    
                                     }
                                 })
                                 .catch(error => console.error(error));

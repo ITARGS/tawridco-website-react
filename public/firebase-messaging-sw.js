@@ -16,11 +16,11 @@ const messaging = firebase.messaging();
 
 try {
     messaging.setBackgroundMessageHandler(function (payload) {
-        let data = JSON.parse(payload?.data?.data);
+        let data = payload?.notification;
         const notificationTitle = data?.title;
         const notificationOptions = {
-            body: data?.message,
-            icon: './logo.png',
+            body: data?.body,
+            icon: './logo.png' || data?.image,
             image: data?.image
         };
 

@@ -2,7 +2,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     status: 'loading', //fulfill
     setting: null,
-    payment_setting: null
+    payment_setting: null,
+    settingsFetchedTime: new Date(),
+    paymentSettingsFetchTime: new Date()
 };
 export const settingReducer = createSlice({
     name: "setting",
@@ -11,10 +13,12 @@ export const settingReducer = createSlice({
         setSetting: (state, action) => {
             state.status = "fulfilled";
             state.setting = action.payload.data;
+            state.settingsFetchedTime = new Date();
         },
         setPaymentSetting: (state, action) => {
             state.status = "fulfill";
             state.payment_setting = action.payload.data;
+            state.paymentSettingsFetchTime = new Date();
         },
     }
 });

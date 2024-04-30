@@ -7,7 +7,7 @@ import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline 
 import { IoMdArrowDropdown, IoIosArrowDown } from "react-icons/io";
 import { GoLocation } from 'react-icons/go';
 import { FiMenu, FiFilter } from 'react-icons/fi';
-import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { AiOutlineClose, AiOutlineCloseCircle } from 'react-icons/ai';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Location from '../location/Location';
 import { useDispatch, useSelector } from 'react-redux';
@@ -28,6 +28,7 @@ import { setFavourite } from "../../model/reducer/favouriteReducer";
 import { setFilterSearch } from "../../model/reducer/productFilterReducer";
 import { Modal } from 'antd';
 import "../location/location.css";
+import { diffInTime } from '../../utils/TimeUtilites';
 
 const Header = () => {
     const closeSidebarRef = useRef();
@@ -87,7 +88,12 @@ const Header = () => {
         setBodyScroll(true);
     };
 
-
+    useEffect(() => {
+        if (curr_url.pathname != "/products") {
+            setsearch("");
+            dispatch(setFilterSearch({ data: null }));
+        }
+    }, [curr_url]);
     useEffect(() => {
         if (setting.setting?.default_city && !city.city) {
             setisLocationPresent(true);
@@ -107,13 +113,17 @@ const Header = () => {
 
 
     useEffect(() => {
-        api.getSystemLanguage(0, 0)
-            .then((response) => response.json())
-            .then((result) => {
-                dispatch(setLanguageList({ data: result.data }));
-            });
-        fetchPaymentSetting();
-        dispatch(setFilterSearch({ data: null }));
+        if (languages?.available_languages === null) {
+            api.getSystemLanguage(0, 0)
+                .then((response) => response.json())
+                .then((result) => {
+                    dispatch(setLanguageList({ data: result.data }));
+                });
+        }
+        if (setting?.payment_setting == null) {
+            fetchPaymentSetting();
+        }
+        // dispatch(setFilterSearch({ data: null }));
         handleResize();
         window.addEventListener('resize', handleResize);
 
@@ -135,9 +145,6 @@ const Header = () => {
                 }
             })
             .catch(error => console.log(error));
-
-
-
     };
 
     const fetchFavorite = async (token, latitude, longitude) => {
@@ -172,7 +179,6 @@ const Header = () => {
             fetchFavorite(cookies.get('jwt_token'), city.city.latitude, city.city.longitude);
             // fetchNotification(cookies.get('jwt_token'));
         }
-
     }, [city, user]);
 
 
@@ -508,9 +514,14 @@ const Header = () => {
                                             onChange={(e) => {
                                                 setsearch(e.target.value);
                                             }}
-
                                         />
-
+                                        {search != "" ? <AiOutlineClose size={15} className='cursorPointer' style={{
+                                            position: "absolute",
+                                            right: "65px"
+                                        }} onClick={() => {
+                                            setsearch("");
+                                            dispatch(setFilterSearch({ data: null }));
+                                        }} /> : null}
                                         <button type='submit'>
                                             <MdSearch fill='white' />
                                         </button>

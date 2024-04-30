@@ -100,11 +100,8 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                 setP_id(0);
                                 setP_V_id(0);
                                 setQnty(0);
-                                // dispatch({ type: ActionTypes.SET_CART, payloTad: res });
                             }
-
                         });
-
                 }
                 else if (result?.data?.one_seller_error_code == 1) {
                     dispatch(setSellerFlag({ data: 1 }));
@@ -125,14 +122,11 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                         .then(res => {
                             if (res.status === 1) {
                                 dispatch(setCart({ data: res }));
-                                // dispatch({ type: ActionTypes.SET_CART, payload: res });
                             }
                             else {
                                 dispatch(setCart({ data: null }));
-                                // dispatch({ type: ActionTypes.SET_CART, payload: null });
                             }
                         });
-
                 }
                 else {
                     toast.error(result.message);
@@ -152,7 +146,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                         .then(res => {
                             if (res.status === 1) {
                                 dispatch(setFavourite({ data: res }));
-                                // dispatch({ type: ActionTypes.SET_FAVORITE, payload: res });
                             }
                         });
                 }
@@ -175,11 +168,9 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                         .then(res => {
                             if (res.status === 1) {
                                 dispatch(setFavourite({ data: res }));
-                                // dispatch({ type: ActionTypes.SET_FAVORITE, payload: res });
                             }
                             else {
                                 dispatch(setFavourite({ data: null }));
-                                // dispatch({ type: ActionTypes.SET_FAVORITE, payload: null });
                             }
                         });
                 }

@@ -499,7 +499,7 @@ const OrderDetails = React.memo(() => {
                                                     {t('total')}
                                                 </span>
                                                 <span>
-                                                    ${orderData?.final_total}
+                                                    {setting?.setting?.currency}{orderData?.final_total}
                                                 </span>
                                             </div>
                                         </div>
@@ -517,11 +517,11 @@ const OrderDetails = React.memo(() => {
                             </div>
                         </div>
                     </div>
-                </div >
+                </div>
 
                 <RateProductModal product_id={ratingProductId} showPdtRatingModal={showPdtRatingModal} setShowPdtRatingModal={setShowPdtRatingModal} />
                 <UpdateRatingModal product_id={ratingProductId} showModal={showRatingEditModal} setShowModal={setShowRatingEditModal} ratingId={editRatingId} setRatingId={setEditRatingId} />
-            </section >
+            </section>
         </>
     );
 });

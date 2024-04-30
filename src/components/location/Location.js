@@ -10,12 +10,14 @@ import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setCity } from '../../model/reducer/locationReducer';
 import { setSetting } from '../../model/reducer/settingReducer';
+import Cookies from 'universal-cookie';
+import { setShop } from '../../model/reducer/shopReducer';
 
 const Location = (props) => {
   const dispatch = useDispatch();
 
   const setting = useSelector(state => (state.setting));
-
+  const cookies = new Cookies();
   const [isloading, setisloading] = useState(false);
   const [currLocationClick, setcurrLocationClick] = useState(false);
   const [isInputFields, setisInputFields] = useState(false);
@@ -290,11 +292,11 @@ const Location = (props) => {
   };
 
   //handle Confirm current location
-  const confirmCurrentLocation = () => {
+  const confirmCurrentLocation = async () => {
     setisloading(true);
 
     fetchCity(localLocation.city, localLocation.lat, localLocation.lng)
-      .then(result => {
+      .then(async (result) => {
         if (result.status === 1) {
           // dispatch({
           //   type: ActionTypes.SET_CITY, payload: {
@@ -330,6 +332,7 @@ const Location = (props) => {
               distance: result.data.distance
             }
           }));
+          fetchShop(result?.data?.latitude, result?.data?.longitude);
           setisloading(false);
           setcurrLocationClick(false);
           props.setisLocationPresent(true);
@@ -341,8 +344,21 @@ const Location = (props) => {
           seterrorMsg(result.message);
         }
       }).catch(error => console.log("error ", error));
+
   };
   const { t } = useTranslation();
+
+  const fetchShop = async (latitude, longitude) => {
+    try {
+      const response = await api.getShop(latitude, longitude, cookies.get("jwt_token"));
+      const result = await response.json();
+      if (result?.status == 1) {
+        dispatch(setShop({ data: result?.data }));
+      }
+    } catch (error) {
+      console.log(error?.message);
+    }
+  };
 
   return (
     <>

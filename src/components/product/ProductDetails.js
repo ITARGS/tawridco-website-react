@@ -45,6 +45,7 @@ const ProductDetails = () => {
     const city = useSelector(state => state.city);
     const setting = useSelector(state => state.setting);
     const favorite = useSelector(state => (state.favourite));
+    const shop = useSelector(state => state.shop);
 
     useEffect(() => {
         window.scrollTo({ top: 0 });
@@ -67,7 +68,7 @@ const ProductDetails = () => {
     const [quantity, setQuantity] = useState([]);
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [selectedProduct, setselectedProduct] = useState({});
-    const [productSizes, setproductSizes] = useState(null);
+    // const [productSizes, setproductSizes] = useState(null);
     const [offerConatiner, setOfferContainer] = useState(0);
     const [variant_index, setVariantIndex] = useState(null);
     const [realted_variant_index, setRelatedVariantIndex] = useState(0);
@@ -93,25 +94,27 @@ const ProductDetails = () => {
             .catch((error) => console.log(error));
     };
 
-    const getBrandDetails = (id) => {
+    // Not Used
+    // const getBrandDetails = (id) => {
 
-        api.getBrands()
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
+    //     api.getBrands()
+    //         .then(response => response.json())
+    //         .then(result => {
+    //             if (result.status === 1) {
 
-                    result.data.forEach(brnd => {
-                        if (brnd.id === id) {
-                            setproductbrand(brnd);
-                        }
-                    });
-                }
-            })
-            .catch((error) => console.log(error));
-    };
+    //                 result.data.forEach(brnd => {
+    //                     if (brnd.id === id) {
+    //                         console.log(brnd);
+    //                         setproductbrand(brnd);
+    //                     }
+    //                 });
+    //             }
+    //         })
+    //         .catch((error) => console.log(error));
+    // };
 
     const getProductDatafromApi = (id) => {
-        api.getProductbyId(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, id?.id ? id.id : product.selectedProduct_id, cookies.get('jwt_token'))
+        api.getProductbyId(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, id ? id : product.selectedProduct_id, cookies.get('jwt_token'))
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -120,10 +123,11 @@ const ProductDetails = () => {
                     setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index) ? result.data.variants.find((element) => element.id == variant_index) : result.data.variants[0]);
                     setmainimage(result.data.image_url);
                     setimages(result.data.images);
-                    getCategoryDetails(result.data.category_id);
-                    getBrandDetails(result.data.brand_id);
+                    // getCategoryDetails(result.data.category_id);
+                    setproductbrand(shop?.shop?.brands?.find((brand) => brand?.id == result?.data?.brand_id));
+                    // getBrandDetails(result.data.brand_id);
 
-                }
+                };
             })
             .catch(error => console.log(error));
 
@@ -134,14 +138,12 @@ const ProductDetails = () => {
 
     useEffect(() => {
         const getProductData = async () => {
-
             await api.getProductbyFilter(city.city?.id ? city?.city?.id : setting?.setting?.default_city?.id, city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, { slug: slug }, cookies.get('jwt_token'))
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
                         dispatch(setSelectedProduct({ data: result?.data[0]?.id }));
-                        // dispatch({ type: ActionTypes.SET_SELECTED_PRODUCT, payload: result.data[0].id });
-                        getProductDatafromApi({ id: result?.data[0]?.id });
+                        getProductDatafromApi(result?.data[0]?.id);
                     }
                     else {
                     }
@@ -163,10 +165,12 @@ const ProductDetails = () => {
                     if (result.status === 1) {
                         setproductSize(result.sizes);
                         setrelatedProducts(result.data);
-
                     }
                 })
                 .catch(error => console.log(error));
+        }
+        if (productdata && selectedVariant === null && productdata.variants) {
+            setSelectedVariant(productdata.variants[0]);
         }
     }, [productdata, cart]);
 
@@ -286,12 +290,12 @@ const ProductDetails = () => {
     const { productRating, totalData, loading: Loading, error } = useGetProductRatingsById(cookies.get("jwt_token"), productdata?.id, limit, offset);
     const { ratingImages, totalImages } = useGetProductRatingImages(cookies.get("jwt_token"), productdata?.id, 8, offset);
 
-    useEffect(() => {
-        if (productdata && selectedVariant === null && productdata.variants) {
-            setSelectedVariant(productdata.variants[0]);
-        }
+    // useEffect(() => {
+    //     if (productdata && selectedVariant === null && productdata.variants) {
+    //         setSelectedVariant(productdata.variants[0]);
+    //     }
 
-    }, [productdata, cart]);
+    // }, [productdata, cart]);
 
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
@@ -394,16 +398,15 @@ const ProductDetails = () => {
             });
     };
 
-    useEffect(() => {
+    // useEffect(() => {
+    //     if (productdata.length > 0) {
+    //         setSelectedVariant(productdata.varaints[0]);
+    //     }
+    // }, [productdata, cart]);
 
-        if (productdata.length > 0) {
-            setSelectedVariant(productdata.varaints[0]);
-        }
-    }, [productdata, cart]);
-
-    useEffect(() => {
-        // window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [productdata]);
+    // useEffect(() => {
+    // window.scrollTo({ top: 0, behavior: 'smooth' });
+    // }, [productdata]);
 
     const handleVariantChange = (variant, index) => {
         setSelectedVariant(variant);
@@ -794,7 +797,7 @@ const ProductDetails = () => {
                                                         </div>
                                                     </div>
                                                 }
-                                                {productbrand.name &&
+                                                {productbrand?.name ?
                                                     <div className='product-overview'>
                                                         <div className='product-seller'>
                                                             <span className='seller-title'>{t("brand")}:</span>
@@ -807,7 +810,7 @@ const ProductDetails = () => {
                                                             <span className='tag-name'>{productdata.tags} </span>
                                                         </div>
                                                     ) : ""} */}
-                                                    </div>}
+                                                    </div> : null}
                                                 {productRating?.rating_list?.length !== 0 ?
                                                     <div className='mt-3 cursorPointer'>
                                                         <OverlayTrigger

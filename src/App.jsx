@@ -15,7 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast } from 'react-toastify';
 
 import ShowAllCategories from './components/category/ShowAllCategories';
-import ProductList2 from './components/product/ProductList2';
+import ProductList from './components/product/ProductList';
 import ProductDetails from './components/product/ProductDetails';
 import ViewCart from './components/cart/ViewCart';
 import Wishlist from './components/favorite/Wishlist';
@@ -45,6 +45,7 @@ import AllRatingsAndReviews from './components/product/AllRatingsAndReviews';
 import AllRatingImages from './components/product/AllRatingImages';
 import PayPalPaymentHandler from './components/paypalPaymentHandler/PayPalPaymentHandler';
 import jsonFile from "./utils/en.json";
+import { diffInTime, } from './utils/TimeUtilites';
 
 const App = () => {
   //initialize cookies
@@ -58,48 +59,50 @@ const App = () => {
   const user = useSelector(state => (state.user));
   const cart = useSelector(state => (state.cart));
   const language = useSelector((state) => (state.language));
+  const shop = useSelector((state) => (state.shop));
 
   useEffect(() => {
-    if (cookies.get('jwt_token') !== undefined) {
+    if (cookies.get('jwt_token') !== undefined && user.user === null) {
       getCurrentUser(cookies.get('jwt_token'));
-    } else {
-      dispatch(logoutAuth({ data: null }));
     }
+    //  else {
+    //   dispatch(logoutAuth({ data: null }));
+    // }
     getSetting();
   }, []);
 
   useEffect(() => {
-    api.getSystemLanguage(0, 1)
-      .then(response => response.json())
-      .then(result => {
-        document.documentElement.dir = result?.data?.type;
-        if (result.status === 1) {
-          if (!language.current_language) {
-            // console.log(result.data);
-            if (result.data !== undefined) {
-              dispatch(setLanguage({ data: result.data }));
+    if (language?.current_language === null)
+      api.getSystemLanguage(0, 1)
+        .then(response => response.json())
+        .then(result => {
+          document.documentElement.dir = result?.data?.type;
+          if (result.status === 1) {
+            if (language.current_language === null) {
+              // console.log(result.data);
+              if (result.data !== undefined) {
+                dispatch(setLanguage({ data: result.data }));
+              }
+              else {
+                dispatch(setLanguage({
+                  data: {
+                    "id": 15,
+                    "name": "English",
+                    "code": "en",
+                    "type": "LTR",
+                    "system_type": 3,
+                    "is_default": 1,
+                    "json_data": jsonFile,
+                    "display_name": "English",
+                    "system_type_name": "Website"
+                  }
+                }));
+              }
+            } else {
+              document.documentElement.dir = language.current_language.type ? language.current_language.type : "LTR";
             }
-            else {
-              dispatch(setLanguage({
-                data: {
-                  "id": 15,
-                  "name": "English",
-                  "code": "en",
-                  "type": "LTR",
-                  "system_type": 3,
-                  "is_default": 1,
-                  "json_data": jsonFile,
-                  "display_name": "English",
-                  "system_type_name": "Website"
-                }
-              }));
-            }
-          } else {
-            document.documentElement.dir = language.current_language.type ? language.current_language.type : "LTR";
           }
-          // document.documentElement.dir = result.data.type;
-        }
-      });
+        });
   }, []);
 
 
@@ -125,28 +128,29 @@ const App = () => {
   };
   //fetching app-settings
   const getSetting = async () => {
-    await api.getSettings().then(response => response.json())
-      .then(result => {
-        if (result.status === 1) {
-          if (result?.data?.default_city == undefined && city?.city) {
-            const updatedSetting = {
-              ...setting?.setting,
-              default_city: {
-                id: city?.city?.id,
-                name: city?.city?.name,
-                state: city?.city?.state,
-                formatted_address: city?.city?.formatted_address,
-                latitude: city?.city?.latitude,
-                longitude: city?.city?.longitude
-              }
-            };
-            dispatch(setSetting({ data: updatedSetting }));
-          } else {
-            dispatch(setSetting({ data: result?.data }));
+    if (setting?.setting == null)
+      await api.getSettings().then(response => response.json())
+        .then(result => {
+          if (result.status === 1) {
+            if (result?.data?.default_city == undefined && city?.city) {
+              const updatedSetting = {
+                ...setting?.setting,
+                default_city: {
+                  id: city?.city?.id,
+                  name: city?.city?.name,
+                  state: city?.city?.state,
+                  formatted_address: city?.city?.formatted_address,
+                  latitude: city?.city?.latitude,
+                  longitude: city?.city?.longitude
+                }
+              };
+              dispatch(setSetting({ data: updatedSetting }));
+            } else {
+              dispatch(setSetting({ data: result?.data }));
+            }
           }
-        }
-      })
-      .catch(error => console.log(error));
+        })
+        .catch(error => console.log(error));
   };
 
   useEffect(() => {
@@ -158,7 +162,6 @@ const App = () => {
             dispatch(setShop({ data: result.data }));
           }
         });
-
     };
     if (city.city !== null) {
       fetchShop(city.city.latitude, city.city.longitude);
@@ -166,7 +169,7 @@ const App = () => {
     // else {
     // fetchShop(setting?.setting?.map_latitude, setting?.setting?.map_longitude);
     // }
-  }, [city, cart, setting]);
+  }, [city, cart]);
 
 
   useEffect(() => {
@@ -254,7 +257,7 @@ const App = () => {
                   <Route key="address" exact path="/profile/address" element={<ProfileDashboard showAddress={true} />} />
                   <Route key="notification" exact path="/notification" element={<Notification />} />
                   <Route key="categories" exact path='/categories' element={<ShowAllCategories />} />
-                  <Route key="products" exact path='/products' element={<ProductList2 />} />
+                  <Route key="products" exact path='/products' element={<ProductList />} />
                   <Route key="product-details" exact path='/product/:slug' element={<ProductDetails />} />
                   <Route key="rating-and-reviews" exact path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} />
                   <Route key="about" exact path='/about' element={<About />} />
@@ -273,7 +276,7 @@ const App = () => {
                   <Route key="brands" exact path='/brands' element={<BrandList />} />
                   <Route key="countries" exact path='/countries' element={<ShopByCountriesPage />} />
                   <Route key="sellers" exact path='/sellers' element={<ShopBySellersPage />} />
-                  <Route key="products" exact path='/products' element={<ProductList2 />} />
+                  <Route key="products" exact path='/products' element={<ProductList />} />
                   <Route key="product-details" exact path='/product/:slug' element={<ProductDetails />} />
                   <Route key="rating-and-reviews" exact path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} />
                   <Route key="about" exact path='/about' element={<About />} />

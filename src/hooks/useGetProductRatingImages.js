@@ -20,7 +20,9 @@ const useGetProductRatingImages = (token, product_id, limit, offset) => {
             }
             setLoading(false);
         };
-        fetchProductRatingById();
+        if (product_id !== undefined) {
+            fetchProductRatingById();
+        }
     }, [product_id, offset]);
 
     return { ratingImages, totalImages, loading, error };

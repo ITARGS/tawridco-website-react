@@ -41,12 +41,16 @@ const FirebaseData = () => {
   const auth = firebase.auth();
 
   const messaging = firebase.messaging();
-  messaging.onMessage(function (payload) {
-    // console.log("Message ->", payload);
-    let data = JSON.parse(payload?.data?.data);
-    // console.log(data);
-    new Notification(data?.title, { body: data?.message, icon: data?.image || setting?.setting?.web_settings?.web_logo });
-  });
+  try {
+    messaging.onMessage(function (payload) {
+      // console.log("Message ->", payload);
+      let data = payload?.data;
+      // console.log(data);
+      new Notification(data?.title, { body: data?.message, icon: data?.image || setting?.setting?.web_settings?.web_logo });
+    });
+  } catch (err) {
+    console.log(err?.message);
+  }
   return { auth, firebase, messaging };
 };
 
