@@ -9,21 +9,22 @@ import { AiOutlineEye } from 'react-icons/ai';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { BsHeart, BsShare, BsPlus, BsHeartFill } from "react-icons/bs";
 import { BiMinus, BiLink } from 'react-icons/bi';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Cookies from 'universal-cookie';
 import QuickViewModal from './QuickViewModal';
-import Offers from '../offer/Offers';
 import { FacebookIcon, FacebookShareButton, TelegramIcon, TelegramShareButton, WhatsappIcon, WhatsappShareButton } from 'react-share';
 import { IoIosArrowDown } from 'react-icons/io';
 import { useTranslation } from 'react-i18next';
 
-import { setCart, setSellerFlag } from "../../model/reducer/cartReducer";
+import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from "../../model/reducer/cartReducer";
 import { setFavourite } from "../../model/reducer/favouriteReducer";
 import { setProductSizes } from "../../model/reducer/productSizesReducer";
 import { setFilterCategory, setFilterSection } from '../../model/reducer/productFilterReducer';
 import Popup from "../same-seller-popup/Popup";
 import { LuStar } from 'react-icons/lu';
+import Loader from '../loader/Loader';
+import { setSelectedProduct } from '../../model/reducer/selectedProduct';
 
 
 
@@ -34,24 +35,24 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
     const cookies = new Cookies();
     const dispatch = useDispatch();
     const navigate = useNavigate();
-
     const { t } = useTranslation();
 
     const city = useSelector(state => state.city);
     const shop = useSelector(state => state.shop);
     const setting = useSelector(state => state.setting);
     const cart = useSelector(state => state.cart);
-
     const sizes = useSelector(state => state.productSizes);
     const favorite = useSelector(state => (state.favourite));
+
     const [selectedVariant, setSelectedVariant] = useState({});
     const [p_id, setP_id] = useState(0);
     const [p_v_id, setP_V_id] = useState(0);
     const [qnty, setQnty] = useState(0);
     const [loader, setisLoader] = useState(false);
-
-    // console.log("Product Container Rendered");
-    // const shop = useSelector(state=>state.shop);
+    const [selectedProduct, setselectedProduct] = useState({});
+    const [productSizes, setproductSizes] = useState(null);
+    const [offerConatiner, setOfferContainer] = useState(0);
+    const [variant_index, setVariantIndex] = useState(null);
 
     useEffect(() => {
         if (sizes.sizes === null || sizes.status === 'loading') {
@@ -74,13 +75,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
 
 
 
-    const [selectedProduct, setselectedProduct] = useState({});
-    const [productSizes, setproductSizes] = useState(null);
-    const [offerConatiner, setOfferContainer] = useState(0);
-    const [variant_index, setVariantIndex] = useState(null);
-    //for product variants dropdown in product card
-
-
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
         setP_id(product_id);
@@ -91,17 +85,23 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            if (res.status === 1) {
-                                dispatch(setCart({ data: res }));
-                                setShowModal(false);
-                                setP_id(0);
-                                setP_V_id(0);
-                                setQnty(0);
+                    if (cart?.cartProducts?.find((product) => product?.product_id == product_id)?.qty == undefined) {
+                        dispatch(setCart({ data: result }));
+                        dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
+                        const updatedCartCount = [...cart?.cartProducts, { product_id: product_id, product_variant_id: product_variant_id, qty: qty }];
+                        dispatch(setCartProducts({ data: updatedCartCount }));
+                    } else {
+                        const updatedProducts = cart?.cartProducts?.map(product => {
+                            if (product.product_id == product_id) {
+                                return { ...product, qty: qty };
+                            } else {
+                                return product;
                             }
                         });
+                        dispatch(setCart({ data: result }));
+                        dispatch(setCartProducts({ data: updatedProducts }));
+                        dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
+                    }
                 }
                 else if (result?.data?.one_seller_error_code == 1) {
                     dispatch(setSellerFlag({ data: 1 }));
@@ -111,22 +111,14 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
     };
 
     //remove from Cart
-    const removefromCart = async (product_id, product_variant_id) => {
+    const removefromCart = async (product_id, product_variant_id, section_id) => {
         await api.removeFromCart(cookies.get('jwt_token'), product_id, product_variant_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            if (res.status === 1) {
-                                dispatch(setCart({ data: res }));
-                            }
-                            else {
-                                dispatch(setCart({ data: null }));
-                            }
-                        });
+                    const updatedProducts = cart?.cartProducts?.filter(product => product?.product_id != product_id);
+                    dispatch(setCartProducts({ data: updatedProducts }));
                 }
                 else {
                     toast.error(result.message);
@@ -241,6 +233,16 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
         e.target.src = setting.setting?.web_logo;
     };
 
+    function getProductQuantities(products) {
+        return Object.entries(products.reduce((quantities, product) => {
+            const existingQty = quantities[product.product_id] || 0;
+            return { ...quantities, [product.product_id]: existingQty + product.qty };
+        }, {})).map(([productId, qty]) => ({
+            product_id: parseInt(productId),
+            qty
+        }));
+    }
+
     return (
         <section id="products">
             <div className="container">
@@ -248,9 +250,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                     ? (
                         <>
                             <div className="d-flex justify-content-center">
-                                <div className="spinner-border" role="status">
-                                    <span className="visually-hidden">Loading...</span>
-                                </div>
+                                <Loader width={"100%"} height={"500px"} />
                             </div>
                         </>
 
@@ -259,9 +259,8 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                     : (
                         <>
 
-                            {shop.shop.sections.map((section, index0) => {
+                            {shop?.shop?.sections?.map((section, index0) => {
                                 if (section.products.length > 0) {
-
                                     return (
 
                                         <div key={index0}>
@@ -285,7 +284,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
 
                                                 <div className="product_section_content p-0">
                                                     <Slider {...settings}>
-                                                        {section.products.map((product, index) => (
+                                                        {section?.products?.map((product, index) => (
                                                             <div className="row" key={index}>
                                                                 <div className="col-md-12">
 
@@ -298,7 +297,9 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                 }}
                                                                             />
                                                                         </span>
-                                                                        <Link to={`/product/${product.slug}`} className='text-decoration-none text-reset'>
+                                                                        <Link to={`/product/${product.slug}`} onClick={() => {
+                                                                            dispatch(setSelectedProduct({ data: product?.id }));
+                                                                        }} className='text-decoration-none text-reset'>
 
                                                                             <div className='image-container' >
 
@@ -352,7 +353,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                         </div>
                                                                                     </>
                                                                                         :
-
                                                                                         <>
 
                                                                                             {/* {document.getElementById()} */}
@@ -391,56 +391,49 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                             <BsHeart size={16} /></button>
                                                                                     )}
                                                                             </div>
-                                                                            <div className='border-end' style={{ flexGrow: "1" }} >
-                                                                                {product.variants[0].cart_count > 0 ? <>
+                                                                            <div className='border-end' style={{ flexGrow: "1" }}>
+                                                                                {cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty > 0 ? <>
                                                                                     <div id={`input-cart-productdetail`} className="input-to-cart">
                                                                                         <button type='button' className="wishlist-button" onClick={() => {
-
-                                                                                            if (product.variants[0].cart_count === 1) {
+                                                                                            if (cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty == 1) {
                                                                                                 removefromCart(product.id, product.variants[0].id);
-
                                                                                             }
                                                                                             else {
-                                                                                                addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count - 1);
-
-
+                                                                                                addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty - 1);
+                                                                                                // addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product?.variants[0]?.id)?.qty - 1);
                                                                                             }
 
                                                                                         }}><BiMinus size={20} fill='#fff' /></button>
-                                                                                        {/* <span id={`input-productdetail`} >{quantity}</span> */}
                                                                                         <div className="quantity-container text-center">
                                                                                             <input
                                                                                                 type="number"
                                                                                                 min="1"
                                                                                                 max={product.variants[0].stock}
                                                                                                 className="quantity-input bg-transparent text-center"
-                                                                                                value={product.variants[0].cart_count}
-                                                                                                // value={cart.cart && cart.cart.data.cart.some(element => element.id === product.variants[0].id ? element.qty : 0)}
+                                                                                                // value={product.variants[0].cart_count} 
+                                                                                                value={cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty}
                                                                                                 disabled
                                                                                             />
                                                                                         </div>
                                                                                         <button type='button' className="wishlist-button" onClick={() => {
-
+                                                                                            const productQuantity = getProductQuantities(cart?.cartProducts);
                                                                                             if (Number(product.is_unlimited_stock)) {
-
-                                                                                                if (product.variants[0].cart_count < Number(product.total_allowed_quantity)) {
-                                                                                                    addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
-
+                                                                                                if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product.total_allowed_quantity)) {
+                                                                                                    // addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
+                                                                                                    addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty + 1);
 
                                                                                                 } else {
                                                                                                     toast.error('Apologies, maximum product quantity limit reached!');
                                                                                                 }
                                                                                             } else {
-
-                                                                                                if (product.variants[0].cart_count >= Number(product.variants[0].stock)) {
+                                                                                                if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.variants[0].stock)) {
                                                                                                     toast.error(t("out_of_stock_message"));
                                                                                                 }
-                                                                                                else if (product.variants[0].cart_count >= Number(product.total_allowed_quantity)) {
+                                                                                                else if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.total_allowed_quantity)) {
                                                                                                     toast.error('Apologies, maximum product quantity limit reached');
                                                                                                 } else {
-                                                                                                    addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
-
-
+                                                                                                    addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty + 1);
+                                                                                                    // addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product?.variants[0]?.id)?.qty + 1);
                                                                                                 }
                                                                                             }
 
@@ -449,16 +442,12 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                 </> : <>
                                                                                     <button type="button" id={`Add-to-cart-section${index}${index0}`} className='w-100 h-100 add-to-cart active' onClick={() => {
                                                                                         if (cookies.get('jwt_token') !== undefined) {
-
-                                                                                            if (cart.cart && cart.cart.data.cart.some(element => element.product_id === product.id) && cart.cart.data.cart.some(element => element.product_variant_id === product.variants[variant_index?.pid === product.id ? variant_index?.index : 0].id)) {
-                                                                                                toast.info('Product already in Cart');
+                                                                                            const productQuantity = getProductQuantities(cart?.cartProducts);
+                                                                                            console.log("Product Total Allowed Quantity ->", product?.total_allowed_quantity);
+                                                                                            if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) < Number(product.total_allowed_quantity)) {
+                                                                                                addtoCart(product.id, product.variants[0].id, 1);
                                                                                             } else {
-                                                                                                if (product.variants[0].status) {
-
-                                                                                                    addtoCart(product.id, product.variants[0].id, 1);
-                                                                                                } else {
-                                                                                                    toast.error(t("out_of_stock_message"));
-                                                                                                }
+                                                                                                toast.error(t("out_of_stock_message"));
                                                                                             }
                                                                                         }
                                                                                         else {

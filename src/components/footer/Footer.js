@@ -67,7 +67,7 @@ export const Footer = () => {
                             )
                             : (
                                 <ul className='category-list'>
-                                    {shop?.shop?.categories.map((ctg, index) => (
+                                    {shop?.shop?.categories?.map((ctg, index) => (
                                         <li key={index}>
                                             <button className='link' onClick={() => {
                                                 selectCategory(ctg);

@@ -13,13 +13,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setProductSizes } from "../../model/reducer/productSizesReducer";
-import { clearCartPromo, setCart, setPromoCodeApplied } from "../../model/reducer/cartReducer";
+import { clearCartPromo, setCart, setCartProducts, setPromoCodeApplied, setCartSubTotal } from "../../model/reducer/cartReducer";
 import Promo from "./Promo";
 import { RiCoupon2Fill } from 'react-icons/ri';
 
 
 
-const Cart = () => {
+const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
 
     const closeCanvas = useRef();
     const cookies = new Cookies();
@@ -36,7 +36,8 @@ const Cart = () => {
     const [iscartEmpty, setiscartEmpty] = useState(false);
     const [isLoader, setisLoader] = useState(false);
     const [showPromoOffcanvas, setShowPromoOffcanvas] = useState(false);
-
+    const [cartSidebarData, setCartSidebarData] = useState([]);
+    // const [cartSubTotal, setCartSubTotal] = useState(0);
     useEffect(() => {
         if (sizes.sizes === null || sizes.status === 'loading') {
             if (city.city !== null && cart.cart !== null) {
@@ -46,7 +47,6 @@ const Cart = () => {
                         if (result.status === 1) {
                             setproductSizes(result.sizes);
                             dispatch(setProductSizes({ data: result.sizes }));
-                            // dispatch({ type: ActionTypes.SET_PRODUCT_SIZES, payload: result.sizes });
                         }
                     });
             }
@@ -68,32 +68,63 @@ const Cart = () => {
 
 
 
+    useEffect(() => {
+        if (isCartSidebarOpen == true)
+            fetchCartData();
+    }, [isCartSidebarOpen]);
 
-
+    const fetchCartData = async () => {
+        setisLoader(true);
+        try {
+            const response = await api.getCart(cookies.get("jwt_token"), city?.city?.latitude, city?.city?.longitude);
+            const result = await response.json();
+            if (result.status == 1) {
+                const productsData = result?.data?.cart?.map((product) => {
+                    return {
+                        product_id: product?.product_id,
+                        product_variant_id: product?.product_variant_id,
+                        qty: product?.qty
+                    };
+                });
+                dispatch(setCart({ data: result }));
+                dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
+                dispatch(setCartProducts({ data: productsData }));
+                // setCartSubTotal(result?.data?.sub_total);
+                setCartSidebarData(result?.data?.cart);
+            }
+        } catch (err) {
+            console.log(err?.message);
+        }
+        setisLoader(false);
+    };
 
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
-        // setisLoader(true);
         await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            setisLoader(false);
-                            if (res.status === 1) {
-                                dispatch(clearCartPromo());
-                                // dispatch(setPromoCodeApplied({ data: 0 }));
-                                dispatch(setCart({ data: res }));
-                                // dispatch({ type: ActionTypes.SET_CART, payload: res });
-                            }
-                        });
+                    dispatch(setCartSubTotal({ data: result?.sub_total ? result?.sub_total : 0 }));
+                    const updatedCartProducts = cartSidebarData?.map(product => {
+                        if ((product.product_id == product_id) && (product?.product_variant_id == product_variant_id)) {
+                            return { ...product, qty: qty };
+                        } else {
+                            return product;
+                        }
+                    });
+                    setCartSidebarData(updatedCartProducts);
+                    const updatedProducts = cart?.cartProducts?.map((product) => {
+                        if ((product?.product_id == product_id) && (product?.product_variant_id == product_variant_id)) {
+                            return { ...product, qty: qty };
+                        } else {
+                            return product;
+                        }
+                    });
+                    dispatch(setCartProducts({ data: updatedProducts }));
 
                 } else if (result.status === 0) {
                     setisLoader(false);
-
                 }
                 else {
                     setisLoader(false);
@@ -104,35 +135,32 @@ const Cart = () => {
 
     //remove from Cart
     const removefromCart = async (product_id, product_variant_id) => {
-        setisLoader(true);
+        // setisLoader(true);
         await api.removeFromCart(cookies.get('jwt_token'), product_id, product_variant_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            dispatch(clearCartPromo());
-                            // dispatch(setPromoCodeApplied({ data: 0 }));
-                            if (res.status === 1) {
-                                // dispatch({ type: ActionTypes.SET_CART, payload: res });
-                                dispatch(setCart({ data: res }));
-                            }
-                            else {
-                                dispatch(setCart({ data: null }));
-                                // dispatch({ type: ActionTypes.SET_CART, payload: null });
-                            }
-                        })
-                        .catch(error => console.log(error));
-
+                    const updatedCartProducts = cart?.cartProducts?.filter(product => {
+                        if (product?.product_variant_id != product_variant_id) {
+                            return product;
+                        }
+                    });
+                    dispatch(setCartProducts({ data: updatedCartProducts ? updatedCartProducts : [] }));
+                    dispatch(setCartSubTotal({ data: result?.sub_total }));
+                    const updatedProducts = cartSidebarData?.filter(product => {
+                        if (product.product_variant_id != product_variant_id) {
+                            return product;
+                        }
+                    });
+                    setCartSidebarData(updatedProducts);
                 }
                 else {
-                    setisLoader(false);
                     toast.error(result.message);
                 }
             })
             .catch(error => console.log(error));
+        // setisLoader(false);
     };
     const { t } = useTranslation();
     const placeHolderImage = (e) => {
@@ -150,24 +178,34 @@ const Cart = () => {
             }
             closeCanvas.current.click();
             navigate('/checkout');
-            //dispatch(toggleWallet());
         });
     };
+
     const removeCoupon = () => {
         dispatch(clearCartPromo());
-        // dispatch(setPromoCodeApplied({ data: 0 }));
-        // console.log(totalPayment);
         toast.info("Coupon Removed");
     };
+
+    function getProductQuantities(products) {
+        return Object.entries(products.reduce((quantities, product) => {
+            const existingQty = quantities[product.product_id] || 0;
+            return { ...quantities, [product.product_id]: existingQty + product.qty };
+        }, {})).map(([productId, qty]) => ({
+            product_id: parseInt(productId),
+            qty
+        }));
+    }
+
     return (
         <div tabIndex="-1" className={`cart-sidebar-container offcanvas offcanvas-end`} id="cartoffcanvasExample" aria-labelledby="cartoffcanvasExampleLabel">
-
             <div className='cart-sidebar-header'>
                 <h5>{t("your_cart")}</h5>
-                <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeCanvas}><AiOutlineCloseCircle fill='black' /></button>
+                <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeCanvas} onClick={() => setIsCartSidebarOpen(false)}>
+                    <AiOutlineCloseCircle fill='black' />
+                </button>
             </div>
 
-            {iscartEmpty ? (
+            {(cartSidebarData?.length == 0 && !isLoader) ? (
                 <div className='empty-cart'>
                     <img src={EmptyCart} alt='empty-cart' onError={placeHolderImage}></img>
                     <p>{t("empty_cart_list_message")}</p>
@@ -177,13 +215,12 @@ const Cart = () => {
                     }}>{t("empty_cart_list_button_name")}</button>
                 </div>) : (
                 <>
-                    {cart.cart === null
+                    {isLoader == true
                         ? (
                             <Loader width='100%' height='100%' />
                         )
                         : (
                             <>
-                                {/* {isLoader ? <Loader screen='full' background='none' /> : null} */}
                                 <div className='cart-sidebar-product'>
                                     <div className='products-header'>
                                         <span>{t("product")}</span>
@@ -193,12 +230,10 @@ const Cart = () => {
                                     <div className='products-container'>
 
 
-                                        {cart?.cart?.data?.cart?.map((product, index) => (
+                                        {cartSidebarData?.map((product, index) => (
                                             <div key={index} className='cart-card'>
                                                 <div className='left-wrapper'>
-                                                    {/* {console.log("Slug ki khoj", product)} */}
                                                     <Link to={`/product/${product.slug}`}>
-
                                                         <div className='image-container'>
                                                             <img src={product.image_url} alt='product' onError={placeHolderImage}></img>
                                                         </div>
@@ -211,41 +246,41 @@ const Cart = () => {
                                                         <div id={`selectedVariant${index}-wrapper-cartsidebar`} className='selected-variant-cart' >
                                                             {product.measurement} {product.unit}
                                                         </div>
-
-
                                                         <div className='counter'>
                                                             <button type='button' onClick={() => {
                                                                 if (product.qty > 1) {
                                                                     addtoCart(product.product_id, product.product_variant_id, product.qty - 1);
-
                                                                 }
 
-                                                            }}><BiMinus fill='#fff' /></button>
-                                                            <span id={`input-cart-sidebar${index}`} >{product.qty}</span>
-                                                            <button type='button' onClick={() => {
-
-                                                                // if (val < product.total_allowed_quantity) {
-                                                                //     document.getElementById(`input-cart-sidebar${index}`).innerHTML = val + 1;
-                                                                //     addtoCart(product.product_id, product.product_variant_id, document.getElementById(`input-cart-sidebar${index}`).innerHTML)
-                                                                // }
-                                                                if (Number(product.is_unlimited_stock) === 1) {
-                                                                    if (Number(product.qty) < Number(setting.setting.max_cart_items_count)) {
-                                                                        addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
+                                                            }}>
+                                                                <BiMinus fill='#fff' />
+                                                            </button>
+                                                            <span id={`input-cart-sidebar${index}`} >
+                                                                {product.qty}
+                                                            </span>
+                                                            <button type='button'
+                                                                onClick={() => {
+                                                                    const productQuantity = getProductQuantities(cart?.cartProducts);
+                                                                    if (Number(product.is_unlimited_stock) === 1) {
+                                                                        if (productQuantity?.find(prdct => prdct?.product_id == product?.product_id)?.qty <= Number(product?.total_allowed_quantity)) {
+                                                                            addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
+                                                                        } else {
+                                                                            toast.error('Apologies, maximum product quantity limit reached!');
+                                                                        }
                                                                     } else {
-                                                                        toast.error('Apologies, maximum product quantity limit reached!');
-                                                                    }
-                                                                } else {
-                                                                    if (Number(product.qty) >= Number(product.stock)) {
-                                                                        toast.error(t("out_of_stock_message"));
+                                                                        if (Number(product.qty) >= Number(product.stock)) {
+                                                                            toast.error(t("out_of_stock_message"));
 
-                                                                    } else if (Number(product.qty) >= Number(setting.setting.max_cart_items_count)) {
-                                                                        toast.error('Apologies, maximum product quantity limit reached!');
+                                                                        } else if (productQuantity?.find(prdct => prdct?.product_id == product?.product_id)?.qty <= Number(product?.total_allowed_quantity)) {
+                                                                            toast.error('Apologies, maximum product quantity limit reached!');
+                                                                        }
+                                                                        else {
+                                                                            addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
+                                                                        }
                                                                     }
-                                                                    else {
-                                                                        addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
-                                                                    }
-                                                                }
-                                                            }}><BsPlus fill='#fff' /></button>
+                                                                }}>
+                                                                <BsPlus fill='#fff' />
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -320,16 +355,10 @@ const Cart = () => {
                                                         <span>{t("sub_total")}</span>
                                                         <div className='d-flex align-items-center' style={{ fontSize: "14px" }}>
                                                             {setting.setting && setting.setting.currency}
-                                                            <span>{(cart?.promo_code?.discount ? (cart.cart?.data?.sub_total - cart?.promo_code?.discount).toFixed(setting.setting?.decimal_point) : cart.cart?.data?.sub_total.toFixed(setting.setting?.decimal_point))}</span>
+                                                            <span>{(cart?.promo_code?.discount ? (cart?.cartSubTotal - cart?.promo_code?.discount)?.toFixed(setting.setting?.decimal_point) : cart?.cartSubTotal?.toFixed(setting.setting?.decimal_point))}</span>
                                                         </div>
                                                     </div>
-
-
                                                 </div>
-
-
-
-
                                                 <div className='button-container'>
                                                     <button type='button' className='view-cart' onClick={() => {
                                                         closeCanvas.current.click();
@@ -341,8 +370,6 @@ const Cart = () => {
                                                     }}>{t("proceed_to_checkout")}</button>
                                                 </div>
                                             </>)}
-
-
                                 </div>
                             </>
                         )}

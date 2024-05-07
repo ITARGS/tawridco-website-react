@@ -56,7 +56,7 @@ const Header = () => {
     const [totalNotification, settotalNotification] = useState(null);
     const [isDesktopView, setIsDesktopView] = useState(window.innerWidth > 768);
     const [search, setsearch] = useState("");
-
+    const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
 
     //initialize cookies
 
@@ -175,8 +175,8 @@ const Header = () => {
 
     useEffect(() => {
         if (city.city !== null && cookies.get('jwt_token') !== undefined && user.user !== null) {
-            fetchCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude);
-            fetchFavorite(cookies.get('jwt_token'), city.city.latitude, city.city.longitude);
+            // fetchCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude);
+            fetchFavorite(cookies.get('jwt_token'), city?.city?.latitude, city?.city?.longitude);
             // fetchNotification(cookies.get('jwt_token'));
         }
     }, [city, user]);
@@ -616,12 +616,14 @@ const Header = () => {
                                                         }
                                                         else if (city.city === null) {
                                                             toast.error("Please Select you delivery location first!");
+                                                        } else {
+                                                            setIsCartSidebarOpen(true);
                                                         }
                                                     }}>
                                                     <IoCartOutline />
-                                                    {cart.cart !== null ?
+                                                    {cart?.cartProducts?.length !== 0 ?
                                                         <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
-                                                            {cart.cart.total}
+                                                            {cart.cartProducts.length != 0 ? cart?.cartProducts?.length : null}
                                                             <span className="visually-hidden">unread messages</span>
                                                         </span>
                                                         : null}
@@ -849,7 +851,7 @@ const Header = () => {
 
 
                 {/* Cart Sidebar */}
-                <Cart />
+                <Cart isCartSidebarOpen={isCartSidebarOpen} setIsCartSidebarOpen={setIsCartSidebarOpen} />
 
             </header>
 

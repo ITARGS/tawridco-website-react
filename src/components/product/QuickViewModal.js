@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Modal } from 'react-bootstrap';
 // import { AddToCart, AddToFavorite, RemoveFromCart, RemoveFromFavorite } from '../../functions/Functions';
 import { setProductSizes } from '../../model/reducer/productSizesReducer';
-import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
+import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
 import { setFavourite } from '../../model/reducer/favouriteReducer';
 import Popup from '../same-seller-popup/Popup';
 
@@ -37,7 +37,7 @@ const QuickViewModal = (props) => {
 
     const [mainimage, setmainimage] = useState("");
     const [productcategory, setproductcategory] = useState({});
-    const [productbrand, setproductbrand] = useState({});
+    // const [productbrand, setproductbrand] = useState({});
     const [product, setproduct] = useState({});
     const [productSizes, setproductSizes] = useState(null);
     const [isLoader, setisLoader] = useState(false);
@@ -47,14 +47,14 @@ const QuickViewModal = (props) => {
 
     useEffect(() => {
         if (Object.keys(props.selectedProduct).length > 0 && city.city !== null && Object.keys(product).length === 0 && props.showModal === true) {
-            getCategoryDetails();
-            getBrandDetails();
+            // getCategoryDetails();
+            // getBrandDetails();
             fetchProduct(props.selectedProduct.id);
         }
         else if (props.showModal === true) {
             fetchProductVariant(props.selectedProduct.id);
         }
-    }, [props.selectedProduct, cart, city]);
+    }, [props.selectedProduct, city]);
 
 
 
@@ -65,8 +65,6 @@ const QuickViewModal = (props) => {
             .then(result => {
                 if (result.status === 1) {
                     // console.log("fetchProduct Result ->", result.data);
-                    // !variant_index && setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
-                    // setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index));
                     setproduct(result.data);
                     setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
                     setmainimage(result.data.image_url);
@@ -85,9 +83,6 @@ const QuickViewModal = (props) => {
                     setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
                     setmainimage(result.data.image_url);
                     setSelectedVariant((result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index)) || result.data.variants?.[0]);
-                    // console.log("fetchProduct Variant Func Called -> ", result.data);
-                    // !variant_index && setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
-                    // setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index));
                 }
             })
             .catch(error => console.log(error));
@@ -111,40 +106,40 @@ const QuickViewModal = (props) => {
         else {
             setproductSizes(sizes.sizes);
         }
-    }, [city, sizes, cart]);
+    }, [city, sizes]);
 
 
 
 
-    const getCategoryDetails = () => {
-        api.getCategory()
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    result.data.forEach(ctg => {
-                        if (ctg.id === props.selectedProduct.category_id) {
-                            setproductcategory(ctg);
-                        }
-                    });
-                }
-            })
-            .catch((error) => console.log(error));
-    };
+    // const getCategoryDetails = () => {
+    //     api.getCategory()
+    //         .then(response => response.json())
+    //         .then(result => {
+    //             if (result.status === 1) {
+    //                 result.data.forEach(ctg => {
+    //                     if (ctg.id === props.selectedProduct.category_id) {
+    //                         setproductcategory(ctg);
+    //                     }
+    //                 });
+    //             }
+    //         })
+    //         .catch((error) => console.log(error));
+    // };
 
-    const getBrandDetails = () => {
-        api.getBrands()
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    result.data.forEach(brnd => {
-                        if (brnd.id === props.selectedProduct.brand_id) {
-                            setproductbrand(brnd);
-                        }
-                    });
-                }
-            })
-            .catch((error) => console.log(error));
-    };
+    // const getBrandDetails = () => {
+    //     api.getBrands()
+    //         .then(response => response.json())
+    //         .then(result => {
+    //             if (result.status === 1) {
+    //                 result.data.forEach(brnd => {
+    //                     if (brnd.id === props.selectedProduct.brand_id) {
+    //                         setproductbrand(brnd);
+    //                     }
+    //                 });
+    //             }
+    //         })
+    //         .catch((error) => console.log(error));
+    // };
 
 
     //Add to Cart
@@ -156,16 +151,23 @@ const QuickViewModal = (props) => {
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            //console.log(res);
-                            if (res.status === 1) {
-                                props.setShowModal(false);
-                                dispatch(setCart({ data: res }));
+                    if (cart?.cartProducts?.find((product) => (product?.product_id == product_id) && (product?.product_variant_id == product_variant_id))?.qty == undefined) {
+                        dispatch(setCart({ data: result }));
+                        dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
+                        const updatedCartCount = [...cart?.cartProducts, { product_id: product_id, product_variant_id: product_variant_id, qty: qty }];
+                        dispatch(setCartProducts({ data: updatedCartCount }));
+                    } else {
+                        const updatedProducts = cart?.cartProducts?.map(product => {
+                            if ((product.product_id == product_id) && (product?.product_variant_id == product_variant_id)) {
+                                return { ...product, qty: qty };
+                            } else {
+                                return product;
                             }
                         });
-
+                        dispatch(setCart({ data: result }));
+                        dispatch(setCartProducts({ data: updatedProducts }));
+                        dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
+                    }
                 }
                 else if (result?.data?.one_seller_error_code == 1) {
                     dispatch(setSellerFlag({ data: 1 }));
@@ -186,15 +188,13 @@ const QuickViewModal = (props) => {
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            if (res.status === 1)
-                                dispatch(setCart({ data: res }));
-                            else
-                                dispatch(setCart({ data: null }));
-                        });
-
+                    dispatch(setCartSubTotal({ data: result?.sub_total }));
+                    const updatedCartProducts = cart?.cartProducts?.filter(product => {
+                        if (product?.product_variant_id != product_variant_id) {
+                            return product;
+                        }
+                    });
+                    dispatch(setCartProducts({ data: updatedCartProducts ? updatedCartProducts : [] }));
                 }
                 else {
                     toast.error(result.message);
@@ -308,6 +308,16 @@ const QuickViewModal = (props) => {
         e.target.src = setting.setting?.web_logo;
     };
 
+    function getProductQuantities(products) {
+        return Object.entries(products.reduce((quantities, product) => {
+            const existingQty = quantities[product.product_id] || 0;
+            return { ...quantities, [product.product_id]: existingQty + product.qty };
+        }, {})).map(([productId, qty]) => ({
+            product_id: parseInt(productId),
+            qty
+        }));
+    }
+
     return (
         <Modal
             size='lg'
@@ -320,8 +330,8 @@ const QuickViewModal = (props) => {
                     <div className="d-flex flex-row justify-content-end header">
                         <button type="button" aria-label="Close" onClick={() => {
                             props.setselectedProduct({});
-                            setproductcategory({});
-                            setproductbrand({});
+                            // setproductcategory({});
+                            // setproductbrand({});
                             setproduct({});
                             setSelectedVariant(null);
                             setQuantity(0);
@@ -433,47 +443,113 @@ const QuickViewModal = (props) => {
 
 
                                                     </div>
-                                                    {
-                                                        selectedVariant ? (selectedVariant.cart_count >= 1 ? <>
+                                                    {selectedVariant ? (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= 1 ? <>
+                                                        <div id={`input-cart-quickview`} className="input-to-cart">
+                                                            {/* Remove From Cart Button */}
+                                                            <button type='button' onClick={(e) => {
+                                                                e.preventDefault();
+                                                                if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty == 1) {
+                                                                    removefromCart(product.id, selectedVariant.id);
+                                                                }
+                                                                else {
+                                                                    addtoCart(product.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty - 1);
 
-                                                            <div id={`input-cart-quickview`} className="input-to-cart">
-                                                                {/* Remove From Cart Button */}
-                                                                <button type='button' onClick={(e) => {
-                                                                    e.preventDefault();
-                                                                    if (selectedVariant.cart_count === 1) {
+                                                                }
 
-                                                                        removefromCart(product.id, selectedVariant.id);
+                                                            }} className="wishlist-button">
+                                                                <BiMinus fill='#fff' />
+                                                            </button>
+                                                            <span id={`input-quickview`} >{cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty}</span>
+                                                            <button type='button' onClick={(e) => {
+                                                                e.preventDefault();
+                                                                const productQuantity = getProductQuantities(cart?.cartProducts);
+                                                                if (Number(product.is_unlimited_stock)) {
+                                                                    if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.total_allowed_quantity)) {
+                                                                        toast.error('Apologies, maximum product quantity limit reached');
                                                                     }
                                                                     else {
-                                                                        addtoCart(product.id, selectedVariant.id, selectedVariant.cart_count - 1);
+                                                                        addtoCart(product.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
+                                                                    }
+                                                                }
+                                                                else {
+
+                                                                    if (selectedVariant.cart_count >= Number(selectedVariant.stock)) {
+                                                                        toast.error('Oops, Limited Stock Available');
+                                                                    }
+                                                                    else if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.total_allowed_quantity)) {
+                                                                        toast.error('Apologies, maximum cart quantity limit reached');
+                                                                    }
+                                                                    else {
+                                                                        addtoCart(product.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
 
                                                                     }
+                                                                }
 
-                                                                }} className="wishlist-button">
-                                                                    <BiMinus fill='#fff' />
-                                                                </button>
-                                                                <span id={`input-quickview`} >{selectedVariant.cart_count}</span>
+                                                            }} className="wishlist-button"><BsPlus fill='#fff' /> </button>
+
+
+                                                        </div>
+                                                    </> : <>
+                                                        <button type='button' id={`Add-to-cart-quickview`} className='add-to-cart'
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                const productQuantity = getProductQuantities(cart?.cartProducts);
+                                                                if (cookies.get('jwt_token') !== undefined) {
+                                                                    if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.total_allowed_quantity)) {
+                                                                        toast.error('Oops, Limited Stock Available');
+                                                                    }
+                                                                    else if (Number(product.is_unlimited_stock)) {
+                                                                        addtoCart(product.id, selectedVariant.id, 1);
+                                                                    } else {
+                                                                        if (selectedVariant.status) {
+                                                                            addtoCart(product.id, selectedVariant.id, 1);
+                                                                        } else {
+                                                                            toast.error('Oops, Limited Stock Available');
+                                                                        }
+                                                                    }
+                                                                }
+                                                                else {
+                                                                    toast.error(t("required_login_message_for_cartRedirect"));
+                                                                }
+                                                            }}>{t("add_to_cart")}</button>
+                                                    </>)
+                                                        : product.variants[0].cart_count >= 1 ? <>
+                                                            <div id={`input-cart-quickview`} className="input-to-cart">
+                                                                <button type='button' onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    if (product.variants[0].cart_count === 1) {
+
+                                                                        removefromCart(product.id, product.variants[0].id);
+                                                                    }
+                                                                    else {
+                                                                        addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count - 1);
+                                                                        setQuantity(quantity - 1);
+                                                                    }
+
+                                                                }} className="wishlist-button"><BiMinus fill='#fff' /></button>
+                                                                <span id={`input-quickview`} >{product.variants[0].cart_count}</span>
                                                                 <button type='button' onClick={(e) => {
                                                                     e.preventDefault();
                                                                     if (Number(product.is_unlimited_stock)) {
-                                                                        if (selectedVariant.cart_count >= Number(setting.setting.max_cart_items_count)) {
+                                                                        if (product.variants[0].cart_count >= Number(setting.setting.max_cart_items_count)) {
                                                                             toast.error('Apologies, maximum product quantity limit reached');
                                                                         }
+
                                                                         else {
-                                                                            addtoCart(product.id, selectedVariant.id, selectedVariant.cart_count + 1);
+                                                                            addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
 
                                                                         }
                                                                     }
                                                                     else {
 
-                                                                        if (selectedVariant.cart_count >= Number(selectedVariant.stock)) {
-                                                                            toast.error('OOps, Limited Stock Available');
+                                                                        if (product.variants[0].cart_count >= Number(setting.setting.max_cart_items_count)) {
+                                                                            toast.error('Apologies, maximum product quantity limit reached');
                                                                         }
-                                                                        else if (selectedVariant.cart_count >= Number(setting.setting.max_cart_items_count)) {
-                                                                            toast.error('Apologies, maximum cart quantity limit reached');
+                                                                        else if (product.variants[0].cart_count >= Number(product.variants[0].stock)) {
+                                                                            toast.error('Oops, Limited Stock Available');
                                                                         }
                                                                         else {
-                                                                            addtoCart(product.id, selectedVariant.id, selectedVariant.cart_count + 1);
+                                                                            addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
 
                                                                         }
                                                                     }
@@ -483,17 +559,19 @@ const QuickViewModal = (props) => {
 
                                                             </div>
                                                         </> : <>
+
+
                                                             <button type='button' id={`Add-to-cart-quickview`} className='add-to-cart'
                                                                 onClick={(e) => {
                                                                     e.preventDefault();
                                                                     if (cookies.get('jwt_token') !== undefined) {
 
-                                                                        if (cart.cart && cart.cart.data.cart?.some(element => element.product_variant_id === product.variants.find((variant) => variant.id == variant_index).id)) {
+                                                                        if (cart.cart && cart.cart.data.cart?.some(element => element.product_variant_id === product.variants.find((variant) => variant.id == variant_index))) {
                                                                             toast.info('Product already in Cart');
                                                                         } else {
                                                                             if (product.variants[0].status) {
 
-                                                                                addtoCart(product.id, selectedVariant.id, 1);
+                                                                                addtoCart(product.id, product.variants[0].id, 1);
                                                                             } else {
                                                                                 toast.error(t("out_of_stock_message"));
                                                                             }
@@ -503,77 +581,8 @@ const QuickViewModal = (props) => {
                                                                         toast.error(t("required_login_message_for_cartRedirect"));
                                                                     }
                                                                 }}>{t("add_to_cart")}</button>
-                                                        </>)
-                                                            : product.variants[0].cart_count >= 1 ? <>
-                                                                <div id={`input-cart-quickview`} className="input-to-cart">
-                                                                    <button type='button' onClick={(e) => {
-                                                                        e.preventDefault();
-                                                                        if (product.variants[0].cart_count === 1) {
 
-                                                                            removefromCart(product.id, product.variants[0].id);
-                                                                        }
-                                                                        else {
-                                                                            addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count - 1);
-                                                                            setQuantity(quantity - 1);
-                                                                        }
-
-                                                                    }} className="wishlist-button"><BiMinus fill='#fff' /></button>
-                                                                    <span id={`input-quickview`} >{product.variants[0].cart_count}</span>
-                                                                    <button type='button' onClick={(e) => {
-                                                                        e.preventDefault();
-                                                                        if (Number(product.is_unlimited_stock)) {
-                                                                            if (product.variants[0].cart_count >= Number(setting.setting.max_cart_items_count)) {
-                                                                                toast.error('Apologies, maximum product quantity limit reached');
-                                                                            }
-
-                                                                            else {
-                                                                                addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
-
-                                                                            }
-                                                                        }
-                                                                        else {
-
-                                                                            if (product.variants[0].cart_count >= Number(setting.setting.max_cart_items_count)) {
-                                                                                toast.error('Apologies, maximum product quantity limit reached');
-                                                                            }
-                                                                            else if (product.variants[0].cart_count >= Number(product.variants[0].stock)) {
-                                                                                toast.error('OOps, Limited Stock Available');
-                                                                            }
-                                                                            else {
-                                                                                addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
-
-                                                                            }
-                                                                        }
-
-                                                                    }} className="wishlist-button"><BsPlus fill='#fff' /> </button>
-
-
-                                                                </div>
-                                                            </> : <>
-
-
-                                                                <button type='button' id={`Add-to-cart-quickview`} className='add-to-cart'
-                                                                    onClick={(e) => {
-                                                                        e.preventDefault();
-                                                                        if (cookies.get('jwt_token') !== undefined) {
-
-                                                                            if (cart.cart && cart.cart.data.cart?.some(element => element.product_variant_id === product.variants.find((variant) => variant.id == variant_index))) {
-                                                                                toast.info('Product already in Cart');
-                                                                            } else {
-                                                                                if (product.variants[0].status) {
-
-                                                                                    addtoCart(product.id, product.variants[0].id, 1);
-                                                                                } else {
-                                                                                    toast.error(t("out_of_stock_message"));
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                        else {
-                                                                            toast.error(t("required_login_message_for_cartRedirect"));
-                                                                        }
-                                                                    }}>{t("add_to_cart")}</button>
-
-                                                            </>
+                                                        </>
                                                     }
 
                                                     {
@@ -613,11 +622,11 @@ const QuickViewModal = (props) => {
                                                         </div>
                                                     }
 
-                                                    {productbrand?.name ? (
+                                                    {product?.brand_name ? (
                                                         <div className='product-overview'>
                                                             <div className='product-tags'>
                                                                 <span className='tag-title'>{t("brand")} :</span>
-                                                                <span className='tag-name'>{productbrand.name} </span>
+                                                                <span className='tag-name'>{product?.brand_name} </span>
                                                             </div>
                                                         </div>
                                                     ) : ""}

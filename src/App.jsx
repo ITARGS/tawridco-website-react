@@ -128,29 +128,29 @@ const App = () => {
   };
   //fetching app-settings
   const getSetting = async () => {
-    if (setting?.setting == null)
-      await api.getSettings().then(response => response.json())
-        .then(result => {
-          if (result.status === 1) {
-            if (result?.data?.default_city == undefined && city?.city) {
-              const updatedSetting = {
-                ...setting?.setting,
-                default_city: {
-                  id: city?.city?.id,
-                  name: city?.city?.name,
-                  state: city?.city?.state,
-                  formatted_address: city?.city?.formatted_address,
-                  latitude: city?.city?.latitude,
-                  longitude: city?.city?.longitude
-                }
-              };
-              dispatch(setSetting({ data: updatedSetting }));
-            } else {
-              dispatch(setSetting({ data: result?.data }));
-            }
+    // if (setting?.setting == null)
+    await api.getSettings().then(response => response.json())
+      .then(result => {
+        if (result.status === 1) {
+          if (result?.data?.default_city == undefined && city?.city) {
+            const updatedSetting = {
+              ...setting?.setting,
+              default_city: {
+                id: city?.city?.id,
+                name: city?.city?.name,
+                state: city?.city?.state,
+                formatted_address: city?.city?.formatted_address,
+                latitude: city?.city?.latitude,
+                longitude: city?.city?.longitude
+              }
+            };
+            dispatch(setSetting({ data: updatedSetting }));
+          } else {
+            dispatch(setSetting({ data: result?.data }));
           }
-        })
-        .catch(error => console.log(error));
+        }
+      })
+      .catch(error => console.log(error));
   };
 
   useEffect(() => {
@@ -169,7 +169,7 @@ const App = () => {
     // else {
     // fetchShop(setting?.setting?.map_latitude, setting?.setting?.map_longitude);
     // }
-  }, [city, cart]);
+  }, [city,]);
 
 
   useEffect(() => {

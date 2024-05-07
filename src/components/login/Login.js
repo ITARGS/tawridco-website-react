@@ -60,7 +60,7 @@ const Login = React.memo((props) => {
         }
     }, [setting]);
     // console.log(fcm);
-
+    
     //initialize Cookies
     const cookies = new Cookies();
     const Navigate = useNavigate();
