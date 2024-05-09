@@ -17,8 +17,8 @@ import { IoIosArrowDown } from 'react-icons/io';
 import QuickViewModal from '../product/QuickViewModal';
 import { useTranslation } from 'react-i18next';
 import { setProductSizes } from '../../model/reducer/productSizesReducer';
-import { setFavourite } from '../../model/reducer/favouriteReducer';
-import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
+import { setFavourite, setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
+import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
 import Popup from '../same-seller-popup/Popup';
 
 
@@ -46,13 +46,12 @@ const Wishlist = () => {
     useEffect(() => {
         if (sizes.sizes === null || sizes.status === 'loading') {
             if (city.city !== null && favorite.favorite !== null) {
-                api.getProductbyFilter(city.city.id, city.city.latitude, city.city.longitude)
+                api.getProductbyFilter(city.city.latitude, city.city.longitude)
                     .then(response => response.json())
                     .then(result => {
                         if (result.status === 1) {
                             setproductSizes(result.sizes);
                             dispatch(setProductSizes({ data: result.sizes }));
-                            // dispatch({ type: ActionTypes.SET_PRODUCT_SIZES, payload: result.sizes });
                         }
                     });
             }
@@ -75,30 +74,35 @@ const Wishlist = () => {
             .then(response => response.json())
             .then((result) => {
                 dispatch(setFavourite({ data: result }));
-                // dispatch({ type: ActionTypes.SET_FAVORITE, payload: result });
             });
-    }, [cart]);
+    }, []);
 
 
 
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
-        setisLoader(true);
         await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            setisLoader(false);
-
-                            if (res.status === 1) {
-                                dispatch(setCart({ data: res }));
-                                // dispatch({ type: ActionTypes.SET_CART, payload: res });
+                    if (cart?.cartProducts?.find((product) => (product?.product_id == product_id) && (product?.product_variant_id == product_variant_id))?.qty == undefined) {
+                        dispatch(setCart({ data: result }));
+                        dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
+                        const updatedCartCount = [...cart?.cartProducts, { product_id: product_id, product_variant_id: product_variant_id, qty: qty }];
+                        dispatch(setCartProducts({ data: updatedCartCount }));
+                    } else {
+                        const updatedProducts = cart?.cartProducts?.map(product => {
+                            if ((product.product_id == product_id) && (product?.product_variant_id == product_variant_id)) {
+                                return { ...product, qty: qty };
+                            } else {
+                                return product;
                             }
                         });
+                        dispatch(setCart({ data: result }));
+                        dispatch(setCartProducts({ data: updatedProducts }));
+                        dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
+                    }
                 }
                 else if (result?.data?.one_seller_error_code == 1) {
                     dispatch(setSellerFlag({ data: 1 }));
@@ -108,7 +112,6 @@ const Wishlist = () => {
                     toast.error(result.message);
                 }
             });
-        setisLoader(false);
     };
 
     //remove from Cart
@@ -119,20 +122,14 @@ const Wishlist = () => {
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            setisLoader(false);
-                            if (res.status === 1) {
-                                dispatch(setCart({ data: res }));
-                                // dispatch({ type: ActionTypes.SET_CART, payload: res });
-                            }
-                            else {
-                                dispatch(setCart({ data: null }));
-                                // dispatch({ type: ActionTypes.SET_CART, payload: null });
-                            }
-                        })
-                        .catch(error => console.log(error));
+                    dispatch(setCartSubTotal({ data: result?.sub_total }));
+                    const updatedCartProducts = cart?.cartProducts?.filter(product => {
+                        if (product?.product_variant_id != product_variant_id) {
+                            return product;
+                        }
+                    });
+                    dispatch(setCartProducts({ data: updatedCartProducts ? updatedCartProducts : [] }));
+                    setisLoader(false);
                 }
                 else {
                     setisLoader(false);
@@ -150,14 +147,16 @@ const Wishlist = () => {
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getFavorite(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            setisLoader(false);
-                            dispatch(setFavourite({ data: res }));
-                            dispatch({ type: ActionTypes.SET_FAVORITE, payload: res });
-
+                    await api.getFavorite(cookies.get("jwt_token"), city?.city?.latitude, city?.city?.longitude)
+                        .then((res) => res.json())
+                        .then((result) => {
+                            dispatch(setFavourite({ data: result }));
                         });
+                    const updatedFavouriteProducts = favorite?.favouriteProductIds.filter(id => id != product_id);
+                    dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
+                    const updatedFavouriteLength = favorite?.favouritelength - 1;
+                    dispatch(setFavouriteLength({ data: updatedFavouriteLength }));
+                    setisLoader(false);
                 }
                 else {
                     setisLoader(false);
@@ -217,7 +216,7 @@ const Wishlist = () => {
                                             </thead>
 
                                             <tbody>
-                                                {favorite.favorite.status !== 0 && favorite.favorite.data.map((product, index) => (
+                                                {favorite.favorite.status !== 0 && favorite?.favorite?.data?.map((product, index) => (
                                                     <tr key={index} className=''>
                                                         <th className='products-image-container first-column'>
                                                             <div className='image-container'>
@@ -243,24 +242,26 @@ const Wishlist = () => {
                                                         </th>
 
                                                         <th className='quantity'>
-                                                            {product && product.variants[0]?.cart_count > 0 ?
+                                                            {cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 0 ?
                                                                 <>
                                                                     <div className='counter' id={`input-cart-wishlist${index}`}>
                                                                         <button type='button' onClick={() => {
-                                                                            if (product.variants[0]?.cart_count > 1) {
-                                                                                addtoCart(product.id, product.variants[0]?.id, product.variants[0]?.cart_count - 1);
+                                                                            if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 1) {
+                                                                                addtoCart(product.id, product.variants[0]?.id, cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty - 1);
                                                                             } else {
                                                                                 removefromCart(product.id, product.variants[0]?.id);
 
                                                                             }
                                                                         }}><BiMinus fill='#fff' /></button>
-                                                                        <span id={`input-cart-sidebar${index}`} >{product.variants[0]?.cart_count}</span>
+
+                                                                        <span id={`input-cart-sidebar${index}`} >{cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty}</span>
+
                                                                         <button type='button' onClick={() => {
 
                                                                             if (Number(product.is_unlimited_stock)) {
 
-                                                                                if (product.variants[0]?.cart_count < Number(setting.setting.max_cart_items_count)) {
-                                                                                    addtoCart(product.id, product.variants[0]?.id, product.variants[0]?.cart_count + 1);
+                                                                                if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty < Number(setting.setting.max_cart_items_count)) {
+                                                                                    addtoCart(product.id, product.variants[0]?.id, cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty + 1);
 
 
                                                                                 } else {
@@ -268,14 +269,14 @@ const Wishlist = () => {
                                                                                 }
                                                                             } else {
 
-                                                                                if (product.variants[0]?.cart_count >= Number(product.variants[0]?.stock)) {
+                                                                                if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty >= Number(product.variants[0]?.stock)) {
                                                                                     toast.error(t("out_of_stock_message"));
                                                                                 }
-                                                                                else if (Number(product.variants[0]?.cart_count) >= Number(product.total_allowed_quantity)) {
+                                                                                else if (Number(cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty) >= Number(product.total_allowed_quantity)) {
                                                                                     toast.error('Apologies, maximum product quantity limit reached');
                                                                                 } else {
 
-                                                                                    addtoCart(product.id, product.variants[0]?.id, product.variants[0]?.cart_count + 1);
+                                                                                    addtoCart(product.id, product.variants[0]?.id, cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty + 1);
                                                                                 }
                                                                             }
 
@@ -334,7 +335,7 @@ const Wishlist = () => {
                 city={city}
                 setP_V_id={setP_V_id}
                 setP_id={setP_id} />
-        </section>
+        </section >
     );
 };
 

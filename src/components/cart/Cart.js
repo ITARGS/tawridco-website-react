@@ -41,7 +41,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
     useEffect(() => {
         if (sizes.sizes === null || sizes.status === 'loading') {
             if (city.city !== null && cart.cart !== null) {
-                api.getProductbyFilter(city.city.id, city.city.latitude, city.city.longitude)
+                api.getProductbyFilter(city.city.latitude, city.city.longitude)
                     .then(response => response.json())
                     .then(result => {
                         if (result.status === 1) {

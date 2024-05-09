@@ -176,7 +176,7 @@ const Header = () => {
     useEffect(() => {
         if (city.city !== null && cookies.get('jwt_token') !== undefined && user.user !== null) {
             // fetchCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude);
-            fetchFavorite(cookies.get('jwt_token'), city?.city?.latitude, city?.city?.longitude);
+            // fetchFavorite(cookies.get('jwt_token'), city?.city?.latitude, city?.city?.longitude);
             // fetchNotification(cookies.get('jwt_token'));
         }
     }, [city, user]);
@@ -569,12 +569,10 @@ const Header = () => {
                                                 navigate("/wishlist");
                                             }
                                         }}>
-                                        {/* {console.log("this runned")} */}
                                         <IoHeartOutline className='' />
-
-                                        {favorite.favorite && favorite.favorite.status !== 0 && favorite.favorite !== null ?
+                                        {(favorite.favouritelength !== 0) ?
                                             <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5 ">
-                                                {favorite.favorite.total}
+                                                {favorite.favouritelength}
                                                 <span className="visually-hidden">unread messages</span>
                                             </span>
                                             : null}

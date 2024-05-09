@@ -17,7 +17,7 @@ import { useTranslation } from 'react-i18next';
 import Loader from '../loader/Loader';
 import { clearSelectedProduct, setSelectedProduct } from '../../model/reducer/selectedProduct';
 import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
-import { setFavourite } from '../../model/reducer/favouriteReducer';
+import { setFavourite, setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
 import Popup from '../same-seller-popup/Popup';
 import useGetProductRatingsById from '../../hooks/useGetProductRatingsById';
 import { OverlayTrigger, Popover, ProgressBar } from 'react-bootstrap';
@@ -45,6 +45,7 @@ const ProductDetails = () => {
     const setting = useSelector(state => state.setting);
     const favorite = useSelector(state => (state.favourite));
     const shop = useSelector(state => state.shop);
+    const user = useSelector(state => state.user);
 
     useEffect(() => {
         window.scrollTo({ top: 0 });
@@ -111,12 +112,13 @@ const ProductDetails = () => {
     //         .catch((error) => console.log(error));
     // };
 
-    const getProductDatafromApi = (id) => {
-        if (id !== null) {
-            api.getProductbyId(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, id ? id : product.selectedProduct_id, cookies.get('jwt_token'))
+    const getProductDatafromApi = (slug) => {
+        if (slug !== null || slug !== undefined) {
+            api.getProductbyId(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, -1, cookies.get('jwt_token'), slug)
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
+                        dispatch(setSelectedProduct({ data: result?.data[0]?.id }));
                         setproductdata(result.data);
                         setVariantIndex(result.data.variants[0]?.id);
                         setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index) ? result.data.variants.find((element) => element.id == variant_index) : result.data.variants[0]);
@@ -136,25 +138,25 @@ const ProductDetails = () => {
 
 
     useEffect(() => {
-        const getProductData = async () => {
-            await api.getProductbyFilter(city.city?.id ? city?.city?.id : setting?.setting?.default_city?.id, city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, { slug: slug }, cookies.get('jwt_token'))
-                .then(response => response.json())
-                .then(result => {
-                    if (result.status === 1) {
-                        dispatch(setSelectedProduct({ data: result?.data[0]?.id }));
-                        getProductDatafromApi(result?.data[0]?.id);
-                    }
-                    else {
-                    }
-                })
-                .catch(error => console.log(error));
-        };
-        getProductData();
-        // getProductDatafromApi(product?.id);
+        // const getProductData = async () => {
+        //     await api.getProductbyFilter(city.city?.id ? city?.city?.id : setting?.setting?.default_city?.id, city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, { slug: slug }, cookies.get('jwt_token'))
+        //         .then(response => response.json())
+        //         .then(result => {
+        //             if (result.status === 1) {
+        //                 dispatch(setSelectedProduct({ data: result?.data[0]?.id }));
+        //                 getProductDatafromApi(result?.data[0]?.id);
+        //             }
+        //             else {
+        //             }
+        //         })
+        //         .catch(error => console.log(error));
+        // };
+        // getProductData();
+        getProductDatafromApi(slug);
     }, [slug]);
 
     const fetchRelatedProducts = () => {
-        api.getProductbyFilter(city.city?.id ? city?.city?.id : setting?.setting?.default_city?.id, city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, {
+        api.getProductbyFilter(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, {
             category_id: productdata.category_id,
         }, cookies.get('jwt_token'))
             .then(response => response.json())
@@ -167,14 +169,14 @@ const ProductDetails = () => {
             .catch(error => console.log(error));
     };
 
-    useEffect(() => {
-        if (Object.keys(productdata).length !== 0) {
-            fetchRelatedProducts();
-        }
-        if (productdata && selectedVariant === null && productdata.variants) {
-            setSelectedVariant(productdata.variants[0]);
-        }
-    }, [productdata]);
+    // useEffect(() => {
+    //      if (Object.keys(productdata).length !== 0) {
+    //          fetchRelatedProducts();
+    //      }
+    //     if (productdata && selectedVariant === null && productdata.variants) {
+    //         setSelectedVariant(productdata.variants[0]);
+    //     }
+    // }, [productdata]);
 
     // useEffect(() => {
     //     getProductDatafromApi();
@@ -362,47 +364,40 @@ const ProductDetails = () => {
 
     //Add to favorite
     const addToFavorite = async (product_id) => {
-        setisLoading(true);
+        // setisLoading(true);
         await api.addToFavotite(cookies.get('jwt_token'), product_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getFavorite(cookies.get('jwt_token'), city.city?.latitude, city.city?.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            if (res.status === 1) {
-                                dispatch(setFavourite({ data: res }));
-                            }
-                        });
+                    const updatedFavouriteProducts = [...favorite.favouriteProductIds, product_id];
+                    dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
+                    const updatedFavouriteLength = favorite?.favouritelength + 1;
+                    dispatch(setFavouriteLength({ data: updatedFavouriteLength }));
                 }
                 else {
                     toast.error(result.message);
                 }
-                setisLoading(false);
+                // setisLoading(false);
             });
     };
 
     const removefromFavorite = async (product_id) => {
-        setisLoading(true);
+        // setisLoading(true);
         await api.removeFromFavorite(cookies.get('jwt_token'), product_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getFavorite(cookies.get('jwt_token'), city.city?.latitude, city.city?.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            if (res.status === 1)
-                                dispatch(setFavourite({ data: res }));
-                            else
-                                dispatch(setFavourite({ data: null }));
-                        });
+                    const updatedFavouriteProducts = favorite?.favouriteProductIds.filter(id => id != product_id);
+                    dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
+                    const updatedFavouriteLength = favorite?.favouritelength - 1;
+                    dispatch(setFavouriteLength({ data: updatedFavouriteLength }));
                 }
                 else {
                     toast.error(result.message);
                 }
-                setisLoading(false);
+                // setisLoading(false);
             });
     };
 
@@ -513,7 +508,7 @@ const ProductDetails = () => {
                 <div className='container' style={{ gap: "20px" }}>
                     <div className='top-wrapper'>
 
-                        {product.selectedProduct_id === null || Object.keys(productdata).length === 0 || Object.keys(productSize).length === 0 ? (
+                        {product.selectedProduct_id === null || Object.keys(productdata).length === 0 ? (
                             <div className="d-flex justify-content-center">
                                 <Loader width={"100%"} height={"600px"} />
                             </div>
@@ -614,7 +609,7 @@ const ProductDetails = () => {
                                                     </div>
                                                     <div className="cart_option">
                                                         {selectedVariant ?
-                                                            (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= 1
+                                                            (user?.user && cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= 1
                                                                 ? <>
                                                                     <div id={`input-cart-quickview`} className="input-to-cart">
                                                                         <button type='button' onClick={() => {
@@ -627,7 +622,7 @@ const ProductDetails = () => {
 
                                                                         }} className="wishlist-button"><BiMinus fill='#fff' /></button>
                                                                         <span id={`input-quickview`}>
-                                                                            {cartLoader ? <div class="spinner-border text-muted"></div> :
+                                                                            {cartLoader ? <div className="spinner-border text-muted"></div> :
                                                                                 cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
                                                                             }
                                                                         </span>
@@ -758,22 +753,18 @@ const ProductDetails = () => {
                                                                         }}>{t("add_to_cart")}</button>
 
                                                                 </>}
-
-                                                        {/* <button type='button' className='wishlist-product' onClick={() => addToFavorite(productdata.id)}><BsHeart /></button> */}
-                                                        {
-
-                                                            favorite.favorite && favorite.favorite.data.some(element => element.id === productdata.id) ? (
-                                                                <button type="button" className='wishlist-product' onClick={() => {
-                                                                    if (cookies.get('jwt_token') !== undefined) {
-                                                                        removefromFavorite(productdata.id);
-                                                                    } else {
-                                                                        toast.error(t('required_login_message_for_cart'));
-                                                                    }
-                                                                }}
-                                                                >
-                                                                    <BsHeartFill size={16} fill='green' />
-                                                                </button>
-                                                            ) : (
+                                                        {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == productdata.id) ? (
+                                                            <button type="button" className='wishlist-product' onClick={() => {
+                                                                if (cookies.get('jwt_token') !== undefined) {
+                                                                    removefromFavorite(productdata.id);
+                                                                } else {
+                                                                    toast.error(t('required_login_message_for_cart'));
+                                                                }
+                                                            }}
+                                                            >
+                                                                <BsHeartFill size={16} fill='green' />
+                                                            </button>)
+                                                            : (
                                                                 <button key={productdata.id} type="button" className='wishlist-product' onClick={() => {
                                                                     if (cookies.get('jwt_token') !== undefined) {
                                                                         addToFavorite(productdata.id);
@@ -920,7 +911,7 @@ const ProductDetails = () => {
                         totalImages={totalImages}
                     />
 
-                    <div className='related-product-wrapper'>
+                    {/* <div className='related-product-wrapper'>
                         <h5>{t("related_product")}</h5>
                         <div className='related-product-container'>
                             {relatedProducts === null
@@ -1059,7 +1050,7 @@ const ProductDetails = () => {
                                                                         }
 
                                                                     }}><BiMinus size={20} fill='#fff' /></button>
-                                                                    {/* <span id={`input-productdetail`} >{quantity}</span> */}
+                                                                    <span id={`input-productdetail`} >{quantity}</span>
                                                                     <div className="quantity-container text-center">
                                                                         <input
                                                                             type="number"
@@ -1153,7 +1144,7 @@ const ProductDetails = () => {
                             }
 
                         </div>
-                    </div>
+                    </div> */}
 
 
                     <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} setP_V_id={setP_V_id} setP_id={setP_id} />

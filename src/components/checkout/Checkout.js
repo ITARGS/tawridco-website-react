@@ -38,7 +38,7 @@ import { ActionTypes } from '../../model/action-type';
 import { RiCoupon2Fill } from 'react-icons/ri';
 import Promo from '../cart/Promo';
 import { useTranslation } from 'react-i18next';
-import { clearCartPromo, setCart, setCartCheckout, setCartPromo, setWallet } from '../../model/reducer/cartReducer';
+import { clearCartPromo, setCart, setCartCheckout, setCartProducts, setCartPromo, setCartSubTotal, setWallet } from '../../model/reducer/cartReducer';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { PiWallet } from "react-icons/pi";
 import { deductUserBalance } from '../../model/reducer/authReducer';
@@ -213,6 +213,8 @@ const Checkout = () => {
                                 toast.success(result.message);
                                 setIsOrderPlaced(true);
                                 setShow(true);
+                                dispatch(setCartProducts({ data: [] }));
+                                dispatch(setCartSubTotal({ data: 0 }));
                             }
                             else {
                                 toast.error(result.message);
@@ -310,6 +312,8 @@ const Checkout = () => {
                             toast.success(result.message);
                             setIsOrderPlaced(true);
                             setShow(true);
+                            dispatch(setCartProducts({ data: [] }));
+                            dispatch(setCartSubTotal({ data: 0 }));
                         }
                         else {
                             toast.error(result.message);
@@ -379,6 +383,8 @@ const Checkout = () => {
                             setloadingPlaceOrder(false);
                             dispatch(setWallet({ data: 0 }));
                             dispatch(setCartPromo({ data: null }));
+                            dispatch(setCartProducts({ data: [] }));
+                            dispatch(setCartSubTotal({ data: 0 }));
                             dispatch(deductUserBalance({ data: walletDeductionAmt }));
                             setIsOrderPlaced(true);
                             setShow(true);
@@ -536,6 +542,8 @@ const Checkout = () => {
                             dispatch(deductUserBalance({ data: walletDeductionAmt }));
                             setIsOrderPlaced(true);
                             setShow(true);
+                            dispatch(setCartProducts({ data: [] }));
+                            dispatch(setCartSubTotal({ data: 0 }));
                         }
                         else {
                             toast.error(result.message);
@@ -577,10 +585,27 @@ const Checkout = () => {
                                         setpaymentUrl(res.data.midtrans_redirect_url?.snapUrl);
                                         dispatch(deductUserBalance({ data: walletDeductionAmt }));
                                         dispatch(setCartPromo({ data: null }));
-                                        let subWindow = window.open(res.data?.snapUrl, '_blank');
+                                        window.addEventListener('message', function (event) {
+                                            console.log('Message received from sub-window:', event.data);
+                                            // Add additional logic to handle the received message as needed
+                                        });
+                                        let subWindow = window.open(res.data?.snapUrl, '_blank', "width=500,height=500,resizable=yes,scrollbars=yes,status=yes,toolbar=no,menubar=no");
+                                        if (subWindow) {
+                                            subWindow.addEventListener("load", function () {
+                                                const interval = setInterval(() => {
+                                                    subWindow.opener.postMessage("Hello", "*");
+                                                    subWindow.opener.postMessage(subWindow.location, "*");
+                                                    // console.log("SubWindow Location", subWindow.location);
+                                                }, 1000);
+
+                                                subWindow.addEventListener("unload", () => {
+                                                    clearInterval(interval);
+                                                });
+                                            });
+                                        }
                                     } else {
                                         toast.error(res.message);
-                                        setloadingPlaceOrder(false);    
+                                        setloadingPlaceOrder(false);
                                     }
                                 })
                                 .catch(error => console.error(error));
@@ -595,7 +620,6 @@ const Checkout = () => {
             }
         }
     };
-
     const handleClose = () => {
         setisLoader(true);
         api.removeCart(cookies.get('jwt_token')).then(response => response.json())

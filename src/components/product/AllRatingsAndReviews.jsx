@@ -28,7 +28,7 @@ const AllRatingsAndReviews = () => {
     const [currPage, setCurrPage] = useState(1);
     const [limit, setLimit] = useState(12);
     const [offset, setOffset] = useState(0);
-    const [productId, setProductId] = useState(0);
+    const [productId, setProductId] = useState(-1);
     const [product, setProduct] = useState("");
     const [imageMappingLength, setImageMappingLength] = useState(5);
 
@@ -50,7 +50,7 @@ const AllRatingsAndReviews = () => {
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: "smooth" });
         const GetProductData = async () => {
-            await api.getProductbyFilter(setting?.setting?.default_city?.id, setting.setting?.default_city?.latitude, setting.setting?.default_city?.longitude, { slug: slug }, null)
+            await api.getProductbyFilter(setting.setting?.default_city?.latitude, setting.setting?.default_city?.longitude, { slug: slug }, null)
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
@@ -91,11 +91,12 @@ const AllRatingsAndReviews = () => {
         setImageLoading(false);
     };
     useEffect(() => {
-        fetchProductRatingById();
+        if (productId !== -1)
+            fetchProductRatingById();
     }, [productId, offset]);
     useEffect(() => {
-
-        fetchProductRatingImages();
+        if (productId !== -1)
+            fetchProductRatingImages();
     }, [productId]);
 
     const calculatePercentage = (totalRating, starWiseRating) => {

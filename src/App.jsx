@@ -46,6 +46,7 @@ import AllRatingImages from './components/product/AllRatingImages';
 import PayPalPaymentHandler from './components/paypalPaymentHandler/PayPalPaymentHandler';
 import jsonFile from "./utils/en.json";
 import { diffInTime, } from './utils/TimeUtilites';
+import { setFavouriteLength, setFavouriteProductIds } from './model/reducer/favouriteReducer';
 
 const App = () => {
   //initialize cookies
@@ -65,10 +66,10 @@ const App = () => {
     if (cookies.get('jwt_token') !== undefined && user.user === null) {
       getCurrentUser(cookies.get('jwt_token'));
     }
+    getSetting();
     //  else {
     //   dispatch(logoutAuth({ data: null }));
     // }
-    getSetting();
   }, []);
 
   useEffect(() => {
@@ -129,7 +130,7 @@ const App = () => {
   //fetching app-settings
   const getSetting = async () => {
     // if (setting?.setting == null)
-    await api.getSettings().then(response => response.json())
+    await api.getSettings(user?.user ? 1 : 0, user?.user ? cookies.get("jwt_token") : null).then(response => response.json())
       .then(result => {
         if (result.status === 1) {
           if (result?.data?.default_city == undefined && city?.city) {
@@ -145,8 +146,12 @@ const App = () => {
               }
             };
             dispatch(setSetting({ data: updatedSetting }));
+            dispatch(setFavouriteLength({ data: updatedSetting?.setting?.favorite_product_ids?.length }));
+            dispatch(setFavouriteProductIds({ data: updatedSetting?.setting?.favorite_product_ids }));
           } else {
             dispatch(setSetting({ data: result?.data }));
+            dispatch(setFavouriteLength({ data: result?.data?.favorite_product_ids?.length }));
+            dispatch(setFavouriteProductIds({ data: result?.data?.favorite_product_ids }));
           }
         }
       })
@@ -169,7 +174,7 @@ const App = () => {
     // else {
     // fetchShop(setting?.setting?.map_latitude, setting?.setting?.map_longitude);
     // }
-  }, [city,]);
+  }, [city]);
 
 
   useEffect(() => {
@@ -190,9 +195,9 @@ const App = () => {
     --body-background: #f7f7f7;
     --container-bg: #f2f3f9;
     --primary-color: #141a1f;
-    --secondary-color: ${setting.setting && setting.setting.web_settings.color}; 
-    --secondary-color-light: ${setting.setting && setting.setting.web_settings.light_color};
-    --secondary-color-dark:${setting.setting && setting.setting.web_settings.dark_color};
+    --secondary-color: ${setting?.setting && setting?.setting?.web_settings?.color}; 
+    --secondary-color-light: ${setting?.setting && setting?.setting?.web_settings?.light_color};
+    --secondary-color-dark:${setting?.setting && setting?.setting?.web_settings?.dark_color};
     --sub-text-color: #8b8b8b;
     --second-cards-color: #ffffff;
     --text-field-color: #f8f8f8;

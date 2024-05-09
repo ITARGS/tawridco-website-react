@@ -16,7 +16,7 @@ import { Modal } from 'react-bootstrap';
 // import { AddToCart, AddToFavorite, RemoveFromCart, RemoveFromFavorite } from '../../functions/Functions';
 import { setProductSizes } from '../../model/reducer/productSizesReducer';
 import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
-import { setFavourite } from '../../model/reducer/favouriteReducer';
+import { setFavourite, setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
 import Popup from '../same-seller-popup/Popup';
 
 
@@ -32,6 +32,7 @@ const QuickViewModal = (props) => {
 
     const cart = useSelector(state => state.cart);
     const favorite = useSelector(state => state.favourite);
+    const user = useSelector(state => state.user);
 
 
 
@@ -93,7 +94,7 @@ const QuickViewModal = (props) => {
     useEffect(() => {
         if (sizes.sizes === null || sizes.status === 'loading') {
             if (city.city !== null) {
-                api.getProductbyFilter(city.city.id, city.city.latitude, city.city.longitude, cookies.get('jwt_token'))
+                api.getProductbyFilter(city.city.latitude, city.city.longitude, cookies.get('jwt_token'))
                     .then(response => response.json())
                     .then(result => {
                         if (result.status === 1) {
@@ -209,13 +210,10 @@ const QuickViewModal = (props) => {
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getFavorite(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            setisLoader(false);
-                            if (res.status === 1)
-                                dispatch(setFavourite({ data: res }));
-                        });
+                    const updatedFavouriteProducts = [...favorite.favouriteProductIds, product_id];
+                    dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
+                    const updatedFavouriteLength = favorite?.favouritelength + 1;
+                    dispatch(setFavouriteLength({ data: updatedFavouriteLength }));
                 }
                 else {
                     // setisLoader(false);
@@ -230,14 +228,10 @@ const QuickViewModal = (props) => {
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getFavorite(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            if (res.status === 1)
-                                dispatch(setFavourite({ data: res }));
-                            else
-                                dispatch(setFavourite({ data: null }));
-                        });
+                    const updatedFavouriteProducts = favorite?.favouriteProductIds.filter(id => id != product_id);
+                    dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
+                    const updatedFavouriteLength = favorite?.favouritelength - 1;
+                    dispatch(setFavouriteLength({ data: updatedFavouriteLength }));
                 }
                 else {
                     toast.error(result.message);
@@ -443,7 +437,7 @@ const QuickViewModal = (props) => {
 
 
                                                     </div>
-                                                    {selectedVariant ? (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= 1 ? <>
+                                                    {selectedVariant ? (user?.user && cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= 1 ? <>
                                                         <div id={`input-cart-quickview`} className="input-to-cart">
                                                             {/* Remove From Cart Button */}
                                                             <button type='button' onClick={(e) => {
@@ -585,29 +579,27 @@ const QuickViewModal = (props) => {
                                                         </>
                                                     }
 
-                                                    {
-
-                                                        favorite.favorite && favorite.favorite.data?.some(element => element.id === product.id) ? (
-                                                            <button type="button" className='wishlist-product' onClick={() => {
-                                                                if (cookies.get('jwt_token') !== undefined) {
-                                                                    removefromFavorite(product.id);
-                                                                } else {
-                                                                    toast.error(t('required_login_message_for_cart'));
-                                                                }
-                                                            }}
-                                                            >
-                                                                <BsHeartFill size={16} fill='green' />
-                                                            </button>
-                                                        ) : (
-                                                            <button key={product.id} type="button" className='wishlist-product' onClick={() => {
-                                                                if (cookies.get('jwt_token') !== undefined) {
-                                                                    addToFavorite(product.id);
-                                                                } else {
-                                                                    toast.error(t("required_login_message_for_cart"));
-                                                                }
-                                                            }}>
-                                                                <BsHeart size={16} /></button>
-                                                        )}
+                                                    {favorite.favorite && favorite.favouriteProductIds?.some(id => id == product.id) ? (
+                                                        <button type="button" className='wishlist-product' onClick={() => {
+                                                            if (cookies.get('jwt_token') !== undefined) {
+                                                                removefromFavorite(product.id);
+                                                            } else {
+                                                                toast.error(t('required_login_message_for_cart'));
+                                                            }
+                                                        }}
+                                                        >
+                                                            <BsHeartFill size={16} fill='green' />
+                                                        </button>
+                                                    ) : (
+                                                        <button key={product.id} type="button" className='wishlist-product' onClick={() => {
+                                                            if (cookies.get('jwt_token') !== undefined) {
+                                                                addToFavorite(product.id);
+                                                            } else {
+                                                                toast.error(t("required_login_message_for_cart"));
+                                                            }
+                                                        }}>
+                                                            <BsHeart size={16} /></button>
+                                                    )}
 
                                                     {product?.fssai_lic_no &&
                                                         <div className='fssai-details'>

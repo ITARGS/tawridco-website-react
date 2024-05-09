@@ -29,7 +29,7 @@ const ShowAllCategories = () => {
   // console.log(arr);
 
   const getProductfromApi = async (ctg) => {
-    await api.getProductbyFilter(city.city.id, city.city.latitude, city.city.longitude, { category_id: ctg.id })
+    await api.getProductbyFilter( city.city.latitude, city.city.longitude, { category_id: ctg.id })
       .then(response => response.json())
       .then(result => {
         if (result.status === 1) {

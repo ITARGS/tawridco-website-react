@@ -25,7 +25,7 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Popup from "../same-seller-popup/Popup";
 import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
-import { setFavourite } from '../../model/reducer/favouriteReducer';
+import { setFavourite, setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
 import { LuStar } from 'react-icons/lu';
 import "./product.css";
 
@@ -46,6 +46,7 @@ const ProductList2 = React.memo(() => {
     const favorite = useSelector(state => (state.favourite));
     const setting = useSelector(state => (state.setting));
     const cart = useSelector(state => (state.cart));
+    const user = useSelector(state => (state.user));
     const share_parent_url = `${setting.setting && setting.setting.web_settings.website_url}/product/`;
 
     const [productresult, setproductresult] = useState([]);
@@ -98,8 +99,8 @@ const ProductList2 = React.memo(() => {
     };
 
     const filterProductsFromApi = async (filter) => {
-        setisLoader(true);
-        await api.getProductbyFilter(city?.city?.id, city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
+        // setisLoader(true);
+        await api.getProductbyFilter(city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -121,7 +122,7 @@ const ProductList2 = React.memo(() => {
                     settotalProducts(0);
                     setSizes([]);
                 }
-                setisLoader(false);
+                // setisLoader(false);
             })
             .catch(error => console.log("error ", error));
     };
@@ -157,12 +158,12 @@ const ProductList2 = React.memo(() => {
 
         dispatch(setFilterBrands({ data: sorted_brand_ids }));
     };
-
+    // console.log(category?.category);
     useEffect(() => {
         if (brands === null) {
             fetchBrands();
         }
-        if (category?.category?.length === 0) {
+        if (category?.category === null) {
             fetchCategories();
         }
         if (location.pathname === "/products")
@@ -207,7 +208,7 @@ const ProductList2 = React.memo(() => {
 
     const FilterProductByPrice = async (filter) => {
         // setisLoader(true);
-        await api.getProductbyFilter(city?.city?.id, city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
+        await api.getProductbyFilter(city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -225,7 +226,7 @@ const ProductList2 = React.memo(() => {
 
     const filterBySize = async (filter) => {
         setproductresult(null);
-        await api.getProductbyFilter(city.city.id, city.city.latitude, city.city.longitude, filter, cookies.get('jwt_token'))
+        await api.getProductbyFilter(city.city.latitude, city.city.longitude, filter, cookies.get('jwt_token'))
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -482,13 +483,10 @@ const ProductList2 = React.memo(() => {
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getFavorite(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            setisLoader(false);
-                            if (res.status === 1)
-                                dispatch(setFavourite({ data: res }));
-                        });
+                    const updatedFavouriteProducts = [...favorite.favouriteProductIds, product_id];
+                    dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
+                    const updatedFavouriteLength = favorite?.favouritelength + 1;
+                    dispatch(setFavouriteLength({ data: updatedFavouriteLength }));
                 }
                 else {
                     // setisLoader(false);
@@ -503,14 +501,10 @@ const ProductList2 = React.memo(() => {
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getFavorite(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            if (res.status === 1)
-                                dispatch(setFavourite({ data: res }));
-                            else
-                                dispatch(setFavourite({ data: null }));
-                        });
+                    const updatedFavouriteProducts = favorite?.favouriteProductIds.filter(id => id != product_id);
+                    dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
+                    const updatedFavouriteLength = favorite?.favouritelength - 1;
+                    dispatch(setFavouriteLength({ data: updatedFavouriteLength }));
                 }
                 else {
                     toast.error(result.message);
@@ -866,34 +860,31 @@ const ProductList2 = React.memo(() => {
 
                                                                         <div className='d-flex flex-row border-top product-card-footer'>
                                                                             <div className='border-end '>
-                                                                                {
-
-                                                                                    favorite.favorite && favorite.favorite.status !== 0 && favorite.favorite.data.some(element => element.id === product.id) ? (
-                                                                                        <button type="button" className='wishlist-product' onClick={() => {
-                                                                                            if (cookies.get('jwt_token') !== undefined) {
-                                                                                                removefromFavorite(product.id);
-                                                                                            } else {
-                                                                                                toast.error(t('required_login_message_for_cart'));
-                                                                                            }
-                                                                                        }}
-                                                                                        >
-                                                                                            <BsHeartFill size={16} fill='green' />
-                                                                                        </button>
-                                                                                    ) : (
-                                                                                        <button key={product.id} type="button" className='wishlist-product' onClick={() => {
-                                                                                            if (cookies.get('jwt_token') !== undefined) {
-                                                                                                addToFavorite(product.id);
-                                                                                            } else {
-                                                                                                toast.error(t("required_login_message_for_cart"));
-                                                                                            }
-                                                                                        }}>
-                                                                                            <BsHeart size={16} /></button>
-                                                                                    )}
+                                                                                {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == product.id) ? (
+                                                                                    <button type="button" className='wishlist-product' onClick={() => {
+                                                                                        if (cookies.get('jwt_token') !== undefined) {
+                                                                                            removefromFavorite(product.id);
+                                                                                        } else {
+                                                                                            toast.error(t('required_login_message_for_cart'));
+                                                                                        }
+                                                                                    }}
+                                                                                    >
+                                                                                        <BsHeartFill size={16} fill='green' />
+                                                                                    </button>
+                                                                                ) : (
+                                                                                    <button key={product.id} type="button" className='wishlist-product' onClick={() => {
+                                                                                        if (cookies.get('jwt_token') !== undefined) {
+                                                                                            addToFavorite(product.id);
+                                                                                        } else {
+                                                                                            toast.error(t("required_login_message_for_cart"));
+                                                                                        }
+                                                                                    }}>
+                                                                                        <BsHeart size={16} /></button>
+                                                                                )}
                                                                             </div>
 
                                                                             <div className='border-end aes' style={{ flexGrow: "1" }} >
-                                                                                {/* {cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty} */}
-                                                                                {cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 0 ? <>
+                                                                                {user?.user && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 0 ? <>
                                                                                     <div id={`input-cart-productdetail`} className="input-to-cart">
                                                                                         <button type='button' className="wishlist-button" onClick={() => {
 

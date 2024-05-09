@@ -262,7 +262,7 @@ const Order = () => {
                                             </thead>
                                             <tbody>
                                                 {PrevOrders && PrevOrders.map((order, index) => (
-                                                    <tr key={index} className={index === PrevOrders.length - 1 ? 'last-column' : ''}>
+                                                    <tr key={order?.id} className={index === PrevOrders.length - 1 ? 'last-column' : ''}>
                                                         <th>{`#${order.order_id} `}</th>
                                                         <th className='product-name d-table-cell verticall-center flex-column justify-content-center'>{order.items.map((item, ind) => (
                                                             <div className="column-container">

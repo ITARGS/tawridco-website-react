@@ -24,8 +24,10 @@ import { useTranslation } from 'react-i18next';
 
 import FirebaseData from '../../utils/firebase/FirebaseData';
 import PhoneInput from 'react-phone-input-2';
-import { setCurrentUser } from '../../model/reducer/authReducer';
+import { setCurrentUser, setFcmToken } from '../../model/reducer/authReducer';
 import { Modal } from 'react-bootstrap';
+import { setSetting } from '../../model/reducer/settingReducer';
+import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
 
 const Login = React.memo((props) => {
 
@@ -42,6 +44,7 @@ const Login = React.memo((props) => {
                         const currentToken = await messaging.getToken();
                         if (currentToken) {
                             setFcm(currentToken);
+                            dispatch(setFcmToken({ data: currentToken }));
                         } else {
                             // console.log("No registration token available");
                         }
@@ -60,7 +63,7 @@ const Login = React.memo((props) => {
         }
     }, [setting]);
     // console.log(fcm);
-    
+
     //initialize Cookies
     const cookies = new Cookies();
     const Navigate = useNavigate();
@@ -228,6 +231,15 @@ const Login = React.memo((props) => {
                     });
 
                     getCurrentUser(result.data.access_token);
+                    api.getSettings(1, result.data.access_token)
+                        .then((req) => req.json())
+                        .then((res) => {
+                            if (res.status == 1) {
+                                dispatch(setSetting({ data: res?.data }));
+                                dispatch(setFavouriteLength({ data: res?.data?.favorite_product_ids?.length }));
+                                dispatch(setFavouriteProductIds({ data: res?.data?.favorite_product_ids }));
+                            }
+                        });
                     setlocalstorageOTP(Uid);
                     setError("");
                     setOTP("");
@@ -379,107 +391,6 @@ const Login = React.memo((props) => {
         </>
     );
     return newReturn;
-    // return (
-    //     <>
-    //         <div className="modal fade login" id={props.modal_id} data-bs-backdrop="static" data-bs-keyboard="false" tabIndex="-1" aria-labelledby="loginLabel" aria-hidden="true">
-    //             <div className="modal-dialog modal-dialog-centered">
-    //                 <div className="modal-content" style={{ borderRadius: "10px" }}>
-    //                     <div className="d-flex flex-row justify-content-between align-items-center header">
-    //                         <h5>{t("Login")}</h5>
-    //                         <button type="button" className="" data-bs-dismiss="modal" aria-label="Close" ref={closeModalRef} onClick={() => {
-    //                             setError("");
-    //                             setOTP("");
-    //                             setPhonenum("");
-    //                             setcheckboxSelected(false);
-    //                             setisLoading(false);
-    //                             setIsOTP(false);
-
-    //                         }}><AiOutlineCloseCircle /></button>
-    //                     </div>
-    //                     <div className="modal-body d-flex flex-column gap-3 align-items-center body">
-    //                         <img src={setting.setting && setting.setting.web_settings.web_logo} alt='logo'></img>
-
-    //                         {isOTP
-    //                             ? (
-    //                                 <>
-    //                                     <h5>{t("enter_verification_code")}</h5>
-    //                                     <span>{t("otp_send_message")} <p>{phonenum}</p></span>
-    //                                 </>
-    //                             )
-    //                             : (
-    //                                 <>
-    //                                     <h5>{t("Welcome")}</h5>
-    //                                     <span>{t("login_enter_number")}</span>
-    //                                 </>
-    //                             )}
-
-    //                         {error === ''
-    //                             ? ""
-    //                             : <span className='error-msg'>{error}</span>}
-
-    //                         {isOTP
-    //                             ? (
-    //                                 <form className='d-flex flex-column gap-3 form w-100' onSubmit={verifyOTP}>
-    //                                     {isLoading
-    //                                         ? (
-    //                                             <Loader width='100%' height='auto' />
-    //                                         )
-    //                                         : null}
-    //                                     <OTPInput className='otp-container' value={OTP} onChange={setOTP} autoFocus OTPLength={6} otpType="number" disabled={false} />
-    //                                     <span className='timer'>
-    //                                         <button onClick={handleLogin} disabled={disabled}>
-    //                                             {timer === 0 ?
-    //                                                 `Resend OTP` : <>Resend OTP in : <strong> {formatTime(timer)} </strong> </>}
-    //                                         </button> </span>
-    //                                     <span className='button-container d-flex gap-5'>
-
-    //                                         <button type="submit" className='login-btn' >{t("verify_and_proceed")}</button>
-
-
-    //                                     </span>
-    //                                 </form>
-    //                             )
-    //                             : (
-    //                                 <form className='d-flex flex-column gap-3 form' onSubmit={handleLogin}>
-    //                                     {isLoading
-    //                                         ? (
-    //                                             <Loader width='100%' height='auto' />
-    //                                         )
-    //                                         : null}
-
-
-    //                                     <div>
-    //                                         <PhoneInput
-    //                                             country={"in"}
-    //                                             value={phonenum}
-    //                                             onChange={handleOnChange}
-    //                                             enableSearch
-    //                                             disableSearchIcon
-    //                                             placeholder={t('please_enter_valid_phone_number')}
-    //                                             disableDropdown={false}
-    //                                         />
-    //                                     </div>
-
-
-    //                                     <span style={{ alignSelf: "baseline" }}>
-    //                                         <input type="checkbox" className='mx-2' required checked={checkboxSelected} onChange={() => {
-    //                                             setcheckboxSelected(!checkboxSelected);
-    //                                         }} />
-    //                                         {t("agreement_message")} &nbsp;<a onClick={handleTerms}>{t("terms_of_service")}</a> &nbsp;{t("and")}<a onClick={handlePolicy}>&nbsp; {t("privacy_policy")} &nbsp;</a>
-    //                                     </span>
-    //                                     <button type='submit'> {t("login_continue")}</button>
-    //                                 </form>
-    //                             )}
-
-
-    //                     </div>
-    //                 </div>
-    //                 <div id="recaptcha-container" style={{ display: "none" }}></div>
-    //             </div>
-    //         </div>
-
-    //     </>
-    // );
 });
 
 export default Login;

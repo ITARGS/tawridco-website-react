@@ -13,7 +13,7 @@ import Lottie from 'lottie-react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { ActionTypes } from '../../model/action-type';
-import { setCart, setCartCheckout, setWallet } from '../../model/reducer/cartReducer';
+import { setCart, setCartCheckout, setCartProducts, setCartSubTotal, setWallet } from '../../model/reducer/cartReducer';
 import { deductUserBalance } from '../../model/reducer/authReducer';
 
 const CARD_OPTIONS = {
@@ -110,6 +110,8 @@ const StripeModal = (props) => {
                         setShow(true);
                         setIsOrderPlaced(true);
                         setloadingPay(false);
+                        dispatch(setCartProducts({ data: [] }));
+                        dispatch(setCartSubTotal({ data: 0 }));
                     }
                     else {
                         setloadingPay(false);

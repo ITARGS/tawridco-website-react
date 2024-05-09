@@ -1,10 +1,11 @@
-// import { ActionTypes } from "../action-type";
 import { createSlice } from "@reduxjs/toolkit";
 
 
 const initialState = {
     status: 'loading', //fulfill
     favorite: null,
+    favouritelength: 0,
+    favouriteProductIds: []
 };
 
 export const favouriteReducer = createSlice({
@@ -14,21 +15,16 @@ export const favouriteReducer = createSlice({
         setFavourite: (state, action) => {
             state.status = "fulfill";
             state.favorite = action.payload.data;
+        },
+        setFavouriteLength: (state, action) => {
+            state.favouritelength = action.payload.data;
+        },
+        setFavouriteProductIds: (state, action) => {
+            state.favouriteProductIds = action.payload.data;
         }
     }
-    // switch (type) {
-    //     case ActionTypes.SET_FAVORITE:
-    //         return{
-    //             ...state,
-    //             status:"fulfill",
-    //             favorite:payload,
-    //         }
-
-    //     default:
-    //         return state;
-    // }
 });
 
 
-export const { setFavourite } = favouriteReducer.actions;
+export const { setFavourite, setFavouriteLength, setFavouriteProductIds } = favouriteReducer.actions;
 export default favouriteReducer.reducer;

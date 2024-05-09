@@ -38,7 +38,7 @@ const AllRatingImages = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
         const getProductData = async () => {
 
-            await api.getProductbyFilter(city.city?.id, city.city?.latitude, city.city?.longitude, { slug: slug }, cookies.get('jwt_token'))
+            await api.getProductbyFilter(city.city?.latitude, city.city?.longitude, { slug: slug }, cookies.get('jwt_token'))
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {

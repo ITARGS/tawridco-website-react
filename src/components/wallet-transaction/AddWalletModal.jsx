@@ -185,7 +185,10 @@ const AddWalletModal = (props) => {
             } else if (paymentMethod === "paypal") {
                 handlePaypalPayment(result?.data?.paypal_redirect_url);
             } else if (paymentMethod === "midtrans") {
-                window.open(result?.data?.snapUrl, "_blank");
+                const paymentWindow = window.open(result?.data?.snapUrl, "_blank");
+                window.addEventListener("message", (event) => {
+                    console.log(event.data);
+                });
             }
         } catch (err) {
             console.log(err.message);

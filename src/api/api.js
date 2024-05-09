@@ -63,9 +63,13 @@ const api = {
 
         return fetch(appUrl + appSubUrl + "/delete_account", requestOptions);
     },
-    getSettings() {
+    getSettings(isToken = 0, token) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
+        if (isToken === 1) {
+            myHeaders.append("Authorization", token_prefix + token);
+        }
+
         var requestOptions = {
             method: 'GET',
             headers: myHeaders,
@@ -238,13 +242,13 @@ const api = {
 
         return fetch(appUrl + appSubUrl + "/edit_profile", requestOptions);
     },
-    getProductbyFilter(city_id, latitude, longitude, filters, token) {
+    getProductbyFilter(latitude, longitude, filters, token) {
         var myHeaders = new Headers();
         //console.log("getProductbyFilter API ->", filters);
         myHeaders.append(access_key_param, access_key);
         token && myHeaders.append("Authorization", token_prefix + token);
         var formdata = new FormData();
-        formdata.append("city_id", city_id);
+        // formdata.append("city_id", city_id);
         formdata.append("latitude", latitude);
         formdata.append("longitude", longitude);
         //console.log(filters);
@@ -267,16 +271,20 @@ const api = {
 
         return fetch(appUrl + appSubUrl + "/products", requestOptions);
     },
-    getProductbyId(latitude, longitude, id, token) {
+    getProductbyId(latitude, longitude, id, token, slug) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
 
-        var formdata = new FormData();
-        formdata.append("id", id);
+        let formdata = new FormData();
+        if (id !== -1) {
+            formdata.append("id", id);
+        }
         formdata.append("latitude", latitude);
         formdata.append("longitude", longitude);
-
+        if (slug) {
+            formdata.append("slug", slug);
+        }
         var requestOptions = {
             method: 'POST',
             headers: myHeaders,

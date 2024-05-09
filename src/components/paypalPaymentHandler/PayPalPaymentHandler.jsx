@@ -9,7 +9,7 @@ import animate2 from '../../utils/order_success_tick_animation.json';
 import NoOrderSVG from "../../utils/zero-state-screens/No_Orders.svg";
 import api from '../../api/api';
 import Cookies from 'universal-cookie';
-import { setCart, setCartCheckout } from '../../model/reducer/cartReducer';
+import { setCart, setCartCheckout, setCartProducts, setCartSubTotal } from '../../model/reducer/cartReducer';
 import { useDispatch } from 'react-redux';
 
 const PayPalPaymentHandler = () => {
@@ -30,9 +30,12 @@ const PayPalPaymentHandler = () => {
     const [timer, setTimer] = useState(5);
     const interval = useRef();
     const timeout = useRef();
-
+    // https://devegrocer.thewrteam.in/web-payment-status?order_id=wallet-20240509133121-32&status_code=200&transaction_status=capture
     useEffect(() => {
-        if (queryParamsObj.type === "wallet") {
+        if (queryParamsObj.status_code == 200 && queryParamsObj.order_id.split("-")[0] == "wallet") {
+            window.opener.postMessage("RechargeDone");
+        }
+        else if (queryParamsObj.type === "wallet") {
             toast.success(t("wallet_recharge_paypal_pending_message"));
         }
         else {
@@ -41,6 +44,8 @@ const PayPalPaymentHandler = () => {
                     if (result?.status === 1) {
                         dispatch(setCart({ data: null }));
                         dispatch(setCartCheckout({ data: null }));
+                        dispatch(setCartProducts({ data: [] }));
+                        dispatch(setCartSubTotal({ data: 0 }));
                     }
                 });
             } catch (err) {
