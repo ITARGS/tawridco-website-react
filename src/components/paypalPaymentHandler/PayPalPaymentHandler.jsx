@@ -32,8 +32,11 @@ const PayPalPaymentHandler = () => {
     const timeout = useRef();
     // https://devegrocer.thewrteam.in/web-payment-status?order_id=wallet-20240509133121-32&status_code=200&transaction_status=capture
     useEffect(() => {
+        let intervalId;
         if (queryParamsObj.status_code == 200 && queryParamsObj.order_id.split("-")[0] == "wallet") {
-            window.opener.postMessage("RechargeDone");
+            intervalId = setInterval(() => {
+                window.opener.postMessage("Recharge Done", "*");
+            }, 1000);
         }
         else if (queryParamsObj.type === "wallet") {
             toast.success(t("wallet_recharge_paypal_pending_message"));
@@ -51,7 +54,6 @@ const PayPalPaymentHandler = () => {
             } catch (err) {
                 console.log(err.message);
             }
-            toast.success(t("order_paypal_pending_message"));
         }
         interval.current = setInterval(() => {
             setTimer(prev => prev - 1);
@@ -62,6 +64,7 @@ const PayPalPaymentHandler = () => {
         return () => {
             clearInterval(interval.current);
             clearTimeout(timeout);
+            clearInterval(intervalId);
         };
     }, []);
 

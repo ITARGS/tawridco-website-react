@@ -302,5 +302,6 @@
   "non-returnable": "Non-Returnable",
   "returnable": "Product is returnable in ",
   "days": "days",
-  "midtrans": "Midtrans"
+  "midtrans": "Midtrans",
+  "wallet_recharge_successfull": "Wallet Recharge Successfull"
 }

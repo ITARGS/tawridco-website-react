@@ -585,24 +585,7 @@ const Checkout = () => {
                                         setpaymentUrl(res.data.midtrans_redirect_url?.snapUrl);
                                         dispatch(deductUserBalance({ data: walletDeductionAmt }));
                                         dispatch(setCartPromo({ data: null }));
-                                        window.addEventListener('message', function (event) {
-                                            console.log('Message received from sub-window:', event.data);
-                                            // Add additional logic to handle the received message as needed
-                                        });
-                                        let subWindow = window.open(res.data?.snapUrl, '_blank', "width=500,height=500,resizable=yes,scrollbars=yes,status=yes,toolbar=no,menubar=no");
-                                        if (subWindow) {
-                                            subWindow.addEventListener("load", function () {
-                                                const interval = setInterval(() => {
-                                                    subWindow.opener.postMessage("Hello", "*");
-                                                    subWindow.opener.postMessage(subWindow.location, "*");
-                                                    // console.log("SubWindow Location", subWindow.location);
-                                                }, 1000);
-
-                                                subWindow.addEventListener("unload", () => {
-                                                    clearInterval(interval);
-                                                });
-                                            });
-                                        }
+                                        let subWindow = window.open(res.data?.snapUrl, '_parent');
                                     } else {
                                         toast.error(res.message);
                                         setloadingPlaceOrder(false);
@@ -911,7 +894,6 @@ const Checkout = () => {
                                                     {cart.checkout === null || user.user === null
                                                         ? (
                                                             <Loader screen='full' />
-
                                                         )
                                                         : (
                                                             <div className='summary'>
@@ -919,7 +901,7 @@ const Checkout = () => {
                                                                     <span>{t("sub_total")}</span>
                                                                     <div className='d-flex align-items-center'>
 
-                                                                        <span>{setting.setting && setting.setting.currency}   {(cart.checkout.sub_total).toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                        <span>{setting.setting && setting.setting.currency}   {(cart?.checkout?.sub_total)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
                                                                     </div>
                                                                 </div>
 
@@ -927,7 +909,7 @@ const Checkout = () => {
                                                                     <span>{t("delivery_charge")}</span>
                                                                     <div className='d-flex align-items-center'>
 
-                                                                        <span>{setting.setting && setting.setting.currency}  {(cart.checkout.delivery_charge.total_delivery_charge).toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                        <span>{setting.setting && setting.setting.currency}  {(cart?.checkout?.delivery_charge?.total_delivery_charge)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
                                                                     </div>
                                                                 </div>
                                                                 {cart.promo_code && <>
@@ -935,7 +917,7 @@ const Checkout = () => {
                                                                         <span>{t("discount")}</span>
                                                                         <div className='d-flex align-items-center'>
 
-                                                                            <span>- {setting.setting && setting.setting.currency}    {Number(cart.promo_code?.discount).toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                            <span>- {setting.setting && setting.setting.currency}    {Number(cart?.promo_code?.discount)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
                                                                         </div>
                                                                     </div>
                                                                 </>}
@@ -944,7 +926,7 @@ const Checkout = () => {
                                                                         <span>{t("Wallet")}</span>
                                                                         <div className='d-flex align-items-center'>
 
-                                                                            <span>- {setting.setting && setting.setting.currency}    {Number(walletDeductionAmt).toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                            <span>- {setting.setting && setting.setting.currency}    {Number(walletDeductionAmt)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
                                                                         </div>
                                                                     </div>
                                                                 </> : <></>}
@@ -1007,7 +989,7 @@ const Checkout = () => {
                                                                     <div className='d-flex align-items-center total-amount' style={{ color: "var(--secondary-color)" }}>
                                                                         <span>
                                                                             {setting.setting && setting.setting.currency}
-                                                                            {Number(totalPayment).toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                            {Number(totalPayment)?.toFixed(setting.setting && setting.setting.decimal_point)}
                                                                         </span>
                                                                         {/* {cart.promo_code ?
                                                                             <span>

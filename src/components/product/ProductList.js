@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BsPlusCircle } from "react-icons/bs";
+import { BsArrowDown, BsPlusCircle } from "react-icons/bs";
 import { AiOutlineEye, AiOutlineCloseCircle } from 'react-icons/ai';
 import { BsHeart, BsShare, BsPlus, BsHeartFill } from "react-icons/bs";
 import { BiMinus, BiLink } from 'react-icons/bi';
@@ -28,6 +28,7 @@ import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../
 import { setFavourite, setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
 import { LuStar } from 'react-icons/lu';
 import "./product.css";
+import CategoryComponent from './Categories';
 
 const ProductList2 = React.memo(() => {
     const total_products_per_page = 12;
@@ -38,9 +39,7 @@ const ProductList2 = React.memo(() => {
 
 
     const closeCanvas = useRef();
-
-    const category = useSelector(state => state.category);
-    // console.log(category);
+    const category = useSelector(state => state.category?.category);
     const city = useSelector(state => state.city);
     const filter = useSelector(state => state.productFilter);
     const favorite = useSelector(state => (state.favourite));
@@ -66,8 +65,9 @@ const ProductList2 = React.memo(() => {
     const [p_v_id, setP_V_id] = useState(0);
     const [qnty, setQnty] = useState(0);
     const location = useLocation();
-
-
+    const [showPriceFilter, setShowPriceFilter] = useState(true);
+    const [selectedCategories, setSelectedCategories] = useState(filter?.category_id !== null ? [filter?.category_id] : []);
+    const { t } = useTranslation();
 
     const fetchBrands = () => {
         api.getBrands()
@@ -99,34 +99,37 @@ const ProductList2 = React.memo(() => {
     };
 
     const filterProductsFromApi = async (filter) => {
-        // setisLoader(true);
+        setisLoader(true);
         await api.getProductbyFilter(city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
                     // console.log("Filter Product From Api ->", result);
-                    setMinPrice(result.total_min_price);
-                    if (result.total_min_price === result.total_max_price) {
-                        setMaxPrice(result.total_max_price + 100);
-                        setValues([result.total_min_price, result.total_max_price + 100]);
-                    } else {
-                        setMaxPrice(result.total_max_price);
-                        setValues([result.total_min_price, result.total_max_price]);
+                    if (minPrice == null && maxPrice == null && filter?.price_filter == null) {
+                        setMinPrice(result.total_min_price);
+                        if (result.total_min_price === result.total_max_price) {
+                            setMaxPrice(result.total_max_price + 100);
+                            setValues([result.total_min_price, result.total_max_price + 100]);
+                        } else {
+                            setMaxPrice(result.total_max_price);
+                            setValues([result.total_min_price, result.total_max_price]);
+                        }
                     }
                     setproductresult(result.data);
                     setSizes(result.sizes);
                     settotalProducts(result.total);
+                    setShowPriceFilter(true);
                 }
                 else {
                     setproductresult([]);
                     settotalProducts(0);
                     setSizes([]);
+                    setShowPriceFilter(false);
                 }
-                // setisLoader(false);
+                setisLoader(false);
             })
             .catch(error => console.log("error ", error));
     };
-
 
 
     const sort_unique_brand_ids = (int_brand_ids) => {
@@ -155,19 +158,22 @@ const ProductList2 = React.memo(() => {
         }
 
         const sorted_brand_ids = sort_unique_brand_ids(brand_ids);
-
+        // console.log("Sorted Brand Ids ->", sorted_brand_ids);
         dispatch(setFilterBrands({ data: sorted_brand_ids }));
     };
     // console.log(category?.category);
+
     useEffect(() => {
         if (brands === null) {
             fetchBrands();
         }
-        if (category?.category === null) {
+        if (category === null) {
             fetchCategories();
         }
         if (location.pathname === "/products")
             filterProductsFromApi({
+                min_price: filter.price_filter?.min_price,
+                max_price: filter.price_filter?.max_price,
                 category_id: filter?.category_id,
                 brand_ids: filter?.brand_ids.toString(),
                 sort: filter?.sort_filter,
@@ -181,68 +187,50 @@ const ProductList2 = React.memo(() => {
                 section_id: filter?.section_id
             });
 
-    }, [filter.search, filter.category_id, filter.brand_ids, filter.sort_filter, filter?.search_sizes]);
+    }, [filter.search, filter.category_id, filter.brand_ids, filter.sort_filter, filter?.search_sizes, filter?.price_filter, offset]);
 
-    useEffect(() => {
-        FilterProductByPrice({
-            min_price: filter.price_filter?.min_price,
-            max_price: filter.price_filter?.max_price,
-            category_id: filter?.category_id,
-            brand_ids: filter?.brand_ids?.toString(),
-            sort: filter?.sort_filter,
-            search: filter?.search,
-            sizes: filter?.search_sizes?.filter(obj => obj.checked).map(obj => obj["size"]).join(","),
-            limit: total_products_per_page,
-            offset: offset,
-            unit_ids: filter?.search_sizes?.filter(obj => obj.checked).map(obj => obj["unit_id"]).join(","),
-            seller_slug: filter?.seller_slug,
-            country_id: filter?.country_id,
-            section_id: filter?.section_id
-        });
-    }, [filter?.price_filter, offset]);
+    // useEffect(() => {
+    //     FilterProductByPrice({
+    //         min_price: filter.price_filter?.min_price,
+    //         max_price: filter.price_filter?.max_price,
+    //         category_id: filter?.category_id,
+    //         brand_ids: filter?.brand_ids?.toString(),
+    //         sort: filter?.sort_filter,
+    //         search: filter?.search,
+    //         sizes: filter?.search_sizes?.filter(obj => obj.checked).map(obj => obj["size"]).join(","),
+    //         limit: total_products_per_page,
+    //         offset: offset,
+    //         unit_ids: filter?.search_sizes?.filter(obj => obj.checked).map(obj => obj["unit_id"]).join(","),
+    //         seller_slug: filter?.seller_slug,
+    //         country_id: filter?.country_id,
+    //         section_id: filter?.section_id
+    //     });
+    // }, [filter?.price_filter, offset]);
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
 
 
-    const FilterProductByPrice = async (filter) => {
-        // setisLoader(true);
-        await api.getProductbyFilter(city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    setproductresult(result.data);
-                    settotalProducts(result.total);
-                }
-                else {
-                    setproductresult([]);
-                    settotalProducts(0);
-                }
-                // setisLoader(false);
-            })
-            .catch(error => console.log("error ", error));
-    };
+    // const FilterProductByPrice = async (filter) => {
+    //     // setisLoader(true);
+    //     await api.getProductbyFilter(city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
+    //         .then(response => response.json())
+    //         .then(result => {
+    //             if (result.status === 1) {
+    //                 setproductresult(result.data);
+    //                 settotalProducts(result.total);
+    //             }
+    //             else {
+    //                 setproductresult([]);
+    //                 settotalProducts(0);
+    //             }
+    //             // setisLoader(false);
+    //         })
+    //         .catch(error => console.log("error ", error));
+    // };
 
-    const filterBySize = async (filter) => {
-        setproductresult(null);
-        await api.getProductbyFilter(city.city.latitude, city.city.longitude, filter, cookies.get('jwt_token'))
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    setproductresult(result.data);
-                    settotalProducts(result.total);
-                }
-                else {
-                    setproductresult([]);
-                    settotalProducts(0);
-                }
-                setisLoader(false);
-            })
-            .catch(error => console.log("error ", error));
-    };
 
-    const { t } = useTranslation();
 
     const placeHolderImage = (e) => {
 
@@ -280,6 +268,10 @@ const ProductList2 = React.memo(() => {
                             dispatch(setFilterSort({ data: "new" }));
                             dispatch(setFilterBySeller({ data: "" }));
                             dispatch(setFilterByCountry({ data: "" }));
+                            dispatch(setFilterCategory({ data: null }));
+                            setSelectedCategories([]);
+                            setMinPrice(null);
+                            setMaxPrice(null);
                         }}>{t("clear_filters")}</span></h5>
                     {brands === null
                         ? (
@@ -291,7 +283,7 @@ const ProductList2 = React.memo(() => {
                                     <div whiltap={{ scale: 0.8 }} onClick={() => {
                                         filterbyBrands(brand);
                                         closeCanvas.current.click();
-                                    }} className={`d-flex justify-content-between align-items-center filter-bar ${filter.brand_ids?.length != 0 ? filter.brand_ids.includes(brand.id) ? 'active' : null : null}`} key={index} >
+                                    }} className={`d-flex justify-content-between align-items-center filter-bar border-bottom ${filter.brand_ids?.length != 0 ? filter.brand_ids.includes(brand.id) ? 'active' : null : null}`} key={index} >
                                         <div className='d-flex gap-3 align-items-baseline'>
                                             <div className='image-container'>
                                                 <img onError={placeHolderImage} src={brand.image_url} alt="category"></img>
@@ -304,120 +296,147 @@ const ProductList2 = React.memo(() => {
                         )}
 
                 </div>
-
-                {minPrice !== null && maxPrice !== null ? <div className='filter-row'>
-                    <h5>{t("filter")} {t("by_price")}</h5>
-                    {
-                        (minPrice === null || maxPrice === null)
-                            ? (
-                                <Loader />
-                            )
-                            : (
-                                <div
-                                    className='slider'
-                                >
-                                    <Range
-                                        draggableTrack
-                                        values={values}
-                                        step={1}
-                                        min={minPrice}
-                                        max={maxPrice}
-                                        onChange={(newValues) => {
-                                            setValues(newValues);
-                                        }}
-                                        i18nIsDynamicList
-                                        onFinalChange={(newValues) => {
-                                            // console.log(newValues);
-
-                                            dispatch(setFilterMinMaxPrice({ data: { min_price: newValues[0], max_price: newValues[1] } }));
-                                        }}
-                                        renderTrack={({ props, children }) => (
-                                            <div
-                                                className='track'
-                                                onMouseDown={props.onMouseDown}
-                                                onTouchStart={props.onTouchStart}
-                                                style={{
-                                                    ...props.style,
-                                                    height: '36px',
-                                                    display: 'flex',
-                                                    width: '100%',
-                                                }}
-                                            >
-                                                <div
-                                                    ref={props.ref}
-                                                    style={{
-                                                        height: '5px',
-                                                        width: '100%',
-                                                        borderRadius: '4px',
-                                                        background: getTrackBackground({
-                                                            values,
-                                                            colors: ['white', `var(--secondary-color)`, 'white'],
-                                                            min: minPrice,
-                                                            max: maxPrice,
-
-                                                        }),
-                                                        alignSelf: 'center',
-                                                    }}
-                                                    className='track-1'
-                                                >
-                                                    {children}
-                                                </div>
-                                            </div>
-                                        )}
-                                        renderThumb={({ props, isDragged }) => (
-                                            <div
-                                                {...props}
-                                                className='thumb'
-                                                tabIndex={0}
-                                                onKeyDown={(e) => {
-                                                    // Handle keyboard events here
-                                                    if (e.key === 'ArrowLeft') {
-                                                        // setMaxPrice(maxPrice - 1);
-                                                        setValues([values[0] - 1, values[1]]);
-                                                    } else if (e.key === 'ArrowRight') {
-                                                        // setMinPrice(minPrice + 1);
-                                                        setValues([values[0] + 1, values[1]]);
-                                                    }
-                                                }}
-                                            >   {props['aria-valuenow']}
-
-                                            </div>
-                                        )}
-                                    />
+                <div className='filter-row'>
+                    <h5 className='product-filter-headline d-flex w-100 align-items-center justify-content-start'>
+                        {t("categories")}
+                    </h5>
+                    {/* {category?.map((ctg) => (
+                        <div key={ctg?.id}
+                            // onClick={() => {
+                            //     handleSelectedCategories(ctg?.id);
+                            // }}
+                            className={`d-flex justify-content-between align-items-center filter-bar ${filter?.category_id?.split(",")?.includes(String(ctg?.id)) ? 'active' : ""}`}>
+                            <div className='d-flex gap-3 align-items-baseline'>
+                                <div className='image-container'>
+                                    <img onError={placeHolderImage} src={ctg.image_url} alt="category"></img>
                                 </div>
-                            )}
-                </div> : null}
-
-                {(sizes?.length !== 0) ? <div className='filter-row'  >
-                    <h2 className='product-filter-headline d-flex w-100 align-items-center justify-content-between'>
-                        <span>{t("Filter By Sizes")}</span>
-                    </h2>
-                    {!sizes
-                        ?
-                        (<Loader />)
-                        :
-                        (<div id='filterBySizeContainer'>
-                            {sizes.map((size, index) => (
-                                <div
-                                    whiletap={{ scale: 0.8 }}
-                                    onClick={() => {
-                                        closeCanvas.current.click();
-                                    }} className={`d-flex justify-content-between align-items-center px-4 filter-bar`} key={index}>
-                                    <div className='d-flex'>
-                                        <p>{size.size} {size.short_code}</p>
-                                    </div>
-                                    <input type='checkbox'
-                                        checked={filter?.search_sizes.some(obj => obj.size === size.size && obj.checked && obj.short_code === size.short_code && obj.unit_id === size.unit_id)}
-                                        onChange={() => {
-                                            handleCheckboxToggle(size);
-                                        }}
-                                    />
-                                </div>
-                            ))}
+                                <p>{ctg.name}</p>
+                            </div>
+                            <div className='d-flex justify-content-end'>
+                                <IoIosArrowDown size={20} />
+                            </div>
                         </div>
-                        )
-                    }
-                </div> : null}
+                    ))} */}
+                    <CategoryComponent data={category} selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories} />
+                </div>
+                {
+                    showPriceFilter ?
+                        <div className='filter-row'>
+                            <h5> {t("filter")} {t("by_price")}</h5>
+                            {
+                                (minPrice === null || maxPrice === null)
+                                    ? (
+                                        <Loader />
+                                    )
+                                    : (
+                                        <div
+                                            className='slider'
+                                        >
+                                            <Range
+                                                draggableTrack
+                                                values={values}
+                                                step={1}
+                                                min={minPrice}
+                                                max={maxPrice}
+                                                onChange={(newValues) => {
+                                                    setValues(newValues);
+                                                }}
+                                                i18nIsDynamicList
+                                                onFinalChange={(newValues) => {
+                                                    // console.log(newValues);
+
+                                                    dispatch(setFilterMinMaxPrice({ data: { min_price: newValues[0], max_price: newValues[1] } }));
+                                                }}
+                                                renderTrack={({ props, children }) => (
+                                                    <div
+                                                        className='track'
+                                                        onMouseDown={props.onMouseDown}
+                                                        onTouchStart={props.onTouchStart}
+                                                        style={{
+                                                            ...props.style,
+                                                            height: '36px',
+                                                            display: 'flex',
+                                                            width: '100%',
+                                                        }}
+                                                    >
+                                                        <div
+                                                            ref={props.ref}
+                                                            style={{
+                                                                height: '5px',
+                                                                width: '100%',
+                                                                borderRadius: '4px',
+                                                                background: getTrackBackground({
+                                                                    values,
+                                                                    colors: ['white', `var(--secondary-color)`, 'white'],
+                                                                    min: minPrice,
+                                                                    max: maxPrice,
+
+                                                                }),
+                                                                alignSelf: 'center',
+                                                            }}
+                                                            className='track-1'
+                                                        >
+                                                            {children}
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                renderThumb={({ props, isDragged }) => (
+                                                    <div
+                                                        {...props}
+                                                        className='thumb'
+                                                        tabIndex={0}
+                                                        onKeyDown={(e) => {
+                                                            // Handle keyboard events here
+                                                            if (e.key === 'ArrowLeft') {
+                                                                // setMaxPrice(maxPrice - 1);
+                                                                setValues([values[0] - 1, values[1]]);
+                                                            } else if (e.key === 'ArrowRight') {
+                                                                // setMinPrice(minPrice + 1);
+                                                                setValues([values[0] + 1, values[1]]);
+                                                            }
+                                                        }}
+                                                    >   {props['aria-valuenow']}
+
+                                                    </div>
+                                                )}
+                                            />
+                                        </div>
+                                    )
+                            }
+                        </div > : null}
+
+                {
+                    (sizes?.length !== 0) ? <div className='filter-row'  >
+                        <h2 className='product-filter-headline d-flex w-100 align-items-center justify-content-between'>
+                            <span>{t("Filter By Sizes")}</span>
+                        </h2>
+                        {!sizes
+                            ?
+                            (<Loader />)
+                            :
+                            (<div id='filterBySizeContainer'>
+                                {sizes.map((size, index) => (
+                                    <div
+                                        whiletap={{ scale: 0.8 }}
+                                        onClick={() => {
+                                            closeCanvas.current.click();
+                                        }} className={`d-flex justify-content-between align-items-center px-4 filter-bar`} key={index}>
+                                        <div className='d-flex'>
+                                            <p>{size.size} {size.short_code}</p>
+                                        </div>
+                                        <input type='checkbox'
+                                            checked={filter?.search_sizes.some(obj => obj.size === size.size && obj.checked && obj.short_code === size.short_code && obj.unit_id === size.unit_id)}
+                                            onChange={() => {
+                                                handleCheckboxToggle(size);
+                                            }}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                            )
+                        }
+                    </div> : null
+                }
             </>
         );
     };

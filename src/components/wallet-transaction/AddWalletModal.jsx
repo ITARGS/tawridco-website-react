@@ -185,10 +185,30 @@ const AddWalletModal = (props) => {
             } else if (paymentMethod === "paypal") {
                 handlePaypalPayment(result?.data?.paypal_redirect_url);
             } else if (paymentMethod === "midtrans") {
-                const paymentWindow = window.open(result?.data?.snapUrl, "_blank");
-                window.addEventListener("message", (event) => {
+                const windowWidth = 700;
+                const windowHeight = 700;
+                const windowLeft = window.screen.width / 2 - windowWidth / 2;
+                const windowTop = window.screen.height / 2 - windowHeight / 2;
+                const windowFeatures = `width=${windowWidth},height=${windowHeight},left=${windowLeft},top=${windowTop},resizable=yes,scrollbars=yes,status=yes`;
+                const paymentWindow = window.open(result?.data?.snapUrl, "_blank", windowFeatures);
+                const messageEventListener = async (event) => {
                     console.log(event.data);
-                });
+                    if (event.data === "Recharge Done") {
+                        paymentWindow.close();
+                        dispatch(addUserBalance({ data: walletAmount }));
+                        toast.success(t("wallet_recharge_successfull"));
+                        props.setShowModal(false);
+                        // Remove the event listener once the task is completed
+                        window.removeEventListener("message", messageEventListener);
+                    }
+                };
+
+                // Add the event listener
+                window.addEventListener("message", messageEventListener);
+                paymentWindow.onbeforeunload = () => {
+                    // Remove the event listener if the payment window is closed without making payment
+                    window.removeEventListener("message", messageEventListener);
+                };
             }
         } catch (err) {
             console.log(err.message);

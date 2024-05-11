@@ -28,11 +28,15 @@ import { setCurrentUser, setFcmToken } from '../../model/reducer/authReducer';
 import { Modal } from 'react-bootstrap';
 import { setSetting } from '../../model/reducer/settingReducer';
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
+import { setCart } from '../../model/reducer/cartReducer';
+
 
 const Login = React.memo((props) => {
 
     const { auth, firebase, messaging } = FirebaseData();
     const setting = useSelector(state => (state.setting));
+    const city = useSelector(state => state.city);
+    const user = useSelector(state => state.user);
     const [fcm, setFcm] = useState('');
 
     useEffect(() => {
@@ -44,7 +48,9 @@ const Login = React.memo((props) => {
                         const currentToken = await messaging.getToken();
                         if (currentToken) {
                             setFcm(currentToken);
-                            dispatch(setFcmToken({ data: currentToken }));
+                            if (user?.fcm_token === null || currentToken != user?.fcm_token) {
+                                dispatch(setFcmToken({ data: currentToken }));
+                            }
                         } else {
                             // console.log("No registration token available");
                         }
@@ -189,7 +195,19 @@ const Login = React.memo((props) => {
                 }
             });
     };
-
+    const fetchCart = async (token, latitude, longitude) => {
+        await api.getCart(token, latitude, longitude)
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 1) {
+                    dispatch(setCart({ data: result }));
+                }
+                else {
+                    dispatch(setCart({ data: null }));
+                }
+            })
+            .catch(error => console.log(error));
+    };
     //otp verification
     const verifyOTP = async (e) => {
         e.preventDefault();
@@ -240,6 +258,9 @@ const Login = React.memo((props) => {
                                 dispatch(setFavouriteProductIds({ data: res?.data?.favorite_product_ids }));
                             }
                         });
+                    fetchCart(result.data.access_token, city?.city?.latitude ? city?.city?.latitude : setting?.setting?.default_city?.latitude,
+                        city?.city?.longitude ? city?.city?.longitude : setting?.setting?.default_city?.longitude
+                    );
                     setlocalstorageOTP(Uid);
                     setError("");
                     setOTP("");

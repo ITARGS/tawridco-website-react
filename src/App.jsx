@@ -63,13 +63,13 @@ const App = () => {
   const shop = useSelector((state) => (state.shop));
 
   useEffect(() => {
-    if (cookies.get('jwt_token') !== undefined && user.user === null) {
+    if (cookies.get('jwt_token') !== undefined && user?.user === null) {
       getCurrentUser(cookies.get('jwt_token'));
     }
-    getSetting();
-    //  else {
+    // else if (cookies.get("jwt_token")) {
     //   dispatch(logoutAuth({ data: null }));
     // }
+    getSetting();
   }, []);
 
   useEffect(() => {

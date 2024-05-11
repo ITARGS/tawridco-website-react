@@ -95,7 +95,7 @@ const Header = () => {
         }
     }, [curr_url]);
     useEffect(() => {
-        if (setting.setting?.default_city && !city.city) {
+        if (setting.setting?.default_city && city.city == null) {
             setisLocationPresent(true);
             api.getCity(parseFloat(setting.setting.default_city?.latitude), parseFloat(setting.setting.default_city?.longitude))
                 .then(response => response.json())
@@ -133,53 +133,53 @@ const Header = () => {
         };
     }, []);
 
-    const fetchCart = async (token, latitude, longitude) => {
-        await api.getCart(token, latitude, longitude)
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    dispatch(setCart({ data: result }));
-                }
-                else {
-                    dispatch(setCart({ data: null }));
-                }
-            })
-            .catch(error => console.log(error));
-    };
+    // const fetchCart = async (token, latitude, longitude) => {
+    //     await api.getCart(token, latitude, longitude)
+    //         .then(response => response.json())
+    //         .then(result => {
+    //             if (result.status === 1) {
+    //                 dispatch(setCart({ data: result }));
+    //             }
+    //             else {
+    //                 dispatch(setCart({ data: null }));
+    //             }
+    //         })
+    //         .catch(error => console.log(error));
+    // };
 
-    const fetchFavorite = async (token, latitude, longitude) => {
-        await api.getFavorite(token, latitude, longitude)
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    dispatch(setFavourite({ data: result }));
-                }
-                else {
-                    dispatch(setFavourite({ data: null }));
-                }
-            })
-            .catch(error => console.log(error));
-    };
+    // const fetchFavorite = async (token, latitude, longitude) => {
+    //     await api.getFavorite(token, latitude, longitude)
+    //         .then(response => response.json())
+    //         .then(result => {
+    //             if (result.status === 1) {
+    //                 dispatch(setFavourite({ data: result }));
+    //             }
+    //             else {
+    //                 dispatch(setFavourite({ data: null }));
+    //             }
+    //         })
+    //         .catch(error => console.log(error));
+    // };
 
-    const fetchNotification = async (token) => {
-        await api.getNotification(token)
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    dispatch(setNotification({ data: result.data }));
-                    result.total > 0 ? settotalNotification(result.total) : settotalNotification(null);
-                }
-            })
-            .catch(error => console.log(error));
-    };
+    // const fetchNotification = async (token) => {
+    //     await api.getNotification(token)
+    //         .then(response => response.json())
+    //         .then(result => {
+    //             if (result.status === 1) {
+    //                 dispatch(setNotification({ data: result.data }));
+    //                 result.total > 0 ? settotalNotification(result.total) : settotalNotification(null);
+    //             }
+    //         })
+    //         .catch(error => console.log(error));
+    // };
 
-    useEffect(() => {
-        if (city.city !== null && cookies.get('jwt_token') !== undefined && user.user !== null) {
-            // fetchCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude);
-            // fetchFavorite(cookies.get('jwt_token'), city?.city?.latitude, city?.city?.longitude);
-            // fetchNotification(cookies.get('jwt_token'));
-        }
-    }, [city, user]);
+    // useEffect(() => {
+    //     if (city.city !== null && cookies.get('jwt_token') !== undefined && user.user == null) {
+    //         fetchCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude);
+    //         // fetchFavorite(cookies.get('jwt_token'), city?.city?.latitude, city?.city?.longitude);
+    //         // fetchNotification(cookies.get('jwt_token'));
+    //     }
+    // }, [user]);
 
 
     const fetchPaymentSetting = async () => {
