@@ -174,7 +174,7 @@ const ProductList2 = React.memo(() => {
             filterProductsFromApi({
                 min_price: filter.price_filter?.min_price,
                 max_price: filter.price_filter?.max_price,
-                category_id: filter?.category_id,
+                category_ids: filter?.category_id,
                 brand_ids: filter?.brand_ids.toString(),
                 sort: filter?.sort_filter,
                 search: filter?.search,
