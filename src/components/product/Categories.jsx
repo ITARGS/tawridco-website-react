@@ -80,17 +80,12 @@ const CategoryComponent = ({ data, selectedCategories,
     const renderSubcategories = (subcategories) => {
         return subcategories?.map(subcategory => (
             <div key={subcategory.id} className='d-flex flex-column ms-3'>
-                <div className={`d-flex justify-content-between align-items-center filter-bar border-bottom  p-2 ${selectedCategories?.includes(subcategory?.id) ? "active" : ""}`}
-                    onClick={() => {
-                        if (!subcategory.has_child) {
-                            // Handle onClick logic only if has_child is false
+                <div className={`d-flex justify-content-between align-items-center filter-bar border-bottom  p-2 ${selectedCategories?.includes(subcategory?.id) ? "active" : ""}`}>
+                    <div className='d-flex gap-3 align-items-baseline'
+                        onClick={() => {
+                            // Handle selection of the category
                             handleSelectedCategories(subcategory.id);
-                        } else {
-                            toggleCategory(subcategory.id);
-                        }
-                    }}
-                >
-                    <div className='d-flex gap-3 align-items-baseline'>
+                        }}>
                         <div className='image-container'>
                             <img src={subcategory.image_url} alt="category" />
                         </div>
@@ -136,41 +131,32 @@ const CategoryComponent = ({ data, selectedCategories,
                     <div key={category?.id}
                         className={`d-flex justify-content-between align-items-center filter-bar p-2 border-bottom ${expandedCategories.includes(category.id) ? 'expanded' : ''}
                             ${selectedCategories?.includes(category?.id) ? "active" : ""}
-                        `}
-                        onClick={() => {
-                            if (!category.has_child) {
-                                handleSelectedCategories(category.id);
-                            } else {
-                                const isExpanded = expandedCategories.includes(category.id);
-                                // If the category is already expanded, collapse it and its subcategories
-                                if (isExpanded) {
-                                    const updatedExpandedCategories = expandedCategories.filter(id => id !== category.id);
-                                    setExpandedCategories(updatedExpandedCategories);
-                                } else {
-                                    // If the category is not expanded, expand it
-                                    toggleCategory(category.id);
-                                }
-                            }
-                            // toggleCategory(category.id);
-                        }}
-                    >
-                        <div className='d-flex gap-3 align-items-baseline'>
+                        `}>
+                        <div className='d-flex gap-3 align-items-baseline' onClick={() => {
+                            handleSelectedCategories(category.id);
+                        }}>
                             <div className='image-container'>
                                 <img src={category.image_url} alt="category" />
                             </div>
                             <p>{category.name}</p>
                         </div>
                         {category.has_child && (
-                            expandedCategories.includes(category.id)
-                                ?
-                                <div>
-                                    <IoIosArrowUp size={20} />
-                                </div>
-                                :
-                                <div className='toggle-arrow'>
-                                    <IoIosArrowDown size={20} />
-                                </div>
-
+                            <div
+                                className='toggle-arrow'
+                                onClick={() => {
+                                    const isExpanded = expandedCategories.includes(category.id);
+                                    if (isExpanded) {
+                                        const updatedExpandedCategories = expandedCategories.filter(id => id !== category.id);
+                                        setExpandedCategories(updatedExpandedCategories);
+                                    } else {
+                                        toggleCategory(category.id);
+                                    }
+                                }}>
+                                {expandedCategories.includes(category.id)
+                                    ? <IoIosArrowUp size={20} />
+                                    : <IoIosArrowDown size={20} />
+                                }
+                            </div>
                         )}
                     </div>
                     {expandedCategories.includes(category.id) && category.has_child && (
