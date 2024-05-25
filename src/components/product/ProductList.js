@@ -1000,13 +1000,13 @@ const ProductList2 = React.memo(() => {
                                                     </div>
 
                                                     <div>
-                                                        <Pagination
+                                                        {(totalProducts > total_products_per_page) ? <Pagination
                                                             activePage={currPage}
                                                             itemsCountPerPage={total_products_per_page}
                                                             totalItemsCount={totalProducts}
                                                             pageRangeDisplayed={5}
                                                             onChange={handlePageChange.bind(this)}
-                                                        />
+                                                        /> : null}
                                                     </div>
                                                     <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal}
                                                         setP_id={setP_id}

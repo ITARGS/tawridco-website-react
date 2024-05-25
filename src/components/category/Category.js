@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import './category.css';
 import api from '../../api/api';
 import { AiOutlineArrowRight } from 'react-icons/ai';
@@ -9,7 +9,7 @@ import { Card } from 'react-bootstrap';
 import Slider from 'react-slick';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
-import { setCategory } from '../../model/reducer/categoryReducer';
+import { setCategory, setSelectedCategory } from '../../model/reducer/categoryReducer';
 import { setFilterCategory } from '../../model/reducer/productFilterReducer';
 
 
@@ -32,13 +32,16 @@ const Category = () => {
 
 
     const shop = useSelector(state => state.shop);
+    const category = shop && shop?.shop?.categories;
+
     const fetchCategory = (id = 0) => {
-        api.getCategory(id)
+        api.getCategory({
+            id: 0,
+        })
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
                     dispatch(setCategory({ data: result.data }));
-                    // dispatch({ type: ActionTypes.SET_CATEGORY, payload: result.data });
                 }
             })
             .catch(error => {
@@ -46,10 +49,20 @@ const Category = () => {
             }
             );
     };
+    useEffect(() => {
+        // fetchCategory()
+    }, []);
+
     const selectCategory = (category) => {
         dispatch(setFilterCategory({ data: category.id }));
-        // dispatch({ type: ActionTypes.SET_FILTER_CATEGORY, payload: category.id });
-        navigate('/products');
+        if (category?.has_child === true) {
+            navigate(`/category/${category.slug}`);
+            dispatch(setSelectedCategory(category));
+            // navigate(`/category/${category.slug}`, { state: { categoryName: category.name } });
+        } else {
+            navigate('/products');
+
+        }
 
     };
     const settings = {
@@ -100,18 +113,19 @@ const Category = () => {
         e.target.src = setting.setting?.web_logo;
     };
     return (
+
         <>
-            {(shop?.shop?.is_category_section_in_homepage && (shop?.shop?.categories?.length > 0))
+            {(category && (category?.length > 0))
                 ?
                 <>
                     <div className="row category_section_header">
                         <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
                             <div className="title d-md-flex align-items-center ">
                                 <p>{t('shop_by')} {t('categories')}</p>
-                                <Link className='d-none d-md-block' to='/categories'>{t('see_all')} {t('categories')}<AiOutlineArrowRight size={15} className='see_category_arrow' /> </Link>
+                                <Link className='d-none d-md-block' to='/category/all'>{t('see_all')} {t('categories')}<AiOutlineArrowRight size={15} className='see_category_arrow' /> </Link>
                             </div>
                             <div className=' d-md-none'>
-                                <Link className='category_button' to='/categories'>{t('see_all')}</Link>
+                                <Link className='category_button' to='/category/all'>{t('see_all')}</Link>
                             </div>
                             <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
                                 <button className='prev-arrow-category' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
@@ -125,9 +139,8 @@ const Category = () => {
                             <Slider {...settings} ref={sliderRef}>
 
                                 {
-                                    shop.shop?.categories?.map((ctg, index) => (
+                                    category?.map((ctg, index) => (
                                         <div className="col-md-12" key={index}>
-
                                             <div className='category-container '>
 
                                                 {ctg.has_child

@@ -13,7 +13,10 @@ export const categoryReducer = createSlice({
         setCategory: (state, action) => {
             state.status = "fulfill";
             state.category = action.payload.data;
-        }
+        },
+        setSelectedCategory: (state, action) => {
+            state.selectedCategory = action.payload; // Set the selected category
+        },
     }
     //     switch(type) {
     //         case ActionTypes.SET_CATEGORY:
@@ -27,5 +30,5 @@ export const categoryReducer = createSlice({
     // }
 });
 
-export const { setCategory } = categoryReducer.actions;
+export const { setCategory, setSelectedCategory } = categoryReducer.actions;
 export default categoryReducer.reducer;

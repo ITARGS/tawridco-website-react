@@ -140,12 +140,40 @@ const api = {
         return fetch(appUrl + appSubUrl + "/brands", requestOptions);
 
     },
-    getCategory(id = 0) {
+    // getCategory(id = 0) {
+    //     var myHeaders = new Headers();
+    //     myHeaders.append(access_key_param, access_key);
+
+    //     var formdata = new FormData();
+    //     formdata.append('category_id', id);
+
+    //     var requestOptions = {
+    //         method: 'GET',
+    //         headers: myHeaders,
+    //         // body: formdata,
+    //         redirect: 'follow'
+    //     };
+    //     var params = { category_id: id };
+    //     var url = new URL(appUrl + appSubUrl + "/categories");
+    //     for (let k in params) {
+    //         url.searchParams.append(k, params[k]);
+    //     };
+    //     return fetch(url, requestOptions);
+    // },
+    getCategory({
+        id = "",
+        limit = "",
+        offset = "",
+        slug = ""
+    }) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
 
         var formdata = new FormData();
         formdata.append('category_id', id);
+        formdata.append('limit', limit);
+        formdata.append('offset', offset);
+        formdata.append('slug', slug);
 
         var requestOptions = {
             method: 'GET',
@@ -153,11 +181,14 @@ const api = {
             // body: formdata,
             redirect: 'follow'
         };
-        var params = { category_id: id };
+        var params = { category_id: id, limit: limit, offset: offset, slug: slug };
         var url = new URL(appUrl + appSubUrl + "/categories");
         for (let k in params) {
-            url.searchParams.append(k, params[k]);
-        };
+            if (params[k] !== "") { // Check if the parameter value is not empty
+                url.searchParams.append(k, params[k]);
+            }
+        }
+
         return fetch(url, requestOptions);
     },
     getSlider() {

@@ -212,3 +212,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+#expandCategory .slick-track {
+  margin-left: unset !important;
+  margin-right: unset !important;
+}

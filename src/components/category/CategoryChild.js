@@ -1,16 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/api';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, useLocation, useNavigate, useNavigation, useParams } from 'react-router-dom';
+import { t } from 'i18next';
+import coverImg from '../../utils/cover-img.jpg';
+import { setFilterCategory } from '../../model/reducer/productFilterReducer';
+import Pagination from 'react-js-pagination';
+import No_Orders from '../../utils/zero-state-screens/No_Orders.svg';
+import { setSelectedCategory } from '../../model/reducer/categoryReducer';
+import Loader from '../loader/Loader';
 
-const CategoryChild = (props) => {
+
+const CategoryChild = () => {
+    const total_products_per_page = 12;
+
+    const SelectedCategory = useSelector(state => state.category?.selectedCategory);
+    const { slug } = useParams();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const dispatch = useDispatch();
     const setting = useSelector(state => (state.setting));
+    const [offset, setoffset] = useState(0);
+    const [totalProducts, settotalProducts] = useState(0);
+    const [currPage, setcurrPage] = useState(1);
+    const [category, setcategory] = useState(null);
+    const [loading, setLoading] = useState(false);
+
     const fetchCategory = () => {
-        const id = props.ctg_id;
-        api.getCategory(id)
+        const slug_id = slug === 'all' ? "" : slug;
+        setLoading(true);
+        api.getCategory({
+            limit: total_products_per_page,
+            offset: offset,
+            slug: slug_id
+        })
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
                     setcategory(result.data);
+                    settotalProducts(result.total);
+                    setLoading(false);
+                } else {
+                    setLoading(false);
+                    setcategory([]);
                 }
             })
             .catch(error => console.log("error ", error));
@@ -18,39 +50,113 @@ const CategoryChild = (props) => {
 
     useEffect(() => {
         fetchCategory();
-    }, []);
+    }, [slug, offset, SelectedCategory]);
 
-    const [category, setcategory] = useState(null);
     const placeHolderImage = (e) => {
 
         e.target.src = setting.setting?.web_logo;
     };
+
+    const handleGetCategory = (category) => {
+        if (category?.has_child === true) {
+            navigate(`/category/${category?.slug}`);
+            dispatch(setFilterCategory({ data: category.id }));
+            if (slug === "all") {
+                dispatch(setSelectedCategory(category));
+            }
+        } else {
+            dispatch(setFilterCategory({ data: category.id }));
+            navigate('/products');
+
+        }
+    };
+
+    //page change
+    const handlePageChange = (pageNum) => {
+        setcurrPage(pageNum);
+        setoffset(pageNum * total_products_per_page - total_products_per_page);
+    };
+
+    useEffect(() => {
+        if (!location.pathname.startsWith('/category/') || location.pathname === '/category/all') {
+            dispatch(setSelectedCategory(null)); // Clear selected category state
+        }
+    }, [location.pathname, dispatch]);
+
+
     return (
-        <div id={props.id} className='collapse'>
-            {/* <button type='button'>xyz</button>
-            <button type='button'>abc</button> */}
-            {category === null
-                ? (
-                    <div className="d-flex justify-content-center">
-                        <div className="spinner-border" role="status">
-                            <span className="visually-hidden">Loading...</span>
+        <>
+            <section id='allcategories'>
+
+                <div className='cover'>
+                    <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
+                    <div className='page-heading'>
+                        <h5 key={"category"}>{t("categories")}</h5>
+                        <p>
+                            <Link to="/" className='text-light text-decoration-none' onClick={() => fetchCategory(0)} key={"home"}>{t("home")} / </Link>
+                            <Link to='/category/all' className='text-light text-decoration-none'
+                                key={"category"}>{t("categories")} / </Link>
+                            {SelectedCategory?.slug &&
+                                <Link to={`/category/${SelectedCategory?.slug}`} className='text-light text-decoration-none' key={"categoryName"}>{SelectedCategory?.name} / </Link>
+                            }
+                            {SelectedCategory && category && SelectedCategory?.id !== category[0]?.id && category[0]?.id &&
+                                <Link className='text-light text-decoration-none' key={"..."}> ... / </Link>
+                            }
+                        </p>
+                    </div>
+                </div>
+                <div className='container'>
+                    {loading
+                        ?
+                        <Loader width="100%" height="350px" />
+                        : null}
+                    {category && (category?.length > 0) && !loading ?
+                        <div className='row justify-content-center mt-5 mb-5'>
+                            {category?.map((ctg, index) => (
+                                <div className="col-md-3 col-lg-2 col-6 col-sm-3 my-3 content" key={index}
+                                    onClick={(e) => { handleGetCategory(ctg); }}
+                                >
+                                    <div className='card'>
+                                        <img onError={placeHolderImage} className='card-img-top' src={ctg.image_url} alt='allCategories' loading='lazy' />
+                                        <div className='card-body' style={{ cursor: "pointer" }}>
+                                            <p>
+                                                {ctg.name}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div> : null}
+
+                    {category?.length === 0 && !loading ?
+                        <>
+                            <div className='no-product' style={{
+                                height: "50vh", width: "100%", display: "flex", alignItems: "center",
+                                justifyContent: "center", textAlign: "center", fontSize: "24px"
+                            }}>
+
+                                <p>No Categories Found</p>
+                            </div>
+                        </>
+                        : null}
+
+                    {totalProducts > total_products_per_page &&
+                        <div className='mt-5 mb-5'>
+                            <Pagination
+                                activePage={currPage}
+                                itemsCountPerPage={total_products_per_page}
+                                totalItemsCount={totalProducts}
+                                pageRangeDisplayed={5}
+                                onChange={handlePageChange.bind(this)}
+                            />
                         </div>
-                    </div>
-                )
-                : (
-                    <div className='sub-categories'>
-                        {category.map((ctg, index) => (
+                    }
+                </div>
+            </section>
 
-                            <button type='button' className='p-3 border-bottom' key={index}>
-                                <img onError={placeHolderImage} src={ctg.image_url} alt={ctg.subtitle} className='me-3' style={{ marginLeft: "40px" }} />
-                                {ctg.name}
-                            </button>
-
-                        ))}
-                    </div>
-                )}
-        </div>
+        </>
     );
+
 };
 
 export default CategoryChild;

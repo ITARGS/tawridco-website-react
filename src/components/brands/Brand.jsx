@@ -87,10 +87,10 @@ const Brand = () => {
                 <div className=' d-md-none'>
                   <Link className='brand_button' to='/brands'>{t('see_all')}</Link>
                 </div>
-                <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
+                {(shop?.shop?.brands?.length > 5) ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
                   <button className='prev-arrow-brand' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
                   <button className='next-arrow-brand' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button>
-                </div>
+                </div> : null}
               </div>
             </div>
             <div className='row justify-content-center home allBrandsSlider'>

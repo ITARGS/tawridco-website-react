@@ -47,6 +47,7 @@ import PayPalPaymentHandler from './components/paypalPaymentHandler/PayPalPaymen
 import jsonFile from "./utils/en.json";
 import { diffInTime, } from './utils/TimeUtilites';
 import { setFavouriteLength, setFavouriteProductIds } from './model/reducer/favouriteReducer';
+import CategoryChild from './components/category/CategoryChild';
 
 const App = () => {
   //initialize cookies
@@ -261,7 +262,7 @@ const App = () => {
                   <Route key="profile-wallet-transactions" exact path="/profile/wallet-transaction" element={<ProfileDashboard showWalletTransaction={true} />} />
                   <Route key="address" exact path="/profile/address" element={<ProfileDashboard showAddress={true} />} />
                   <Route key="notification" exact path="/notification" element={<Notification />} />
-                  <Route key="categories" exact path='/categories' element={<ShowAllCategories />} />
+                  {/* <Route key="categories" exact path='/categories' element={<ShowAllCategories />} /> */}
                   <Route key="products" exact path='/products' element={<ProductList />} />
                   <Route key="product-details" exact path='/product/:slug' element={<ProductDetails />} />
                   <Route key="rating-and-reviews" exact path='/product/:slug/rating-and-reviews' element={<AllRatingsAndReviews />} />
@@ -274,10 +275,12 @@ const App = () => {
                   <Route key="brands" exact path='/brands' element={<BrandList />} />
                   <Route key="countries" exact path='/countries' element={<ShopByCountriesPage />} />
                   <Route key="sellers" exact path='/sellers' element={<ShopBySellersPage />} />
+                  <Route key="category" exact path='/category/:slug' element={<CategoryChild />} />
                 </>
                 :
                 <>
-                  <Route key="categories" exact path='/categories' element={<ShowAllCategories />} />
+                  <Route key="category" exact path='/category/:slug' element={<CategoryChild />} />
+                  {/* <Route key="categories" exact path='/categories' element={<ShowAllCategories />} /> */}
                   <Route key="brands" exact path='/brands' element={<BrandList />} />
                   <Route key="countries" exact path='/countries' element={<ShopByCountriesPage />} />
                   <Route key="sellers" exact path='/sellers' element={<ShopBySellersPage />} />

@@ -3,13 +3,13 @@ importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js')
 
 
 firebase.initializeApp({
-    apiKey: '__FIREBASE_API__',
-    authDomain: '__FIREBASE_AUTH_DOMAIN__',
-    projectId: '__FIREBASE_PROJECT_ID__',
-    storageBucket: '__FIREBASE_MESSAGING_SENDER_ID__',
-    messagingSenderId: '__FIREBASE_STORAGE_BUCKET__',
-    appId: '__FIREBASE_APP_ID__',
-    measurementId: '__FIREBASE_MEASUREMENT_ID__',
+    apiKey: 'AIzaSyBT3LL_VaQavGOX8hV8kRSLpWrkbBKX8io',
+    authDomain: 'egrocer-457a9.firebaseapp.com',
+    projectId: 'egrocer-457a9',
+    storageBucket: 'egrocer-457a9.appspot.com',
+    messagingSenderId: '755773183987',
+    appId: '1:755773183987:web:79da7c0c3f815e4793e486',
+    measurementId: 'G-CZXY4LTFRH',
 });
 
 const messaging = firebase.messaging();

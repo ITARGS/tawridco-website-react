@@ -71,7 +71,6 @@ const ShopByCountries = () => {
         ]
     };
     const placeHolderImage = (e) => {
-
         e.target.src = setting.setting?.web_logo;
     };
 
@@ -88,10 +87,10 @@ const ShopByCountries = () => {
                             <div className=' d-md-none'>
                                 <Link className='country_button' to='/countries'>{t('see_all')}</Link>
                             </div>
-                            <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
+                            {(shop?.shop?.countries?.length > 5) ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
                                 <button className='prev-arrow-country' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
                                 <button className='next-arrow-country' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button>
-                            </div>
+                            </div> : null}
                         </div>
                     </div>
                     <div className='row justify-content-center home allCountriesContainer'>
@@ -104,7 +103,7 @@ const ShopByCountries = () => {
                                     <div className='card'>
                                         <img onError={placeHolderImage} className='card-img-top' src={`${process.env.REACT_APP_API_URL}/storage/${country.logo}`} alt='sellers' loading='lazy' />
                                         <div className='card-body' style={{ cursor: "pointer" }} >
-                                            <p>{country.name} </p>
+                                            <p>{country.name}</p>
                                         </div>
                                     </div>
                                 </div>

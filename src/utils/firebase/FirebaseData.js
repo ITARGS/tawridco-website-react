@@ -8,7 +8,6 @@ const FirebaseData = () => {
 
   const setting = useSelector((state) => state.setting);
 
-
   if (setting.setting === null) {
     return <Loader screen='full' />;
   }
@@ -31,6 +30,7 @@ const FirebaseData = () => {
     appId: appId,
     measurementId: measurementId,
   };
+
 
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);

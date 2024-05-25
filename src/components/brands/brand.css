@@ -76,7 +76,10 @@
 .allBrandsSlider .cover {
   height: 200px;
 }
-
+.allBrandsSlider .slick-track {
+  margin-left: unset !important;
+  margin-right: unset !important;
+}
 .allBrandsSlider .cover img {
   height: 100%;
   width: 100%;
