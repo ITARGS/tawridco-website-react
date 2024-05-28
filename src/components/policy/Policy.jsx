@@ -1,16 +1,16 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
-import coverImg from '../../utils/cover-img.jpg'
-import './policy.css'
+import React from 'react';
+import { useSelector } from 'react-redux';
+import coverImg from '../../utils/cover-img.jpg';
+import './policy.css';
 import Loader from '../loader/Loader';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 const Policy = () => {
 
-    const setting = useSelector(state => (state.setting))
-    const { policy_type } = useParams()
-    const { t } = useTranslation()
+    const setting = useSelector(state => (state.setting));
+    const { policy_type } = useParams();
+    const { t } = useTranslation();
     return (
         <section id='policy' className='policy'>
             {setting.setting === null ? <Loader screen='full' />
@@ -38,7 +38,7 @@ const Policy = () => {
                                                 ? <span className='active'>{t("cancellation_policy")}</span>
                                                 : null}
                             </div>
-                        </div >
+                        </div>
                         <div className='container'>
                             {policy_type === 'Privacy_Policy'
                                 ? <div className='policy-container' dangerouslySetInnerHTML={{ __html: setting.setting.privacy_policy }}></div>
@@ -54,7 +54,7 @@ const Policy = () => {
                     </>
                 )}
         </section>
-    )
-}
+    );
+};
 
-export default Policy
+export default Policy;

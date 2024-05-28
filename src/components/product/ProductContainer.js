@@ -235,6 +235,28 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
         }));
     }
 
+    const handleValidateAddExistingProduct = (productQuantity, product) => {
+        if (Number(product.is_unlimited_stock)) {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product.total_allowed_quantity)) {
+                // addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
+                addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty + 1);
+
+            } else {
+                toast.error(t("max_cart_limit_error"));
+            }
+        } else {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.variants[0].stock)) {
+                toast.error(t("out_of_stock_message"));
+            }
+            else if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.total_allowed_quantity)) {
+                toast.error(t("max_cart_limit_error"));
+            } else {
+                addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty + 1);
+                // addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product?.variants[0]?.id)?.qty + 1);
+            }
+        }
+    };
+
     return (
         <section id="products">
             <div className="container">
@@ -407,26 +429,26 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                         </div>
                                                                                         <button type='button' className="wishlist-button" onClick={() => {
                                                                                             const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                                            if (Number(product.is_unlimited_stock)) {
-                                                                                                if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product.total_allowed_quantity)) {
-                                                                                                    // addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
-                                                                                                    addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty + 1);
+                                                                                            // if (Number(product.is_unlimited_stock)) {
+                                                                                            //     if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product.total_allowed_quantity)) {
+                                                                                            //         // addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
+                                                                                            //         addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty + 1);
 
-                                                                                                } else {
-                                                                                                    toast.error('Apologies, maximum product quantity limit reached!');
-                                                                                                }
-                                                                                            } else {
-                                                                                                if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.variants[0].stock)) {
-                                                                                                    toast.error(t("out_of_stock_message"));
-                                                                                                }
-                                                                                                else if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.total_allowed_quantity)) {
-                                                                                                    toast.error('Apologies, maximum product quantity limit reached');
-                                                                                                } else {
-                                                                                                    addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty + 1);
-                                                                                                    // addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product?.variants[0]?.id)?.qty + 1);
-                                                                                                }
-                                                                                            }
-
+                                                                                            //     } else {
+                                                                                            //         toast.error('Apologies, maximum product quantity limit reached!');
+                                                                                            //     }
+                                                                                            // } else {
+                                                                                            //     if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.variants[0].stock)) {
+                                                                                            //         toast.error(t("out_of_stock_message"));
+                                                                                            //     }
+                                                                                            //     else if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.total_allowed_quantity)) {
+                                                                                            //         toast.error('Apologies, maximum product quantity limit reached');
+                                                                                            //     } else {
+                                                                                            //         addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty + 1);
+                                                                                            //         // addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product?.variants[0]?.id)?.qty + 1);
+                                                                                            //     }
+                                                                                            // }
+                                                                                            handleValidateAddExistingProduct(productQuantity, product);
                                                                                         }}><BsPlus size={20} fill='#fff' /> </button>
                                                                                     </div>
                                                                                 </> : <>

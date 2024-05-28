@@ -53,14 +53,13 @@ const CategoryChild = () => {
     }, [slug, offset, SelectedCategory]);
 
     const placeHolderImage = (e) => {
-
         e.target.src = setting.setting?.web_logo;
     };
 
     const handleGetCategory = (category) => {
         if (category?.has_child === true) {
             navigate(`/category/${category?.slug}`);
-            dispatch(setFilterCategory({ data: category.id }));
+            // dispatch(setFilterCategory({ data: category.id }));
             if (slug === "all") {
                 dispatch(setSelectedCategory(category));
             }

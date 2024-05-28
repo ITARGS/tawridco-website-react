@@ -5,7 +5,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     status: "loading", //fulfill
     user: null,
-    fcm_token: null
+    fcm_token: null,
+    authId: "",
+    jwtToken: ""
 };
 
 export const authReducer = createSlice({
@@ -20,6 +22,8 @@ export const authReducer = createSlice({
             state.status = "loading";
             state.user = null;
             state.fcm_token = null;
+            state.authId = "";
+            state.jwtToken = "";
         },
         deductUserBalance: (state, action) => {
             if (state.user) {
@@ -33,9 +37,15 @@ export const authReducer = createSlice({
         },
         setFcmToken: (state, action) => {
             state.fcm_token = action.payload.data;
+        },
+        setAuthId: (state, action) => {
+            state.authId = action.payload.data;
+        },
+        setJWTToken: (state, action) => {
+            state.jwtToken = action.payload.data;
         }
     }
 });
 
-export const { setCurrentUser, logoutAuth, deductUserBalance, addUserBalance, setFcmToken } = authReducer.actions;
+export const { setCurrentUser, logoutAuth, deductUserBalance, addUserBalance, setFcmToken, setAuthId, setJWTToken } = authReducer.actions;
 export default authReducer.reducer;

@@ -500,6 +500,53 @@ const ProductDetails = () => {
         }));
     }
 
+    const handleValidateAddExistingProduct = (productQuantity, productdata) => {
+        if (Number(productdata.is_unlimited_stock)) {
+            if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
+                toast.error(t("max_cart_limit_error"));
+            }
+            else {
+                addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
+            }
+        }
+        else {
+            if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
+                toast.error(t("limited_product_stock_error"));
+            }
+            else if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= Number(setting.setting.max_cart_items_count)) {
+                toast.error(t("max_cart_limit_error"));
+            }
+            else {
+                addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
+            }
+        }
+
+    };
+
+    const handleValidateAddNewProduct = (productQuantity, productdata) => {
+        if (cookies.get('jwt_token') !== undefined) {
+            if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
+                toast.error(t("limited_product_stock_error"));
+            }
+            else if (Number(productdata.is_unlimited_stock)) {
+                addtoCart(productdata.id, selectedVariant.id, 1);
+            } else {
+                if (selectedVariant.status) {
+                    addtoCart(productdata.id, selectedVariant.id, 1);
+                    setP_id(productdata.id);
+                    setP_V_id(selectedVariant.id);
+                    setQnty(1);
+                } else {
+                    toast.error(t("limited_product_stock_error"));
+                }
+            }
+        }
+        else {
+            toast.error(t("required_login_message_for_cartRedirect"));
+        }
+    };
+
+
     return (
         <>
             {loading && <Loader screen="full" background="none" />}
@@ -630,26 +677,26 @@ const ProductDetails = () => {
 
                                                                             const productQuantity = getProductQuantities(cart?.cartProducts);
                                                                             // console.log("Product Quantity ->", productQuantity);
-                                                                            if (Number(productdata.is_unlimited_stock)) {
-                                                                                if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
-                                                                                    toast.error('Apologies, maximum product quantity limit reached');
-                                                                                }
-                                                                                else {
-                                                                                    addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
-                                                                                }
-                                                                            }
-                                                                            else {
-                                                                                if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
-                                                                                    toast.error('Oops, Limited Stock Available');
-                                                                                }
-                                                                                else if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= Number(setting.setting.max_cart_items_count)) {
-                                                                                    toast.error('Apologies, maximum cart quantity limit reached');
-                                                                                }
-                                                                                else {
-                                                                                    addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
-                                                                                }
-                                                                            }
-
+                                                                            // if (Number(productdata.is_unlimited_stock)) {
+                                                                            //     if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
+                                                                            //         toast.error('Apologies, maximum product quantity limit reached');
+                                                                            //     }
+                                                                            //     else {
+                                                                            //         addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
+                                                                            //     }
+                                                                            // }
+                                                                            // else {
+                                                                            //     if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
+                                                                            //         toast.error('Oops, Limited Stock Available');
+                                                                            //     }
+                                                                            //     else if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= Number(setting.setting.max_cart_items_count)) {
+                                                                            //         toast.error('Apologies, maximum cart quantity limit reached');
+                                                                            //     }
+                                                                            //     else {
+                                                                            //         addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
+                                                                            //     }
+                                                                            // }
+                                                                            handleValidateAddExistingProduct(productQuantity, productdata);
                                                                         }} className="wishlist-button"><BsPlus fill='#fff' /> </button>
 
 
@@ -658,29 +705,33 @@ const ProductDetails = () => {
                                                                     <button type='button' id={`Add-to-cart-quickview`} className='add-to-cart'
                                                                         onClick={() => {
                                                                             const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                            if (cookies.get('jwt_token') !== undefined) {
-                                                                                if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
-                                                                                    toast.error('Oops, Limited Stock Available');
-                                                                                }
-                                                                                else if (Number(productdata.is_unlimited_stock)) {
-                                                                                    addtoCart(productdata.id, selectedVariant.id, 1);
-                                                                                } else {
-                                                                                    if (selectedVariant.status) {
-                                                                                        addtoCart(productdata.id, selectedVariant.id, 1);
-                                                                                        setP_id(productdata.id);
-                                                                                        setP_V_id(selectedVariant.id);
-                                                                                        setQnty(1);
-                                                                                    } else {
-                                                                                        toast.error('Oops, Limited Stock Available');
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                            else {
-                                                                                toast.error(t("required_login_message_for_cartRedirect"));
-                                                                            }
+                                                                            // if (cookies.get('jwt_token') !== undefined) {
+                                                                            //     if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
+                                                                            //         toast.error('Oops, Limited Stock Available');
+                                                                            //     }
+                                                                            //     else if (Number(productdata.is_unlimited_stock)) {
+                                                                            //         addtoCart(productdata.id, selectedVariant.id, 1);
+                                                                            //     } else {
+                                                                            //         if (selectedVariant.status) {
+                                                                            //             addtoCart(productdata.id, selectedVariant.id, 1);
+                                                                            //             setP_id(productdata.id);
+                                                                            //             setP_V_id(selectedVariant.id);
+                                                                            //             setQnty(1);
+                                                                            //         } else {
+                                                                            //             toast.error('Oops, Limited Stock Available');
+                                                                            //         }
+                                                                            //     }
+                                                                            // }
+                                                                            // else {
+                                                                            //     toast.error(t("required_login_message_for_cartRedirect"));
+                                                                            // }
+                                                                            handleValidateAddNewProduct(productQuantity, productdata);
                                                                         }}>{t("add_to_cart")}</button>
                                                                 </>)
-                                                            : productdata.variants[0].cart_count >= 1 ?
+                                                            : null
+                                                        }
+                                                        {/*
+                                                         productdata.variants[0].cart_count >= 1 ?
                                                                 <>
                                                                     <div id={`input-cart-quickview`} className="input-to-cart">
                                                                         <button type='button' onClick={() => {
@@ -726,9 +777,8 @@ const ProductDetails = () => {
 
 
                                                                     </div>
-                                                                </> : <>
-
-
+                                                                </> :
+                                                                <>
                                                                     <button type='button' id={`Add-to-cart-quickview`} className='add-to-cart'
                                                                         onClick={() => {
                                                                             if (cookies.get('jwt_token') !== undefined) {
@@ -752,7 +802,8 @@ const ProductDetails = () => {
                                                                             }
                                                                         }}>{t("add_to_cart")}</button>
 
-                                                                </>}
+                                                                </> */}
+
                                                         {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == productdata.id) ? (
                                                             <button type="button" className='wishlist-product' onClick={() => {
                                                                 if (cookies.get('jwt_token') !== undefined) {
@@ -760,8 +811,7 @@ const ProductDetails = () => {
                                                                 } else {
                                                                     toast.error(t('required_login_message_for_cart'));
                                                                 }
-                                                            }}
-                                                            >
+                                                            }}>
                                                                 <BsHeartFill size={16} fill='green' />
                                                             </button>)
                                                             : (
@@ -1151,7 +1201,7 @@ const ProductDetails = () => {
                     <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} cookies={cookies} toast={toast} city={city} />
                 </div>
 
-            </div >
+            </div>
         </>
 
     );

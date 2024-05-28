@@ -6,25 +6,18 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Loader from '../loader/Loader';
 import 'react-phone-input-2/lib/style.css';
-
 //phone number input
-
 //otp
 import OTPInput from 'otp-input-react';
-
 //firebase
 import { signInWithPhoneNumber } from "firebase/auth";
-
-
 import Cookies from 'universal-cookie';
-import jwt from 'jwt-decode';
-import { setlocalstorageOTP } from '../../utils/manageLocalStorage';
-import { useNavigate } from 'react-router-dom';
+// import jwt from 'jwt-decode';
+import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-
 import FirebaseData from '../../utils/firebase/FirebaseData';
 import PhoneInput from 'react-phone-input-2';
-import { setCurrentUser, setFcmToken } from '../../model/reducer/authReducer';
+import { setAuthId, setCurrentUser, setFcmToken, setJWTToken } from '../../model/reducer/authReducer';
 import { Modal } from 'react-bootstrap';
 import { setSetting } from '../../model/reducer/settingReducer';
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
@@ -38,38 +31,7 @@ const Login = React.memo((props) => {
     const city = useSelector(state => state.city);
     const user = useSelector(state => state.user);
     const [fcm, setFcm] = useState('');
-    // useEffect(() => {
-    //     if (navigator.serviceWorker.controller) {
-    //         navigator.serviceWorker.controller.postMessage({
-    //             type: 'FIREBASE_CONFIG',
-    //             config: {
-    //                 apiKey: setting?.setting && setting?.setting?.firebase?.apiKey,
-    //                 authDomain: setting?.setting && setting?.setting?.firebase?.authDomain,
-    //                 projectId: setting?.setting && setting?.setting?.firebase?.projectId,
-    //                 storageBucket: setting?.setting && setting?.setting?.firebase?.storageBucket,
-    //                 messagingSenderId: setting?.setting && setting?.setting?.firebase?.messagingSenderId,
-    //                 appId: setting?.setting && setting?.setting?.firebase?.appId,
-    //                 measurementId: setting?.setting && setting?.setting?.firebase?.measurementId,
-    //             },
-    //         });
-    //     } else {
-    //         navigator.serviceWorker.ready.then(registration => {
-    //             registration.active.postMessage({
-    //                 type: 'FIREBASE_CONFIG',
-    //                 config: {
-    //                     apiKey: setting?.setting && setting?.setting?.firebase?.apiKey,
-    //                     authDomain: setting?.setting && setting?.setting?.firebase?.authDomain,
-    //                     projectId: setting?.setting && setting?.setting?.firebase?.projectId,
-    //                     storageBucket: setting?.setting && setting?.setting?.firebase?.storageBucket,
-    //                     messagingSenderId: setting?.setting && setting?.setting?.firebase?.messagingSenderId,
-    //                     appId: setting?.setting && setting?.setting?.firebase?.appId,
-    //                     measurementId: setting?.setting && setting?.setting?.firebase?.measurementId,
-    //                 },
-    //             });
-    //         });
-    //     }
 
-    // }, [setting?.setting?.firebase]);
     useEffect(() => {
         const initializeFirebaseMessaging = async () => {
             if (setting?.setting && messaging) {
@@ -105,13 +67,12 @@ const Login = React.memo((props) => {
     const cookies = new Cookies();
     const Navigate = useNavigate();
     const closeModalRef = useRef();
-
     const dispatch = useDispatch();
 
+    const [phonenum, setPhonenum] = useState(process.env.REACT_APP_DEMO_MODE == "true" ?
+        `${process.env.REACT_APP_COUNTRY_DIAL_CODE}${process.env.REACT_APP_DEMO_LOGIN_NO}` : "");
 
-    const [phonenum, setPhonenum] = useState("+919876543210");
-
-    const [countryCode, setCountryCode] = useState("91");
+    const [countryCode, setCountryCode] = useState(process.env.REACT_APP_COUNTRY_DIAL_CODE);
     const [checkboxSelected, setcheckboxSelected] = useState(false);
     const [error, setError] = useState("", setTimeout(() => {
         if (error !== "")
@@ -119,10 +80,24 @@ const Login = React.memo((props) => {
     }, 5000));
     const [isOTP, setIsOTP] = useState(false);
     const [Uid, setUid] = useState("");
-    const [OTP, setOTP] = useState("123456");
+    const [OTP, setOTP] = useState(process.env.REACT_APP_DEMO_MODE == "true" ? process.env.REACT_APP_DEMO_OTP : "");
     const [isLoading, setisLoading] = useState(false);
     const [timer, setTimer] = useState(null); // Initial timer value in seconds
     const [disabled, setDisabled] = useState(true);
+
+
+    // console.log(phonenum, countryCode);
+
+    useEffect(() => {
+        if (props.show == true) {
+            setPhonenum(process.env.REACT_APP_DEMO_MODE == "true" ?
+                `${process.env.REACT_APP_COUNTRY_DIAL_CODE}${process.env.REACT_APP_DEMO_LOGIN_NO}` : "");
+            setCountryCode(process.env.REACT_APP_DEMO_MODE == "true" ?
+                process.env.REACT_APP_COUNTRY_DIAL_CODE : ""
+            );
+            setOTP(process.env.REACT_APP_DEMO_MODE == "true" ? process.env.REACT_APP_DEMO_OTP : "");
+        }
+    }, [props.show]);
 
     useEffect(() => {
         let interval;
@@ -147,9 +122,9 @@ const Login = React.memo((props) => {
 
     useEffect(() => {
         if (firebase && auth && window.recaptchaVerifier && setting.setting.firebase) {
-            if (window.recaptchaVerifier) {
+            if (window?.recaptchaVerifier) {
                 try {
-                    window.recaptchaVerifier?.clear();
+                    window?.recaptchaVerifier?.clear();
                 } catch (err) {
                     console.log(err?.message);
                 }
@@ -162,8 +137,12 @@ const Login = React.memo((props) => {
             // other options
         }));
         return () => {
-            if (window.recaptchaVerifier && setting.setting.firebase) {
-                window.recaptchaVerifier?.clear();
+            if (window?.recaptchaVerifier && setting.setting.firebase) {
+                try {
+                    window?.recaptchaVerifier?.clear();
+                } catch (err) {
+                    console.log(err?.message);
+                }
             }
         };
     }, [firebase, auth]);
@@ -187,7 +166,7 @@ const Login = React.memo((props) => {
 
                 //OTP Generation
                 // generateRecaptcha();
-                let appVerifier = window.recaptchaVerifier;
+                let appVerifier = window?.recaptchaVerifier;
                 try {
                     signInWithPhoneNumber(auth, phonenum, appVerifier)
                         .then(confirmationResult => {
@@ -252,8 +231,9 @@ const Login = React.memo((props) => {
             setUid(result.user.uid);
 
             //login call
-            const num = phonenum.replace(`+${countryCode}`, "");
-            loginApiCall(num, result.user.uid, countryCode);
+            // console.log(phonenum);
+            const num = phonenum.replace(`${countryCode}`, "");
+            loginApiCall(num.replace("+", ""), result.user.uid, countryCode.replace("+", ""));
 
 
 
@@ -267,18 +247,18 @@ const Login = React.memo((props) => {
     };
 
     const loginApiCall = async (num, Uid, countrycode) => {
+        // console.log("Before Login API Call ->", num, Uid, countrycode);
         await api.login(num, Uid, countrycode, fcm)
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    const decoded = jwt(result.data.access_token);
+                    // const decoded = jwt(result.data.access_token);
 
                     const tomorrow = new Date();
                     tomorrow.setDate(new Date().getDate() + 1);
                     cookies.set("jwt_token", result.data.access_token, {
                         expires: new Date(tomorrow)
                     });
-
                     getCurrentUser(result.data.access_token);
                     api.getSettings(1, result.data.access_token)
                         .then((req) => req.json())
@@ -292,7 +272,9 @@ const Login = React.memo((props) => {
                     fetchCart(result.data.access_token, city?.city?.latitude ? city?.city?.latitude : setting?.setting?.default_city?.latitude,
                         city?.city?.longitude ? city?.city?.longitude : setting?.setting?.default_city?.longitude
                     );
-                    setlocalstorageOTP(Uid);
+                    dispatch(setJWTToken({ data: result.data.access_token }));
+                    dispatch(setAuthId({ data: Uid }));
+                    // setlocalstorageOTP(Uid);
                     setError("");
                     setOTP("");
                     setPhonenum("");
@@ -316,17 +298,11 @@ const Login = React.memo((props) => {
 
     const handleTerms = () => {
         props.setShow(false);
-        Navigate('/terms');
-        // if (closeModalRef.current) {
-        //     closeModalRef.current.click();
-        // }
+        // Navigate('/terms');
     };
     const handlePolicy = () => {
         props.setShow(false);
-        Navigate('/policy/Privacy_Policy');
-        // if (closeModalRef.current) {
-        //     closeModalRef.current.click();
-        // }
+        // Navigate('/policy/Privacy_Policy');
     };
 
     const handleOnChange = (value, data, event, formattedValue) => {
@@ -417,7 +393,7 @@ const Login = React.memo((props) => {
 
                                 <div>
                                     <PhoneInput
-                                        country={"in"}
+                                        country={process.env.REACT_APP_COUNTRY_CODE}
                                         value={phonenum}
                                         onChange={handleOnChange}
                                         enableSearch
@@ -432,7 +408,8 @@ const Login = React.memo((props) => {
                                     <input type="checkbox" className='mx-2' required checked={checkboxSelected} onChange={() => {
                                         setcheckboxSelected(!checkboxSelected);
                                     }} />
-                                    {t("agreement_message")} &nbsp;<a onClick={handleTerms}>{t("terms_of_service")}</a> &nbsp;{t("and")}<a onClick={handlePolicy}>&nbsp; {t("privacy_policy")} &nbsp;</a>
+                                    {t("agreement_message")} &nbsp;<Link to={"/terms"} onClick={handleTerms}>{t("terms_of_service")}</Link> &nbsp;{t("and")}
+                                    <Link to={"/policy/Privacy_Policy"} onClick={handlePolicy}>&nbsp; {t("privacy_policy")} &nbsp;</Link>
                                 </span>
                                 <button type='submit'> {t("login_continue")}</button>
                             </form>
@@ -446,3 +423,35 @@ const Login = React.memo((props) => {
 });
 
 export default Login;
+// useEffect(() => {
+//     if (navigator.serviceWorker.controller) {
+//         navigator.serviceWorker.controller.postMessage({
+//             type: 'FIREBASE_CONFIG',
+//             config: {
+//                 apiKey: setting?.setting && setting?.setting?.firebase?.apiKey,
+//                 authDomain: setting?.setting && setting?.setting?.firebase?.authDomain,
+//                 projectId: setting?.setting && setting?.setting?.firebase?.projectId,
+//                 storageBucket: setting?.setting && setting?.setting?.firebase?.storageBucket,
+//                 messagingSenderId: setting?.setting && setting?.setting?.firebase?.messagingSenderId,
+//                 appId: setting?.setting && setting?.setting?.firebase?.appId,
+//                 measurementId: setting?.setting && setting?.setting?.firebase?.measurementId,
+//             },
+//         });
+//     } else {
+//         navigator.serviceWorker.ready.then(registration => {
+//             registration.active.postMessage({
+//                 type: 'FIREBASE_CONFIG',
+//                 config: {
+//                     apiKey: setting?.setting && setting?.setting?.firebase?.apiKey,
+//                     authDomain: setting?.setting && setting?.setting?.firebase?.authDomain,
+//                     projectId: setting?.setting && setting?.setting?.firebase?.projectId,
+//                     storageBucket: setting?.setting && setting?.setting?.firebase?.storageBucket,
+//                     messagingSenderId: setting?.setting && setting?.setting?.firebase?.messagingSenderId,
+//                     appId: setting?.setting && setting?.setting?.firebase?.appId,
+//                     measurementId: setting?.setting && setting?.setting?.firebase?.measurementId,
+//                 },
+//             });
+//         });
+//     }
+
+// }, [setting?.setting?.firebase]);

@@ -20,10 +20,11 @@ import { removelocalstorageOTP, gelocalstoragetOTP } from '../../utils/manageLoc
 import api from '../../api/api';
 import { useTranslation } from 'react-i18next';
 import FirebaseData from '../../utils/firebase/FirebaseData';
-import { logoutAuth, setCurrentUser } from "../../model/reducer/authReducer";
+import { logoutAuth, setAuthId, setCurrentUser } from "../../model/reducer/authReducer";
 import { setFilterBrands, setFilterCategory, setFilterSearch, setFilterSection } from "../../model/reducer/productFilterReducer";
 import WalletTransaction from '../wallet-transaction/WalletTransaction';
 import { PiWallet } from "react-icons/pi";
+import { setCartProducts, setCartSubTotal } from '../../model/reducer/cartReducer';
 
 
 const ProfileDashboard = (props) => {
@@ -154,16 +155,12 @@ const ProfileDashboard = (props) => {
                                 if (result.status === 1) {
                                     cookies.remove('jwt_token');
                                     removelocalstorageOTP();
-                                    // dispatch({ type: ActionTypes.SET_FILTER_BRANDS, payload: [] });
-                                    // dispatch({ type: ActionTypes.SET_FILTER_CATEGORY, payload: null });
-                                    // dispatch({ type: ActionTypes.SET_FILTER_SEARCH, payload: null });
-                                    // dispatch({ type: ActionTypes.SET_FILTER_SECTION, payload: null });
-                                    // dispatch({ type: ActionTypes.LOGOUT_AUTH, payload: null });
-
                                     dispatch(setFilterBrands({ data: [] }));
                                     dispatch(setFilterCategory({ data: null }));
                                     dispatch(setFilterSearch({ data: null }));
                                     dispatch(setFilterSection({ data: null }));
+                                    dispatch(setCartProducts({ data: [] }));
+                                    dispatch(setCartSubTotal({ data: 0 }));
                                     dispatch(logoutAuth({ data: null }));
                                     toast.success("You're Successfully Logged Out");
                                     navigate('/');
@@ -184,7 +181,7 @@ const ProfileDashboard = (props) => {
 
 
     };
-
+    // console.log(user?.authId);
     const handleDeleteAcount = () => {
 
         confirmAlert({
@@ -195,7 +192,7 @@ const ProfileDashboard = (props) => {
                     label: t('Ok'),
                     onClick: async () => {
 
-                        await api.deleteAccount(cookies.get('jwt_token'), gelocalstoragetOTP()).then(response => response.json())
+                        await api.deleteAccount(cookies.get('jwt_token'), user?.authId).then(response => response.json())
                             .then(result => {
                                 if (result.status === 1) {
                                     cookies.remove('jwt_token');
@@ -206,12 +203,9 @@ const ProfileDashboard = (props) => {
                                     dispatch(setFilterCategory({ data: null }));
                                     dispatch(setFilterSearch({ data: null }));
                                     dispatch(setFilterSection({ data: null }));
+                                    dispatch(setCartProducts({ data: [] }));
+                                    dispatch(setCartSubTotal({ data: 0 }));
                                     dispatch(logoutAuth({ data: null }));
-                                    // dispatch({ type: ActionTypes.SET_FILTER_BRANDS, payload: [] });
-                                    // dispatch({ type: ActionTypes.SET_FILTER_CATEGORY, payload: null });
-                                    // dispatch({ type: ActionTypes.SET_FILTER_SEARCH, payload: null });
-                                    // dispatch({ type: ActionTypes.SET_FILTER_SECTION, payload: null });
-                                    // dispatch({ type: ActionTypes.LOGOUT_AUTH, payload: null });
                                     toast.info("You're Account is Succesfully Deleted!!");
                                     navigate('/');
                                 }

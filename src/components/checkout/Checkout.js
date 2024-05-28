@@ -19,12 +19,12 @@ import { motion } from 'framer-motion';
 import Modal from 'react-bootstrap/Modal';
 
 //lottie animation JSONs
-import Lottie, { useLottie } from 'lottie-react';
+import Lottie from 'lottie-react';
 import animate1 from '../../utils/order_placed_back_animation.json';
 import animate2 from '../../utils/order_success_tick_animation.json';
 
 //payment methods
-import useRazorpay, { Razorpay } from 'react-razorpay';
+import useRazorpay from 'react-razorpay';
 import { loadStripe } from '@stripe/stripe-js';
 import {
     Elements,
@@ -33,9 +33,6 @@ import {
 import InjectCheckout from './StripeModal';
 import PaystackPop from '@paystack/inline-js';
 import Loader from '../loader/Loader';
-import { Button } from 'react-bootstrap';
-import { ActionTypes } from '../../model/action-type';
-import { RiCoupon2Fill } from 'react-icons/ri';
 import Promo from '../cart/Promo';
 import { useTranslation } from 'react-i18next';
 import { clearCartPromo, setCart, setCartCheckout, setCartProducts, setCartPromo, setCartSubTotal, setWallet } from '../../model/reducer/cartReducer';
@@ -47,6 +44,9 @@ import { deductUserBalance } from '../../model/reducer/authReducer';
 
 const Checkout = () => {
     const dispatch = useDispatch();
+    const cookies = new Cookies();
+    const navigate = useNavigate();
+
     const city = useSelector(state => state.city);
     const cart = useSelector(state => (state.cart));
     const address = useSelector((state) => state.address);
@@ -61,16 +61,31 @@ const Checkout = () => {
     const [walletAmount, setWalletAmount] = useState(user?.user?.balance);
     const [isPromoApplied, setIsPromoApplied] = useState(false);
     const [IsOrderPlaced, setIsOrderPlaced] = useState(false);
-
-
+    const [expectedDate, setexpectedDate] = useState(null);
+    const [timeslots, settimeslots] = useState(null);
+    const [selectedAddress, setselectedAddress] = useState(null);
+    const today = new Date();
+    const [expectedTime, setexpectedTime] = useState();
+    const [paymentMethod, setpaymentMethod] = useState("");
+    const [deliveryTime, setDeliveryTime] = useState("");
+    const [orderID, setOrderID] = useState(0);
+    const [loadingPlaceOrder, setloadingPlaceOrder] = useState(false);
+    const [stripeOrderId, setstripeOrderId] = useState(null);
+    const [stripeClientSecret, setstripeClientSecret] = useState(null);
+    const [stripeTransactionId, setstripeTransactionId] = useState(null);
+    const [show, setShow] = useState(false);
+    const [showPromoOffcanvas, setShowPromoOffcanvas] = useState(false);
+    const [stripeModalShow, setStripeModalShow] = useState(false);
+    const [isFullWalletPay, setIsFullWalletPay] = useState(false);
+    const [isLoader, setisLoader] = useState(false);
+    // const [paymentSettings, setpaymentSettings] = useState(null)
     const paypalStatus = useRef(false);
 
-    const cookies = new Cookies();
-    const navigate = useNavigate();
+
 
     const stripePromise = loadStripe(setting.payment_setting && setting.payment_setting.stripe_publishable_key);
 
-
+    // console.log("Payment Methods ->", setting?.payment_setting, expectedTime);
     useEffect(() => {
         api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude, 1)
             .then(response => response.json())
@@ -86,6 +101,13 @@ const Checkout = () => {
                     setWalletAmount(user?.user?.balance);
                     // dispatch({ type: ActionTypes.SET_CART_CHECKOUT, payload: result.data });
                 }
+                // else if (result.status === 0) {
+                //     dispatch(setCartCheckout({ data: null }));
+                //     toast.error(t("no_products_found"));
+                //     setTimeout(() => {
+                //         navigate("/");
+                //     }, 1500);
+                // }
 
             })
             .catch(error => console.log(error));
@@ -102,6 +124,7 @@ const Checkout = () => {
     }, []);
 
     useEffect(() => {
+        console.log("address.selected_address useEffect");
         if (address?.selected_address?.latitude && address?.selected_address?.longitude)
             api.getCart(cookies.get('jwt_token'), address?.selected_address?.latitude, address?.selected_address?.longitude, 1)
                 .then(response => response.json())
@@ -122,7 +145,7 @@ const Checkout = () => {
                 .catch(error => console.log(error));
     }, [address?.selected_address]);
 
-    const [expectedDate, setexpectedDate] = useState(null);
+
     const checkLastOrderTime = (lastTime) => {
         const currentTime = expectedDate ? expectedDate : new Date();
         if (currentTime > new Date()) {
@@ -143,30 +166,17 @@ const Checkout = () => {
 
     };
 
-    const [timeslots, settimeslots] = useState(null);
-    const [selectedAddress, setselectedAddress] = useState(null);
-    const today = new Date();
-    const [expectedTime, setexpectedTime] = useState();
-    const [paymentMethod, setpaymentMethod] = useState("");
-    const [deliveryTime, setDeliveryTime] = useState("");
-    const [orderID, setOrderID] = useState(0);
-    const [loadingPlaceOrder, setloadingPlaceOrder] = useState(false);
-    const [stripeOrderId, setstripeOrderId] = useState(null);
-    const [stripeClientSecret, setstripeClientSecret] = useState(null);
-    const [stripeTransactionId, setstripeTransactionId] = useState(null);
-    const [show, setShow] = useState(false);
-    const [showPromoOffcanvas, setShowPromoOffcanvas] = useState(false);
-    const [stripeModalShow, setStripeModalShow] = useState(false);
-    const [isFullWalletPay, setIsFullWalletPay] = useState(false);
-    // const [paymentSettings, setpaymentSettings] = useState(null)
-    const [isLoader, setisLoader] = useState(false);
+
     const fetchTimeSlot = () => {
         api.fetchTimeSlot()
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
+                    if (result?.data?.time_slots_is_enabled == "false") {
+                        return toast.error(t("timeslots_not_enabled"));
+                    }
                     settimeslots(result.data);
-                    setexpectedTime(result.data.time_slots.filter((element) => checkLastOrderTime(element.last_order_time))[0]);
+                    setexpectedTime(result?.data?.time_slots.filter((element) => checkLastOrderTime(element?.last_order_time))[0]);
                 }
             })
             .catch(error => console.log(error));
@@ -180,7 +190,7 @@ const Checkout = () => {
     }, [timeslots]);
 
     useEffect(() => {
-        setexpectedTime(timeslots?.time_slots.filter((element) => checkLastOrderTime(element.last_order_time))[0]);
+        setexpectedTime(timeslots?.time_slots.filter((element) => checkLastOrderTime(element?.last_order_time))[0]);
     }, [expectedDate]);
 
 
@@ -284,7 +294,7 @@ const Checkout = () => {
         api.deleteOrder(cookies.get('jwt_token'), order_id);
         setWalletDeductionAmt(walletDeductionAmt);
         setWalletAmount(user.user.balance);
-        setTotalPayment(totalPayment);
+        // setTotalPayment(totalPayment);
         setIsOrderPlaced(false);
     };
 
@@ -366,8 +376,8 @@ const Checkout = () => {
             toast.error("Please Select Delivery Address");
         }
         else {
-            setDeliveryTime(`${expectedDate.getDate()}-${expectedDate.getMonth() + 1}-${expectedDate.getFullYear()} ${expectedTime.title}`);
-            const delivery_time = `${expectedDate.getDate()}-${expectedDate.getMonth() + 1}-${expectedDate.getFullYear()} ${expectedTime.title}`;
+            setDeliveryTime(`${expectedDate.getDate()}-${expectedDate.getMonth() + 1}-${expectedDate.getFullYear()} ${expectedTime?.title}`);
+            const delivery_time = `${expectedDate.getDate()}-${expectedDate.getMonth() + 1}-${expectedDate.getFullYear()} ${expectedTime?.title}`;
             setloadingPlaceOrder(true);
             if (delivery_time === null) {
                 toast.error("Please Select Preffered Delivery Time");
@@ -730,7 +740,7 @@ const Checkout = () => {
                                                             : (
                                                                 <>
 
-                                                                    {timeslots.time_slots.filter((element) => checkLastOrderTime(element.last_order_time)).map((timeslot, index) => {
+                                                                    {timeslots?.time_slots.filter((element) => checkLastOrderTime(element?.last_order_time)).map((timeslot, index) => {
                                                                         return (
 
                                                                             <div key={index} className='time-slot-container'>
@@ -741,7 +751,7 @@ const Checkout = () => {
                                                                                 </div>
                                                                                 <div>
 
-                                                                                    {timeslot.title}
+                                                                                    {timeslot?.title}
                                                                                 </div>
                                                                             </div>
                                                                         );

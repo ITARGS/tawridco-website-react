@@ -319,94 +319,93 @@ const ProductList2 = React.memo(() => {
                     ))} */}
                     <CategoryComponent data={category} selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories} />
                 </div>
-                {
-                    showPriceFilter ?
-                        <div className='filter-row'>
-                            <h5> {t("filter")} {t("by_price")}</h5>
-                            {
-                                (minPrice === null || maxPrice === null)
-                                    ? (
-                                        <Loader />
-                                    )
-                                    : (
-                                        <div
-                                            className='slider'
-                                        >
-                                            <Range
-                                                draggableTrack
-                                                values={values}
-                                                step={1}
-                                                min={minPrice}
-                                                max={maxPrice}
-                                                onChange={(newValues) => {
-                                                    setValues(newValues);
-                                                }}
-                                                i18nIsDynamicList
-                                                onFinalChange={(newValues) => {
-                                                    // console.log(newValues);
+                {showPriceFilter ?
+                    <div className='filter-row'>
+                        <h5> {t("filter")} {t("by_price")}</h5>
+                        {
+                            (minPrice === null || maxPrice === null)
+                                ? (
+                                    <Loader />
+                                )
+                                : (
+                                    <div
+                                        className='slider'
+                                    >
+                                        <Range
+                                            draggableTrack
+                                            values={values}
+                                            step={1}
+                                            min={minPrice}
+                                            max={maxPrice}
+                                            onChange={(newValues) => {
+                                                setValues(newValues);
+                                            }}
+                                            i18nIsDynamicList
+                                            onFinalChange={(newValues) => {
+                                                // console.log(newValues);
 
-                                                    dispatch(setFilterMinMaxPrice({ data: { min_price: newValues[0], max_price: newValues[1] } }));
-                                                }}
-                                                renderTrack={({ props, children }) => (
+                                                dispatch(setFilterMinMaxPrice({ data: { min_price: newValues[0], max_price: newValues[1] } }));
+                                            }}
+                                            renderTrack={({ props, children }) => (
+                                                <div
+                                                    className='track'
+                                                    onMouseDown={props.onMouseDown}
+                                                    onTouchStart={props.onTouchStart}
+                                                    style={{
+                                                        ...props.style,
+                                                        height: '36px',
+                                                        display: 'flex',
+                                                        width: '100%',
+                                                    }}
+                                                >
                                                     <div
-                                                        className='track'
-                                                        onMouseDown={props.onMouseDown}
-                                                        onTouchStart={props.onTouchStart}
+                                                        ref={props.ref}
                                                         style={{
-                                                            ...props.style,
-                                                            height: '36px',
-                                                            display: 'flex',
+                                                            height: '5px',
                                                             width: '100%',
+                                                            borderRadius: '4px',
+                                                            background: getTrackBackground({
+                                                                values,
+                                                                colors: ['white', `var(--secondary-color)`, 'white'],
+                                                                min: minPrice,
+                                                                max: maxPrice,
+
+                                                            }),
+                                                            alignSelf: 'center',
                                                         }}
+                                                        className='track-1'
                                                     >
-                                                        <div
-                                                            ref={props.ref}
-                                                            style={{
-                                                                height: '5px',
-                                                                width: '100%',
-                                                                borderRadius: '4px',
-                                                                background: getTrackBackground({
-                                                                    values,
-                                                                    colors: ['white', `var(--secondary-color)`, 'white'],
-                                                                    min: minPrice,
-                                                                    max: maxPrice,
-
-                                                                }),
-                                                                alignSelf: 'center',
-                                                            }}
-                                                            className='track-1'
-                                                        >
-                                                            {children}
-                                                        </div>
+                                                        {children}
                                                     </div>
-                                                )}
-                                                renderThumb={({ props, isDragged }) => (
-                                                    <div
-                                                        {...props}
-                                                        className='thumb'
-                                                        tabIndex={0}
-                                                        onKeyDown={(e) => {
-                                                            // Handle keyboard events here
-                                                            if (e.key === 'ArrowLeft') {
-                                                                // setMaxPrice(maxPrice - 1);
-                                                                setValues([values[0] - 1, values[1]]);
-                                                            } else if (e.key === 'ArrowRight') {
-                                                                // setMinPrice(minPrice + 1);
-                                                                setValues([values[0] + 1, values[1]]);
-                                                            }
-                                                        }}
-                                                    >   {props['aria-valuenow']}
+                                                </div>
+                                            )}
+                                            renderThumb={({ props, isDragged }) => (
+                                                <div
+                                                    {...props}
+                                                    className='thumb'
+                                                    tabIndex={0}
+                                                    onKeyDown={(e) => {
+                                                        // Handle keyboard events here
+                                                        if (e.key === 'ArrowLeft') {
+                                                            // setMaxPrice(maxPrice - 1);
+                                                            setValues([values[0] - 1, values[1]]);
+                                                        } else if (e.key === 'ArrowRight') {
+                                                            // setMinPrice(minPrice + 1);
+                                                            setValues([values[0] + 1, values[1]]);
+                                                        }
+                                                    }}
+                                                >   {props['aria-valuenow']}
 
-                                                    </div>
-                                                )}
-                                            />
-                                        </div>
-                                    )
-                            }
-                        </div > : null}
+                                                </div>
+                                            )}
+                                        />
+                                    </div>
+                                )
+                        }
+                    </div> : null}
 
-                {
-                    (sizes?.length !== 0) ? <div className='filter-row'  >
+                {(sizes?.length !== 0) ?
+                    <div className='filter-row'>
                         <h2 className='product-filter-headline d-flex w-100 align-items-center justify-content-between'>
                             <span>{t("Filter By Sizes")}</span>
                         </h2>
@@ -536,7 +535,9 @@ const ProductList2 = React.memo(() => {
         setcurrPage(pageNum);
         setoffset(pageNum * total_products_per_page - total_products_per_page);
     };
+
     const placeholderItems = Array.from({ length: 12 }).map((_, index) => index);
+
     function getProductQuantities(products) {
         return Object.entries(products.reduce((quantities, product) => {
             const existingQty = quantities[product.product_id] || 0;
@@ -546,6 +547,48 @@ const ProductList2 = React.memo(() => {
             qty
         }));
     }
+
+
+    const handleValidateAddExistingProduct = (productQuantity, product) => {
+        if (Number(product.is_unlimited_stock)) {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product?.total_allowed_quantity)) {
+                addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
+            } else {
+                toast.error('Apologies, maximum product quantity limit reached!');
+            }
+        } else {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.variants[0].stock)) {
+                toast.error(t("out_of_stock_message"));
+            }
+            else if (Number(productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty) >= Number(product.total_allowed_quantity)) {
+                toast.error('Apologies, maximum product quantity limit reached');
+            } else {
+                addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
+            }
+        }
+    };
+
+    const handleValidateAddNewProduct = (productQuantity, product) => {
+        if (cookies.get('jwt_token') !== undefined) {
+            if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) >= Number(product?.total_allowed_quantity)) {
+                toast.error('Oops, Limited Stock Available');
+            }
+            else if (Number(product.is_unlimited_stock)) {
+                addtoCart(product.id, product?.variants?.[0].id, 1);
+            } else {
+                if (product?.variants?.[0]?.status) {
+                    addtoCart(product.id, product?.variants?.[0].id, 1);
+                } else {
+                    toast.error('Oops, Limited Stock Available');
+                }
+            }
+        }
+        else {
+            toast.error(t("required_login_message_for_cartRedirect"));
+        }
+    };
+
+
     return (
         <>
             <section id="productlist" className='container' onContextMenu={() => { return false; }}>
@@ -695,7 +738,7 @@ const ProductList2 = React.memo(() => {
                                                                                             )}
                                                                                     </div>
 
-                                                                                    <div className='border-end aes' style={{ flexGrow: "1" }} >
+                                                                                    <div className='border-end aes' style={{ flexGrow: "1" }}>
                                                                                         {product.variants[0].cart_count > 0 ? <>
                                                                                             <div id={`input-cart-productdetail`} className="input-to-cart">
                                                                                                 <button type='button' className="wishlist-button" onClick={(e) => {
@@ -875,8 +918,8 @@ const ProductList2 = React.memo(() => {
 
                                                                         </div>
                                                                     </Link>
-                                                                    {filter.grid_view ? <>
 
+                                                                    {filter.grid_view ? <>
                                                                         <div className='d-flex flex-row border-top product-card-footer'>
                                                                             <div className='border-end '>
                                                                                 {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == product.id) ? (
@@ -903,74 +946,78 @@ const ProductList2 = React.memo(() => {
                                                                             </div>
 
                                                                             <div className='border-end aes' style={{ flexGrow: "1" }} >
-                                                                                {user?.user && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 0 ? <>
-                                                                                    <div id={`input-cart-productdetail`} className="input-to-cart">
-                                                                                        <button type='button' className="wishlist-button" onClick={() => {
+                                                                                {user?.user && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 0 ?
+                                                                                    <>
+                                                                                        <div id={`input-cart-productdetail`} className="input-to-cart">
+                                                                                            <button type='button' className="wishlist-button" onClick={() => {
+                                                                                                if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty == 1) {
+                                                                                                    removefromCart(product.id, product.variants[0].id);
+                                                                                                    selectedVariant.cart_count = 0;
+                                                                                                }
+                                                                                                else {
+                                                                                                    addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty - 1);
+                                                                                                    selectedVariant.cart_count = selectedVariant.cart_count - 1;
+                                                                                                }
+                                                                                            }}>
+                                                                                                <BiMinus size={20} fill='#fff' />
+                                                                                            </button>
+                                                                                            {/* <span id={`input-productdetail`} >{quantity}</span> */}
+                                                                                            <div className="quantity-container text-center">
+                                                                                                <input
+                                                                                                    type="number"
+                                                                                                    min="1"
+                                                                                                    max={product.variants[0].stock}
+                                                                                                    className="quantity-input bg-transparent text-center"
+                                                                                                    value={cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty}
+                                                                                                    disabled
+                                                                                                />
+                                                                                            </div>
 
-                                                                                            if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty == 1) {
-                                                                                                removefromCart(product.id, product.variants[0].id);
-                                                                                                selectedVariant.cart_count = 0;
-                                                                                            }
-                                                                                            else {
-                                                                                                addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty - 1);
-                                                                                                selectedVariant.cart_count = selectedVariant.cart_count - 1;
-                                                                                            }
-                                                                                        }}><BiMinus size={20} fill='#fff' /></button>
-                                                                                        {/* <span id={`input-productdetail`} >{quantity}</span> */}
-                                                                                        <div className="quantity-container text-center">
-                                                                                            <input
-                                                                                                type="number"
-                                                                                                min="1"
-                                                                                                max={product.variants[0].stock}
-                                                                                                className="quantity-input bg-transparent text-center"
-                                                                                                value={cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty}
-                                                                                                disabled
-                                                                                            />
+                                                                                            <button type='button' className="wishlist-button" onClick={() => {
+                                                                                                const productQuantity = getProductQuantities(cart?.cartProducts);
+                                                                                                // if (Number(product.is_unlimited_stock)) {
+                                                                                                //     if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product?.total_allowed_quantity)) {
+                                                                                                //         addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
+                                                                                                //     } else {
+                                                                                                //         toast.error('Apologies, maximum product quantity limit reached!');
+                                                                                                //     }
+                                                                                                // } else {
+                                                                                                //     if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.variants[0].stock)) {
+                                                                                                //         toast.error(t("out_of_stock_message"));
+                                                                                                //     }
+                                                                                                //     else if (Number(productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty) >= Number(product.total_allowed_quantity)) {
+                                                                                                //         toast.error('Apologies, maximum product quantity limit reached');
+                                                                                                //     } else {
+                                                                                                //         addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
+                                                                                                //     }
+                                                                                                // }
+                                                                                                handleValidateAddExistingProduct(productQuantity, product);
+                                                                                            }}><BsPlus size={20} fill='#fff' /> </button>
                                                                                         </div>
-                                                                                        <button type='button' className="wishlist-button" onClick={() => {
+                                                                                    </> :
+                                                                                    <>
+                                                                                        <button type="button" id={`Add-to-cart-section${index}`} className='w-100 h-100 add-to-cart active' onClick={() => {
                                                                                             const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                                            if (Number(product.is_unlimited_stock)) {
-                                                                                                if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product?.total_allowed_quantity)) {
-                                                                                                    addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
-                                                                                                } else {
-                                                                                                    toast.error('Apologies, maximum product quantity limit reached!');
-                                                                                                }
-                                                                                            } else {
-                                                                                                if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.variants[0].stock)) {
-                                                                                                    toast.error(t("out_of_stock_message"));
-                                                                                                }
-                                                                                                else if (Number(productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty) >= Number(product.total_allowed_quantity)) {
-                                                                                                    toast.error('Apologies, maximum product quantity limit reached');
-                                                                                                } else {
-                                                                                                    addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
-                                                                                                }
-                                                                                            }
-
-                                                                                        }}><BsPlus size={20} fill='#fff' /> </button>
-                                                                                    </div>
-                                                                                </> : <>
-
-                                                                                    <button type="button" id={`Add-to-cart-section${index}`} className='w-100 h-100 add-to-cart active' onClick={() => {
-                                                                                        const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                                        if (cookies.get('jwt_token') !== undefined) {
-                                                                                            if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) >= Number(product?.total_allowed_quantity)) {
-                                                                                                toast.error('Oops, Limited Stock Available');
-                                                                                            }
-                                                                                            else if (Number(product.is_unlimited_stock)) {
-                                                                                                addtoCart(product.id, product?.variants?.[0].id, 1);
-                                                                                            } else {
-                                                                                                if (product?.variants?.[0]?.status) {
-                                                                                                    addtoCart(product.id, product?.variants?.[0].id, 1);
-                                                                                                } else {
-                                                                                                    toast.error('Oops, Limited Stock Available');
-                                                                                                }
-                                                                                            }
-                                                                                        }
-                                                                                        else {
-                                                                                            toast.error(t("required_login_message_for_cartRedirect"));
-                                                                                        }
-                                                                                    }} disabled={!Number(product.is_unlimited_stock) && product.variants[0].status === 0}>{t("add_to_cart")}</button>
-                                                                                </>}
+                                                                                            // if (cookies.get('jwt_token') !== undefined) {
+                                                                                            //     if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) >= Number(product?.total_allowed_quantity)) {
+                                                                                            //         toast.error('Oops, Limited Stock Available');
+                                                                                            //     }
+                                                                                            //     else if (Number(product.is_unlimited_stock)) {
+                                                                                            //         addtoCart(product.id, product?.variants?.[0].id, 1);
+                                                                                            //     } else {
+                                                                                            //         if (product?.variants?.[0]?.status) {
+                                                                                            //             addtoCart(product.id, product?.variants?.[0].id, 1);
+                                                                                            //         } else {
+                                                                                            //             toast.error('Oops, Limited Stock Available');
+                                                                                            //         }
+                                                                                            //     }
+                                                                                            // }
+                                                                                            // else {
+                                                                                            //     toast.error(t("required_login_message_for_cartRedirect"));
+                                                                                            // }
+                                                                                            handleValidateAddNewProduct(productQuantity, product);
+                                                                                        }} disabled={!Number(product.is_unlimited_stock) && product.variants[0].status === 0}>{t("add_to_cart")}</button>
+                                                                                    </>}
 
                                                                             </div>
 
@@ -1000,13 +1047,15 @@ const ProductList2 = React.memo(() => {
                                                     </div>
 
                                                     <div>
-                                                        {(totalProducts > total_products_per_page) ? <Pagination
-                                                            activePage={currPage}
-                                                            itemsCountPerPage={total_products_per_page}
-                                                            totalItemsCount={totalProducts}
-                                                            pageRangeDisplayed={5}
-                                                            onChange={handlePageChange.bind(this)}
-                                                        /> : null}
+                                                        {(totalProducts > total_products_per_page) ?
+                                                            <Pagination
+                                                                activePage={currPage}
+                                                                itemsCountPerPage={total_products_per_page}
+                                                                totalItemsCount={totalProducts}
+                                                                pageRangeDisplayed={5}
+                                                                onChange={handlePageChange.bind(this)}
+                                                            /> : null
+                                                        }
                                                     </div>
                                                     <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal}
                                                         setP_id={setP_id}
