@@ -748,6 +748,9 @@ const api = {
         } else if (payment_method.toLocaleLowerCase() === "midtrans") {
             formData.append("payment_method", "Midtrans");
             formData.append("request_from", "website");
+        } else if (payment_method.toLocaleLowerCase() === "phonepe") {
+            formData.append("payment_method", "Phonepe");
+            formData.append("request_from", "website");
         }
 
         var requestOptions = {

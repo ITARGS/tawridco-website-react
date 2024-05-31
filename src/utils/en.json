@@ -307,5 +307,8 @@
   "timeslots_not_enabled": "Please enable timeslots from admin panel to get the delivery",
   "no_products_found": "No product(s) found in cart",
   "limited_product_stock_error": "Oops, Limited Stock Available",
-  "max_cart_limit_error": "Apologies, maximum cart quantity limit reached"
+  "max_cart_limit_error": "Apologies, maximum cart quantity limit reached",
+  "phonepe": "PhonePe",
+  "please_select_payment_method": "Please select a payment method !",
+  "something_went_wrong_select_address": "Oops, something went wrong! Please select the address again."
 }

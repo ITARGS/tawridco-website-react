@@ -31,9 +31,15 @@ const PayPalPaymentHandler = () => {
     const interval = useRef();
     const timeout = useRef();
     // https://devegrocer.thewrteam.in/web-payment-status?order_id=wallet-20240509133121-32&status_code=200&transaction_status=capture
+    // https://devegrocer.thewrteam.in/web-payment-status?status=PAYMENT_SUCCESS&type=order&payment_method=Phonepe
     useEffect(() => {
         let intervalId;
-        if (queryParamsObj.status_code == 200 && queryParamsObj.order_id.split("-")[0] == "wallet") {
+        if (queryParamsObj.status == "PAYMENT_SUCCESS" && queryParamsObj.type == "wallet" && queryParamsObj.payment_method == "Phonepe") {
+            intervalId = setInterval(() => {
+                window.opener.postMessage("Recharge Done", "*");
+            }, 1000);
+        }
+        else if (queryParamsObj.status_code == 200 && queryParamsObj.order_id.split("-")[0] == "wallet") {
             intervalId = setInterval(() => {
                 window.opener.postMessage("Recharge Done", "*");
             }, 1000);

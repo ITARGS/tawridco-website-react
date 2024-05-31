@@ -69,8 +69,9 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
 
 
     useEffect(() => {
-        if (isCartSidebarOpen == true)
+        if (isCartSidebarOpen === true) {
             fetchCartData();
+        }
     }, [isCartSidebarOpen]);
 
     const fetchCartData = async () => {

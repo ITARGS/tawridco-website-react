@@ -50,10 +50,11 @@ const WalletTransaction = () => {
 
     useEffect(() => {
         setisLoader(true);
+        // if (addWalletModal === false)
         fetchTransactions();
         // eslint-disable-next-line
 
-    }, [offset, addWalletModal]);
+    }, [offset]);
 
     //page change
     const handlePageChange = (pageNum) => {
@@ -148,7 +149,7 @@ const WalletTransaction = () => {
                                 onChange={handlePageChange.bind(this)}
                             />
                             : null}
-                        <AddWalletModal showModal={addWalletModal} setShowModal={setAddWalletModal} />
+                        <AddWalletModal showModal={addWalletModal} setShowModal={setAddWalletModal} fetchTransactions={fetchTransactions} />
                     </>
 
                 )}

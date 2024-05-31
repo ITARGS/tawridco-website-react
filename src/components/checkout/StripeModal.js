@@ -175,18 +175,10 @@ const StripeModal = (props) => {
                 : null}
 
             <div className="modal-body">
-
                 <div className='stripe-container d-flex flex-column p-0'>
-
-                    {/* <div className="d-flex flex-row justify-content-between header">
-                        <span className='heading'>Egrocers Payment</span>
-                        <button type="button" className="close-stripe" data-bs-dismiss="modal" aria-label="Close" ref={closeModal}><AiOutlineCloseCircle /></button>
-                    </div> */}
                     <form onSubmit={handleSubmit} id="stripe-form" className='row p-5 border-3'>
-                        {/* <CardSection /> */}
                         <fieldset className='FormGroup p-4'>
                             <div className="FormRow">
-
                                 <CardElement options={CARD_OPTIONS} />
                             </div>
                         </fieldset>

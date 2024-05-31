@@ -8,4 +8,4 @@ Disallow: /wp-admin/
 Disallow: /rss/
 Disallow: /feed/
 
-Sitemap: https://devegrocer.thewrteam.in/sitemap.xml
+Sitemap: __REACT_APP_BASE_URL__/sitemap.xml

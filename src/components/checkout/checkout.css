@@ -155,7 +155,7 @@
 }
 
 .checkout-container .order-container {
-  min-width: 320px;
+  /* min-width: 320px; */
   margin-top: 0px;
 }
 
@@ -445,4 +445,24 @@
   font-weight: 600;
   align-self: center;
   cursor: pointer;
+}
+
+@media screen and (min-width: 0px) and (max-width: 320px) {
+  .checkout-container .checkout-util-container,
+  .checkout-container .order-container {
+    width: 300px;
+  }
+}
+@media screen and (min-width: 768px) and (max-width: 1024px) {
+  .checkout-container.container {
+    align-items: center;
+  }
+  .checkout-container .order-container {
+    width: 700px;
+  }
+}
+@media screen and (min-width: 1025px) and (max-width: 1440px) {
+  .checkout-container .order-container {
+    padding-right: 20px;
+  }
 }

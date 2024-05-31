@@ -90,6 +90,7 @@ const StripeModal = (props) => {
                         dispatch(addUserBalance({ data: props.amount }));
                         props.setAddWalletModal(false);
                         toast.success(result.message);
+                        props.fetchTransactions();
                     }
                     else {
                         setloadingPay(false);
@@ -111,7 +112,6 @@ const StripeModal = (props) => {
                     <form onSubmit={handleSubmit} id="stripe-form" className='row p-5 border-3'>
                         <fieldset className='FormGroup p-4'>
                             <div className="FormRow">
-
                                 <CardElement options={CARD_OPTIONS} />
                             </div>
                         </fieldset>
@@ -139,7 +139,7 @@ export default function InjectCheckout(props) {
                         client_secret={props.client_secret}
                         transaction_id={props.transaction_id}
                         amount={props.amount}
-
+                        fetchTransactions={props.fetchTransactions}
                     ></StripeModal>
                 </>
             )}

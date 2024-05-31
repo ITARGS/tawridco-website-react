@@ -37,7 +37,7 @@ const NewAddress = (props) => {
         address_type: 'Home',
         is_default: false,
     });
-    
+
     const handleAddnewAddress = (e) => {
         e.preventDefault();
 
@@ -348,7 +348,7 @@ const NewAddress = (props) => {
                     console.log(error);
                 });
                 if (!("geolocation" in navigator)) {
-                    console.log("error hoti");
+                    console.log("geolocation not present in navigator");
                 }
             });
     };

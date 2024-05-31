@@ -16,6 +16,7 @@
     "axios": "^1.6.7",
     "bootstrap": "^5.3.2",
     "bootstrap-icons": "^1.11.1",
+    "dotenv": "^16.4.5",
     "firebase": "^9.19.1",
     "framer-motion": "^10.16.4",
     "i18next": "^23.6.0",
@@ -53,8 +54,9 @@
     "yet-another-react-lightbox": "^3.17.1"
   },
   "scripts": {
+    "build:sitemap": "node generate-sitemap.js",
     "start": "react-scripts start",
-    "build": "react-scripts build --openssl-legacy-provider && node ftp.js",
+    "build": "npm run build:sitemap && react-scripts build --openssl-legacy-provider && node ftp.js",
     "vercel-build": "react-scripts build --openssl-legacy-provider",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

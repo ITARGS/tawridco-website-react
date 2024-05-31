@@ -12,6 +12,7 @@ import cod from '../../utils/ic_cod.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import paypal from "../../utils/ic_paypal.svg";
 import Midtrans from "../../utils/Icons/Midtrans.svg";
+import PhonepeSVG from "../../utils/Icons/Phonepe.svg";
 import Cookies from 'universal-cookie';
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
@@ -78,12 +79,11 @@ const Checkout = () => {
     const [stripeModalShow, setStripeModalShow] = useState(false);
     const [isFullWalletPay, setIsFullWalletPay] = useState(false);
     const [isLoader, setisLoader] = useState(false);
-    // const [paymentSettings, setpaymentSettings] = useState(null)
     const paypalStatus = useRef(false);
 
 
 
-    const stripePromise = loadStripe(setting.payment_setting && setting.payment_setting.stripe_publishable_key);
+    const stripePromise = loadStripe(setting?.payment_setting && setting?.payment_setting?.stripe_publishable_key);
 
     // console.log("Payment Methods ->", setting?.payment_setting, expectedTime);
     useEffect(() => {
@@ -99,16 +99,7 @@ const Checkout = () => {
                         setTotalPayment(result.data.total_amount);
                     }
                     setWalletAmount(user?.user?.balance);
-                    // dispatch({ type: ActionTypes.SET_CART_CHECKOUT, payload: result.data });
                 }
-                // else if (result.status === 0) {
-                //     dispatch(setCartCheckout({ data: null }));
-                //     toast.error(t("no_products_found"));
-                //     setTimeout(() => {
-                //         navigate("/");
-                //     }, 1500);
-                // }
-
             })
             .catch(error => console.log(error));
 
@@ -116,15 +107,15 @@ const Checkout = () => {
             .then(res => res.json())
             .then(result => {
                 setCodAllow(result?.data?.cod_allowed);
-
+                // setpaymentMethod("COD");
             })
             .catch(error => console.log(error));
         fetchTimeSlot();
-        setpaymentMethod("COD");
+
     }, []);
 
     useEffect(() => {
-        console.log("address.selected_address useEffect");
+        // console.log("address.selected_address useEffect");
         if (address?.selected_address?.latitude && address?.selected_address?.longitude)
             api.getCart(cookies.get('jwt_token'), address?.selected_address?.latitude, address?.selected_address?.longitude, 1)
                 .then(response => response.json())
@@ -370,17 +361,24 @@ const Checkout = () => {
             toast.error(t('please_select_date'));
         }
         else if (!address.address) {
-            toast.error("Please add an address");
+            toast.error(t("something_went_wrong_select_address"));
         }
         else if (address.selected_address === null) {
-            toast.error("Please Select Delivery Address");
+            toast.error("Please Select a Default Delivery Address");
         }
         else {
             setDeliveryTime(`${expectedDate.getDate()}-${expectedDate.getMonth() + 1}-${expectedDate.getFullYear()} ${expectedTime?.title}`);
             const delivery_time = `${expectedDate.getDate()}-${expectedDate.getMonth() + 1}-${expectedDate.getFullYear()} ${expectedTime?.title}`;
             setloadingPlaceOrder(true);
+            if (paymentMethod === "") {
+                toast.error(t("please_select_payment_method"));
+                setloadingPlaceOrder(false);
+                return;
+            }
             if (delivery_time === null) {
-                toast.error("Please Select Preffered Delivery Time");
+                toast.error("Please Select Preferred Delivery Time");
+                setloadingPlaceOrder(false);
+                return;
             }
             else if (paymentMethod === 'COD') {
                 // place order
@@ -610,6 +608,38 @@ const Checkout = () => {
                         }
                     })
                     .catch(error => console.log(error));
+            } else if (paymentMethod == "Phonepe") {
+                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                    .then(response => response.json())
+                    .then(async result => {
+                        // fetchOrders();
+                        if (result.status === 1) {
+                            setOrderID(result.data.order_id);
+                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Phonepe", "order")
+                                .then(resp => resp.json())
+                                .then(res => {
+                                    console.log(res.data);
+                                    setisLoader(false);
+                                    if (res.status === 1) {
+                                        setloadingPlaceOrder(false);
+                                        setpaymentUrl(res.data.redirectUrl);
+                                        dispatch(deductUserBalance({ data: walletDeductionAmt }));
+                                        dispatch(setCartPromo({ data: null }));
+                                        window.open(res.data?.redirectUrl, '_parent');
+                                    } else {
+                                        toast.error(res.message);
+                                        setloadingPlaceOrder(false);
+                                    }
+                                })
+                                .catch(error => console.error(error));
+                        }
+                        else {
+                            toast.error(result.message);
+                            setloadingPlaceOrder(false);
+                            setisLoader(false);
+                        }
+                    })
+                    .catch(error => console.log(error));
             }
         }
     };
@@ -628,12 +658,6 @@ const Checkout = () => {
     };
 
 
-    const removeCoupon = () => {
-        dispatch(clearCartPromo());
-        toast.info("Coupon Removed");
-    };
-
-
     useEffect(() => {
         if (IsOrderPlaced) {
             setShow(true);
@@ -644,16 +668,16 @@ const Checkout = () => {
     }, [IsOrderPlaced]);
 
     const { t } = useTranslation();
+
     const placeHolderImage = (e) => {
         e.target.src = setting.setting?.web_logo;
     };
+
     const current = new Date();
     return (
         <>
             <section id='checkout'>
-                {/* {console.log(IsOrderPlaced)} */}
                 {IsOrderPlaced ?
-
                     <>
                         <Modal
                             show={show}
@@ -682,7 +706,7 @@ const Checkout = () => {
                         </Modal>
                     </>
                     : null}
-                {/* //     {stripepayment ? <PaymentElement /> : null} */}
+
                 <div className='cover'>
                     <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
                     <div className='title'>
@@ -781,7 +805,7 @@ const Checkout = () => {
                                                             <span style={{ fontSize: "14px" }}>
                                                                 {t("Wallet Balance")}
                                                             </span>
-                                                            <p style={{ color: 'var(--secondary-color', fontSize: "14px" }} className='mb-0'>
+                                                            <p style={{ color: 'var(--secondary-color', fontSize: "14px" }} className='mb-0 me-2'>
                                                                 {setting?.setting?.currency}
                                                                 {/* {t(parseFloat(user?.user?.balance).toFixed(setting?.setting && setting?.setting?.decimal_point))} */}
 
@@ -800,10 +824,10 @@ const Checkout = () => {
                                         </div> : null}
 
                                         {isFullWalletPay ? <></> :
+
                                             <div className='payment-wrapper checkout-component'>
                                                 <span className='heading'>{t("payment_method")}</span>
-
-                                                {setting?.payment_setting.cod_payment_method === "1" && codAllow == 1
+                                                {setting?.payment_setting?.cod_payment_method === "1" && codAllow == 1
                                                     ? (
                                                         <label className="form-check-label cursorPointer" htmlFor='cod'>
                                                             <div className='payment-selector'>
@@ -811,14 +835,14 @@ const Checkout = () => {
                                                                 <div className="">
                                                                     <span>{t("cash_on_delivery")}</span>
                                                                 </div>
-                                                                <input type="radio" name="payment-method" id='cod' defaultChecked={true} onChange={() => {
+                                                                <input type="radio" name="payment-method" id='cod' onChange={() => {
                                                                     setpaymentMethod("COD");
                                                                 }} />
                                                             </div>
                                                         </label>
                                                     ) : null}
 
-                                                {setting.payment_setting.razorpay_payment_method === "1"
+                                                {setting?.payment_setting?.razorpay_payment_method === "1"
                                                     ? (
                                                         <label className="form-check-label cursorPointer" htmlFor='razorpay'>
                                                             <div className='payment-selector'>
@@ -833,7 +857,7 @@ const Checkout = () => {
                                                         </label>
                                                     ) : null}
 
-                                                {setting.payment_setting.paystack_payment_method === "1"
+                                                {setting?.payment_setting?.paystack_payment_method === "1"
                                                     ? (
                                                         <label className="form-check-label cursorPointer" htmlFor='paystack'>
                                                             <div className='payment-selector'>
@@ -848,7 +872,7 @@ const Checkout = () => {
                                                         </label>
                                                     ) : null}
 
-                                                {setting.payment_setting.stripe_payment_method === "1"
+                                                {setting?.payment_setting?.stripe_payment_method === "1"
                                                     ? (
                                                         <label className="form-check-label cursorPointer" htmlFor='stripe'>
                                                             <div className='payment-selector'>
@@ -863,7 +887,7 @@ const Checkout = () => {
                                                         </label>
                                                     ) : null}
 
-                                                {setting.payment_setting.paypal_payment_method === "1"
+                                                {setting?.payment_setting?.paypal_payment_method === "1"
                                                     ? (
                                                         <>
                                                             <label className="form-check-label cursorPointer" htmlFor='paypal'>
@@ -880,19 +904,34 @@ const Checkout = () => {
 
                                                         </>
                                                     ) : null}
-                                                <label className="form-check-label cursorPointer" htmlFor='midtrans'>
-                                                    <div className='payment-selector'>
-                                                        <img src={Midtrans} alt='midtrans' />
-                                                        <div className="">
-                                                            <span>{t("midtrans")}</span>
+                                                {setting?.payment_setting?.midtrans_payment_method === "1" ?
+                                                    <label className="form-check-label cursorPointer" htmlFor='midtrans'>
+                                                        <div className='payment-selector'>
+                                                            <img src={Midtrans} alt='midtrans' />
+                                                            <div className="">
+                                                                <span>{t("midtrans")}</span>
+                                                            </div>
+                                                            <input type="radio" name="payment-method" id='midtrans' onChange={() => {
+                                                                setpaymentMethod("Midtrans");
+                                                            }} />
                                                         </div>
-                                                        <input type="radio" name="payment-method" id='midtrans' onChange={() => {
-                                                            setpaymentMethod("Midtrans");
-                                                        }} />
-                                                    </div>
-                                                </label>
-                                                {/* {setting?.payment_setting?.} */}
-                                            </div>}
+                                                    </label>
+                                                    : null}
+                                                {setting?.payment_setting?.phonepay_payment_method === "1" ?
+                                                    <label className="form-check-label cursorPointer" htmlFor='phonepe'>
+                                                        <div className='payment-selector'>
+                                                            <img src={PhonepeSVG} alt='phonepe' />
+                                                            <div className="">
+                                                                <span>{t("phonepe")}</span>
+                                                            </div>
+                                                            <input type="radio" name="payment-method" id='phonepe' onChange={() => {
+                                                                setpaymentMethod("Phonepe");
+                                                            }} />
+                                                        </div>
+                                                    </label>
+                                                    : null}
+                                            </div>
+                                        }
 
 
                                         <div className='order-summary-wrapper checkout-component'>
@@ -1062,7 +1101,7 @@ const Checkout = () => {
                 <Modal.Header onClick={() => setStripeModalShow(false)
 
                 } className='header justify-content-between'>
-                    <span style={{ color: '#33a36b', fontSize: '18px', fontWeight: 'bolder' }}>Egrocers Payment</span>
+                    <span style={{ color: '#33a36b', fontSize: '18px', fontWeight: 'bolder' }}>{process.env.REACT_APP_WEB_NAME} Payment</span>
                     <span style={{ cursor: 'pointer' }}>
                         <AiOutlineCloseCircle size={20} />
                     </span>

@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
@@ -8,6 +8,7 @@ import PayStackSVG from "../../utils/Paystack.svg";
 import RazorPaySVG from "../../utils/Razorpay.svg";
 import StripeSVG from "../../utils/Stripe.svg";
 import MidtransSVG from "../../utils/Icons/Midtrans.svg";
+import PhonePeSVG from "../../utils/Icons/Phonepe.svg";
 import PaytmSVG from "../../utils/Paytm.svg";
 import api from '../../api/api';
 import Cookies from 'universal-cookie';
@@ -16,8 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from "react-toastify";
 import { addUserBalance } from '../../model/reducer/authReducer';
 import PaystackPop from '@paystack/inline-js';
-import { CardElement, Elements, ElementsConsumer } from '@stripe/react-stripe-js';
-import { useNavigate } from 'react-router-dom';
+import { Elements } from '@stripe/react-stripe-js';
 import Loader from '../loader/Loader';
 import { loadStripe } from '@stripe/stripe-js';
 import InjectCheckout from './AddWalletStripeModal';
@@ -31,10 +31,12 @@ const AddWalletModal = (props) => {
     const dispatch = useDispatch();
 
     const [walletAmount, setWalletAmount] = useState(0);
-    const [paymentMethod, setPaymentMethod] = useState("Paypal");
+    const [paymentMethod, setPaymentMethod] = useState("");
     const [stripeTransId, setStripeTransId] = useState(null);
     const [stripeClientSecret, setstripeClientSecret] = useState(null);
     const [stripeModalShow, setStripeModalShow] = useState(false);
+    const [loader, setLoader] = useState(false);
+
     const handleAmountChange = (e) => {
         const amt = parseInt(e.target.value);
         setWalletAmount(amt);
@@ -43,7 +45,6 @@ const AddWalletModal = (props) => {
     const handlePmtMethodChange = (value) => {
         setPaymentMethod(value);
     };
-
 
     const stripePromise = loadStripe(setting.payment_setting && setting.payment_setting.stripe_publishable_key);
 
@@ -94,6 +95,7 @@ const AddWalletModal = (props) => {
                                 props.setShowModal(false);
                                 toast.success(result.message);
                                 dispatch(addUserBalance({ data: parseInt(amount) }));
+                                props.fetchTransactions();
                             }
                             else {
                                 toast.error(result.message);
@@ -151,6 +153,7 @@ const AddWalletModal = (props) => {
                             toast.success(result.message);
                             dispatch(addUserBalance({ data: parseInt(amount) }));
                             props.setShowModal(false);
+                            props.fetchTransactions();
                         }
                         else {
                             toast.error(result.message);
@@ -168,9 +171,12 @@ const AddWalletModal = (props) => {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (paymentMethod === "") {
+            toast.error(t("please_select_payment_method"));
+        }
         try {
             let response, result;
-            if (paymentMethod === "paypal" || paymentMethod === "stripe" || paymentMethod === "razorpay" || paymentMethod === "midtrans") {
+            if (paymentMethod === "paypal" || paymentMethod === "stripe" || paymentMethod === "razorpay" || paymentMethod === "midtrans" || paymentMethod === "phonepe") {
                 response = await api.initiate_transaction(cookies.get("jwt_token"), null, paymentMethod, "wallet", walletAmount);
                 result = await response.json();
             }
@@ -192,12 +198,13 @@ const AddWalletModal = (props) => {
                 const windowFeatures = `width=${windowWidth},height=${windowHeight},left=${windowLeft},top=${windowTop},resizable=yes,scrollbars=yes,status=yes`;
                 const paymentWindow = window.open(result?.data?.snapUrl, "_blank", windowFeatures);
                 const messageEventListener = async (event) => {
-                    console.log(event.data);
+                    // console.log(event.data);
                     if (event.data === "Recharge Done") {
                         paymentWindow.close();
                         dispatch(addUserBalance({ data: walletAmount }));
                         toast.success(t("wallet_recharge_successfull"));
                         props.setShowModal(false);
+                        props.fetchTransactions();
                         // Remove the event listener once the task is completed
                         window.removeEventListener("message", messageEventListener);
                     }
@@ -209,11 +216,37 @@ const AddWalletModal = (props) => {
                     // Remove the event listener if the payment window is closed without making payment
                     window.removeEventListener("message", messageEventListener);
                 };
+            } else if (paymentMethod === "phonepe") {
+                const windowWidth = 700;
+                const windowHeight = 700;
+                const windowLeft = window.screen.width / 2 - windowWidth / 2;
+                const windowTop = window.screen.height / 2 - windowHeight / 2;
+                const windowFeatures = `width=${windowWidth},height=${windowHeight},left=${windowLeft},top=${windowTop},resizable=yes,scrollbars=yes,status=yes`;
+                const paymentWindow = window.open(result?.data?.redirectUrl, "_blank", windowFeatures);
+                const messageEventListener = async (event) => {
+                    // console.log(event.data);
+                    if (event.data === "Recharge Done") {
+                        paymentWindow.close();
+                        dispatch(addUserBalance({ data: walletAmount }));
+                        toast.success(t("wallet_recharge_successfull"));
+                        window.removeEventListener("message", messageEventListener);
+                        props.setShowModal(false);
+                        props.fetchTransactions();
+                        // Remove the event listener once the task is completed
+                    }
+                };
+                // Add the event listener
+                window.addEventListener("message", messageEventListener);
+                paymentWindow.onbeforeunload = () => {
+                    // Remove the event listener if the payment window is closed without making payment
+                    window.removeEventListener("message", messageEventListener);
+                };
             }
         } catch (err) {
             console.log(err.message);
         }
     };
+
     return (
         <>
 
@@ -231,7 +264,7 @@ const AddWalletModal = (props) => {
                     <div className='closeModalBtn' onClick={() => props.setShowModal(false)}><AiOutlineCloseCircle size={34} /></div>
                 </Modal.Header>
                 <Modal.Body>
-                    <form onSubmit={handleSubmit}>
+                    {!loader ? <form onSubmit={handleSubmit}>
                         <div className='d-flex flex-column justify-content-start'>
                             <div>
                                 <div className='mb-3'>{t("amount")}</div>
@@ -248,62 +281,77 @@ const AddWalletModal = (props) => {
                                         {t("choose_payment_method")}
                                     </div>
                                     <div className='d-flex flex-column gap-4'>
-                                        <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
-                                            <div>
-                                                <img className='me-3' src={PaypalSVG} alt='paypalSVG' />
-                                                {t("paypal")}
+                                        {setting?.payment_setting?.paypal_payment_method === "1" ?
+                                            <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                                <div>
+                                                    <img className='me-3' src={PaypalSVG} alt='paypalSVG' />
+                                                    {t("paypal")}
+                                                </div>
+                                                <div>
+                                                    <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("paypal")} />
+                                                </div>
                                             </div>
-                                            <div>
-                                                <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("paypal")} />
-                                            </div>
-                                        </div>
-                                        <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
-                                            <div>
+                                            :
+                                            null}
+                                        {setting?.payment_setting?.razorpay_payment_method === "1" ?
+                                            <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                                <div>
 
-                                                <img className='me-3' src={RazorPaySVG} alt='razorPaySVG' />
-                                                {t("razorpay")}
+                                                    <img className='me-3' src={RazorPaySVG} alt='razorPaySVG' />
+                                                    {t("razorpay")}
+                                                </div>
+                                                <div>
+                                                    <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("razorpay")} />
+                                                </div>
                                             </div>
-                                            <div>
-                                                <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("razorpay")} />
-                                            </div>
-                                        </div>
-                                        <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
-                                            <div>
+                                            :
+                                            null}
+                                        {setting?.payment_setting?.paystack_payment_method === "1" ?
+                                            <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                                <div>
 
-                                                <img className='me-3' src={PayStackSVG} alt='paystackSVG' />
-                                                {t("paystack")}
+                                                    <img className='me-3' src={PayStackSVG} alt='paystackSVG' />
+                                                    {t("paystack")}
+                                                </div>
+                                                <div>
+                                                    <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("paystack")} />
+                                                </div>
+                                            </div>
+                                            :
+                                            null}
+                                        {setting?.payment_setting?.stripe_payment_method === "1" ?
+                                            <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                                <div>
+                                                    <img className='me-3' src={StripeSVG} alt='stripeSVG' />
+                                                    {t("stripe")}
+                                                </div>
+                                                <div>
+                                                    <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("stripe")} />
+                                                </div>
+                                            </div>
+                                            :
+                                            null}
+                                        {setting?.payment_setting?.midtrans_payment_method === "1" ?
+                                            <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                                <div>
+                                                    <img className='MidtransSVG me-3' src={MidtransSVG} alt='MidtransSVG' />
+                                                    {t("midtrans")}
+                                                </div>
+                                                <div>
+                                                    <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("midtrans")} />
+                                                </div>
+                                            </div>
+                                            :
+                                            null}
+                                        {setting?.payment_setting?.phonepay_payment_method === "1" ? <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                            <div>
+                                                <img className='PhonePeSVG me-2' src={PhonePeSVG} alt='PhonePeSVG' />
+                                                {t("Phonepe")}
                                             </div>
                                             <div>
-                                                <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("paystack")} />
+                                                <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("phonepe")} />
                                             </div>
-                                        </div>
-                                        <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
-                                            <div>
-                                                <img className='me-3' src={StripeSVG} alt='stripeSVG' />
-                                                {t("stripe")}
-                                            </div>
-                                            <div>
-                                                <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("stripe")} />
-                                            </div>
-                                        </div>
-                                        <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
-                                            <div>
-                                                <img className='MidtransSVG me-3' src={MidtransSVG} alt='MidtransSVG' />
-                                                {t("midtrans")}
-                                            </div>
-                                            <div>
-                                                <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("midtrans")} />
-                                            </div>
-                                        </div>
-                                        {/* <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
-                                            <div>
-                                                <img className='me-2' src={PaytmSVG} alt='paytmSVG' />
-                                                {t("Paytm")}
-                                            </div>
-                                            <div>
-                                                <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("paytm")} />
-                                            </div>
-                                        </div> */}
+                                        </div> : null}
 
                                     </div>
                                 </div>
@@ -314,14 +362,16 @@ const AddWalletModal = (props) => {
                             <button type='submit' className='payButton'>{t("add_money")}</button>
                         </div>
                     </form>
-
+                        :
+                        <Loader width={"100%"} height={"600px"} />
+                    }
                 </Modal.Body>
             </Modal>
             <Modal id="stripeModal" size='lg' centered show={stripeModalShow}>
                 <Modal.Header onClick={() => setStripeModalShow(false)
 
                 } className='header justify-content-between'>
-                    <span style={{ color: '#33a36b', fontSize: '18px', fontWeight: 'bolder' }}>Egrocers Payment</span>
+                    <span style={{ color: '#33a36b', fontSize: '18px', fontWeight: 'bolder' }}>{process.env.REACT_APP_WEB_NAME} Payment</span>
                     <span style={{ cursor: 'pointer' }}>
                         <AiOutlineCloseCircle size={20} />
                     </span>
@@ -333,7 +383,15 @@ const AddWalletModal = (props) => {
                         ? <Loader width='100%' height='100%' />
                         :
                         <Elements stripe={stripePromise} client_secret={stripeClientSecret} transaction_id={stripeTransId} amount={walletAmount}>
-                            <InjectCheckout setAddWalletModal={props.setShowModal} setShow={setStripeModalShow} stripe={stripePromise} client_secret={stripeClientSecret} transaction_id={stripeTransId} amount={walletAmount} />
+                            <InjectCheckout
+                                setAddWalletModal={props.setShowModal}
+                                setShow={setStripeModalShow}
+                                stripe={stripePromise}
+                                client_secret={stripeClientSecret}
+                                transaction_id={stripeTransId}
+                                amount={walletAmount}
+                                fetchTransactions={props.fetchTransactions}
+                            />
                         </Elements>
                     }
 
