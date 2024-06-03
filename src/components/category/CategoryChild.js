@@ -9,6 +9,9 @@ import Pagination from 'react-js-pagination';
 import No_Orders from '../../utils/zero-state-screens/No_Orders.svg';
 import { setSelectedCategory } from '../../model/reducer/categoryReducer';
 import Loader from '../loader/Loader';
+import Skeleton from 'react-loading-skeleton';
+import { ValidateNoInternet } from '../../utils/NoInternetValidator';
+import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
 
 const CategoryChild = () => {
@@ -25,6 +28,7 @@ const CategoryChild = () => {
     const [currPage, setcurrPage] = useState(1);
     const [category, setcategory] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [isNetworkError, setIsNetworkError] = useState(false);
 
     const fetchCategory = () => {
         const slug_id = slug === 'all' ? "" : slug;
@@ -45,7 +49,13 @@ const CategoryChild = () => {
                     setcategory([]);
                 }
             })
-            .catch(error => console.log("error ", error));
+            .catch(error => {
+                console.log("error ", error);
+                const isNoInternet = ValidateNoInternet(error);
+                if (isNoInternet) {
+                    setIsNetworkError(isNoInternet);
+                }
+            });
     };
 
     useEffect(() => {
@@ -82,11 +92,11 @@ const CategoryChild = () => {
         }
     }, [location.pathname, dispatch]);
 
+    const placeholderItems = Array.from({ length: 12 }).map((_, index) => index);
 
     return (
         <>
-            <section id='allcategories'>
-
+            {!isNetworkError ? <section id='allcategories'>
                 <div className='cover'>
                     <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
                     <div className='page-heading'>
@@ -107,7 +117,14 @@ const CategoryChild = () => {
                 <div className='container'>
                     {loading
                         ?
-                        <Loader width="100%" height="350px" />
+                        <div className='row justify-content-center mx-3'>
+                            {placeholderItems.map((index) => (
+                                <div key={index} className='col-md-3 col-lg-2 col-6 col-sm-3 my-3'>
+                                    <Skeleton height={250} />
+                                </div>
+                            ))
+                            }
+                        </div>
                         : null}
                     {category && (category?.length > 0) && !loading ?
                         <div className='row justify-content-center mt-5 mb-5'>
@@ -152,6 +169,12 @@ const CategoryChild = () => {
                     }
                 </div>
             </section>
+                :
+                <div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>
+                    <MdSignalWifiConnectedNoInternet0 />
+                    <p>{t("no_internet_connection")}</p>
+                </div>
+            }
 
         </>
     );

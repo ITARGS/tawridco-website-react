@@ -165,7 +165,7 @@ const Order = () => {
             </div>
 
             {isLoader ?
-                <div className='my-5'><Loader width='100%' height='350px' /></div>
+                <div className='my-5'><Loader width='100%' height='500px' /></div>
                 : <>
 
                     <Tabs

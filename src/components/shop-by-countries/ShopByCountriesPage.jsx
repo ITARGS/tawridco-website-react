@@ -9,19 +9,18 @@ import useShopByCountries from '../../hooks/useShopByCountries';
 import Cookies from 'universal-cookie';
 import Skeleton from 'react-loading-skeleton';
 import "./shop-by-countries.css";
+import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
 const ShopByCountriesPage = () => {
 
+    const cookies = new Cookies();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const cookies = new Cookies();
 
-    const [limit, setLimit] = useState(12);
     const [currentPage, setCurrentPage] = useState(1);
+    const [limit, setLimit] = useState(12);
     const [offset, setOffset] = useState(0);
-
-    const { data, totalData, loading, error } = useShopByCountries(cookies.get("jwt_token"), limit, offset);
     const setting = useSelector(state => state.setting);
 
     useEffect(() => {
@@ -32,6 +31,16 @@ const ShopByCountriesPage = () => {
 
     }, []);
 
+    const { data, totalData, loading, error } = useShopByCountries(cookies.get("jwt_token"), limit, offset);
+
+    if (error === "Failed to fetch") {
+        return (<div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>
+            <MdSignalWifiConnectedNoInternet0 />
+            <p>{t("no_internet_connection")}</p>
+        </div>);
+    };
+
+
     const placeHolderImage = (e) => {
         e.target.src = setting.setting?.web_logo;
     };
@@ -41,9 +50,7 @@ const ShopByCountriesPage = () => {
         setOffset(pageNo * limit - limit);
     };
 
-
     const placeholderItems = Array.from({ length: 12 }).map((_, index) => index);
-
 
     return (
         <>

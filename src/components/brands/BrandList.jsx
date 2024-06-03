@@ -9,6 +9,8 @@ import Pagination from 'react-js-pagination';
 import Cookies from 'universal-cookie';
 import useShopByBrands from '../../hooks/useShopByBrands';
 import Skeleton from 'react-loading-skeleton';
+import { ValidateNoInternet } from "../../utils/NoInternetValidator";
+import { MdSignalWifiConnectedNoInternet0 } from "react-icons/md";
 
 
 const BrandList = () => {
@@ -24,8 +26,14 @@ const BrandList = () => {
     const [offset, setOffset] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const { data, totalData, loading } = useShopByBrands(cookies.get("jwt_token"), limit, offset);
+    const { data, totalData, loading, error } = useShopByBrands(cookies.get("jwt_token"), limit, offset);
 
+    if (error === "Failed to fetch") {
+        return (<div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>
+            <MdSignalWifiConnectedNoInternet0 />
+            <p>{t("no_internet_connection")}</p>
+        </div>);
+    }
     const placeHolderImage = (e) => {
 
         e.target.src = setting.setting?.web_logo;

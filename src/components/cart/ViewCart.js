@@ -16,6 +16,8 @@ import Promo from './Promo';
 import { useTranslation } from 'react-i18next';
 import { setProductSizes } from '../../model/reducer/productSizesReducer';
 import { clearCartPromo, setCart, setCartCheckout, setCartProducts, setCartPromo, setCartSubTotal, setPromoCodeApplied } from '../../model/reducer/cartReducer';
+import { ValidateNoInternet } from '../../utils/NoInternetValidator';
+import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
 
 const ViewCart = () => {
@@ -37,8 +39,7 @@ const ViewCart = () => {
     const [isLoader, setisLoader] = useState(false);
     const [showPromoOffcanvas, setShowPromoOffcanvas] = useState(false);
     const [cartProducts, setViewCartProducts] = useState([]);
-
-    console.log(location.pathname);
+    const [isNetworkError, setIsNetworkError] = useState(false);
     useEffect(() => {
         if (location.pathname == "/cart")
             api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude, 0)
@@ -46,7 +47,6 @@ const ViewCart = () => {
                 .then(result => {
                     if (result.status === 1) {
                         // dispatch(setCartCheckout({ data: result.data }));
-                        console.log(result.data);
                         dispatch(setCart({ data: result }));
                         setViewCartProducts(result?.data?.cart);
                         const productsData = result?.data?.cart?.map((product) => {
@@ -59,11 +59,16 @@ const ViewCart = () => {
                         dispatch(setCart({ data: result }));
                         dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
                         dispatch(setCartProducts({ data: productsData }));
-                        // dispatch({ type: ActionTypes.SET_CART_CHECKOUT, payload: result.data });
                     }
 
                 })
-                .catch(error => console.log(error));
+                .catch(error => {
+                    console.log(error);
+                    const isNoInternet = ValidateNoInternet(error);
+                    if (isNoInternet) {
+                        setIsNetworkError(isNoInternet);
+                    }
+                });
 
     }, [user]);
 
@@ -118,21 +123,6 @@ const ViewCart = () => {
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    // await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
-                    //     .then(resp => resp.json())
-                    //     .then(res => {
-                    //         setisLoader(false);
-                    //         dispatch(clearCartPromo());
-                    //         // dispatch(setPromoCodeApplied({ data: 0 }));
-                    //         if (res.status === 1) {
-                    //             dispatch(dispatch(setCart({ data: res })));
-                    //         }
-                    //         else {
-                    //             setiscartEmpty(true);
-                    //             dispatch(setCart({ data: null }));
-                    //         }
-                    //     })
-                    //     .catch(error => console.log(error));
                     dispatch(clearCartPromo());
                     const updatedCartProducts = cart?.cartProducts?.filter(product => {
                         if (product?.product_variant_id != product_variant_id) {
@@ -171,231 +161,217 @@ const ViewCart = () => {
             navigate('/checkout');
         });
     };
-    console.log(cartProducts);
+    // console.log(cartProducts);
     return (
-        <section id='viewcart' className='viewcart'>
-            <div className='cover'>
-                <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
-                <div className='title'>
-                    <h3>{t("cart")}</h3>
-                    <span><Link to='/' className='text-light text-decoration-none'>{t("home")} / </Link></span><span className='active'>{t('cart')}</span>
-                </div>
+        <>
+            {!isNetworkError ?
+                <section id='viewcart' className='viewcart'>
+                    <div className='cover'>
+                        <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
+                        <div className='title'>
+                            <h3>{t("cart")}</h3>
+                            <span><Link to='/' className='text-light text-decoration-none'>{t("home")} / </Link></span><span className='active'>{t('cart')}</span>
+                        </div>
 
-            </div>
+                    </div>
 
-            <div className="view-cart-container">
-                <div className='container'>
+                    <div className="view-cart-container">
+                        <div className='container'>
 
-                    {iscartEmpty ? (
-                        <div className='empty-cart co-12'>
-                            <img src={EmptyCart} onError={placeHolderImage} alt='empty-cart'></img>
-                            <p>{t("empty_cart_list_message")}</p>
-                            <span>{t("empty_cart_list_description")}</span>
-                            <button type='button' onClick={() => {
-                                navigate('/products');
-                            }}>{t("empty_cart_list_button_name")}</button>
-                        </div>) : (
-                        <>
-                            <>
-                                {isLoader ? <Loader screen='full' background='none' /> : null}
-                                <div className="row">
+                            {iscartEmpty ? (
+                                <div className='empty-cart co-12'>
+                                    <img src={EmptyCart} onError={placeHolderImage} alt='empty-cart'></img>
+                                    <p>{t("empty_cart_list_message")}</p>
+                                    <span>{t("empty_cart_list_description")}</span>
+                                    <button type='button' onClick={() => {
+                                        navigate('/products');
+                                    }}>{t("empty_cart_list_button_name")}</button>
+                                </div>) : (
+                                <>
+                                    <>
+                                        {isLoader ? <Loader screen='full' background='none' /> : null}
+                                        <div className="row">
 
-                                    <div className='viewcart-product-wrapper col-8'>
-                                        <div className='product-heading'>
-                                            <h3>{t("your_cart")}</h3>
-                                            <span>{t("there_are")} </span><span className='title'>{cart?.cartProducts?.length}</span> <span> {t("product_in_your_cart")}  </span>
-                                        </div>
+                                            <div className='viewcart-product-wrapper col-8'>
+                                                <div className='product-heading'>
+                                                    <h3>{t("your_cart")}</h3>
+                                                    <span>{t("there_are")} </span><span className='title'>{cart?.cartProducts?.length}</span> <span> {t("product_in_your_cart")}  </span>
+                                                </div>
 
-                                        <table className='products-table table'>
-                                            <thead>
-                                                <tr>
-                                                    <th className='first-column'>{t("product")}</th>
-                                                    <th className='hide-mobile'>{t("unit")}</th>
-                                                    <th>{t("price")}</th>
-                                                    <th>{("quantity")}</th>
-                                                    <th className='hide-mobile'>{t("sub_total")}</th>
-                                                    <th className='last-column'>{t("remove")}</th>
-                                                </tr>
-                                            </thead>
+                                                <table className='products-table table'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th className='first-column'>{t("product")}</th>
+                                                            <th className='hide-mobile'>{t("unit")}</th>
+                                                            <th>{t("price")}</th>
+                                                            <th>{("quantity")}</th>
+                                                            <th className='hide-mobile'>{t("sub_total")}</th>
+                                                            <th className='last-column'>{t("remove")}</th>
+                                                        </tr>
+                                                    </thead>
 
-                                            <tbody>
-                                                {cartProducts?.map((product, index) => {
-                                                    if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.product_variant_id)?.qty > 0) {
-                                                        return (
-                                                            <tr key={index} className={`${!product.status ? "danger" : ""}`}>
-                                                                <th className='products-image-container first-column'>
-                                                                    <div className='image-container'>
-                                                                        <img onError={placeHolderImage} src={product.image_url} alt='product'></img>
-                                                                    </div>
+                                                    <tbody>
+                                                        {cartProducts?.map((product, index) => {
+                                                            if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.product_variant_id)?.qty > 0) {
+                                                                return (
+                                                                    <tr key={index} className={`${!product.status ? "danger" : ""}`}>
+                                                                        <th className='products-image-container first-column'>
+                                                                            <div className='image-container'>
+                                                                                <img onError={placeHolderImage} src={product.image_url} alt='product'></img>
+                                                                            </div>
 
-                                                                    <div className=''>
-                                                                        <span>{product.measurement} {product.unit} | {product.name}</span>
+                                                                            <div className=''>
+                                                                                <span>{product.measurement} {product.unit} | {product.name}</span>
 
-                                                                    </div>
-                                                                </th>
+                                                                            </div>
+                                                                        </th>
 
-                                                                <th className='unit hide-mobile'>
-                                                                    {product.qty}
-                                                                </th>
+                                                                        <th className='unit hide-mobile'>
+                                                                            {product.qty}
+                                                                        </th>
 
-                                                                <th className='price'>
-                                                                    {setting.setting && setting.setting.currency}
-                                                                    {(product.discounted_price === 0 ? product.price.toFixed(setting.setting && setting.setting.decimal_point) : product.discounted_price.toFixed(setting.setting && setting.setting.decimal_point))}
-                                                                </th>
+                                                                        <th className='price'>
+                                                                            {setting.setting && setting.setting.currency}
+                                                                            {(product.discounted_price === 0 ? product.price.toFixed(setting.setting && setting.setting.decimal_point) : product.discounted_price.toFixed(setting.setting && setting.setting.decimal_point))}
+                                                                        </th>
 
-                                                                <th className='quantity'>
-                                                                    <div>
-                                                                        <button type='button' onClick={() => {
+                                                                        <th className='quantity'>
+                                                                            <div>
+                                                                                <button type='button' onClick={() => {
 
-                                                                            if (product.qty > 1) {
-                                                                                addtoCart(product.product_id, product.product_variant_id, product.qty - 1);
-                                                                            }
+                                                                                    if (product.qty > 1) {
+                                                                                        addtoCart(product.product_id, product.product_variant_id, product.qty - 1);
+                                                                                    }
 
-                                                                        }}><BiMinus fill='#fff' fontSize={'2rem'} /></button>
-                                                                        <span >{product.qty}</span>
-                                                                        <button type='button' onClick={() => {
-                                                                            if (Number(product.is_unlimited_stock) === 1) {
-                                                                                if (Number(product.qty) < Number(setting.setting.max_cart_items_count)) {
-                                                                                    addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
-                                                                                } else {
-                                                                                    toast.error('Apologies, maximum product quantity limit reached!');
-                                                                                }
-                                                                            } else {
-                                                                                if (Number(product.qty) >= Number(product.stock)) {
-                                                                                    toast.error(t("out_of_stock_message"));
+                                                                                }}><BiMinus fill='#fff' fontSize={'2rem'} /></button>
+                                                                                <span >{product.qty}</span>
+                                                                                <button type='button' onClick={() => {
+                                                                                    if (Number(product.is_unlimited_stock) === 1) {
+                                                                                        if (Number(product.qty) < Number(setting.setting.max_cart_items_count)) {
+                                                                                            addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
+                                                                                        } else {
+                                                                                            toast.error('Apologies, maximum product quantity limit reached!');
+                                                                                        }
+                                                                                    } else {
+                                                                                        if (Number(product.qty) >= Number(product.stock)) {
+                                                                                            toast.error(t("out_of_stock_message"));
 
-                                                                                } else if (Number(product.qty) >= Number(setting.setting.max_cart_items_count)) {
-                                                                                    toast.error('Apologies, maximum product quantity limit reached!');
-                                                                                }
-                                                                                else {
-                                                                                    addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
-                                                                                }
-                                                                            }
-                                                                        }}><BsPlus fill='#fff' fontSize={'2rem'} /></button>
-                                                                    </div>
+                                                                                        } else if (Number(product.qty) >= Number(setting.setting.max_cart_items_count)) {
+                                                                                            toast.error('Apologies, maximum product quantity limit reached!');
+                                                                                        }
+                                                                                        else {
+                                                                                            addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
+                                                                                        }
+                                                                                    }
+                                                                                }}><BsPlus fill='#fff' fontSize={'2rem'} /></button>
+                                                                            </div>
 
-                                                                </th>
+                                                                        </th>
 
-                                                                <th className='subtotal hide-mobile'>
-                                                                    {setting.setting && setting.setting.currency}
+                                                                        <th className='subtotal hide-mobile'>
+                                                                            {setting.setting && setting.setting.currency}
 
-                                                                    {((product.discounted_price === 0 ? product.price.toFixed(setting.setting?.decimal_point) : product.discounted_price.toFixed(setting.setting && setting.setting.decimal_point)) * product.qty).toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                </th>
+                                                                            {((product.discounted_price === 0 ? product.price.toFixed(setting.setting?.decimal_point) : product.discounted_price.toFixed(setting.setting && setting.setting.decimal_point)) * product.qty).toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                        </th>
 
-                                                                <th className='remove last-column'>
-                                                                    <button whiletap={{ scale: 0.8 }} type='button' onClick={() => removefromCart(product.product_id, product.product_variant_id)}>
-                                                                        <RiDeleteBinLine fill='red' fontSize={'2.985rem'} />
-                                                                    </button>
-                                                                </th>
-                                                            </tr>
-                                                        );
-                                                    }
-                                                })}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div className="billing col-3">
-                                        <div className="promo-section mb-3">
-
-                                            <div className="heading">
-                                                <span>{t("coupon")}</span>
+                                                                        <th className='remove last-column'>
+                                                                            <button whiletap={{ scale: 0.8 }} type='button' onClick={() => removefromCart(product.product_id, product.product_variant_id)}>
+                                                                                <RiDeleteBinLine fill='red' fontSize={'2.985rem'} />
+                                                                            </button>
+                                                                        </th>
+                                                                    </tr>
+                                                                );
+                                                            }
+                                                        })}
+                                                    </tbody>
+                                                </table>
                                             </div>
-                                            <div className="promo-wrapper">
-                                                <div className="promo-container">
-                                                    <div className="promo-button ">
-                                                        <span className="">{t("have_coupon")}</span>
-                                                        <button className="btn" onClick={() => setShowPromoOffcanvas(true)}>{t("view_coupon")}</button>
+                                            <div className="billing col-3">
+                                                <div className="promo-section mb-3">
+
+                                                    <div className="heading">
+                                                        <span>{t("coupon")}</span>
                                                     </div>
-                                                    {cart.cart && cart.promo_code ?
-                                                        <>
-                                                            <div className="promo-code">
-                                                                <div className="">
-                                                                    <span><RiCoupon2Fill size={26} fill='var(--secondary-color)' /></span>
-                                                                </div>
-                                                                <div className="d-flex flex-column">
-                                                                    <span className='promo-name'>{cart.promo_code.promo_code}</span>
-                                                                    <span className='promo-discount-amount'>{cart.promo_code.message}</span>
-                                                                </div>
-                                                                <div className="d-flex flex-column">
-                                                                    <span>{setting.setting && setting.setting.currency} {cart.promo_code.discount.toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                    <span className='promo-remove' onClick={() => {
-                                                                        dispatch(clearCartPromo());
-                                                                        toast.info("Coupon Removed");
-                                                                    }}> {t("remove")}</span>
-                                                                </div>
+                                                    <div className="promo-wrapper">
+                                                        <div className="promo-container">
+                                                            <div className="promo-button ">
+                                                                <span className="">{t("have_coupon")}</span>
+                                                                <button className="btn" onClick={() => setShowPromoOffcanvas(true)}>{t("view_coupon")}</button>
                                                             </div>
-                                                        </>
-                                                        : <></>}
+                                                            {cart.cart && cart.promo_code ?
+                                                                <>
+                                                                    <div className="promo-code">
+                                                                        <div className="">
+                                                                            <span><RiCoupon2Fill size={26} fill='var(--secondary-color)' /></span>
+                                                                        </div>
+                                                                        <div className="d-flex flex-column">
+                                                                            <span className='promo-name'>{cart.promo_code.promo_code}</span>
+                                                                            <span className='promo-discount-amount'>{cart.promo_code.message}</span>
+                                                                        </div>
+                                                                        <div className="d-flex flex-column">
+                                                                            <span>{setting.setting && setting.setting.currency} {cart.promo_code.discount.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                            <span className='promo-remove' onClick={() => {
+                                                                                dispatch(clearCartPromo());
+                                                                                toast.info("Coupon Removed");
+                                                                            }}> {t("remove")}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </>
+                                                                : <></>}
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div className='cart-summary-wrapper'>
+                                                    <div className='heading'>
+                                                        <span >{t("cart")} {t("total")}</span>
+                                                    </div>
+                                                    {cart.cartSubTotal === null
+                                                        ? (<div className="d-flex justify-content-center">
+                                                            <div className="spinner-border" role="status">
+                                                                <span className="visually-hidden">Loading...</span>
+                                                            </div>
+                                                        </div>)
+                                                        : (
+                                                            <div className='summary'>
+                                                                <div className='d-flex justify-content-between'>
+                                                                    <span>{t("sub_total")}</span>
+                                                                    <div className='d-flex align-items-center'>
+                                                                        {setting.setting && setting.setting.currency}
+                                                                        <span>{(cart?.cartSubTotal)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                    </div>
+                                                                </div>
+                                                                {cart.promo_code && <>
+                                                                    <div className='d-flex justify-content-between'>
+                                                                        <span>{t("discount")}</span>
+                                                                        <div className='d-flex align-items-center'>
+
+                                                                            <span>-   {setting.setting && setting.setting.currency}{(cart?.promo_code.discount)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </>}
+                                                                <div className='d-flex justify-content-center mt-3 button-container'>
+                                                                    <button type='button' style={{ cursor: "pointer" }} onClick={stockValidation} className='checkout'>{t("proceed_to_checkout")}</button>
+                                                                </div>
+
+                                                            </div>)}
                                                 </div>
                                             </div>
-
                                         </div>
-                                        <div className='cart-summary-wrapper'>
-                                            <div className='heading'>
-                                                <span >{t("cart")} {t("total")}</span>
-                                            </div>
-                                            {cart.cartSubTotal === null
-                                                ? (<div className="d-flex justify-content-center">
-                                                    <div className="spinner-border" role="status">
-                                                        <span className="visually-hidden">Loading...</span>
-                                                    </div>
-                                                </div>)
-                                                : (
-                                                    <div className='summary'>
-                                                        <div className='d-flex justify-content-between'>
-                                                            <span>{t("sub_total")}</span>
-                                                            <div className='d-flex align-items-center'>
-                                                                {setting.setting && setting.setting.currency}
-                                                                <span>{(cart?.cartSubTotal)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                            </div>
-                                                        </div>
-
-                                                        {/* <div className='d-flex justify-content-between'>
-                                                            <span>{t("delivery_charge")}</span>
-                                                            <div className='d-flex align-items-center'>
-                                                                {setting.setting && setting.setting.currency}
-                                                                <span>{(cart?.checkout?.delivery_charge?.total_delivery_charge)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                            </div>
-                                                        </div> */}
-                                                        {cart.promo_code && <>
-                                                            <div className='d-flex justify-content-between'>
-                                                                <span>{t("discount")}</span>
-                                                                <div className='d-flex align-items-center'>
-
-                                                                    <span>-   {setting.setting && setting.setting.currency}{(cart?.promo_code.discount)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                </div>
-                                                            </div>
-                                                        </>}
-
-                                                        {/* <div className='d-flex justify-content-between total'>
-                                                            <span>{t("total")}</span>
-                                                            <div className='d-flex align-items-center total-amount'>
-                                                                {setting.setting && setting.setting.currency}
-                                                                {cart.promo_code ?
-                                                                    <span>{(cart?.promo_code?.discounted_amount + cart?.checkout?.delivery_charge?.total_delivery_charge)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                    : <>
-                                                                        <span>{cart?.checkout?.total_amount?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                    </>}
-                                                            </div>
-                                                        </div> */}
-
-
-                                                        <div className='d-flex justify-content-center mt-3 button-container'>
-                                                            <button type='button' style={{ cursor: "pointer" }} onClick={stockValidation} className='checkout'>{t("proceed_to_checkout")}</button>
-                                                        </div>
-
-                                                    </div>)}
-                                        </div>
-                                    </div>
-                                </div>
-                            </>
-                        </>
-                    )}
+                                    </>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                    <Promo show={showPromoOffcanvas} setShow={setShowPromoOffcanvas} />
+                </section>
+                :
+                <div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>
+                    <MdSignalWifiConnectedNoInternet0 />
+                    <p>{t("no_internet_connection")}</p>
                 </div>
-            </div>
-            <Promo show={showPromoOffcanvas} setShow={setShowPromoOffcanvas} />
-        </section>
-
+            }
+        </>
     );
 };
 

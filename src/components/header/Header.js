@@ -120,7 +120,7 @@ const Header = () => {
                     dispatch(setLanguageList({ data: result.data }));
                 });
         }
-        if (curr_url?.pathname?.startsWith("/") || curr_url?.pathname?.startsWith("/profile/wallet-transaction") || curr_url?.pathname?.startsWith("/checkout")) {
+        if ((curr_url?.pathname == "/") || (curr_url?.pathname == "/profile/wallet-transaction") || (curr_url?.pathname == "/checkout")) {
             fetchPaymentSetting();
         }
         // dispatch(setFilterSearch({ data: null }));

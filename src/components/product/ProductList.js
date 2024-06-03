@@ -29,6 +29,7 @@ import { setFavourite, setFavouriteLength, setFavouriteProductIds } from '../../
 import { LuStar } from 'react-icons/lu';
 import "./product.css";
 import CategoryComponent from './Categories';
+import { MdSignalWifiConnectedNoInternet0 } from "react-icons/md";
 
 const ProductList2 = React.memo(() => {
     const total_products_per_page = 12;
@@ -67,6 +68,7 @@ const ProductList2 = React.memo(() => {
     const location = useLocation();
     const [showPriceFilter, setShowPriceFilter] = useState(true);
     const [selectedCategories, setSelectedCategories] = useState(filter?.category_id !== null ? [filter?.category_id] : []);
+    const [networkError, setNetworkError] = useState(false);
     const { t } = useTranslation();
 
     const fetchBrands = () => {
@@ -128,7 +130,14 @@ const ProductList2 = React.memo(() => {
                 }
                 setisLoader(false);
             })
-            .catch(error => console.log("error ", error));
+            .catch(error => {
+                const regex = /Failed to fetch/g;
+                if (regex.test(error.message)) {
+                    console.log("Network Error");
+                    setNetworkError(true);
+                }
+                console.log(error.message);
+            });
     };
 
 
@@ -591,7 +600,7 @@ const ProductList2 = React.memo(() => {
 
     return (
         <>
-            <section id="productlist" className='container' onContextMenu={() => { return false; }}>
+            {!networkError ? <section id="productlist" className='container' onContextMenu={() => { return false; }}>
                 <div className='row justify-content-center' id='products'>
 
                     <div className="hide-desktop col-3 offcanvas offcanvas-start" tabIndex="-1" id="filteroffcanvasExample" aria-labelledby="filteroffcanvasExampleLabel" >
@@ -1086,6 +1095,11 @@ const ProductList2 = React.memo(() => {
                 </div>
 
             </section>
+                :
+                <div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>
+                    <MdSignalWifiConnectedNoInternet0 />
+                    <p>{t("no_internet_connection")}</p>
+                </div>}
         </>
 
     );

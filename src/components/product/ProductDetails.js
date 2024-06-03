@@ -31,6 +31,8 @@ import NonCancelable from "../../utils/Icons/NotCancelable.svg";
 import Cancelable from "../../utils/Icons/Cancelable.svg";
 import Returnable from "../../utils/Icons/Returnable.svg";
 import NotReturnable from "../../utils/Icons/NotReturnable.svg";
+import { ValidateNoInternet } from '../../utils/NoInternetValidator';
+import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
 const ProductDetails = () => {
 
@@ -77,6 +79,7 @@ const ProductDetails = () => {
     const [p_v_id, setP_V_id] = useState(0);
     const [qnty, setQnty] = useState(0);
     const [cartLoader, setCartLoader] = useState(false);
+    const [isNetworkError, setIsNetworkError] = useState(false);
 
     // const getCategoryDetails = (id) => {
     //     api.getCategory()
@@ -127,7 +130,13 @@ const ProductDetails = () => {
                         setproductbrand(shop?.shop?.brands?.find((brand) => brand?.id == result?.data?.brand_id));
                     };
                 })
-                .catch(error => console.log(error));
+                .catch(error => {
+                    console.log(error);
+                    const isNoInternet = ValidateNoInternet(error);
+                    if (isNoInternet) {
+                        setIsNetworkError(isNoInternet);
+                    }
+                });
         } else {
             return;
         }
@@ -138,36 +147,22 @@ const ProductDetails = () => {
 
 
     useEffect(() => {
-        // const getProductData = async () => {
-        //     await api.getProductbyFilter(city.city?.id ? city?.city?.id : setting?.setting?.default_city?.id, city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, { slug: slug }, cookies.get('jwt_token'))
-        //         .then(response => response.json())
-        //         .then(result => {
-        //             if (result.status === 1) {
-        //                 dispatch(setSelectedProduct({ data: result?.data[0]?.id }));
-        //                 getProductDatafromApi(result?.data[0]?.id);
-        //             }
-        //             else {
-        //             }
-        //         })
-        //         .catch(error => console.log(error));
-        // };
-        // getProductData();
         getProductDatafromApi(slug);
     }, [slug]);
 
-    const fetchRelatedProducts = () => {
-        api.getProductbyFilter(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, {
-            category_id: productdata.category_id,
-        }, cookies.get('jwt_token'))
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    setproductSize(result.sizes);
-                    setrelatedProducts(result.data);
-                }
-            })
-            .catch(error => console.log(error));
-    };
+    // const fetchRelatedProducts = () => {
+    //     api.getProductbyFilter(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, {
+    //         category_id: productdata.category_id,
+    //     }, cookies.get('jwt_token'))
+    //         .then(response => response.json())
+    //         .then(result => {
+    //             if (result.status === 1) {
+    //                 setproductSize(result.sizes);
+    //                 setrelatedProducts(result.data);
+    //             }
+    //         })
+    //         .catch(error => console.log(error));
+    // };
 
     // useEffect(() => {
     //      if (Object.keys(productdata).length !== 0) {
@@ -550,58 +545,59 @@ const ProductDetails = () => {
     return (
         <>
             {loading && <Loader screen="full" background="none" />}
-            <div className='product-details-view'>
+            {!isNetworkError ?
+                <div className='product-details-view'>
 
-                <div className='container' style={{ gap: "20px" }}>
-                    <div className='top-wrapper'>
+                    <div className='container' style={{ gap: "20px" }}>
+                        <div className='top-wrapper'>
 
-                        {product.selectedProduct_id === null || Object.keys(productdata).length === 0 ? (
-                            <div className="d-flex justify-content-center">
-                                <Loader width={"100%"} height={"600px"} />
-                            </div>
-                        )
-                            : (
+                            {product.selectedProduct_id === null || Object.keys(productdata).length === 0 ? (
+                                <div className="d-flex justify-content-center">
+                                    <Loader width={"100%"} height={"600px"} />
+                                </div>
+                            )
+                                : (
 
-                                <div className='row body-wrapper '>
-                                    <div className="col-xl-3 col-lg-4 col-md-12 col-12">
+                                    <div className='row body-wrapper '>
+                                        <div className="col-xl-3 col-lg-4 col-md-12 col-12">
 
-                                        <div className='image-wrapper '>
-                                            <div className='main-image col-12 border'>
-                                                <img onError={placeHolderImage} src={mainimage} alt='main-product' className='col-12' />
-                                            </div>
+                                            <div className='image-wrapper '>
+                                                <div className='main-image col-12 border'>
+                                                    <img onError={placeHolderImage} src={mainimage} alt='main-product' className='col-12' />
+                                                </div>
 
 
-                                            <div className='sub-images-container'>
-                                                {images.length >= 1 ?
-                                                    <Slider {...settings_subImage} className='imageListSlider'>
-                                                        {images.map((image, index) => (
-                                                            <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
-                                                                <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
-                                                                    setmainimage(image);
-                                                                }} />
-                                                            </div>
+                                                <div className='sub-images-container'>
+                                                    {images.length >= 1 ?
+                                                        <Slider {...settings_subImage} className='imageListSlider'>
+                                                            {images.map((image, index) => (
+                                                                <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
+                                                                    <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
+                                                                        setmainimage(image);
+                                                                    }} />
+                                                                </div>
 
-                                                        ))}
-                                                    </Slider>
-                                                    :
-                                                    <>
-                                                        {images.map((image, index) => (
-                                                            <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
-                                                                <img onError={placeHolderImage} src={image} className='col-12 ' alt="product" onClick={() => {
-                                                                    setmainimage(image);
-                                                                }}></img>
-                                                            </div>
-                                                        ))}
-                                                    </>
-                                                }
+                                                            ))}
+                                                        </Slider>
+                                                        :
+                                                        <>
+                                                            {images.map((image, index) => (
+                                                                <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
+                                                                    <img onError={placeHolderImage} src={image} className='col-12 ' alt="product" onClick={() => {
+                                                                        setmainimage(image);
+                                                                    }}></img>
+                                                                </div>
+                                                            ))}
+                                                        </>
+                                                    }
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div className="col-xl-9 col-lg-8 col-md-12 col-12">
-                                        <div className='detail-wrapper'>
-                                            <div className='top-section'>
-                                                <p className='product_name'>{productdata.name}</p>
-                                                {/* {Object.keys(productbrand).length === 0
+                                        <div className="col-xl-9 col-lg-8 col-md-12 col-12">
+                                            <div className='detail-wrapper'>
+                                                <div className='top-section'>
+                                                    <p className='product_name'>{productdata.name}</p>
+                                                    {/* {Object.keys(productbrand).length === 0
                                                     ? null
                                                     : (
                                                         <div className='product-brand'>
@@ -614,123 +610,123 @@ const ProductDetails = () => {
                                                             </span>
                                                         </div>
                                                     )} */}
-                                                <div className='d-flex flex-column gap-2 align-items-start my-1'>
-                                                    <div id="price-section" className='d-flex flex-row gap-2 align-items-center my-1'>
-                                                        {setting.setting && setting.setting.currency}<p id='fa-rupee' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price == 0 ? selectedVariant.price.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price.toFixed(setting.setting && setting.setting.decimal_point)) : (productdata.variants[0].discounted_price === 0 ? productdata.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : productdata.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point))}</p>
-                                                    </div>
-                                                    {(selectedVariant?.price && (selectedVariant?.discounted_price !== 0)) && (selectedVariant?.price !== selectedVariant?.discounted_price) ?
-                                                        <div>
-                                                            <p className='fw-normal text-decoration-line-through' style={{ color: "var(--sub-text-color)", fontSize: "16px" }}>
-                                                                {setting.setting && setting.setting.currency}
-                                                                {selectedVariant?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                            </p>
+                                                    <div className='d-flex flex-column gap-2 align-items-start my-1'>
+                                                        <div id="price-section" className='d-flex flex-row gap-2 align-items-center my-1'>
+                                                            {setting.setting && setting.setting.currency}<p id='fa-rupee' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price == 0 ? selectedVariant.price.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price.toFixed(setting.setting && setting.setting.decimal_point)) : (productdata.variants[0].discounted_price === 0 ? productdata.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : productdata.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point))}</p>
                                                         </div>
-                                                        : null}
-                                                    <input type="hidden" id="productdetail-selected-variant-id" name="variant" value={selectedVariant ? selectedVariant.id : productdata.variants[0].id} />
+                                                        {(selectedVariant?.price && (selectedVariant?.discounted_price !== 0)) && (selectedVariant?.price !== selectedVariant?.discounted_price) ?
+                                                            <div>
+                                                                <p className='fw-normal text-decoration-line-through' style={{ color: "var(--sub-text-color)", fontSize: "16px" }}>
+                                                                    {setting.setting && setting.setting.currency}
+                                                                    {selectedVariant?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                </p>
+                                                            </div>
+                                                            : null}
+                                                        <input type="hidden" id="productdetail-selected-variant-id" name="variant" value={selectedVariant ? selectedVariant.id : productdata.variants[0].id} />
+                                                    </div>
+
                                                 </div>
+                                                <div className='bottom-section'>
+                                                    <div className='d-flex gap-3 bottom-section-content'>
+                                                        <div className='variants' key={"productVariantContainer"}>
 
-                                            </div>
-                                            <div className='bottom-section'>
-                                                <div className='d-flex gap-3 bottom-section-content'>
-                                                    <div className='variants' key={"productVariantContainer"}>
+                                                            <div className="row" key={"variants"}>
+                                                                {productdata.variants.map((variant, index) => {
+                                                                    return (
+                                                                        <div className="variant-section" key={variant?.id}>
+                                                                            <div className={`variant-element ${variant_index === variant.id ? 'active' : ''}  ${Number(productdata.is_unlimited_stock) ? "" : (variant.cart_count >= variant.stock ? "out_of_stock" : "")} `} key={index}>
+                                                                                <label className="element_container " htmlFor={`variant${index}`}>
+                                                                                    <div className="top-section">
+                                                                                        <input type="radio" name="variant" id={`variant${index}`} checked={variant_index == variant.id} disabled={Number(productdata.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)} />
+                                                                                    </div>
+                                                                                    <div className="h-100">
+                                                                                        <span className="d-flex align-items-center flex-column">{variant.measurement} {variant.stock_unit_name} </span>
+                                                                                    </div>
+                                                                                </label>
 
-                                                        <div className="row" key={"variants"}>
-                                                            {productdata.variants.map((variant, index) => {
-                                                                return (
-                                                                    <div className="variant-section" key={variant?.id}>
-                                                                        <div className={`variant-element ${variant_index === variant.id ? 'active' : ''}  ${Number(productdata.is_unlimited_stock) ? "" : (variant.cart_count >= variant.stock ? "out_of_stock" : "")} `} key={index}>
-                                                                            <label className="element_container " htmlFor={`variant${index}`}>
-                                                                                <div className="top-section">
-                                                                                    <input type="radio" name="variant" id={`variant${index}`} checked={variant_index == variant.id} disabled={Number(productdata.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)} />
-                                                                                </div>
-                                                                                <div className="h-100">
-                                                                                    <span className="d-flex align-items-center flex-column">{variant.measurement} {variant.stock_unit_name} </span>
-                                                                                </div>
-                                                                            </label>
+                                                                            </div>
+                                                                        </div>
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        </div>
+                                                        <div className="cart_option">
+                                                            {selectedVariant ?
+                                                                (user?.user && cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= 1
+                                                                    ? <>
+                                                                        <div id={`input-cart-quickview`} className="input-to-cart">
+                                                                            <button type='button' onClick={() => {
+                                                                                if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty == 1) {
+                                                                                    removefromCart(productdata.id, selectedVariant.id);
+                                                                                }
+                                                                                else {
+                                                                                    addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty - 1);
+                                                                                }
+
+                                                                            }} className="wishlist-button"><BiMinus fill='#fff' /></button>
+                                                                            <span id={`input-quickview`}>
+                                                                                {cartLoader ? <div className="spinner-border text-muted"></div> :
+                                                                                    cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
+                                                                                }
+                                                                            </span>
+                                                                            <button type='button' onClick={() => {
+
+                                                                                const productQuantity = getProductQuantities(cart?.cartProducts);
+                                                                                // console.log("Product Quantity ->", productQuantity);
+                                                                                // if (Number(productdata.is_unlimited_stock)) {
+                                                                                //     if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
+                                                                                //         toast.error('Apologies, maximum product quantity limit reached');
+                                                                                //     }
+                                                                                //     else {
+                                                                                //         addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
+                                                                                //     }
+                                                                                // }
+                                                                                // else {
+                                                                                //     if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
+                                                                                //         toast.error('Oops, Limited Stock Available');
+                                                                                //     }
+                                                                                //     else if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= Number(setting.setting.max_cart_items_count)) {
+                                                                                //         toast.error('Apologies, maximum cart quantity limit reached');
+                                                                                //     }
+                                                                                //     else {
+                                                                                //         addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
+                                                                                //     }
+                                                                                // }
+                                                                                handleValidateAddExistingProduct(productQuantity, productdata);
+                                                                            }} className="wishlist-button"><BsPlus fill='#fff' /> </button>
+
 
                                                                         </div>
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                    <div className="cart_option">
-                                                        {selectedVariant ?
-                                                            (user?.user && cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= 1
-                                                                ? <>
-                                                                    <div id={`input-cart-quickview`} className="input-to-cart">
-                                                                        <button type='button' onClick={() => {
-                                                                            if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty == 1) {
-                                                                                removefromCart(productdata.id, selectedVariant.id);
-                                                                            }
-                                                                            else {
-                                                                                addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty - 1);
-                                                                            }
-
-                                                                        }} className="wishlist-button"><BiMinus fill='#fff' /></button>
-                                                                        <span id={`input-quickview`}>
-                                                                            {cartLoader ? <div className="spinner-border text-muted"></div> :
-                                                                                cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
-                                                                            }
-                                                                        </span>
-                                                                        <button type='button' onClick={() => {
-
-                                                                            const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                            // console.log("Product Quantity ->", productQuantity);
-                                                                            // if (Number(productdata.is_unlimited_stock)) {
-                                                                            //     if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
-                                                                            //         toast.error('Apologies, maximum product quantity limit reached');
-                                                                            //     }
-                                                                            //     else {
-                                                                            //         addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
-                                                                            //     }
-                                                                            // }
-                                                                            // else {
-                                                                            //     if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
-                                                                            //         toast.error('Oops, Limited Stock Available');
-                                                                            //     }
-                                                                            //     else if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= Number(setting.setting.max_cart_items_count)) {
-                                                                            //         toast.error('Apologies, maximum cart quantity limit reached');
-                                                                            //     }
-                                                                            //     else {
-                                                                            //         addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
-                                                                            //     }
-                                                                            // }
-                                                                            handleValidateAddExistingProduct(productQuantity, productdata);
-                                                                        }} className="wishlist-button"><BsPlus fill='#fff' /> </button>
-
-
-                                                                    </div>
-                                                                </> : <>
-                                                                    <button type='button' id={`Add-to-cart-quickview`} className='add-to-cart'
-                                                                        onClick={() => {
-                                                                            const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                            // if (cookies.get('jwt_token') !== undefined) {
-                                                                            //     if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
-                                                                            //         toast.error('Oops, Limited Stock Available');
-                                                                            //     }
-                                                                            //     else if (Number(productdata.is_unlimited_stock)) {
-                                                                            //         addtoCart(productdata.id, selectedVariant.id, 1);
-                                                                            //     } else {
-                                                                            //         if (selectedVariant.status) {
-                                                                            //             addtoCart(productdata.id, selectedVariant.id, 1);
-                                                                            //             setP_id(productdata.id);
-                                                                            //             setP_V_id(selectedVariant.id);
-                                                                            //             setQnty(1);
-                                                                            //         } else {
-                                                                            //             toast.error('Oops, Limited Stock Available');
-                                                                            //         }
-                                                                            //     }
-                                                                            // }
-                                                                            // else {
-                                                                            //     toast.error(t("required_login_message_for_cartRedirect"));
-                                                                            // }
-                                                                            handleValidateAddNewProduct(productQuantity, productdata);
-                                                                        }}>{t("add_to_cart")}</button>
-                                                                </>)
-                                                            : null
-                                                        }
-                                                        {/*
+                                                                    </> : <>
+                                                                        <button type='button' id={`Add-to-cart-quickview`} className='add-to-cart'
+                                                                            onClick={() => {
+                                                                                const productQuantity = getProductQuantities(cart?.cartProducts);
+                                                                                // if (cookies.get('jwt_token') !== undefined) {
+                                                                                //     if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
+                                                                                //         toast.error('Oops, Limited Stock Available');
+                                                                                //     }
+                                                                                //     else if (Number(productdata.is_unlimited_stock)) {
+                                                                                //         addtoCart(productdata.id, selectedVariant.id, 1);
+                                                                                //     } else {
+                                                                                //         if (selectedVariant.status) {
+                                                                                //             addtoCart(productdata.id, selectedVariant.id, 1);
+                                                                                //             setP_id(productdata.id);
+                                                                                //             setP_V_id(selectedVariant.id);
+                                                                                //             setQnty(1);
+                                                                                //         } else {
+                                                                                //             toast.error('Oops, Limited Stock Available');
+                                                                                //         }
+                                                                                //     }
+                                                                                // }
+                                                                                // else {
+                                                                                //     toast.error(t("required_login_message_for_cartRedirect"));
+                                                                                // }
+                                                                                handleValidateAddNewProduct(productQuantity, productdata);
+                                                                            }}>{t("add_to_cart")}</button>
+                                                                    </>)
+                                                                : null
+                                                            }
+                                                            {/*
                                                          productdata.variants[0].cart_count >= 1 ?
                                                                 <>
                                                                     <div id={`input-cart-quickview`} className="input-to-cart">
@@ -804,164 +800,164 @@ const ProductDetails = () => {
 
                                                                 </> */}
 
-                                                        {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == productdata.id) ? (
-                                                            <button type="button" className='wishlist-product' onClick={() => {
-                                                                if (cookies.get('jwt_token') !== undefined) {
-                                                                    removefromFavorite(productdata.id);
-                                                                } else {
-                                                                    toast.error(t('required_login_message_for_cart'));
-                                                                }
-                                                            }}>
-                                                                <BsHeartFill size={16} fill='green' />
-                                                            </button>)
-                                                            : (
-                                                                <button key={productdata.id} type="button" className='wishlist-product' onClick={() => {
+                                                            {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == productdata.id) ? (
+                                                                <button type="button" className='wishlist-product' onClick={() => {
                                                                     if (cookies.get('jwt_token') !== undefined) {
-                                                                        addToFavorite(productdata.id);
+                                                                        removefromFavorite(productdata.id);
                                                                     } else {
-                                                                        toast.error(t("required_login_message_for_cart"));
+                                                                        toast.error(t('required_login_message_for_cart'));
                                                                     }
                                                                 }}>
-                                                                    <BsHeart size={16} /></button>
-                                                            )}
+                                                                    <BsHeartFill size={16} fill='green' />
+                                                                </button>)
+                                                                : (
+                                                                    <button key={productdata.id} type="button" className='wishlist-product' onClick={() => {
+                                                                        if (cookies.get('jwt_token') !== undefined) {
+                                                                            addToFavorite(productdata.id);
+                                                                        } else {
+                                                                            toast.error(t("required_login_message_for_cart"));
+                                                                        }
+                                                                    }}>
+                                                                        <BsHeart size={16} /></button>
+                                                                )}
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                {productdata?.fssai_lic_no &&
-                                                    <div className='fssai-details'>
-                                                        <div className='image-container'>
-                                                            <img src={productdata?.fssai_lic_img} alt='fssai' />
+                                                    {productdata?.fssai_lic_no &&
+                                                        <div className='fssai-details'>
+                                                            <div className='image-container'>
+                                                                <img src={productdata?.fssai_lic_img} alt='fssai' />
+                                                            </div>
+                                                            <div className='fssai-license-no'>
+                                                                <span>
+                                                                    {`${t('license_no')} : ${productdata.fssai_lic_no}`}
+                                                                </span>
+                                                            </div>
                                                         </div>
-                                                        <div className='fssai-license-no'>
-                                                            <span>
-                                                                {`${t('license_no')} : ${productdata.fssai_lic_no}`}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                }
-                                                {productbrand?.name ?
-                                                    <div className='product-overview'>
-                                                        <div className='product-seller'>
-                                                            <span className='seller-title'>{t("brand")}:</span>
-                                                            <span className='seller-name'>{productbrand?.name} </span>
-                                                        </div>
-                                                        {/* {productdata.tags !== "" ? (
+                                                    }
+                                                    {productbrand?.name ?
+                                                        <div className='product-overview'>
+                                                            <div className='product-seller'>
+                                                                <span className='seller-title'>{t("brand")}:</span>
+                                                                <span className='seller-name'>{productbrand?.name} </span>
+                                                            </div>
+                                                            {/* {productdata.tags !== "" ? (
 
                                                         <div className='product-tags'>
                                                             <span className='tag-title'>{t("product_tags")}:</span>
                                                             <span className='tag-name'>{productdata.tags} </span>
                                                         </div>
                                                     ) : ""} */}
-                                                    </div> : null}
-                                                {productRating?.rating_list?.length !== 0 ?
-                                                    <div className='mt-3 cursorPointer'>
-                                                        <OverlayTrigger
-                                                            trigger="click"
-                                                            placement="bottom-start"
-                                                            overlay={popover}
-                                                            rootClose={true}
-                                                        >
-                                                            {/* {console.log(productRating)} */}
-                                                            <div className='d-flex justify-content-start align-items-center overlay-content'>
-                                                                <LuStar className='me-1' style={productRating?.average_rating >= 1 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
-                                                                <span className='pe-2 me-2 border-end border-2'>
-                                                                    {productRating?.average_rating?.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                </span>
-                                                                {totalData}
+                                                        </div> : null}
+                                                    {productRating?.rating_list?.length !== 0 ?
+                                                        <div className='mt-3 cursorPointer'>
+                                                            <OverlayTrigger
+                                                                trigger="click"
+                                                                placement="bottom-start"
+                                                                overlay={popover}
+                                                                rootClose={true}
+                                                            >
+                                                                {/* {console.log(productRating)} */}
+                                                                <div className='d-flex justify-content-start align-items-center overlay-content'>
+                                                                    <LuStar className='me-1' style={productRating?.average_rating >= 1 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
+                                                                    <span className='pe-2 me-2 border-end border-2'>
+                                                                        {productRating?.average_rating?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                    </span>
+                                                                    {totalData}
+                                                                </div>
+                                                            </OverlayTrigger>
+                                                        </div> : null}
+                                                    {productdata?.indicator ?
+                                                        productdata?.indicator == 1 ?
+                                                            <div className='d-flex align-items-center mt-3'>
+                                                                <img src={VegIcon} alt='vegIcon' className='me-3' />
+                                                                {t("vegetarian")}
                                                             </div>
-                                                        </OverlayTrigger>
-                                                    </div> : null}
-                                                {productdata?.indicator ?
-                                                    productdata?.indicator == 1 ?
+                                                            :
+                                                            <div className='d-flex align-items-center mt-3'>
+                                                                <img src={NonVegIcon} alt='nonVegIcon' className='me-3' />
+                                                                {t("non-vegetarian")}
+                                                            </div>
+                                                        : null}
+                                                    {productdata?.cancelable_status == 1 ?
                                                         <div className='d-flex align-items-center mt-3'>
-                                                            <img src={VegIcon} alt='vegIcon' className='me-3' />
-                                                            {t("vegetarian")}
+                                                            <img src={Cancelable} alt='cancelableIcon' className='me-3' />
+                                                            {t("cancelable")}
+                                                            {productdata?.till_status == 1 ?
+                                                                t("payment_pending")
+                                                                :
+                                                                null
+                                                            }
+                                                            {productdata?.till_status == 2 ?
+                                                                t("received")
+                                                                :
+                                                                null
+                                                            }
+                                                            {productdata?.till_status == 3 ?
+                                                                t("processed")
+                                                                :
+                                                                null
+                                                            }
+                                                            {productdata?.till_status == 4 ?
+                                                                t("shipped")
+                                                                :
+                                                                null
+                                                            }
+                                                            {productdata?.till_status == 5 ?
+                                                                t("out_for_delivery")
+                                                                :
+                                                                null
+                                                            }
                                                         </div>
                                                         :
                                                         <div className='d-flex align-items-center mt-3'>
-                                                            <img src={NonVegIcon} alt='nonVegIcon' className='me-3' />
-                                                            {t("non-vegetarian")}
+                                                            <img src={NonCancelable} alt='nonCancelableIcon' className='me-3' />
+                                                            {t("non-cancelable")}
                                                         </div>
-                                                    : null}
-                                                {productdata?.cancelable_status == 1 ?
-                                                    <div className='d-flex align-items-center mt-3'>
-                                                        <img src={Cancelable} alt='cancelableIcon' className='me-3' />
-                                                        {t("cancelable")}
-                                                        {productdata?.till_status == 1 ?
-                                                            t("payment_pending")
-                                                            :
-                                                            null
-                                                        }
-                                                        {productdata?.till_status == 2 ?
-                                                            t("received")
-                                                            :
-                                                            null
-                                                        }
-                                                        {productdata?.till_status == 3 ?
-                                                            t("processed")
-                                                            :
-                                                            null
-                                                        }
-                                                        {productdata?.till_status == 4 ?
-                                                            t("shipped")
-                                                            :
-                                                            null
-                                                        }
-                                                        {productdata?.till_status == 5 ?
-                                                            t("out_for_delivery")
-                                                            :
-                                                            null
-                                                        }
-                                                    </div>
-                                                    :
-                                                    <div className='d-flex align-items-center mt-3'>
-                                                        <img src={NonCancelable} alt='nonCancelableIcon' className='me-3' />
-                                                        {t("non-cancelable")}
-                                                    </div>
-                                                }
-                                                {productdata?.return_status == 1 ?
-                                                    <div className='d-flex align-items-center mt-3'>
-                                                        <img src={Returnable} alt='returnableIcon' className='me-3' />
-                                                        {t("returnable")} {productdata?.return_days} {t("days")}
-                                                    </div>
-                                                    :
-                                                    <div className='d-flex align-items-center mt-3'>
-                                                        <img src={NotReturnable} alt='nonReturnableIcon' className='me-3' />
-                                                        {t("non-returnable")}
-                                                    </div>
-                                                }
-                                                <div className="share-product-container">
-                                                    <span>{t("share_product")}:</span>
+                                                    }
+                                                    {productdata?.return_status == 1 ?
+                                                        <div className='d-flex align-items-center mt-3'>
+                                                            <img src={Returnable} alt='returnableIcon' className='me-3' />
+                                                            {t("returnable")} {productdata?.return_days} {t("days")}
+                                                        </div>
+                                                        :
+                                                        <div className='d-flex align-items-center mt-3'>
+                                                            <img src={NotReturnable} alt='nonReturnableIcon' className='me-3' />
+                                                            {t("non-returnable")}
+                                                        </div>
+                                                    }
+                                                    <div className="share-product-container">
+                                                        <span>{t("share_product")}:</span>
 
-                                                    <ul className='share-product'>
-                                                        <li className='share-product-icon'><WhatsappShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${productdata.slug}`}><WhatsappIcon size={32} round={true} /> </WhatsappShareButton></li>
-                                                        <li className='share-product-icon'><TelegramShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${productdata.slug}`}><TelegramIcon size={32} round={true} /> </TelegramShareButton></li>
-                                                        <li className='share-product-icon'><FacebookShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${productdata.slug}`}><FacebookIcon size={32} round={true} /> </FacebookShareButton></li>
-                                                        <li className='share-product-icon'>
-                                                            <button type='button' onClick={() => {
-                                                                navigator.clipboard.writeText(`${setting.setting && setting.setting.web_settings.website_url}product/${productdata.slug}`);
-                                                                toast.success("Copied Succesfully!!");
-                                                            }} > <BiLink size={30} /></button>
-                                                        </li>
-                                                    </ul>
+                                                        <ul className='share-product'>
+                                                            <li className='share-product-icon'><WhatsappShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${productdata.slug}`}><WhatsappIcon size={32} round={true} /> </WhatsappShareButton></li>
+                                                            <li className='share-product-icon'><TelegramShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${productdata.slug}`}><TelegramIcon size={32} round={true} /> </TelegramShareButton></li>
+                                                            <li className='share-product-icon'><FacebookShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${productdata.slug}`}><FacebookIcon size={32} round={true} /> </FacebookShareButton></li>
+                                                            <li className='share-product-icon'>
+                                                                <button type='button' onClick={() => {
+                                                                    navigator.clipboard.writeText(`${setting.setting && setting.setting.web_settings.website_url}product/${productdata.slug}`);
+                                                                    toast.success("Copied Succesfully!!");
+                                                                }} > <BiLink size={30} /></button>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            )}
+                                )}
 
-                    </div>
+                        </div>
 
-                    <ProductDetailsTabs
-                        productdata={productdata}
-                        productRating={productRating}
-                        totalData={totalData}
-                        loading={Loading}
-                        ratingImages={ratingImages}
-                        totalImages={totalImages}
-                    />
+                        <ProductDetailsTabs
+                            productdata={productdata}
+                            productRating={productRating}
+                            totalData={totalData}
+                            loading={Loading}
+                            ratingImages={ratingImages}
+                            totalImages={totalImages}
+                        />
 
-                    {/* <div className='related-product-wrapper'>
+                        {/* <div className='related-product-wrapper'>
                         <h5>{t("related_product")}</h5>
                         <div className='related-product-container'>
                             {relatedProducts === null
@@ -1197,11 +1193,16 @@ const ProductDetails = () => {
                     </div> */}
 
 
-                    <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} setP_V_id={setP_V_id} setP_id={setP_id} />
-                    <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} cookies={cookies} toast={toast} city={city} />
-                </div>
+                        <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} setP_V_id={setP_V_id} setP_id={setP_id} />
+                        <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} cookies={cookies} toast={toast} city={city} />
+                    </div>
 
-            </div>
+                </div> :
+                <div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>
+                    <MdSignalWifiConnectedNoInternet0 />
+                    <p>{t("no_internet_connection")}</p>
+                </div>
+            }
         </>
 
     );

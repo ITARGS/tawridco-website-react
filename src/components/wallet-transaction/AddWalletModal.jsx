@@ -346,7 +346,7 @@ const AddWalletModal = (props) => {
                                         {setting?.payment_setting?.phonepay_payment_method === "1" ? <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
                                             <div>
                                                 <img className='PhonePeSVG me-2' src={PhonePeSVG} alt='PhonePeSVG' />
-                                                {t("Phonepe")}
+                                                {t("phonepe")}
                                             </div>
                                             <div>
                                                 <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("phonepe")} />

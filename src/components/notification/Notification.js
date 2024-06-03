@@ -12,6 +12,8 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { setNotification } from '../../model/reducer/notificationReducer';
 import { formatNotificationDate } from '../../utils/formatDate';
+import { ValidateNoInternet } from '../../utils/NoInternetValidator';
+import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
 const Notification = () => {
   const user = useSelector(state => (state.user));
@@ -29,6 +31,7 @@ const Notification = () => {
   const [notification, setnotifications] = useState(null);
   const [offset, setoffset] = useState(0);
   const [isLoader, setisLoader] = useState(false);
+  const [isNetworkError, setIsNetworkError] = useState(false);
 
   const fetchNotification = () => {
     api.getNotification(cookies.get('jwt_token'), total_notification_per_page, offset)
@@ -41,14 +44,20 @@ const Notification = () => {
           settotalNotification(result.total);
         }
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error);
+        const isNoInternet = ValidateNoInternet(error);
+        if (isNoInternet) {
+          setIsNetworkError(isNoInternet);
+        }
+      });
   };
 
-  useEffect(() => {
-    if (cookies.get('jwt_token') !== undefined && user.user !== null) {
-      fetchNotification();
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (cookies.get('jwt_token') !== undefined && user.user !== null) {
+  //     fetchNotification();
+  //   }
+  // }, [user]);
 
   useEffect(() => {
     setisLoader(true);
@@ -67,66 +76,77 @@ const Notification = () => {
     e.target.src = setting.setting?.web_logo;
   };
   return (
-    <div className='notification'>
-      <div className='cover'>
-        <img src={coverImg} className='img-fluid' alt="cover"></img>
-        <div className='title'>
-          <h3>{t("notification")}</h3>
-          <span><Link to="/" className='text-light text-decoration-none'>{t("home")} / </Link></span><span className='active'>{t("notification")}</span>
-        </div>
-      </div>
-      {notification === null
-        ? (
-          <Loader />
-        )
-        : (
-          <div className="container">
+    <>
 
-            <div className='notification-container'>
-              <div className="notifications">
-                <div className='heading'> {t("all_notification")}</div>
-                {notification.length === 0
-                  ? (<div className='notification-body no-notification'>
-                    <img src={No_Notification} className='no-data-img' alt='no-notification'></img>
-                    <p>{t("empty_notification_list_message")}</p>
-                  </div>)
-                  : (
-                    <>
-                      {isLoader ? <Loader width='100%' height='300px' /> : (
-                        <div className='notification-body'>
-                          {notification.map((ntf, index) => (
-                            <div key={index} className='wrapper'>
-                              {ntf.image_url === "" ? <div className='logo' style={{ background: "var(--secondary-color)" }}><IoNotifications fill='#fff' fontSize='5rem' /></div> : <img onError={placeHolderImage} src={ntf.image_url} alt='notification'></img>}
-                              <div className='content'>
-                                <p className='title'>{ntf.title}</p>
-                                <p>{ntf.message}</p>
-                              </div>
-                              <div className='d-flex flex-column justify-content-center'>
-                                <span>
-                                  {formatNotificationDate(ntf.date_sent)}
-                                </span>
-                                <span>{ntf.date_sent.split(" ")[1]}</span>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {notification.length !== 0 ?
-                        <Pagination
-                          activePage={currPage}
-                          itemsCountPerPage={total_notification_per_page}
-                          totalItemsCount={totalNotification}
-                          pageRangeDisplayed={5}
-                          onChange={handlePageChange.bind(this)}
-                        />
-                        : null}
-                    </>
-                  )}
-              </div>
+      {!isNetworkError ?
+        <div className='notification'>
+          <div className='cover'>
+            <img src={coverImg} className='img-fluid' alt="cover"></img>
+            <div className='title'>
+              <h3>{t("notification")}</h3>
+              <span><Link to="/" className='text-light text-decoration-none'>{t("home")} / </Link></span><span className='active'>{t("notification")}</span>
             </div>
-          </div>)}
-    </div>
+          </div>
+          {notification === null
+            ? (
+              <Loader width="100%" height="500px" />
+            )
+            : (
+              <div className="container">
+
+                <div className='notification-container'>
+                  <div className="notifications">
+                    <div className='heading'> {t("all_notification")}</div>
+                    {notification.length === 0
+                      ? (<div className='notification-body no-notification'>
+                        <img src={No_Notification} className='no-data-img' alt='no-notification'></img>
+                        <p>{t("empty_notification_list_message")}</p>
+                      </div>)
+                      : (
+                        <>
+                          {isLoader ? <Loader width='100%' height='300px' /> : (
+                            <div className='notification-body'>
+                              {notification.map((ntf, index) => (
+                                <div key={index} className='wrapper'>
+                                  {ntf.image_url === "" ? <div className='logo' style={{ background: "var(--secondary-color)" }}><IoNotifications fill='#fff' fontSize='5rem' /></div> : <img onError={placeHolderImage} src={ntf.image_url} alt='notification'></img>}
+                                  <div className='content'>
+                                    <p className='title'>{ntf.title}</p>
+                                    <p>{ntf.message}</p>
+                                  </div>
+                                  <div className='d-flex flex-column justify-content-center'>
+                                    <span>
+                                      {formatNotificationDate(ntf.date_sent)}
+                                    </span>
+                                    <span>{ntf.date_sent.split(" ")[1]}</span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {notification.length !== 0 ?
+                            <Pagination
+                              activePage={currPage}
+                              itemsCountPerPage={total_notification_per_page}
+                              totalItemsCount={totalNotification}
+                              pageRangeDisplayed={5}
+                              onChange={handlePageChange.bind(this)}
+                            />
+                            : null}
+                        </>
+                      )}
+                  </div>
+                </div>
+              </div>)}
+        </div>
+        :
+        <div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>
+          <MdSignalWifiConnectedNoInternet0 />
+          <p>{t("no_internet_connection")}</p>
+        </div>
+      }
+    </>
+
   );
 };
 

@@ -9,12 +9,13 @@ import Cookies from 'universal-cookie';
 import Pagination from 'react-js-pagination';
 import Skeleton from 'react-loading-skeleton';
 import "./shop-by-seller.css";
+import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
 const ShopBySellersPage = () => {
+    const cookies = new Cookies();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const cookies = new Cookies();
 
     const [limit, setLimit] = useState(12);
     const [offset, setOffset] = useState(0);
@@ -25,8 +26,6 @@ const ShopBySellersPage = () => {
     const filter = useSelector(state => state.productFilter);
     const city = useSelector(state => state.city.city);
 
-    const { data, totalData, loading, error } = useShopBySellers(cookies.get("jwt_token"), city.latitude, city.longitude, limit, offset);
-
     useEffect(() => {
         window.scrollTo({
             top: 0,
@@ -34,6 +33,16 @@ const ShopBySellersPage = () => {
         });
 
     }, []);
+
+    const { data, totalData, loading, error } = useShopBySellers(cookies.get("jwt_token"), city.latitude, city.longitude, limit, offset);
+
+    if (error === "Failed to fetch") {
+        return (
+            <div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>
+                <MdSignalWifiConnectedNoInternet0 />
+                <p>{t("no_internet_connection")}</p>
+            </div>);
+    }
 
     const placeHolderImage = (e) => {
         e.target.src = setting.setting?.web_logo;

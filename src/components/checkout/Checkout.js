@@ -40,6 +40,8 @@ import { clearCartPromo, setCart, setCartCheckout, setCartProducts, setCartPromo
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { PiWallet } from "react-icons/pi";
 import { deductUserBalance } from '../../model/reducer/authReducer';
+import { ValidateNoInternet } from '../../utils/NoInternetValidator';
+import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
 
 
@@ -80,7 +82,7 @@ const Checkout = () => {
     const [isFullWalletPay, setIsFullWalletPay] = useState(false);
     const [isLoader, setisLoader] = useState(false);
     const paypalStatus = useRef(false);
-
+    const [isNetworkError, setIsNetworkError] = useState(false);
 
 
     const stripePromise = loadStripe(setting?.payment_setting && setting?.payment_setting?.stripe_publishable_key);
@@ -101,7 +103,13 @@ const Checkout = () => {
                     setWalletAmount(user?.user?.balance);
                 }
             })
-            .catch(error => console.log(error));
+            .catch(error => {
+                console.log(error);
+                const isNoInternet = ValidateNoInternet(error);
+                if (isNoInternet) {
+                    setIsNetworkError(isNoInternet);
+                };
+            });
 
         api.getCartSeller(cookies.get('jwt_token'), city.city.latitude, city.city.longitude, 1)
             .then(res => res.json())
@@ -676,311 +684,312 @@ const Checkout = () => {
     const current = new Date();
     return (
         <>
-            <section id='checkout'>
-                {IsOrderPlaced ?
-                    <>
-                        <Modal
-                            show={show}
-                            onHide={handleClose}
-                            backdrop="static"
-                            keyboard={true}
-                            className='success_modal'
-                            dialogClassName='successModalDialog'>
-                            <Lottie className='lottie-content' animationData={animate1} loop={true}></Lottie>
-                            <Modal.Header closeButton className='flex-column-reverse success_header'>
-                                <Modal.Title>
-                                    <Lottie animationData={animate2} loop={false} className='lottie-tick'></Lottie>
-                                </Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body className='success_body d-flex flex-column justify-content-center align-items-center'>
-                                <div>
-                                    {t("order_placed_description")}
-                                </div>
-                                <button onClick={handleClose} className='checkout_btn'>
-                                    {t("go_to_home")}
-                                </button>
-                            </Modal.Body>
-                            {/* <Modal.Footer className="success_footer">
+            {!isNetworkError ?
+                <>
+                    <section id='checkout'>
+                        {IsOrderPlaced ?
+                            <>
+                                <Modal
+                                    show={show}
+                                    onHide={handleClose}
+                                    backdrop="static"
+                                    keyboard={true}
+                                    className='success_modal'
+                                    dialogClassName='successModalDialog'>
+                                    <Lottie className='lottie-content' animationData={animate1} loop={true}></Lottie>
+                                    <Modal.Header closeButton className='flex-column-reverse success_header'>
+                                        <Modal.Title>
+                                            <Lottie animationData={animate2} loop={false} className='lottie-tick'></Lottie>
+                                        </Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body className='success_body d-flex flex-column justify-content-center align-items-center'>
+                                        <div>
+                                            {t("order_placed_description")}
+                                        </div>
+                                        <button onClick={handleClose} className='checkout_btn'>
+                                            {t("go_to_home")}
+                                        </button>
+                                    </Modal.Body>
+                                    {/* <Modal.Footer className="success_footer">
 
                             </Modal.Footer> */}
-                        </Modal>
-                    </>
-                    : null}
+                                </Modal>
+                            </>
+                            : null}
 
-                <div className='cover'>
-                    <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
-                    <div className='title'>
-                        <h3>{t("checkout")}</h3>
-                        <span><Link to="/" className="text-white text-decoration-none">{t("home")} / </Link> </span><span className='active'>{t("checkout")}</span>
-                    </div>
-                </div>
+                        <div className='cover'>
+                            <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
+                            <div className='title'>
+                                <h3>{t("checkout")}</h3>
+                                <span><Link to="/" className="text-white text-decoration-none">{t("home")} / </Link> </span><span className='active'>{t("checkout")}</span>
+                            </div>
+                        </div>
 
 
 
-                {
-                    !setting.payment_setting === null && !expectedTime === null
-                        ? (
-                            <Loader screen='full' />
-                        )
-                        : (
-                            <>
-                                <div className='checkout-container container'>
+                        {!setting.payment_setting === null && !expectedTime === null
+                            ? (
+                                <Loader screen='full' />
+                            )
+                            : (
+                                <>
+                                    <div className='checkout-container container'>
 
-                                    <div className='checkout-util-container col-lg-9'>
-                                        <div className='billibg-address-wrapper checkout-component'>
-                                            <span className='heading'>{t("billing_details")}</span>
+                                        <div className='checkout-util-container col-lg-9'>
+                                            <div className='billibg-address-wrapper checkout-component'>
+                                                <span className='heading'>{t("billing_details")}</span>
 
-                                            <Address setselectedAddress={setselectedAddress} selectedAddress={selectedAddress} />
+                                                <Address setselectedAddress={setselectedAddress} selectedAddress={selectedAddress} />
+                                            </div>
+                                            {timeslots && timeslots.time_slots_is_enabled === "true" ?
+                                                <>
+
+                                                    <div className='delivery-day-wrapper checkout-component'>
+                                                        <span className='heading'>{t("prefered_day")}</span>
+                                                        <div className='d-flex justify-content-center p-3'>
+                                                            <Calendar value={expectedDate.toString() === "Invalid Date" ? new Date(current.setDate(current.getDate() + (Number(timeslots?.time_slots_delivery_starts_from) - 1))) : expectedDate} onChange={(e) => {
+                                                                if (new Date(e) >= new Date()) {
+                                                                    setexpectedDate(new Date(e));
+                                                                }
+                                                                else if (new Date(e).getDate() === new Date().getDate() && new Date(e).getMonth() === new Date().getMonth() && new Date(e).getFullYear() === new Date().getFullYear()) {
+                                                                    setexpectedDate(new Date(e));
+                                                                }
+                                                                else {
+                                                                    toast.info('Please Select Valid Delivery Day');
+                                                                }
+                                                            }}
+                                                                calendarType={"gregory"}
+                                                                minDate={new Date(current.setDate(current.getDate() + (Number(timeslots?.time_slots_delivery_starts_from) - 1)))}
+                                                                maxDate={new Date(current.setDate(current.getDate() + (Number(timeslots?.time_slots_allowed_days - 1))))}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className='delivery-time-wrapper checkout-component'>
+                                                        <span className='heading'>{t("prefered_time")}</span>
+                                                        <div className='d-flex p-3' style={{ flexWrap: "wrap" }}>
+                                                            {timeslots === null
+                                                                ? <Loader screen='full' />
+
+                                                                : (
+                                                                    <>
+
+                                                                        {timeslots?.time_slots.filter((element) => checkLastOrderTime(element?.last_order_time)).map((timeslot, index) => {
+                                                                            return (
+
+                                                                                <div key={index} className='time-slot-container'>
+                                                                                    <div>
+                                                                                        <input type="radio" name="TimeSlotRadio" id={`TimeSlotRadioId${index}`} defaultChecked={index === 0 ? true : false} onChange={() => {
+                                                                                            setexpectedTime(timeslot);
+                                                                                        }} />
+                                                                                    </div>
+                                                                                    <div>
+
+                                                                                        {timeslot?.title}
+                                                                                    </div>
+                                                                                </div>
+                                                                            );
+
+                                                                        })}
+                                                                    </>
+                                                                )
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                </>
+                                                : <></>}
+
+
                                         </div>
-                                        {timeslots && timeslots.time_slots_is_enabled === "true" ?
-                                            <>
 
-                                                <div className='delivery-day-wrapper checkout-component'>
-                                                    <span className='heading'>{t("prefered_day")}</span>
-                                                    <div className='d-flex justify-content-center p-3'>
-                                                        <Calendar value={expectedDate.toString() === "Invalid Date" ? new Date(current.setDate(current.getDate() + (Number(timeslots?.time_slots_delivery_starts_from) - 1))) : expectedDate} onChange={(e) => {
-                                                            if (new Date(e) >= new Date()) {
-                                                                setexpectedDate(new Date(e));
-                                                            }
-                                                            else if (new Date(e).getDate() === new Date().getDate() && new Date(e).getMonth() === new Date().getMonth() && new Date(e).getFullYear() === new Date().getFullYear()) {
-                                                                setexpectedDate(new Date(e));
-                                                            }
-                                                            else {
-                                                                toast.info('Please Select Valid Delivery Day');
-                                                            }
-                                                        }}
-                                                            calendarType={"gregory"}
-                                                            minDate={new Date(current.setDate(current.getDate() + (Number(timeslots?.time_slots_delivery_starts_from) - 1)))}
-                                                            maxDate={new Date(current.setDate(current.getDate() + (Number(timeslots?.time_slots_allowed_days - 1))))}
-                                                        />
-                                                    </div>
+                                        <div className='order-container'>
+                                            {user?.user?.balance > 0 ? <div className="promo-section">
+                                                <div className="heading">
+                                                    <span>{t("Wallet")}</span>
                                                 </div>
-                                                <div className='delivery-time-wrapper checkout-component'>
-                                                    <span className='heading'>{t("prefered_time")}</span>
-                                                    <div className='d-flex p-3' style={{ flexWrap: "wrap" }}>
-                                                        {timeslots === null
-                                                            ? <Loader screen='full' />
+                                                <div className='promo-wrapper'>
+                                                    <div className='promo-container'>
+                                                        <div className='d-flex justify-content-between align-items-center'>
+                                                            <div className='image-container d-flex align-items-center' style={{ gap: "15px" }}>
+                                                                <PiWallet size={35} fill={'var(--secondary-color)'} />
+                                                                <span style={{ fontSize: "14px" }}>
+                                                                    {t("Wallet Balance")}
+                                                                </span>
+                                                                <p style={{ color: 'var(--secondary-color', fontSize: "14px" }} className='mb-0 me-2'>
+                                                                    {setting?.setting?.currency}
+                                                                    {/* {t(parseFloat(user?.user?.balance).toFixed(setting?.setting && setting?.setting?.decimal_point))} */}
 
-                                                            : (
-                                                                <>
+                                                                    {t(parseFloat(walletAmount).toFixed(setting?.setting && setting?.setting?.decimal_point))}
+                                                                </p>
 
-                                                                    {timeslots?.time_slots.filter((element) => checkLastOrderTime(element?.last_order_time)).map((timeslot, index) => {
-                                                                        return (
-
-                                                                            <div key={index} className='time-slot-container'>
-                                                                                <div>
-                                                                                    <input type="radio" name="TimeSlotRadio" id={`TimeSlotRadioId${index}`} defaultChecked={index === 0 ? true : false} onChange={() => {
-                                                                                        setexpectedTime(timeslot);
-                                                                                    }} />
-                                                                                </div>
-                                                                                <div>
-
-                                                                                    {timeslot?.title}
-                                                                                </div>
-                                                                            </div>
-                                                                        );
-
-                                                                    })}
-                                                                </>
-                                                            )
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </>
-                                            : <></>}
-
-
-                                    </div>
-
-                                    <div className='order-container'>
-                                        {user?.user?.balance > 0 ? <div className="promo-section">
-                                            <div className="heading">
-                                                <span>{t("Wallet")}</span>
-                                            </div>
-                                            <div className='promo-wrapper'>
-                                                <div className='promo-container'>
-                                                    <div className='d-flex justify-content-between align-items-center'>
-                                                        <div className='image-container d-flex align-items-center' style={{ gap: "15px" }}>
-                                                            <PiWallet size={35} fill={'var(--secondary-color)'} />
-                                                            <span style={{ fontSize: "14px" }}>
-                                                                {t("Wallet Balance")}
-                                                            </span>
-                                                            <p style={{ color: 'var(--secondary-color', fontSize: "14px" }} className='mb-0 me-2'>
-                                                                {setting?.setting?.currency}
-                                                                {/* {t(parseFloat(user?.user?.balance).toFixed(setting?.setting && setting?.setting?.decimal_point))} */}
-
-                                                                {t(parseFloat(walletAmount).toFixed(setting?.setting && setting?.setting?.decimal_point))}
-                                                            </p>
-
-                                                        </div>
-                                                        <div>
-                                                            <input type='checkbox' disabled={IsOrderPlaced ? true : false} checked={cart.is_wallet_checked ? true : false} onClick={() => {
-                                                                cart.is_wallet_checked ? dispatch(setWallet({ data: 0 })) : dispatch(setWallet({ data: 1 }));
-                                                            }} />
+                                                            </div>
+                                                            <div>
+                                                                <input type='checkbox' disabled={IsOrderPlaced ? true : false} checked={cart.is_wallet_checked ? true : false} onClick={() => {
+                                                                    cart.is_wallet_checked ? dispatch(setWallet({ data: 0 })) : dispatch(setWallet({ data: 1 }));
+                                                                }} />
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div> : null}
+                                            </div> : null}
 
-                                        {isFullWalletPay ? <></> :
+                                            {isFullWalletPay ? <></> :
 
-                                            <div className='payment-wrapper checkout-component'>
-                                                <span className='heading'>{t("payment_method")}</span>
-                                                {setting?.payment_setting?.cod_payment_method === "1" && codAllow == 1
-                                                    ? (
-                                                        <label className="form-check-label cursorPointer" htmlFor='cod'>
-                                                            <div className='payment-selector'>
-                                                                <img src={cod} alt='cod' />
-                                                                <div className="">
-                                                                    <span>{t("cash_on_delivery")}</span>
-                                                                </div>
-                                                                <input type="radio" name="payment-method" id='cod' onChange={() => {
-                                                                    setpaymentMethod("COD");
-                                                                }} />
-                                                            </div>
-                                                        </label>
-                                                    ) : null}
-
-                                                {setting?.payment_setting?.razorpay_payment_method === "1"
-                                                    ? (
-                                                        <label className="form-check-label cursorPointer" htmlFor='razorpay'>
-                                                            <div className='payment-selector'>
-                                                                <img src={rozerpay} alt='cod' />
-                                                                <div className="">
-                                                                    <span>{t("razorpay")}</span>
-                                                                </div>
-                                                                <input type="radio" name="payment-method" id='razorpay' onChange={() => {
-                                                                    setpaymentMethod("Razorpay");
-                                                                }} />
-                                                            </div>
-                                                        </label>
-                                                    ) : null}
-
-                                                {setting?.payment_setting?.paystack_payment_method === "1"
-                                                    ? (
-                                                        <label className="form-check-label cursorPointer" htmlFor='paystack'>
-                                                            <div className='payment-selector'>
-                                                                <img src={paystack} alt='cod' />
-                                                                <div className="">
-                                                                    <span>{t("paystack")}</span>
-                                                                </div>
-                                                                <input type="radio" name="payment-method" id='paystack' onChange={() => {
-                                                                    setpaymentMethod("Paystack");
-                                                                }} />
-                                                            </div>
-                                                        </label>
-                                                    ) : null}
-
-                                                {setting?.payment_setting?.stripe_payment_method === "1"
-                                                    ? (
-                                                        <label className="form-check-label cursorPointer" htmlFor='stripe'>
-                                                            <div className='payment-selector'>
-                                                                <img src={Stripe} alt='stripe' />
-                                                                <div className="">
-                                                                    <span className='ps-2'> {t("stripe")}</span>
-                                                                </div>
-                                                                <input type="radio" name="payment-method" id='stripe' onChange={() => {
-                                                                    setpaymentMethod("Stripe");
-                                                                }} />
-                                                            </div>
-                                                        </label>
-                                                    ) : null}
-
-                                                {setting?.payment_setting?.paypal_payment_method === "1"
-                                                    ? (
-                                                        <>
-                                                            <label className="form-check-label cursorPointer" htmlFor='paypal'>
+                                                <div className='payment-wrapper checkout-component'>
+                                                    <span className='heading'>{t("payment_method")}</span>
+                                                    {setting?.payment_setting?.cod_payment_method === "1" && codAllow == 1
+                                                        ? (
+                                                            <label className="form-check-label cursorPointer" htmlFor='cod'>
                                                                 <div className='payment-selector'>
-                                                                    <img src={paypal} alt='paypal' />
+                                                                    <img src={cod} alt='cod' />
                                                                     <div className="">
-                                                                        <span>{t("paypal")}</span>
+                                                                        <span>{t("cash_on_delivery")}</span>
                                                                     </div>
-                                                                    <input type="radio" name="payment-method" id='paypal' onChange={() => {
-                                                                        setpaymentMethod("Paypal");
+                                                                    <input type="radio" name="payment-method" id='cod' onChange={() => {
+                                                                        setpaymentMethod("COD");
                                                                     }} />
                                                                 </div>
                                                             </label>
+                                                        ) : null}
 
-                                                        </>
-                                                    ) : null}
-                                                {setting?.payment_setting?.midtrans_payment_method === "1" ?
-                                                    <label className="form-check-label cursorPointer" htmlFor='midtrans'>
-                                                        <div className='payment-selector'>
-                                                            <img src={Midtrans} alt='midtrans' />
-                                                            <div className="">
-                                                                <span>{t("midtrans")}</span>
-                                                            </div>
-                                                            <input type="radio" name="payment-method" id='midtrans' onChange={() => {
-                                                                setpaymentMethod("Midtrans");
-                                                            }} />
-                                                        </div>
-                                                    </label>
-                                                    : null}
-                                                {setting?.payment_setting?.phonepay_payment_method === "1" ?
-                                                    <label className="form-check-label cursorPointer" htmlFor='phonepe'>
-                                                        <div className='payment-selector'>
-                                                            <img src={PhonepeSVG} alt='phonepe' />
-                                                            <div className="">
-                                                                <span>{t("phonepe")}</span>
-                                                            </div>
-                                                            <input type="radio" name="payment-method" id='phonepe' onChange={() => {
-                                                                setpaymentMethod("Phonepe");
-                                                            }} />
-                                                        </div>
-                                                    </label>
-                                                    : null}
-                                            </div>
-                                        }
-
-
-                                        <div className='order-summary-wrapper checkout-component'>
-
-                                            <div className="order-bill">
-                                                <div className='heading'>{t("order_summary")}</div>
-
-                                                <div className='order-details'>
-                                                    {cart.checkout === null || user.user === null
+                                                    {setting?.payment_setting?.razorpay_payment_method === "1"
                                                         ? (
-                                                            <Loader screen='full' />
-                                                        )
-                                                        : (
-                                                            <div className='summary'>
-                                                                <div className='d-flex justify-content-between'>
-                                                                    <span>{t("sub_total")}</span>
-                                                                    <div className='d-flex align-items-center'>
-
-                                                                        <span>{setting.setting && setting.setting.currency}   {(cart?.checkout?.sub_total)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                            <label className="form-check-label cursorPointer" htmlFor='razorpay'>
+                                                                <div className='payment-selector'>
+                                                                    <img src={rozerpay} alt='cod' />
+                                                                    <div className="">
+                                                                        <span>{t("razorpay")}</span>
                                                                     </div>
+                                                                    <input type="radio" name="payment-method" id='razorpay' onChange={() => {
+                                                                        setpaymentMethod("Razorpay");
+                                                                    }} />
                                                                 </div>
+                                                            </label>
+                                                        ) : null}
 
-                                                                <div className='d-flex justify-content-between'>
-                                                                    <span>{t("delivery_charge")}</span>
-                                                                    <div className='d-flex align-items-center'>
-
-                                                                        <span>{setting.setting && setting.setting.currency}  {(cart?.checkout?.delivery_charge?.total_delivery_charge)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                    {setting?.payment_setting?.paystack_payment_method === "1"
+                                                        ? (
+                                                            <label className="form-check-label cursorPointer" htmlFor='paystack'>
+                                                                <div className='payment-selector'>
+                                                                    <img src={paystack} alt='cod' />
+                                                                    <div className="">
+                                                                        <span>{t("paystack")}</span>
                                                                     </div>
+                                                                    <input type="radio" name="payment-method" id='paystack' onChange={() => {
+                                                                        setpaymentMethod("Paystack");
+                                                                    }} />
                                                                 </div>
-                                                                {cart.promo_code && <>
+                                                            </label>
+                                                        ) : null}
+
+                                                    {setting?.payment_setting?.stripe_payment_method === "1"
+                                                        ? (
+                                                            <label className="form-check-label cursorPointer" htmlFor='stripe'>
+                                                                <div className='payment-selector'>
+                                                                    <img src={Stripe} alt='stripe' />
+                                                                    <div className="">
+                                                                        <span className='ps-2'> {t("stripe")}</span>
+                                                                    </div>
+                                                                    <input type="radio" name="payment-method" id='stripe' onChange={() => {
+                                                                        setpaymentMethod("Stripe");
+                                                                    }} />
+                                                                </div>
+                                                            </label>
+                                                        ) : null}
+
+                                                    {setting?.payment_setting?.paypal_payment_method === "1"
+                                                        ? (
+                                                            <>
+                                                                <label className="form-check-label cursorPointer" htmlFor='paypal'>
+                                                                    <div className='payment-selector'>
+                                                                        <img src={paypal} alt='paypal' />
+                                                                        <div className="">
+                                                                            <span>{t("paypal")}</span>
+                                                                        </div>
+                                                                        <input type="radio" name="payment-method" id='paypal' onChange={() => {
+                                                                            setpaymentMethod("Paypal");
+                                                                        }} />
+                                                                    </div>
+                                                                </label>
+
+                                                            </>
+                                                        ) : null}
+                                                    {setting?.payment_setting?.midtrans_payment_method === "1" ?
+                                                        <label className="form-check-label cursorPointer" htmlFor='midtrans'>
+                                                            <div className='payment-selector'>
+                                                                <img src={Midtrans} alt='midtrans' />
+                                                                <div className="">
+                                                                    <span>{t("midtrans")}</span>
+                                                                </div>
+                                                                <input type="radio" name="payment-method" id='midtrans' onChange={() => {
+                                                                    setpaymentMethod("Midtrans");
+                                                                }} />
+                                                            </div>
+                                                        </label>
+                                                        : null}
+                                                    {setting?.payment_setting?.phonepay_payment_method === "1" ?
+                                                        <label className="form-check-label cursorPointer" htmlFor='phonepe'>
+                                                            <div className='payment-selector'>
+                                                                <img src={PhonepeSVG} alt='phonepe' />
+                                                                <div className="">
+                                                                    <span>{t("phonepe")}</span>
+                                                                </div>
+                                                                <input type="radio" name="payment-method" id='phonepe' onChange={() => {
+                                                                    setpaymentMethod("Phonepe");
+                                                                }} />
+                                                            </div>
+                                                        </label>
+                                                        : null}
+                                                </div>
+                                            }
+
+
+                                            <div className='order-summary-wrapper checkout-component'>
+
+                                                <div className="order-bill">
+                                                    <div className='heading'>{t("order_summary")}</div>
+
+                                                    <div className='order-details'>
+                                                        {cart.checkout === null || user.user === null
+                                                            ? (
+                                                                <Loader screen='full' />
+                                                            )
+                                                            : (
+                                                                <div className='summary'>
                                                                     <div className='d-flex justify-content-between'>
-                                                                        <span>{t("discount")}</span>
+                                                                        <span>{t("sub_total")}</span>
                                                                         <div className='d-flex align-items-center'>
 
-                                                                            <span>- {setting.setting && setting.setting.currency}    {Number(cart?.promo_code?.discount)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                            <span>{setting.setting && setting.setting.currency}   {(cart?.checkout?.sub_total)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
                                                                         </div>
                                                                     </div>
-                                                                </>}
-                                                                {walletDeductionAmt ? <>
+
                                                                     <div className='d-flex justify-content-between'>
-                                                                        <span>{t("Wallet")}</span>
+                                                                        <span>{t("delivery_charge")}</span>
                                                                         <div className='d-flex align-items-center'>
 
-                                                                            <span>- {setting.setting && setting.setting.currency}    {Number(walletDeductionAmt)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                            <span>{setting.setting && setting.setting.currency}  {(cart?.checkout?.delivery_charge?.total_delivery_charge)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
                                                                         </div>
                                                                     </div>
-                                                                </> : <></>}
+                                                                    {cart.promo_code && <>
+                                                                        <div className='d-flex justify-content-between'>
+                                                                            <span>{t("discount")}</span>
+                                                                            <div className='d-flex align-items-center'>
 
-                                                                {/* {cart.is_promocode_applied && cart.is_wallet_checked ? <>
+                                                                                <span>- {setting.setting && setting.setting.currency}    {Number(cart?.promo_code?.discount)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </>}
+                                                                    {walletDeductionAmt ? <>
+                                                                        <div className='d-flex justify-content-between'>
+                                                                            <span>{t("Wallet")}</span>
+                                                                            <div className='d-flex align-items-center'>
+
+                                                                                <span>- {setting.setting && setting.setting.currency}    {Number(walletDeductionAmt)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </> : <></>}
+
+                                                                    {/* {cart.is_promocode_applied && cart.is_wallet_checked ? <>
                                                                     <div className='d-flex justify-content-between'>
                                                                         <span>{t("Wallet")}</span>
                                                                         <div className='d-flex align-items-center'>
@@ -1009,7 +1018,7 @@ const Checkout = () => {
                                                                         </> :
                                                                     <></>
                                                                 } */}
-                                                                {/* {cart.cart.data.user_balance && cart.is_wallet_checked && (cart.checkout.total_amount <= cart.checkout.user_balance) && !cart.promo_code ? <>
+                                                                    {/* {cart.cart.data.user_balance && cart.is_wallet_checked && (cart.checkout.total_amount <= cart.checkout.user_balance) && !cart.promo_code ? <>
                                                                     <div className='d-flex justify-content-between'>
                                                                         <span>{t("Wallet")}</span>
                                                                         <div className='d-flex align-items-center'>
@@ -1033,14 +1042,14 @@ const Checkout = () => {
                                                                             </div>
                                                                         </>
                                                                 } */}
-                                                                <div className='d-flex justify-content-between total'>
-                                                                    <span>{t("total")}</span>
-                                                                    <div className='d-flex align-items-center total-amount' style={{ color: "var(--secondary-color)" }}>
-                                                                        <span>
-                                                                            {setting.setting && setting.setting.currency}
-                                                                            {Number(totalPayment)?.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                        </span>
-                                                                        {/* {cart.promo_code ?
+                                                                    <div className='d-flex justify-content-between total'>
+                                                                        <span>{t("total")}</span>
+                                                                        <div className='d-flex align-items-center total-amount' style={{ color: "var(--secondary-color)" }}>
+                                                                            <span>
+                                                                                {setting.setting && setting.setting.currency}
+                                                                                {Number(totalPayment)?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                            </span>
+                                                                            {/* {cart.promo_code ?
                                                                             <span>
                                                                                 {setting.setting && setting.setting.currency}
                                                                                 {(cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge).toFixed(setting.setting && setting.setting.decimal_point)}
@@ -1051,77 +1060,84 @@ const Checkout = () => {
                                                                                     {(cart.checkout.total_amount).toFixed(setting.setting && setting.setting.decimal_point)}
                                                                                 </span>
                                                                             </>} */}
+                                                                        </div>
                                                                     </div>
-                                                                </div>
 
 
 
 
-                                                                {loadingPlaceOrder
-                                                                    ?
-                                                                    <Loader screen='full' background='none' />
-                                                                    : <>
-                                                                        {
-                                                                            setting.payment_setting.cod_payment_method === "1" && codAllow == '1' ||
-                                                                                setting.payment_setting.razorpay_payment_method === "1" ||
-                                                                                setting.payment_setting.paystack_payment_method === "1" ||
-                                                                                setting.payment_setting.stripe_payment_method === "1" ||
-                                                                                setting.payment_setting.paypal_payment_method === "1" ? (
+                                                                    {loadingPlaceOrder
+                                                                        ?
+                                                                        <Loader screen='full' background='none' />
+                                                                        : <>
+                                                                            {
+                                                                                setting.payment_setting.cod_payment_method === "1" && codAllow == '1' ||
+                                                                                    setting.payment_setting.razorpay_payment_method === "1" ||
+                                                                                    setting.payment_setting.paystack_payment_method === "1" ||
+                                                                                    setting.payment_setting.stripe_payment_method === "1" ||
+                                                                                    setting.payment_setting.paypal_payment_method === "1" ? (
 
-                                                                                <div className='button-container'>
+                                                                                    <div className='button-container'>
 
 
 
-                                                                                    {paymentMethod === "Stripe" && setting
-                                                                                        ? <motion.button whiletap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
-                                                                                        : <motion.button whiletap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
-                                                                                    }
-                                                                                </div>
-                                                                            ) : null
-                                                                        }
-                                                                    </>
-                                                                }
+                                                                                        {paymentMethod === "Stripe" && setting
+                                                                                            ? <motion.button whiletap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
+                                                                                            : <motion.button whiletap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
+                                                                                        }
+                                                                                    </div>
+                                                                                ) : null
+                                                                            }
+                                                                        </>
+                                                                    }
 
-                                                            </div>)}
+                                                                </div>)}
+                                                    </div>
                                                 </div>
-                                            </div>
 
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </>
-                        )
-                }
+                                </>
+                            )
+                        }
 
 
-                <Promo show={showPromoOffcanvas} setShow={setShowPromoOffcanvas} />
+                        <Promo show={showPromoOffcanvas} setShow={setShowPromoOffcanvas} />
 
-            </section>
-            <Modal id="stripeModal" size='lg' centered show={stripeModalShow}>
-                <Modal.Header onClick={() => setStripeModalShow(false)
+                    </section>
+                    <Modal id="stripeModal" size='lg' centered show={stripeModalShow}>
+                        <Modal.Header onClick={() => setStripeModalShow(false)
 
-                } className='header justify-content-between'>
-                    <span style={{ color: '#33a36b', fontSize: '18px', fontWeight: 'bolder' }}>{process.env.REACT_APP_WEB_NAME} Payment</span>
-                    <span style={{ cursor: 'pointer' }}>
-                        <AiOutlineCloseCircle size={20} />
-                    </span>
+                        } className='header justify-content-between'>
+                            <span style={{ color: '#33a36b', fontSize: '18px', fontWeight: 'bolder' }}>{process.env.REACT_APP_WEB_NAME} Payment</span>
+                            <span style={{ cursor: 'pointer' }}>
+                                <AiOutlineCloseCircle size={20} />
+                            </span>
 
-                </Modal.Header>
-                <Modal.Body>
+                        </Modal.Header>
+                        <Modal.Body>
 
-                    {stripeOrderId === null || stripeClientSecret === null || stripeTransactionId === null
-                        ? <Loader width='100%' height='100%' />
-                        :
-                        <Elements stripe={stripePromise} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment}>
-                            <InjectCheckout setIsOrderPlaced={setIsOrderPlaced} setShow={setStripeModalShow} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment}
-                                setWalletAmount={setWalletAmount} walletAmount={user?.user?.balance}
-                                walletDeductionAmt={walletDeductionAmt}
-                            />
-                        </Elements>
-                    }
+                            {stripeOrderId === null || stripeClientSecret === null || stripeTransactionId === null
+                                ? <Loader width='100%' height='100%' />
+                                :
+                                <Elements stripe={stripePromise} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment}>
+                                    <InjectCheckout setIsOrderPlaced={setIsOrderPlaced} setShow={setStripeModalShow} orderID={stripeOrderId} client_secret={stripeClientSecret} transaction_id={stripeTransactionId} amount={totalPayment}
+                                        setWalletAmount={setWalletAmount} walletAmount={user?.user?.balance}
+                                        walletDeductionAmt={walletDeductionAmt}
+                                    />
+                                </Elements>
+                            }
 
-                </Modal.Body>
-            </Modal>
+                        </Modal.Body>
+                    </Modal>
+                </>
+                :
+                <div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>
+                    <MdSignalWifiConnectedNoInternet0 />
+                    <p>{t("no_internet_connection")}</p>
+                </div>
+            }
         </>
     );
 };

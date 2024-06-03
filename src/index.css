@@ -209,3 +209,30 @@ input[type="number"] {
   width: 100%;
   height: auto;
 }
+.noInternetContainer {
+  height: 75vh;
+  margin-bottom: 45px;
+}
+.noInternetContainer > svg {
+  width: 500px;
+  height: 500px;
+  fill: var(--secondary-color);
+  opacity: 1;
+  animation: pulseAnimation 1.3s infinite ease-in-out;
+}
+
+@keyframes pulseAnimation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.noInternetContainer > p {
+  font-size: 24px;
+  font-weight: 700;
+}

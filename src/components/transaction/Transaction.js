@@ -70,7 +70,7 @@ const Transaction = () => {
                 )
                 : (
                     <>
-                        {isLoader ? <div className='my-5'><Loader width='100%' height='350px' /></div>
+                        {isLoader ? <div className='my-5'><Loader width='100%' height='500px' /></div>
                             : (<>
                                 {transactions.length === 0
                                     ? <><div className='d-flex align-items-center p-4 no-transaction'>

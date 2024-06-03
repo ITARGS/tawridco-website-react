@@ -15,6 +15,8 @@ import UpdateRatingModal from '../rate-product/UpdateRatingModal';
 import { ImCheckboxChecked } from "react-icons/im";
 import { Modal } from 'react-bootstrap';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { ValidateNoInternet } from '../../utils/NoInternetValidator';
+import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
 
 
@@ -31,6 +33,7 @@ const OrderDetails = React.memo(() => {
     const [ratingProductId, setRatingProductId] = useState(0);
     const [editRatingId, setEditRatingId] = useState(0);
     const [showRatingEditModal, setShowRatingEditModal] = useState(false);
+    const [isNetworkError, setIsNetworkError] = useState(false);
     // const [showReturnModal, setShowReturnModal] = useState(false);
     const [showReturnModal, setShowReturnModal] = useState(Array(orderData?.items?.length).fill(false));
     const urlParams = useParams();
@@ -67,6 +70,11 @@ const OrderDetails = React.memo(() => {
                 setOrderData(response.data[0]);
             } else {
                 toast.error(response.message);
+            }
+        }).catch(err => {
+            const isNoInternet = ValidateNoInternet(err);
+            if (isNoInternet) {
+                setIsNetworkError(true);
             }
         });
 
@@ -139,66 +147,67 @@ const OrderDetails = React.memo(() => {
 
     return (
         <>
-            <section className="order-details-page">
-                <div className='cover'>
-                    <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
-                    <div className='page-heading'>
-                        <h3>{t("order_details")}</h3>
-                        <p><strong onClick={() => navigate('/')}>{t("home")}</strong> / <span> <span onClick={() => navigate('/profile/orders')}>{t("order")}</span> / {orderData?.id}</span></p>
+            {!isNetworkError ?
+                <section className="order-details-page">
+                    <div className='cover'>
+                        <img src={coverImg} onError={placeHolderImage} className='img-fluid' alt="cover"></img>
+                        <div className='page-heading'>
+                            <h3>{t("order_details")}</h3>
+                            <p><strong onClick={() => navigate('/')}>{t("home")}</strong> / <span> <span onClick={() => navigate('/profile/orders')}>{t("order")}</span> / {orderData?.id}</span></p>
+                        </div>
                     </div>
-                </div>
 
-                <div className="container">
-                    <div className="row">
-                        <div className="col-12 col-xl-9">
-                            <div className="order-container">
-                                <div className="list-container">
+                    <div className="container">
+                        <div className="row">
+                            <div className="col-12 col-xl-9">
+                                <div className="order-container">
+                                    <div className="list-container">
 
-                                    <div className="container-heading">
-                                        <span>
-                                            {t('items')}
-                                        </span>
-                                    </div>
-                                    <div className="container-body">
-                                        <div className="table-container">
-                                            <table className="table">
+                                        <div className="container-heading">
+                                            <span>
+                                                {t('items')}
+                                            </span>
+                                        </div>
+                                        <div className="container-body">
+                                            <div className="table-container">
+                                                <table className="table">
 
-                                                <thead>
-                                                    <th>{t('product')}</th>
-                                                    <th>{t('price')}</th>
-                                                    {orderData?.active_status >= 6 ? <th>{t('rating')}</th> : null}
-                                                    {/* <th>{t('action')}</th> */}
-                                                </thead>
-                                                <tbody>
-                                                    {orderData?.items?.map((item, index) => {
-                                                        return (
-                                                            <>
-                                                                <tr key={index} className={Number(item?.active_status) > 6 ? 'disabled' : ''}>
-                                                                    <td>
-                                                                        <div className="product">
+                                                    <thead>
+                                                        <th>{t('product')}</th>
+                                                        <th>{t('price')}</th>
+                                                        {orderData?.active_status >= 6 ? <th>{t('rating')}</th> : null}
+                                                        {/* <th>{t('action')}</th> */}
+                                                    </thead>
+                                                    <tbody>
+                                                        {orderData?.items?.map((item, index) => {
+                                                            return (
+                                                                <>
+                                                                    <tr key={index} className={Number(item?.active_status) > 6 ? 'disabled' : ''}>
+                                                                        <td>
+                                                                            <div className="product">
 
-                                                                            <div className="image-container">
-                                                                                <img src={item.image_url} alt="" />
+                                                                                <div className="image-container">
+                                                                                    <img src={item.image_url} alt="" />
+                                                                                </div>
+                                                                                <div className="item-container">
+                                                                                    <span className='item-name'>{item.name}</span>
+                                                                                    <span className='item-quantity'> X {item.quantity}</span>
+                                                                                    <span className='item-variant'>{` ${item.measurement} ${item.unit}`}</span>
+                                                                                </div>
                                                                             </div>
-                                                                            <div className="item-container">
-                                                                                <span className='item-name'>{item.name}</span>
-                                                                                <span className='item-quantity'> X {item.quantity}</span>
-                                                                                <span className='item-variant'>{` ${item.measurement} ${item.unit}`}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div className="price-container">
-                                                                            <span className="discounted-price">
-                                                                                {`${setting.setting?.currency} ${item.price}`}
-                                                                            </span>
-                                                                            {/* {item.discounted_price !== 0 ?
+                                                                        </td>
+                                                                        <td>
+                                                                            <div className="price-container">
+                                                                                <span className="discounted-price">
+                                                                                    {`${setting.setting?.currency} ${item.price}`}
+                                                                                </span>
+                                                                                {/* {item.discounted_price !== 0 ?
                                                                                 <span className="original-price">
                                                                                     {`${setting.setting?.currency} ${item.price}`}
                                                                                 </span>
                                                                                 : ""} */}
-                                                                        </div>
-                                                                        {/* <div className="actions-container">
+                                                                            </div>
+                                                                            {/* <div className="actions-container">
 
                                                                             {!Number(item?.active_status) >= 6 && item?.return_status == 1 ?
                                                                                 <span className="return">
@@ -228,135 +237,135 @@ const OrderDetails = React.memo(() => {
                                                                             }
 
                                                                         </div> */}
-                                                                        <div className="actions-container">
-                                                                            {Number(item?.active_status) == 6 && item?.return_status == 1 ?
-                                                                                <span className="return">
-                                                                                    <button onClick={() => setShowReturnModal(prevState => {
-                                                                                        const newState = [...prevState];
-                                                                                        newState[index] = true;
-                                                                                        return newState;
-                                                                                    })}>{t('return')}</button>
-                                                                                </span>
-                                                                                : null
-                                                                            }
-
-                                                                            {(Number(item?.active_status) <= 6) && (Number(item?.active_status) <= item?.till_status) && (item?.cancelable_status == 1) ?
-                                                                                <span className="cancel">
-                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancel')}</button>
-                                                                                </span>
-                                                                                : null
-                                                                            }
-                                                                            {Number(item?.active_status) == 7 ?
-                                                                                <span className="cancelled">
-                                                                                    <button>{t('cancelled')}</button>
-                                                                                </span>
-                                                                                : null
-                                                                            }
-
-                                                                            {Number(item?.active_status) == 8 ?
-                                                                                <span className="returned">
-                                                                                    <button >{t('returned')}</button>
-                                                                                </span>
-                                                                                : null
-                                                                            }
-                                                                        </div>
-
-                                                                    </td>
-                                                                    {Number(item?.active_status) >= 6 ? <td>
-                                                                        <div className='rateProductText' >
-                                                                            {item.item_rating.find((rating) => rating.user.id === user.id) ?
-                                                                                <div className='pb-4' onClick={() => {
-                                                                                    setRatingProductId(item.product_id);
-                                                                                    setShowRatingEditModal(true);
-                                                                                    setEditRatingId(item.item_rating.find((rating) => rating.user.id === user.id)?.id);
-                                                                                }}>
-                                                                                    <span className='me-2' >
-                                                                                        {t("you_rated")}
+                                                                            <div className="actions-container">
+                                                                                {Number(item?.active_status) == 6 && item?.return_status == 1 ?
+                                                                                    <span className="return">
+                                                                                        <button onClick={() => setShowReturnModal(prevState => {
+                                                                                            const newState = [...prevState];
+                                                                                            newState[index] = true;
+                                                                                            return newState;
+                                                                                        })}>{t('return')}</button>
                                                                                     </span>
-                                                                                    <span className="userRatedStarContainer">
-                                                                                        <LuStar fill='white' stroke='white' />
-                                                                                        {item?.item_rating?.find((rating) => rating?.user?.id === user?.id)?.rate}
+                                                                                    : null
+                                                                                }
+
+                                                                                {(Number(item?.active_status) <= 6) && (Number(item?.active_status) <= item?.till_status) && (item?.cancelable_status == 1) ?
+                                                                                    <span className="cancel">
+                                                                                        <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancel')}</button>
                                                                                     </span>
-                                                                                </div>
-                                                                                :
-                                                                                <div className='rateProductText' onClick={() => {
-                                                                                    setRatingProductId(item.product_id);
-                                                                                    setShowPdtRatingModal(true);
-                                                                                }}>
-                                                                                    <img className='me-2' src={RateProductStar} alt='rateProductStar' />
-                                                                                    {t("review_and_rating")}
-                                                                                </div>
-                                                                            }
-                                                                        </div>
-                                                                    </td> : null}
-                                                                </tr>
-                                                                {
-                                                                    showReturnModal[index] ?
-                                                                        <Modal
-                                                                            size='md'
-                                                                            show={showReturnModal[index]}
-                                                                            centered
-                                                                            // onHide={() => setShowReturnModal(false)}
-                                                                            onHide={() => setShowReturnModal(prevState => {
-                                                                                const newState = [...prevState];
-                                                                                newState[index] = false;
-                                                                                return newState;
-                                                                            })}
-                                                                            backdrop="static"
-                                                                        >
-                                                                            <Modal.Header className='d-flex justify-content-between returnProductModalHeader'>
-                                                                                <h5 className='title'>{t("return_order_item")}</h5>
-                                                                                <AiOutlineCloseCircle className='cursorPointer' size={28} fill='black' onClick={() => setShowReturnModal(prevState => {
+                                                                                    : null
+                                                                                }
+                                                                                {Number(item?.active_status) == 7 ?
+                                                                                    <span className="cancelled">
+                                                                                        <button>{t('cancelled')}</button>
+                                                                                    </span>
+                                                                                    : null
+                                                                                }
+
+                                                                                {Number(item?.active_status) == 8 ?
+                                                                                    <span className="returned">
+                                                                                        <button >{t('returned')}</button>
+                                                                                    </span>
+                                                                                    : null
+                                                                                }
+                                                                            </div>
+
+                                                                        </td>
+                                                                        {Number(item?.active_status) >= 6 ? <td>
+                                                                            <div className='rateProductText' >
+                                                                                {item.item_rating.find((rating) => rating.user.id === user.id) ?
+                                                                                    <div className='pb-4' onClick={() => {
+                                                                                        setRatingProductId(item.product_id);
+                                                                                        setShowRatingEditModal(true);
+                                                                                        setEditRatingId(item.item_rating.find((rating) => rating.user.id === user.id)?.id);
+                                                                                    }}>
+                                                                                        <span className='me-2' >
+                                                                                            {t("you_rated")}
+                                                                                        </span>
+                                                                                        <span className="userRatedStarContainer">
+                                                                                            <LuStar fill='white' stroke='white' />
+                                                                                            {item?.item_rating?.find((rating) => rating?.user?.id === user?.id)?.rate}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    :
+                                                                                    <div className='rateProductText' onClick={() => {
+                                                                                        setRatingProductId(item.product_id);
+                                                                                        setShowPdtRatingModal(true);
+                                                                                    }}>
+                                                                                        <img className='me-2' src={RateProductStar} alt='rateProductStar' />
+                                                                                        {t("review_and_rating")}
+                                                                                    </div>
+                                                                                }
+                                                                            </div>
+                                                                        </td> : null}
+                                                                    </tr>
+                                                                    {
+                                                                        showReturnModal[index] ?
+                                                                            <Modal
+                                                                                size='md'
+                                                                                show={showReturnModal[index]}
+                                                                                centered
+                                                                                // onHide={() => setShowReturnModal(false)}
+                                                                                onHide={() => setShowReturnModal(prevState => {
                                                                                     const newState = [...prevState];
                                                                                     newState[index] = false;
                                                                                     return newState;
-                                                                                })} />
-                                                                            </Modal.Header>
-                                                                            <Modal.Body className='returnProductModalBody'>
-                                                                                <form onSubmit={(e) => {
-                                                                                    e.preventDefault();
-                                                                                    // if (!returnRef.current.value.trim()) {
-                                                                                    //     toast.error(t('please_type_return_reason'));
-                                                                                    //     return; // Don't proceed further if the textarea is empty
-                                                                                    // }
-                                                                                    handleUpdateStatus(item?.id, 8, returnRef.current.value);
-                                                                                }}>
-                                                                                    <div className='d-flex flex-column justify-content-center'>
-                                                                                        <label htmlFor='reasonTextArea' className='my-3 reasonLabel'>
-                                                                                            {t("return_reason")}
-                                                                                        </label>
-                                                                                        <textarea
-                                                                                            ref={returnRef}
-                                                                                            id="reasonTextArea"
-                                                                                            rows={8}
-                                                                                            name='reasonTextArea'
-                                                                                            placeholder={t("write_return_reason")}
-                                                                                            className='reasonTextArea my-4'
-                                                                                            required
-                                                                                        />
-                                                                                    </div>
-                                                                                    <div className='d-flex justify-content-end mt-4'>
-                                                                                        <button type='submit' className='returnSubmitBtn'>
-                                                                                            {t("request_a_return")}
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </form>
-                                                                            </Modal.Body>
-                                                                        </Modal>
-                                                                        : null}
-                                                            </>
+                                                                                })}
+                                                                                backdrop="static"
+                                                                            >
+                                                                                <Modal.Header className='d-flex justify-content-between returnProductModalHeader'>
+                                                                                    <h5 className='title'>{t("return_order_item")}</h5>
+                                                                                    <AiOutlineCloseCircle className='cursorPointer' size={28} fill='black' onClick={() => setShowReturnModal(prevState => {
+                                                                                        const newState = [...prevState];
+                                                                                        newState[index] = false;
+                                                                                        return newState;
+                                                                                    })} />
+                                                                                </Modal.Header>
+                                                                                <Modal.Body className='returnProductModalBody'>
+                                                                                    <form onSubmit={(e) => {
+                                                                                        e.preventDefault();
+                                                                                        // if (!returnRef.current.value.trim()) {
+                                                                                        //     toast.error(t('please_type_return_reason'));
+                                                                                        //     return; // Don't proceed further if the textarea is empty
+                                                                                        // }
+                                                                                        handleUpdateStatus(item?.id, 8, returnRef.current.value);
+                                                                                    }}>
+                                                                                        <div className='d-flex flex-column justify-content-center'>
+                                                                                            <label htmlFor='reasonTextArea' className='my-3 reasonLabel'>
+                                                                                                {t("return_reason")}
+                                                                                            </label>
+                                                                                            <textarea
+                                                                                                ref={returnRef}
+                                                                                                id="reasonTextArea"
+                                                                                                rows={8}
+                                                                                                name='reasonTextArea'
+                                                                                                placeholder={t("write_return_reason")}
+                                                                                                className='reasonTextArea my-4'
+                                                                                                required
+                                                                                            />
+                                                                                        </div>
+                                                                                        <div className='d-flex justify-content-end mt-4'>
+                                                                                            <button type='submit' className='returnSubmitBtn'>
+                                                                                                {t("request_a_return")}
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </form>
+                                                                                </Modal.Body>
+                                                                            </Modal>
+                                                                            : null}
+                                                                </>
 
-                                                        );
+                                                            );
 
-                                                    })}
-                                                </tbody>
-                                            </table>
+                                                        })}
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    {/* <hr /> */}
+                                        {/* <hr /> */}
 
-                                    {/* <div className="container-footer">
+                                        {/* <div className="container-footer">
                                         <div className="cancelReturnBtnWrapper">
                                             {
                                                 orderData?.items[0]?.cancelable_status === 1 ?
@@ -364,164 +373,170 @@ const OrderDetails = React.memo(() => {
                                             }
                                         </div>
                                     </div> */}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="col-12 col-xl-3">
-                            <div className="order-info">
-                                <div className="order-status-container order-info-container">
-                                    <div className="container-heading">
-                                        <span>
-                                            {t('order')}
-                                        </span>
-                                        <span className="order-id">
-                                            #{orderData?.id}
+                            <div className="col-12 col-xl-3">
+                                <div className="order-info">
+                                    <div className="order-status-container order-info-container">
+                                        <div className="container-heading">
+                                            <span>
+                                                {t('order')}
+                                            </span>
+                                            <span className="order-id">
+                                                #{orderData?.id}
 
-                                        </span>
-                                    </div>
-                                    <div className="status-body">
-                                        {/* <div className="checkmark">
+                                            </span>
+                                        </div>
+                                        <div className="status-body">
+                                            {/* <div className="checkmark">
                                             <input type="checkbox" defaultChecked disabled />
                                             <ImCheckboxChecked fill='#55AE7B' />
                                         </div> */}
-                                        <div className="order-status-details">
-                                            <div className="order-status">
-                                                {`${t('order')} ${orderStatus}`}
+                                            <div className="order-status-details">
+                                                <div className="order-status">
+                                                    {`${t('order')} ${orderStatus}`}
+                                                </div>
+                                                <div className="order-success">
+                                                    {`${t('your_order_has_been')} ${orderStatus} ${t('successfully')}`}
+                                                </div>
+                                                <div className="status-date">
+                                                    {orderData?.status?.length > 0 && new Date(orderData?.status.reverse()[0].reverse()[0]).toLocaleDateString()}
+                                                </div>
                                             </div>
-                                            <div className="order-success">
-                                                {`${t('your_order_has_been')} ${orderStatus} ${t('successfully')}`}
-                                            </div>
-                                            <div className="status-date">
-                                                {orderData?.status?.length > 0 && new Date(orderData?.status.reverse()[0].reverse()[0]).toLocaleDateString()}
-                                            </div>
-                                        </div>
-                                        <div className="payment-status">
-                                            {/* <span className={`${orderData?.bank_transfer_status ? 'done' : ''}`}>
+                                            <div className="payment-status">
+                                                {/* <span className={`${orderData?.bank_transfer_status ? 'done' : ''}`}>
                                                 {orderData?.bank_transfer_status ? t('payment_pending') : t('payment_done')}
                                             </span> */}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                <div className="order-info-container order-delivery-info">
-                                    <div className="container-heading">
-                                        <span>
-                                            {t('delivery_information')}
-                                        </span>
-                                    </div>
-                                    <div className="container-body">
-                                        <div className="address-container">
-                                            <span className='address-heading'>
-                                                {t('delivery_to')}
-                                            </span>
-                                            <span className='address-info'>
-                                                {orderData?.order_address}
-                                            </span>
-                                        </div>
-
-                                        <div className="contact-container">
+                                    <div className="order-info-container order-delivery-info">
+                                        <div className="container-heading">
                                             <span>
-                                                {`${orderData?.country} - ${orderData?.mobile}`}
+                                                {t('delivery_information')}
                                             </span>
                                         </div>
+                                        <div className="container-body">
+                                            <div className="address-container">
+                                                <span className='address-heading'>
+                                                    {t('delivery_to')}
+                                                </span>
+                                                <span className='address-info'>
+                                                    {orderData?.order_address}
+                                                </span>
+                                            </div>
+
+                                            <div className="contact-container">
+                                                <span>
+                                                    {`${orderData?.country} - ${orderData?.mobile}`}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="order-info-container order-billing-container">
-                                    <div className="container-heading">
-                                        <span>
-                                            {t('billing_details')}
-                                        </span>
-                                    </div>
-                                    <div className="container-body">
-                                        <div className="payment-info">
-                                            <div>
-                                                <span>
-                                                    {t('payment_method')}
-                                                </span>
-                                                <span>
-                                                    {orderData?.payment_method}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span>
-                                                    {t('transaction_id')}
-                                                </span>
-                                                <span>
-                                                    {orderData?.transaction_id}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span>
-                                                    {t('delivery_charge')}
-                                                </span>
-                                                <span>
-                                                    {setting.setting?.currency}{orderData?.delivery_charge}
-                                                </span>
-                                            </div>
-                                            <div>
-                                                <span>
-                                                    {t('sub_total')}
-                                                </span>
-                                                <span>
-                                                    {setting.setting?.currency}{orderData?.total}
-                                                </span>
-                                            </div>
-                                            {orderData?.promo_discount ? <div>
-                                                <span>
-                                                    {t('promo_code_discount')}
-                                                </span>
-                                                <span>
-                                                    - {setting.setting?.currency}{orderData?.promo_discount}
-                                                </span>
-                                            </div> : null}
-                                            {orderData?.wallet_balance ? <div>
-                                                <span>
-                                                    {t('wallet_balance_used')}
-                                                </span>
-                                                <span>
-                                                    - {setting.setting?.currency}{orderData?.wallet_balance}
-                                                </span>
-                                            </div> : null}
-                                            {orderData?.discount ?
+                                    <div className="order-info-container order-billing-container">
+                                        <div className="container-heading">
+                                            <span>
+                                                {t('billing_details')}
+                                            </span>
+                                        </div>
+                                        <div className="container-body">
+                                            <div className="payment-info">
                                                 <div>
                                                     <span>
-                                                        {t('discount')}
+                                                        {t('payment_method')}
                                                     </span>
                                                     <span>
-                                                        {setting.setting?.currency}{orderData?.discount}
+                                                        {orderData?.payment_method}
                                                     </span>
+                                                </div>
+                                                <div>
+                                                    <span>
+                                                        {t('transaction_id')}
+                                                    </span>
+                                                    <span>
+                                                        {orderData?.transaction_id}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <span>
+                                                        {t('delivery_charge')}
+                                                    </span>
+                                                    <span>
+                                                        {setting.setting?.currency}{orderData?.delivery_charge}
+                                                    </span>
+                                                </div>
+                                                <div>
+                                                    <span>
+                                                        {t('sub_total')}
+                                                    </span>
+                                                    <span>
+                                                        {setting.setting?.currency}{orderData?.total}
+                                                    </span>
+                                                </div>
+                                                {orderData?.promo_discount ? <div>
+                                                    <span>
+                                                        {t('promo_code_discount')}
+                                                    </span>
+                                                    <span>
+                                                        - {setting.setting?.currency}{orderData?.promo_discount}
+                                                    </span>
+                                                </div> : null}
+                                                {orderData?.wallet_balance ? <div>
+                                                    <span>
+                                                        {t('wallet_balance_used')}
+                                                    </span>
+                                                    <span>
+                                                        - {setting.setting?.currency}{orderData?.wallet_balance}
+                                                    </span>
+                                                </div> : null}
+                                                {orderData?.discount ?
+                                                    <div>
+                                                        <span>
+                                                            {t('discount')}
+                                                        </span>
+                                                        <span>
+                                                            {setting.setting?.currency}{orderData?.discount}
+                                                        </span>
+                                                    </div>
+                                                    : <></>}
+                                            </div>
+                                            <div className="order-total">
+
+                                                <div>
+                                                    <span>
+                                                        {t('total')}
+                                                    </span>
+                                                    <span>
+                                                        {setting?.setting?.currency}{orderData?.final_total}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            {orderData?.active_status === "6" ?
+                                                <div className="button-container">
+                                                    <button className="btn" onClick={() => {
+                                                        getInvoice(orderData?.id);
+                                                    }}>
+                                                        {t('get_invoice')}
+                                                    </button>
                                                 </div>
                                                 : <></>}
                                         </div>
-                                        <div className="order-total">
-
-                                            <div>
-                                                <span>
-                                                    {t('total')}
-                                                </span>
-                                                <span>
-                                                    {setting?.setting?.currency}{orderData?.final_total}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        {orderData?.active_status === "6" ?
-                                            <div className="button-container">
-                                                <button className="btn" onClick={() => {
-                                                    getInvoice(orderData?.id);
-                                                }}>
-                                                    {t('get_invoice')}
-                                                </button>
-                                            </div>
-                                            : <></>}
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <RateProductModal product_id={ratingProductId} showPdtRatingModal={showPdtRatingModal} setShowPdtRatingModal={setShowPdtRatingModal} />
-                <UpdateRatingModal product_id={ratingProductId} showModal={showRatingEditModal} setShowModal={setShowRatingEditModal} ratingId={editRatingId} setRatingId={setEditRatingId} />
-            </section>
+                    <RateProductModal product_id={ratingProductId} showPdtRatingModal={showPdtRatingModal} setShowPdtRatingModal={setShowPdtRatingModal} />
+                    <UpdateRatingModal product_id={ratingProductId} showModal={showRatingEditModal} setShowModal={setShowRatingEditModal} ratingId={editRatingId} setRatingId={setEditRatingId} />
+                </section>
+                :
+                <div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>
+                    <MdSignalWifiConnectedNoInternet0 />
+                    <p>{t("no_internet_connection")}</p>
+                </div>
+            }
         </>
     );
 });

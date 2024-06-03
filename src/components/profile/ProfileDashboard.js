@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ActionTypes } from '../../model/action-type';
 import './profile.css';
 
@@ -30,20 +30,27 @@ import { setCartProducts, setCartSubTotal } from '../../model/reducer/cartReduce
 const ProfileDashboard = (props) => {
     //initialize Cookies
     const cookies = new Cookies();
-
-    const urlParams = useParams();
+    const navigate = useNavigate();
+    const location = useLocation();
+    const dispatch = useDispatch();
 
     const { firebase } = FirebaseData();
 
     const setting = useSelector((state) => state.setting);
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const closeCanvas = useRef(null);
     const user = useSelector(state => (state.user));
+
+    const closeCanvas = useRef(null);
+
     const [profileClick, setprofileClick] = useState(true);
     const [orderClick, setorderClick] = useState(false);
-
-    const [selectedButton, setSelectedButton] = useState('profile');
+    const [selectedButton, setSelectedButton] = useState(location?.pathname?.split("/")?.[2] || 'profile');
+    const [addressClick, setaddressClick] = useState(false);
+    const [transactionClick, settransactionClick] = useState(false);
+    const [walletTransactionClick, setWalletTransactionClick] = useState(false);
+    const [username, setusername] = useState(user.user && user.user.name);
+    const [useremail, setuseremail] = useState(user.user && user.user.email);
+    const [selectedFile, setselectedFile] = useState();
+    const [isupdating, setisupdating] = useState(false);
 
     const handleButtonClick = (buttonName) => {
         setSelectedButton(buttonName);
@@ -59,28 +66,34 @@ const ProfileDashboard = (props) => {
         if (props.showOrders) {
             setprofileClick(false);
             setorderClick(true);
+            setWalletTransactionClick(false);
+            setaddressClick(false);
+            settransactionClick(false);
         } else if (props.showTransaction) {
-            setprofileClick(false);
             settransactionClick(true);
+            setprofileClick(false);
+            setWalletTransactionClick(false);
+            setaddressClick(false);
+            setorderClick(false);
         } else if (props.showAddress) {
         } else if (props.showWalletTransaction) {
-            setprofileClick(false);
             setWalletTransactionClick(true);
-        } else if (props.showAddress) {
             setprofileClick(false);
+            setorderClick(false);
+            setaddressClick(false);
+            settransactionClick(false);
+        } else if (props.showAddress) {
             setaddressClick(true);
+            setprofileClick(false);
+            setWalletTransactionClick(false);
+            settransactionClick(false);
+            setorderClick(false);
         }
 
     }, [user]);
 
 
-    const [addressClick, setaddressClick] = useState(false);
-    const [transactionClick, settransactionClick] = useState(false);
-    const [walletTransactionClick, setWalletTransactionClick] = useState(false);
-    const [username, setusername] = useState(user.user && user.user.name);
-    const [useremail, setuseremail] = useState(user.user && user.user.email);
-    const [selectedFile, setselectedFile] = useState();
-    const [isupdating, setisupdating] = useState(false);
+
 
     const getCurrentUser = (token) => {
         api.getUser(token)
@@ -352,7 +365,7 @@ const ProfileDashboard = (props) => {
                     </button>
 
                     {/* Wallet_History */}
-                    <button type='button' className={`navigation-container-button ${selectedButton === 'wallet' ? 'activeTab' : ''}`} onClick={() => {
+                    <button type='button' className={`navigation-container-button ${selectedButton === 'wallet-transaction' ? 'activeTab' : ''}`} onClick={() => {
                         navigate('/profile/wallet-transaction');
                         setprofileClick(false);
                         setaddressClick(false);
@@ -361,7 +374,7 @@ const ProfileDashboard = (props) => {
                         setWalletTransactionClick(true);
                         setisupdating(false);
                         closeCanvas.current.click();
-                        handleButtonClick('wallet');
+                        handleButtonClick('wallet-transaction');
 
                         if (window.innerWidth < 768) document.getElementsByClassName('sidebar')[0].classList.toggle('active');
                     }} >
