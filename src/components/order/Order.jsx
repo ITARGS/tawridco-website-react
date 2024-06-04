@@ -23,6 +23,8 @@ import OutforDeliverySVG from "../../utils/Icons/statusIcons/status_icon_out_for
 import DeliveredSVG from "../../utils/Icons/statusIcons/status_icon_delivered.svg";
 import CancelledSVG from "../../utils/Icons/statusIcons/status_icon_cancel.svg";
 import ReturnedSVG from "../../utils/Icons/statusIcons/status_icon_returned.svg";
+import { ValidateNoInternet } from '../../utils/NoInternetValidator';
+import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
 const Order = () => {
 
@@ -46,6 +48,7 @@ const Order = () => {
 
     const setting = useSelector(state => state.setting);
     const [orderId, setOrderId] = useState(null);
+    const [isNetworkError, setIsNetworkError] = useState(false);
 
     const fetchOrders = async () => {
         await api.getOrders(cookies.get('jwt_token'), total_orders_per_page, offset)
@@ -59,6 +62,11 @@ const Order = () => {
                 else if (result.message === "No orders found") {
                     setisLoader(false);
                     setNoOrders(true);
+                }
+            }).catch(err => {
+                const isNoInternet = ValidateNoInternet(err);
+                if (isNoInternet) {
+                    setIsNetworkError(true);
                 }
             });
 
@@ -198,180 +206,182 @@ const Order = () => {
     };
 
     return (
-        <div className='order-list'>
-            <div className='heading'>
-                {t("all_orders")}
-            </div>
+        <>
+            {!isNetworkError ?
+                <div className='order-list'>
+                    <div className='heading'>
+                        {t("all_orders")}
+                    </div>
 
-            {isLoader ?
-                <div className='my-5'><Loader width='100%' height='500px' /></div>
-                : <>
+                    {isLoader ?
+                        <div className='my-5'><Loader width='100%' height='500px' /></div>
+                        : <>
 
-                    <Tabs
-                        defaultActiveKey={"active"}
-                        className='orders-tab'
-                        fill
-                    >
-                        <Tab
-                            eventKey={'active'}
-                            title={t('active_orders')}
-                            className='active-orders'
-                        >
-                            <>
-                                {ActiveOrders && ActiveOrders.length === 0
-                                    ? <div className='d-flex align-items-center p-4 no-orders'>
-                                        <img src={No_Orders} className='no-data-img' alt='no-orders'></img>
-                                        <p>{t("no_order")}</p>
-                                    </div>
-                                    :
+                            <Tabs
+                                defaultActiveKey={"active"}
+                                className='orders-tab'
+                                fill
+                            >
+                                <Tab
+                                    eventKey={'active'}
+                                    title={t('active_orders')}
+                                    className='active-orders'
+                                >
                                     <>
-                                        <table className='order-list-table'>
-                                            <thead>
-                                                <tr>
-                                                    <th>{t("order")}</th>
-                                                    <th>{t("products") + " " + t("name")}</th>
-                                                    <th>{t("date")}</th>
-                                                    <th>{t("total")}</th>
-                                                    <th>{t("action")}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {ActiveOrders && ActiveOrders.map((order, index) => (
-                                                    <tr key={index} className={index === ActiveOrders.length - 1 ? 'last-column' : ''}>
-                                                        <th>{`#${order.order_id} `}</th>
-                                                        <th className='product-name d-table-cell verticall-center flex-column justify-content-center'>{order.items.map((item, ind) => (
-                                                            <div className="column-container" key={ind}>
-                                                                <span>{item.product_name}</span>
-                                                                {ind < order.items.length - 1 && <span>,</span>}
-                                                            </div>
+                                        {ActiveOrders && ActiveOrders.length === 0
+                                            ? <div className='d-flex align-items-center p-4 no-orders'>
+                                                <img src={No_Orders} className='no-data-img' alt='no-orders'></img>
+                                                <p>{t("no_order")}</p>
+                                            </div>
+                                            :
+                                            <>
+                                                <table className='order-list-table'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{t("order")}</th>
+                                                            <th>{t("products") + " " + t("name")}</th>
+                                                            <th>{t("date")}</th>
+                                                            <th>{t("total")}</th>
+                                                            <th>{t("action")}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {ActiveOrders && ActiveOrders.map((order, index) => (
+                                                            <tr key={index} className={index === ActiveOrders.length - 1 ? 'last-column' : ''}>
+                                                                <th>{`#${order.order_id} `}</th>
+                                                                <th className='product-name d-table-cell verticall-center flex-column justify-content-center'>{order.items.map((item, ind) => (
+                                                                    <div className="column-container" key={ind}>
+                                                                        <span>{item.product_name}</span>
+                                                                        {ind < order.items.length - 1 && <span>,</span>}
+                                                                    </div>
+                                                                ))}
+                                                                </th>
+                                                                <th>
+                                                                    {order.created_at.substring(0, 10)}
+                                                                </th>
+                                                                <th className='total'>
+                                                                    <FaRupeeSign fontSize={'1.7rem'} /> {order.final_total}
+                                                                </th>
+                                                                <th className='button-container'>
+                                                                    <button type='button' id={`track - ${order.order_id} `} data-bs-toggle="modal" data-bs-target="#trackModal" className='track' value={order.order_id} onClick={(e) => { setHtml(e.target.value); getOrderStatus(e.target.value); }}>{t("track_order")}</button>
+                                                                    {/* <button type='button' id={`invoice - ${order.order_id} `} className='Invoice' value={order.order_id} onClick={(e) => { setHtml(e.target.value); getInvoice(e.target.value) }}>{t("get_invoice")}</button> */}
+                                                                    <button onClick={() => {
+                                                                        navigate(`${order.order_id}`);
+                                                                    }} className='Invoice'>{t('view_details')}</button>
+                                                                </th>
+                                                            </tr>
                                                         ))}
-                                                        </th>
-                                                        <th>
-                                                            {order.created_at.substring(0, 10)}
-                                                        </th>
-                                                        <th className='total'>
-                                                            <FaRupeeSign fontSize={'1.7rem'} /> {order.final_total}
-                                                        </th>
-                                                        <th className='button-container'>
-                                                            <button type='button' id={`track - ${order.order_id} `} data-bs-toggle="modal" data-bs-target="#trackModal" className='track' value={order.order_id} onClick={(e) => { setHtml(e.target.value); getOrderStatus(e.target.value); }}>{t("track_order")}</button>
-                                                            {/* <button type='button' id={`invoice - ${order.order_id} `} className='Invoice' value={order.order_id} onClick={(e) => { setHtml(e.target.value); getInvoice(e.target.value) }}>{t("get_invoice")}</button> */}
-                                                            <button onClick={() => {
-                                                                navigate(`${order.order_id}`);
-                                                            }} className='Invoice'>{t('view_details')}</button>
-                                                        </th>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                                    </tbody>
+                                                </table>
+                                            </>
+                                        }
+                                        {ActiveOrders && ActiveOrders.length !== 0 ?
+                                            <Pagination
+                                                activePage={currPage}
+                                                itemsCountPerPage={total_orders_per_page}
+                                                totalItemsCount={totalActiveOrders}
+                                                pageRangeDisplayed={5}
+                                                onChange={handlePageChange.bind(this)}
+                                            />
+                                            : null}
                                     </>
-                                }
-                                {ActiveOrders && ActiveOrders.length !== 0 ?
-                                    <Pagination
-                                        activePage={currPage}
-                                        itemsCountPerPage={total_orders_per_page}
-                                        totalItemsCount={totalActiveOrders}
-                                        pageRangeDisplayed={5}
-                                        onChange={handlePageChange.bind(this)}
-                                    />
-                                    : null}
-                            </>
-                        </Tab>
-                        <Tab
-                            eventKey={'prev'}
-                            title={t('previous_orders')}
-                            className='prev-orders'
-                        >
-                            <>
-                                {PrevOrders && PrevOrders.length === 0
-                                    ? <div className='d-flex align-items-center p-4 no-orders'>
-                                        <img src={No_Orders} alt='no-orders'></img>
-                                        <p>{t("no_order")}</p>
-                                    </div>
-                                    :
+                                </Tab>
+                                <Tab
+                                    eventKey={'prev'}
+                                    title={t('previous_orders')}
+                                    className='prev-orders'
+                                >
                                     <>
-                                        <table className='order-list-table'>
-                                            <thead>
-                                                <tr>
-                                                    <th>{t("order")}</th>
-                                                    <th>{t("products") + " " + t("name")}</th>
-                                                    <th>{t("date")}</th>
-                                                    <th>{t("total")}</th>
-                                                    <th>{t("action")}</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {PrevOrders && PrevOrders.map((order, index) => (
-                                                    <tr key={order?.id} className={index === PrevOrders.length - 1 ? 'last-column' : ''}>
-                                                        <th>{`#${order.order_id} `}</th>
-                                                        <th className='product-name d-table-cell verticall-center flex-column justify-content-center'>{order.items.map((item, ind) => (
-                                                            <div className="column-container">
-                                                                <span key={ind}>{item.product_name},</span>
-                                                            </div>
+                                        {PrevOrders && PrevOrders.length === 0
+                                            ? <div className='d-flex align-items-center p-4 no-orders'>
+                                                <img src={No_Orders} alt='no-orders'></img>
+                                                <p>{t("no_order")}</p>
+                                            </div>
+                                            :
+                                            <>
+                                                <table className='order-list-table'>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{t("order")}</th>
+                                                            <th>{t("products") + " " + t("name")}</th>
+                                                            <th>{t("date")}</th>
+                                                            <th>{t("total")}</th>
+                                                            <th>{t("action")}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        {PrevOrders && PrevOrders.map((order, index) => (
+                                                            <tr key={order?.id} className={index === PrevOrders.length - 1 ? 'last-column' : ''}>
+                                                                <th>{`#${order.order_id} `}</th>
+                                                                <th className='product-name d-table-cell verticall-center flex-column justify-content-center'>{order.items.map((item, ind) => (
+                                                                    <div className="column-container">
+                                                                        <span key={ind}>{item.product_name},</span>
+                                                                    </div>
+                                                                ))}
+                                                                </th>
+                                                                <th>
+                                                                    {order.created_at.substring(0, 10)}
+                                                                </th>
+                                                                <th className='total'>
+                                                                    <FaRupeeSign fontSize={'1.7rem'} /> {order.final_total}
+                                                                </th>
+                                                                <th className='button-container'>
+                                                                    <button type='button' id={`track - ${order.order_id} `} data-bs-toggle="modal" data-bs-target="#trackModal" className='track' value={order.order_id} onClick={(e) => { setHtml(e.target.value, 1); getOrderStatus(e.target.value); }}>{t("track_order")}</button>
+                                                                    {/* <button type='button' id={`invoice - ${order.order_id} `} className='Invoice' value={order.order_id} onClick={(e) => { setHtml(e.target.value); getInvoice(e.target.value) }}>{t("get_invoice")}</button> */}
+                                                                    <button onClick={() => {
+                                                                        navigate(`${order.order_id}`);
+                                                                    }} className='Invoice'>{t('view_details')}</button>
+                                                                </th>
+                                                            </tr>
                                                         ))}
-                                                        </th>
-                                                        <th>
-                                                            {order.created_at.substring(0, 10)}
-                                                        </th>
-                                                        <th className='total'>
-                                                            <FaRupeeSign fontSize={'1.7rem'} /> {order.final_total}
-                                                        </th>
-                                                        <th className='button-container'>
-                                                            <button type='button' id={`track - ${order.order_id} `} data-bs-toggle="modal" data-bs-target="#trackModal" className='track' value={order.order_id} onClick={(e) => { setHtml(e.target.value, 1); getOrderStatus(e.target.value); }}>{t("track_order")}</button>
-                                                            {/* <button type='button' id={`invoice - ${order.order_id} `} className='Invoice' value={order.order_id} onClick={(e) => { setHtml(e.target.value); getInvoice(e.target.value) }}>{t("get_invoice")}</button> */}
-                                                            <button onClick={() => {
-                                                                navigate(`${order.order_id}`);
-                                                            }} className='Invoice'>{t('view_details')}</button>
-                                                        </th>
-                                                    </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                                    </tbody>
+                                                </table>
+                                            </>
+                                        }
+                                        {PrevOrders && PrevOrders.length !== 0 ?
+                                            <Pagination
+                                                activePage={currPage}
+                                                itemsCountPerPage={total_orders_per_page}
+                                                totalItemsCount={totalPrevOrders}
+                                                pageRangeDisplayed={5}
+                                                onChange={handlePageChange.bind(this)}
+                                            />
+                                            : null}
                                     </>
-                                }
-                                {PrevOrders && PrevOrders.length !== 0 ?
-                                    <Pagination
-                                        activePage={currPage}
-                                        itemsCountPerPage={total_orders_per_page}
-                                        totalItemsCount={totalPrevOrders}
-                                        pageRangeDisplayed={5}
-                                        onChange={handlePageChange.bind(this)}
-                                    />
-                                    : null}
-                            </>
-                        </Tab>
-                    </Tabs>
-                </>
-            }
+                                </Tab>
+                            </Tabs>
+                        </>
+                    }
 
 
 
 
 
 
-            <div id="track">
-                <div className="modal fade new-track" id="trackModal" aria-labelledby="TrackModalLabel" aria-hidden="true">
-                    <div className='modal-dialog'>
-                        <div className="modal-content" style={{ borderRadius: "10px", maxWidth: "100%", padding: "30px 15px", zIndex: -2 }}>
-                            <div id="mainContentTrack">
-                                <section className="track" id="printMe">
-                                    <div className="d-flex justify-content-between align-items-center mx-5">
-                                        <h5 className="page-header">{setting.setting?.app_name}</h5>
-                                        <h5 className="page-header">{t("mobile")}{element && element.mobile}</h5>
-                                        <button type="button" className="bg-white" data-bs-dismiss="modal" aria-label="Close" ref={closeModalRef} style={{ width: '30px' }}><AiOutlineCloseCircle size={26} /></button>
-                                    </div>
-                                    {console.log(element)}
-                                    <div className="d-flex flex-column">
-                                        <div className="d-flex flex-column mx-5 justify-content-around position-relative">
-                                            <div className="d-flex my-4 align-items-center">
-                                                {/* <div className="col-sm-4 bg-white track-col"> <span className="rounded-circle px-3 pt-2 fs-2 track-order-icon btn " style={{ background: "var(--secondary-color-light)" }}><i className="bi bi-cart "></i></span></div>
+                    <div id="track">
+                        <div className="modal fade new-track" id="trackModal" aria-labelledby="TrackModalLabel" aria-hidden="true">
+                            <div className='modal-dialog'>
+                                <div className="modal-content" style={{ borderRadius: "10px", maxWidth: "100%", padding: "30px 15px", zIndex: -2 }}>
+                                    <div id="mainContentTrack">
+                                        <section className="track" id="printMe">
+                                            <div className="d-flex justify-content-between align-items-center mx-5">
+                                                <h5 className="page-header">{setting.setting?.app_name}</h5>
+                                                <h5 className="page-header">{t("mobile")}{element && element.mobile}</h5>
+                                                <button type="button" className="bg-white" data-bs-dismiss="modal" aria-label="Close" ref={closeModalRef} style={{ width: '30px' }}><AiOutlineCloseCircle size={26} /></button>
+                                            </div>
+                                            {console.log(element)}
+                                            <div className="d-flex flex-column">
+                                                <div className="d-flex flex-column mx-5 justify-content-around position-relative">
+                                                    <div className="d-flex my-4 align-items-center">
+                                                        {/* <div className="col-sm-4 bg-white track-col"> <span className="rounded-circle px-3 pt-2 fs-2 track-order-icon btn " style={{ background: "var(--secondary-color-light)" }}><i className="bi bi-cart "></i></span></div>
                                                 <span className=""> {t("order_status_display_name_recieved")}</span> */}
-                                                {/* <ProgressBar className='orderProgressBar' now={element ? element?.active_status === "2" ? 0 :
+                                                        {/* <ProgressBar className='orderProgressBar' now={element ? element?.active_status === "2" ? 0 :
                                                     element.active_status === "4" ? 27 :
                                                         element.active_status === "5" ? 67 :
                                                             element.active_status === "6" ? 100 :
                                                                 100 : 100} /> */}
-                                            </div>
-                                            {/* <div className="progress flex-column col-sm-3" role="progressbar" aria-label="Basic example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
+                                                    </div>
+                                                    {/* <div className="progress flex-column col-sm-3" role="progressbar" aria-label="Basic example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
 
                                                 <div
                                                     className="progress-bar bg-success"
@@ -379,20 +389,20 @@ const Order = () => {
                                                         height: element && element.active_status === "2" ? "23%" : element.active_status === "5" ? "77%" : element.active_status === "4" ? "57%" : element.active_status === "6" ? "100%" : "0%"
                                                     }}></div>
                                                 </div> */}
-                                            <div className='d-flex flex-column my-4 align-items-center'>
-                                                {element?.status?.map((flag, index) => (
-                                                    <div key={index} className="d-flex gap-5 align-items-center orderStatusContainer">
-                                                        <div className="my-4 track-order-icon">
-                                                            {getImageofOrderStatus(Number(flag[0]))}
-                                                        </div>
-                                                        {(index < (element?.status?.length - 1)) ? <ProgressBar className='orderProgressBar' now={100} /> : null}
-                                                        <span className='orderStatusText'>
-                                                            Your order has been {getStatus(flag)} on {formatDate(flag[1])} {formatTime(flag[1])}
-                                                        </span>
+                                                    <div className='d-flex flex-column my-4 align-items-center'>
+                                                        {element?.status?.map((flag, index) => (
+                                                            <div key={index} className="d-flex gap-5 align-items-center orderStatusContainer">
+                                                                <div className="my-4 track-order-icon">
+                                                                    {getImageofOrderStatus(Number(flag[0]))}
+                                                                </div>
+                                                                {(index < (element?.status?.length - 1)) ? <ProgressBar className='orderProgressBar' now={100} /> : null}
+                                                                <span className='orderStatusText'>
+                                                                    Your order has been {getStatus(flag)} on {formatDate(flag[1])} {formatTime(flag[1])}
+                                                                </span>
+                                                            </div>
+                                                        ))}
                                                     </div>
-                                                ))}
-                                            </div>
-                                            {/* <div className={`d-flex my-4 align-items-center ${element?.active_status >= "4" ? "visible" : "invisible"}`}>
+                                                    {/* <div className={`d-flex my-4 align-items-center ${element?.active_status >= "4" ? "visible" : "invisible"}`}>
                                                 <div className="col-sm-4 bg-white track-col"> <span className="rounded-circle px-3 pt-2 fs-2 track-order-icon btn " style={{ background: "var(--secondary-color-light)" }}><i className="bi bi-truck "></i></span></div>
                                                 <span> {t("order_status_display_name_shipped")}</span>
                                             </div>
@@ -404,19 +414,27 @@ const Order = () => {
                                                 <div className="col-sm-4 bg-white track-col"> <span className="rounded-circle px-3 pt-2 fs-2 btn track-order-icon " style={{ background: "var(--secondary-color-light)" }}><i className="bi bi-check "></i></span></div>
                                                 <span> {t("order_status_display_name_delivered")}</span>
                                             </div> */}
-                                        </div>
+                                                </div>
+                                            </div>
+
+
+
+                                        </section>
                                     </div>
-
-
-
-                                </section>
+                                </div>
                             </div>
                         </div>
                     </div>
+                    <OrderTracker show={showTracker} setShow={setShowTracker} />
                 </div>
-            </div>
-            <OrderTracker show={showTracker} setShow={setShowTracker} />
-        </div>
+                :
+                <div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>
+                    <MdSignalWifiConnectedNoInternet0 />
+                    <p>{t("no_internet_connection")}</p>
+                </div>
+            }
+        </>
+
     );
 };
 

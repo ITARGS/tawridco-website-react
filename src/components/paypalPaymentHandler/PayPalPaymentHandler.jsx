@@ -26,7 +26,7 @@ const PayPalPaymentHandler = () => {
         // console.log(key, value);
     }
     // console.log(queryParamsObj);
-
+    const [isOrderPayment, setIsOrderPayment] = useState(false);
     const [timer, setTimer] = useState(5);
     const interval = useRef();
     const timeout = useRef();
@@ -48,6 +48,7 @@ const PayPalPaymentHandler = () => {
             toast.success(t("wallet_recharge_paypal_pending_message"));
         }
         else {
+            setIsOrderPayment(true);
             try {
                 api.removeCart(cookies.get("jwt_token")).then((res) => res.json()).then((result) => {
                     if (result?.status === 1) {
@@ -65,6 +66,7 @@ const PayPalPaymentHandler = () => {
             setTimer(prev => prev - 1);
         }, 1000);
         timeout.current = setTimeout(() => {
+            setIsOrderPayment(false);
             navigate("/");
         }, 6000);
         return () => {
@@ -88,7 +90,7 @@ const PayPalPaymentHandler = () => {
 
     return (
         <>
-            <div className='container d-flex flex-column align-items-center mt-5 payment-container' >
+            {isOrderPayment ? <div className='container d-flex flex-column align-items-center mt-5 payment-container' >
                 <Lottie animationData={animate2} loop={false} className='lottie-tick'></Lottie>
                 <Lottie className='lottie-content' animationData={animate1} loop={true}></Lottie>
                 <div className='text-center'>
@@ -98,6 +100,7 @@ const PayPalPaymentHandler = () => {
                     {t("go_to_home")}
                 </button>
             </div>
+                : null}
         </>
     );
 };

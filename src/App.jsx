@@ -245,7 +245,8 @@ const App = () => {
     <AnimatePresence>
       <style key={"override-style"}>{RootCss}</style>
       <Helmet>
-        <meta name="title" content={setting?.setting?.app_name} />
+        <meta name="title" content={setting?.setting?.web_settings?.common_meta_title} />
+        <meta name="description" content={setting?.setting?.web_settings?.common_meta_description} />
       </Helmet>
       <div key={"home-container"} className="h-auto">
         <Header key="header" />
