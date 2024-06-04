@@ -3,7 +3,7 @@ import './header.css';
 import { BsShopWindow } from 'react-icons/bs';
 import { BiUserCircle } from 'react-icons/bi';
 import { MdSearch, MdGTranslate, MdNotificationsActive } from "react-icons/md";
-import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline } from 'react-icons/io5';
+import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast } from 'react-icons/io5';
 import { IoMdArrowDropdown, IoIosArrowDown } from "react-icons/io";
 import { GoLocation } from 'react-icons/go';
 import { FiMenu, FiFilter } from 'react-icons/fi';
@@ -29,6 +29,7 @@ import { setFilterSearch } from "../../model/reducer/productFilterReducer";
 import { Modal } from 'antd';
 import "../location/location.css";
 import { diffInTime } from '../../utils/TimeUtilites';
+import { setCSSMode } from '../../model/reducer/cssmodeReducer';
 
 const Header = () => {
     const closeSidebarRef = useRef();
@@ -216,6 +217,13 @@ const Header = () => {
     const handleMobileNavActKey = (key) => {
         setMobileNavActKey(key == mobileNavActKey ? null : key);
     };
+
+    const handleThemeChange = (theme) => {
+        document.body.setAttribute("data-bs-theme", theme);
+        // console.log(document.body.getAttribute("data-bs-theme"));
+        dispatch(setCSSMode({ data: theme }));
+    };
+
     return (
         <>
             {/* sidebar */}
@@ -412,10 +420,23 @@ const Header = () => {
                                     <div>
                                         <IoContrast className='fs-3' />
                                     </div>
-                                    <select className='p-2' onChange={handleCssModeChange}>
+                                    <select className='p-2'>
                                         <option value="light">Light</option>
                                         <option value="dark">Dark</option>
                                     </select>
+                                </div> */}
+
+                                {/* <div className='d-flex align-items-center px-2 border-start border-end'>
+                                    <Dropdown>
+                                        <Dropdown.Toggle>
+                                            <IoContrast className='me-2' />
+                                            {t(cssmode.cssmode)}
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu>
+                                            {cssmode?.cssmode === "dark" ? <Dropdown.Item key={"dark"} onClick={() => handleThemeChange("light")}>Light</Dropdown.Item> : null}
+                                            {cssmode?.cssmode === "light" ? <Dropdown.Item key={"light"} onClick={() => handleThemeChange("dark")}>Dark</Dropdown.Item> : null}
+                                        </Dropdown.Menu>
+                                    </Dropdown>
                                 </div> */}
 
                                 <div className='language-container bg-white' >

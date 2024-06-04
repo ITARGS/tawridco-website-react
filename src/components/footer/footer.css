@@ -68,7 +68,7 @@
   justify-content: space-between;
   color: var(--text-field-color);
   align-items: center;
-  padding: 8px 0;
+  padding: 8px;
 }
 
 #footer .copyright p {
@@ -134,4 +134,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+@media screen and (min-width: 1024px) and (max-width: 1440px) {
+  #footer .bottom-section-footer {
+    padding: 8px 20px;
+  }
 }

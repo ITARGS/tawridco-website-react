@@ -48,6 +48,7 @@ import jsonFile from "./utils/en.json";
 import { diffInTime, } from './utils/TimeUtilites';
 import { setFavouriteLength, setFavouriteProductIds } from './model/reducer/favouriteReducer';
 import CategoryChild from './components/category/CategoryChild';
+import { Helmet } from 'react-helmet-async';
 
 const App = () => {
   //initialize cookies
@@ -64,10 +65,11 @@ const App = () => {
   const shop = useSelector((state) => (state.shop));
 
   useEffect(() => {
-    if (cookies.get('jwt_token') !== undefined && user?.user === null) {
+    if (cookies.get('jwt_token') !== undefined) {
       getCurrentUser(cookies.get('jwt_token'));
     }
-    // else if (cookies.get("jwt_token")) {
+    // else if (cookies.get("jwt_token")) {:80
+
     //   dispatch(logoutAuth({ data: null }));
     // }
     getSetting();
@@ -202,7 +204,7 @@ const App = () => {
     --sub-text-color: #8b8b8b;
     --second-cards-color: #ffffff;
     --text-field-color: #f8f8f8;
-  
+    --breadcrumb-bg: #efefef;
     --body-background-dark: #141414;
     --primary-color-dark: #e5e5e5;
     --gray-hover-color: #dcdcdc;
@@ -242,6 +244,9 @@ const App = () => {
   return (
     <AnimatePresence>
       <style key={"override-style"}>{RootCss}</style>
+      <Helmet>
+        <meta name="title" content={setting?.setting?.app_name} />
+      </Helmet>
       <div key={"home-container"} className="h-auto">
         <Header key="header" />
         <NewUserModal key="newUserModal" />

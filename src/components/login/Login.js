@@ -287,7 +287,7 @@ const Login = React.memo((props) => {
                 else {
                     setError(result.message);
                     setOTP("");
-
+                    console.log("Message", result?.message);
                 }
 
                 setisLoading(false);

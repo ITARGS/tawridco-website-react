@@ -175,10 +175,12 @@ const OrderDetails = React.memo(() => {
                                                     <thead>
                                                         <th>{t('product')}</th>
                                                         <th>{t('price')}</th>
-                                                        {orderData?.active_status >= 6 ? <th>{t('rating')}</th> : null}
+                                                        {/* {console.log(orderData)} */}
+                                                        {orderData?.items?.some((item) => (Number(item?.active_status) >= 6)) ? <th>{t('rating')}</th> : null}
                                                         {/* <th>{t('action')}</th> */}
                                                     </thead>
                                                     <tbody>
+                                                        {/* console.log(item); */}
                                                         {orderData?.items?.map((item, index) => {
                                                             return (
                                                                 <>
@@ -271,88 +273,88 @@ const OrderDetails = React.memo(() => {
                                                                             </div>
 
                                                                         </td>
-                                                                        {Number(item?.active_status) >= 6 ? <td>
-                                                                            <div className='rateProductText' >
-                                                                                {item.item_rating.find((rating) => rating.user.id === user.id) ?
-                                                                                    <div className='pb-4' onClick={() => {
-                                                                                        setRatingProductId(item.product_id);
-                                                                                        setShowRatingEditModal(true);
-                                                                                        setEditRatingId(item.item_rating.find((rating) => rating.user.id === user.id)?.id);
-                                                                                    }}>
-                                                                                        <span className='me-2' >
-                                                                                            {t("you_rated")}
-                                                                                        </span>
-                                                                                        <span className="userRatedStarContainer">
-                                                                                            <LuStar fill='white' stroke='white' />
-                                                                                            {item?.item_rating?.find((rating) => rating?.user?.id === user?.id)?.rate}
-                                                                                        </span>
-                                                                                    </div>
-                                                                                    :
-                                                                                    <div className='rateProductText' onClick={() => {
-                                                                                        setRatingProductId(item.product_id);
-                                                                                        setShowPdtRatingModal(true);
-                                                                                    }}>
-                                                                                        <img className='me-2' src={RateProductStar} alt='rateProductStar' />
-                                                                                        {t("review_and_rating")}
-                                                                                    </div>
-                                                                                }
-                                                                            </div>
-                                                                        </td> : null}
+                                                                        {(Number(item?.active_status) >= 6) ?
+                                                                            <td>
+                                                                                <div className='rateProductText' >
+                                                                                    {item.item_rating.find((rating) => rating.user.id === user.id) ?
+                                                                                        <div className='pb-4' onClick={() => {
+                                                                                            setRatingProductId(item.product_id);
+                                                                                            setShowRatingEditModal(true);
+                                                                                            setEditRatingId(item.item_rating.find((rating) => rating.user.id === user.id)?.id);
+                                                                                        }}>
+                                                                                            <span className='me-2' >
+                                                                                                {t("you_rated")}
+                                                                                            </span>
+                                                                                            <span className="userRatedStarContainer">
+                                                                                                <LuStar fill='white' stroke='white' />
+                                                                                                {item?.item_rating?.find((rating) => rating?.user?.id === user?.id)?.rate}
+                                                                                            </span>
+                                                                                        </div>
+                                                                                        :
+                                                                                        <div className='rateProductText' onClick={() => {
+                                                                                            setRatingProductId(item.product_id);
+                                                                                            setShowPdtRatingModal(true);
+                                                                                        }}>
+                                                                                            <img className='me-2' src={RateProductStar} alt='rateProductStar' />
+                                                                                            {t("review_and_rating")}
+                                                                                        </div>
+                                                                                    }
+                                                                                </div>
+                                                                            </td> : null}
                                                                     </tr>
-                                                                    {
-                                                                        showReturnModal[index] ?
-                                                                            <Modal
-                                                                                size='md'
-                                                                                show={showReturnModal[index]}
-                                                                                centered
-                                                                                // onHide={() => setShowReturnModal(false)}
-                                                                                onHide={() => setShowReturnModal(prevState => {
+                                                                    {showReturnModal[index] ?
+                                                                        <Modal
+                                                                            size='md'
+                                                                            show={showReturnModal[index]}
+                                                                            centered
+                                                                            // onHide={() => setShowReturnModal(false)}
+                                                                            onHide={() => setShowReturnModal(prevState => {
+                                                                                const newState = [...prevState];
+                                                                                newState[index] = false;
+                                                                                return newState;
+                                                                            })}
+                                                                            backdrop="static"
+                                                                        >
+                                                                            <Modal.Header className='d-flex justify-content-between returnProductModalHeader'>
+                                                                                <h5 className='title'>{t("return_order_item")}</h5>
+                                                                                <AiOutlineCloseCircle className='cursorPointer' size={28} fill='black' onClick={() => setShowReturnModal(prevState => {
                                                                                     const newState = [...prevState];
                                                                                     newState[index] = false;
                                                                                     return newState;
-                                                                                })}
-                                                                                backdrop="static"
-                                                                            >
-                                                                                <Modal.Header className='d-flex justify-content-between returnProductModalHeader'>
-                                                                                    <h5 className='title'>{t("return_order_item")}</h5>
-                                                                                    <AiOutlineCloseCircle className='cursorPointer' size={28} fill='black' onClick={() => setShowReturnModal(prevState => {
-                                                                                        const newState = [...prevState];
-                                                                                        newState[index] = false;
-                                                                                        return newState;
-                                                                                    })} />
-                                                                                </Modal.Header>
-                                                                                <Modal.Body className='returnProductModalBody'>
-                                                                                    <form onSubmit={(e) => {
-                                                                                        e.preventDefault();
-                                                                                        // if (!returnRef.current.value.trim()) {
-                                                                                        //     toast.error(t('please_type_return_reason'));
-                                                                                        //     return; // Don't proceed further if the textarea is empty
-                                                                                        // }
-                                                                                        handleUpdateStatus(item?.id, 8, returnRef.current.value);
-                                                                                    }}>
-                                                                                        <div className='d-flex flex-column justify-content-center'>
-                                                                                            <label htmlFor='reasonTextArea' className='my-3 reasonLabel'>
-                                                                                                {t("return_reason")}
-                                                                                            </label>
-                                                                                            <textarea
-                                                                                                ref={returnRef}
-                                                                                                id="reasonTextArea"
-                                                                                                rows={8}
-                                                                                                name='reasonTextArea'
-                                                                                                placeholder={t("write_return_reason")}
-                                                                                                className='reasonTextArea my-4'
-                                                                                                required
-                                                                                            />
-                                                                                        </div>
-                                                                                        <div className='d-flex justify-content-end mt-4'>
-                                                                                            <button type='submit' className='returnSubmitBtn'>
-                                                                                                {t("request_a_return")}
-                                                                                            </button>
-                                                                                        </div>
-                                                                                    </form>
-                                                                                </Modal.Body>
-                                                                            </Modal>
-                                                                            : null}
+                                                                                })} />
+                                                                            </Modal.Header>
+                                                                            <Modal.Body className='returnProductModalBody'>
+                                                                                <form onSubmit={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    // if (!returnRef.current.value.trim()) {
+                                                                                    //     toast.error(t('please_type_return_reason'));
+                                                                                    //     return; // Don't proceed further if the textarea is empty
+                                                                                    // }
+                                                                                    handleUpdateStatus(item?.id, 8, returnRef.current.value);
+                                                                                }}>
+                                                                                    <div className='d-flex flex-column justify-content-center'>
+                                                                                        <label htmlFor='reasonTextArea' className='my-3 reasonLabel'>
+                                                                                            {t("return_reason")}
+                                                                                        </label>
+                                                                                        <textarea
+                                                                                            ref={returnRef}
+                                                                                            id="reasonTextArea"
+                                                                                            rows={8}
+                                                                                            name='reasonTextArea'
+                                                                                            placeholder={t("write_return_reason")}
+                                                                                            className='reasonTextArea my-4'
+                                                                                            required
+                                                                                        />
+                                                                                    </div>
+                                                                                    <div className='d-flex justify-content-end mt-4'>
+                                                                                        <button type='submit' className='returnSubmitBtn'>
+                                                                                            {t("request_a_return")}
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </form>
+                                                                            </Modal.Body>
+                                                                        </Modal>
+                                                                        : null}
                                                                 </>
 
                                                             );

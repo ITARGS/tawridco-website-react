@@ -14,7 +14,15 @@ import { ProgressBar, Tab, Tabs } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import OrderTracker from './OrderTracker';
-
+import { formatDate, formatTime } from '../../utils/formatDate';
+import ReceivedSVG from "../../utils/Icons/statusIcons/status_icon_received.svg";
+import PendingPaymentSVG from "../../utils/Icons/statusIcons/status_icon_awaiting_payment.svg";
+import ProcessedSVG from "../../utils/Icons/statusIcons/status_icon_process.svg";
+import ShippedSVG from "../../utils/Icons/statusIcons/status_icon_shipped.svg";
+import OutforDeliverySVG from "../../utils/Icons/statusIcons/status_icon_out_for_delivery.svg";
+import DeliveredSVG from "../../utils/Icons/statusIcons/status_icon_delivered.svg";
+import CancelledSVG from "../../utils/Icons/statusIcons/status_icon_cancel.svg";
+import ReturnedSVG from "../../utils/Icons/statusIcons/status_icon_returned.svg";
 
 const Order = () => {
 
@@ -158,6 +166,37 @@ const Order = () => {
         }
     };
     const { t } = useTranslation();
+
+    const getImageofOrderStatus = (status) => {
+        return (
+            <>
+                {
+                    status == 1 ? <img src={PendingPaymentSVG} className='p-3' alt='PendingPaymentSVG' /> :
+                        status == 2 ? <img src={ReceivedSVG} className='p-3' alt='ReceivedSVG' /> :
+                            status == 3 ? <img src={ProcessedSVG} className='p-3' alt='ProcessedSVG' /> :
+                                status == 4 ? <img src={ShippedSVG} className='p-3' alt='ShippedSVG' /> :
+                                    status == 5 ? <img src={OutforDeliverySVG} className='p-3' alt='OutforDeliverySVG' /> :
+                                        status == 6 ? <img src={DeliveredSVG} className='p-3' alt='DeliveredSVG' /> :
+                                            status == 7 ? <img src={CancelledSVG} className='p-3' alt='CancelledSVG' /> :
+                                                status == 8 ? <img src={ReturnedSVG} className='p-3' alt='ReturnedSVG' /> : null
+                }
+            </>
+        );
+    };
+    const getStatus = (flag) => {
+        return (
+            <>
+                {Number(flag[0]) == 1 ? t("paymentPending") :
+                    Number(flag[0]) == 2 ? t("received") :
+                        Number(flag[0]) == 3 ? t("processed") :
+                            Number(flag[0]) == 4 ? t("shipped") :
+                                Number(flag[0]) == 5 ? t("outForDelivery") :
+                                    Number(flag[0]) == 6 ? t("delivered") :
+                                        Number(flag[0]) == 7 ? t("cancelled") :
+                                            Number(flag[0]) == 8 ? t("returned") : null}
+            </>);
+    };
+
     return (
         <div className='order-list'>
             <div className='heading'>
@@ -320,16 +359,17 @@ const Order = () => {
                                         <h5 className="page-header">{t("mobile")}{element && element.mobile}</h5>
                                         <button type="button" className="bg-white" data-bs-dismiss="modal" aria-label="Close" ref={closeModalRef} style={{ width: '30px' }}><AiOutlineCloseCircle size={26} /></button>
                                     </div>
+                                    {console.log(element)}
                                     <div className="d-flex flex-column">
                                         <div className="d-flex flex-column mx-5 justify-content-around position-relative">
                                             <div className="d-flex my-4 align-items-center">
-                                                <div className="col-sm-4 bg-white track-col"> <span className="rounded-circle px-3 pt-2 fs-2 track-order-icon btn " style={{ background: "var(--secondary-color-light)" }}><i className="bi bi-cart "></i></span></div>
-                                                <span className=""> {t("order_status_display_name_recieved")}</span>
-                                                <ProgressBar className='orderProgressBar' now={element ? element?.active_status === "2" ? 0 :
+                                                {/* <div className="col-sm-4 bg-white track-col"> <span className="rounded-circle px-3 pt-2 fs-2 track-order-icon btn " style={{ background: "var(--secondary-color-light)" }}><i className="bi bi-cart "></i></span></div>
+                                                <span className=""> {t("order_status_display_name_recieved")}</span> */}
+                                                {/* <ProgressBar className='orderProgressBar' now={element ? element?.active_status === "2" ? 0 :
                                                     element.active_status === "4" ? 27 :
                                                         element.active_status === "5" ? 67 :
                                                             element.active_status === "6" ? 100 :
-                                                                0 : 0} />
+                                                                100 : 100} /> */}
                                             </div>
                                             {/* <div className="progress flex-column col-sm-3" role="progressbar" aria-label="Basic example" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
 
@@ -339,7 +379,20 @@ const Order = () => {
                                                         height: element && element.active_status === "2" ? "23%" : element.active_status === "5" ? "77%" : element.active_status === "4" ? "57%" : element.active_status === "6" ? "100%" : "0%"
                                                     }}></div>
                                                 </div> */}
-                                            <div className={`d-flex my-4 align-items-center ${element?.active_status >= "4" ? "visible" : "invisible"}`}>
+                                            <div className='d-flex flex-column my-4 align-items-center'>
+                                                {element?.status?.map((flag, index) => (
+                                                    <div key={index} className="d-flex gap-5 align-items-center orderStatusContainer">
+                                                        <div className="my-4 track-order-icon">
+                                                            {getImageofOrderStatus(Number(flag[0]))}
+                                                        </div>
+                                                        {(index < (element?.status?.length - 1)) ? <ProgressBar className='orderProgressBar' now={100} /> : null}
+                                                        <span className='orderStatusText'>
+                                                            Your order has been {getStatus(flag)} on {formatDate(flag[1])} {formatTime(flag[1])}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                            {/* <div className={`d-flex my-4 align-items-center ${element?.active_status >= "4" ? "visible" : "invisible"}`}>
                                                 <div className="col-sm-4 bg-white track-col"> <span className="rounded-circle px-3 pt-2 fs-2 track-order-icon btn " style={{ background: "var(--secondary-color-light)" }}><i className="bi bi-truck "></i></span></div>
                                                 <span> {t("order_status_display_name_shipped")}</span>
                                             </div>
@@ -350,7 +403,7 @@ const Order = () => {
                                             <div className={`d-flex my-4 align-items-center ${element?.active_status >= "6" ? "visible" : "invisible"}`}>
                                                 <div className="col-sm-4 bg-white track-col"> <span className="rounded-circle px-3 pt-2 fs-2 btn track-order-icon " style={{ background: "var(--secondary-color-light)" }}><i className="bi bi-check "></i></span></div>
                                                 <span> {t("order_status_display_name_delivered")}</span>
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
 

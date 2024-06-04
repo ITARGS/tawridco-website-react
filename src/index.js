@@ -7,6 +7,7 @@ import { Provider } from 'react-redux';
 import { Persiststore } from './model/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import { BrowserRouter } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import "slick-carousel/slick/slick.css";
@@ -17,13 +18,15 @@ import "slick-carousel/slick/slick-theme.css";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
-  <BrowserRouter>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={Persiststore}>
-        <App />
-      </PersistGate>
-    </Provider>
-  </BrowserRouter>
+  <HelmetProvider>
+    <BrowserRouter>
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={Persiststore}>
+          <App />
+        </PersistGate>
+      </Provider>
+    </BrowserRouter>
+  </HelmetProvider>
 );
 
 if ('serviceWorker' in navigator) {

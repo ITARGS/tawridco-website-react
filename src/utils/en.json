@@ -311,5 +311,7 @@
   "phonepe": "PhonePe",
   "please_select_payment_method": "Please select a payment method.",
   "something_went_wrong_select_address": "Oops, something went wrong! Please select the address again.",
-  "no_internet_connection": "Oops, no internet connection available."
+  "no_internet_connection": "Oops, no internet connection available.",
+  "light": "Light",
+  "dark": "Dark"
 }

@@ -453,7 +453,7 @@ input::placeholder {
 }
 
 #productlist {
-  padding-top: 20px;
+  /* padding-top: 20px; */
   padding-bottom: 20px;
   font-size: 2rem;
 }
@@ -1788,4 +1788,27 @@ input::placeholder {
 .noInternetContainer > p {
   font-size: 24px;
   font-weight: 700;
+}
+
+.breadCrumbs {
+  width: 100%;
+  font-size: 16px;
+  background-color: var(--breadcrumb-bg);
+  color: var(--primary-color);
+  margin-bottom: 15px;
+  padding: 10px;
+  padding-left: 20px;
+  font-weight: 600;
+  /* margin-top: 5px; */
+  /* opacity: 0.8; */
+}
+
+.breadCrumbs .breadCrumbsItem > a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.breadCrumbActive {
+  font-weight: 600;
+  color: var(--secondary-color) !important;
 }

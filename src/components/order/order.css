@@ -6,17 +6,19 @@
 .orderProgressBar {
   transform: rotate(90deg);
   z-index: -1;
-  width: 100%;
-  max-width: 186px;
+  width: 50%;
+  max-width: 70px;
   background: var(--secondary-color-light);
   border: 1px solid var(--secondary-color-dark);
   position: absolute;
   transform-origin: left;
   margin: auto;
-  left: 16.5px;
+  left: 20px;
   height: 4.2px !important;
 }
-
+.orderStatusText {
+  font-size: 16px;
+}
 .orderProgressBar .progress-bar {
   background-color: var(--secondary-color) !important;
 }
@@ -58,6 +60,11 @@
 
 .track-order-icon {
   border: 1px solid var(--secondary-color-dark) !important;
+  display: flex;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--secondary-color);
+  /* outline: 2px solid var(--secondary-color-dark); */
 }
 
 .track-order-icon:hover {

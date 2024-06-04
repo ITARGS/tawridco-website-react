@@ -5,7 +5,7 @@ import { BiMinus, BiLink } from 'react-icons/bi';
 import { toast } from 'react-toastify';
 import api from '../../api/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, Link, useParams } from 'react-router-dom';
+import { useNavigate, Link, useParams, useLocation } from 'react-router-dom';
 import Cookies from 'universal-cookie';
 import Slider from 'react-slick';
 import { AiOutlineEye } from 'react-icons/ai';
@@ -40,6 +40,7 @@ const ProductDetails = () => {
     const navigate = useNavigate();
     const cookies = new Cookies();
     const { slug } = useParams();
+    const location = useLocation();
 
     const product = useSelector(state => state.selectedProduct);
     const cart = useSelector(state => state.cart);
@@ -547,7 +548,17 @@ const ProductDetails = () => {
             {loading && <Loader screen="full" background="none" />}
             {!isNetworkError ?
                 <div className='product-details-view'>
-
+                    <div id='productListingBreadcrumb' className='w-100 breadCrumbs'>
+                        <div className='container d-flex align-items-center gap-2'>
+                            <div className='breadCrumbsItem'>
+                                <Link to={"/"}>{t("home")}</Link>
+                            </div>
+                            <div className='breadCrumbsItem'>/</div>
+                            <div className='breadCrumbsItem'>
+                                <Link className={location.pathname.split("/").findIndex(loc => loc == productdata?.slug) !== -1 ? "breadCrumbActive" : ""} to={location?.pathname}>{productdata?.name}</Link>
+                            </div>
+                        </div>
+                    </div>
                     <div className='container' style={{ gap: "20px" }}>
                         <div className='top-wrapper'>
 
