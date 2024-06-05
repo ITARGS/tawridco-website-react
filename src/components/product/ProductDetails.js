@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import './product.css';
-import { BsHeart, BsShare, BsPlus, BsHeartFill, } from "react-icons/bs";
+import { BsHeart, BsPlus, BsHeartFill } from "react-icons/bs";
 import { BiMinus, BiLink } from 'react-icons/bi';
 import { toast } from 'react-toastify';
 import api from '../../api/api';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link, useParams, useLocation } from 'react-router-dom';
-import Cookies from 'universal-cookie';
 import Slider from 'react-slick';
-import { AiOutlineEye } from 'react-icons/ai';
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { FacebookIcon, FacebookShareButton, TelegramIcon, TelegramShareButton, WhatsappIcon, WhatsappShareButton } from 'react-share';
 import QuickViewModal from './QuickViewModal';
-import { IoIosArrowDown } from 'react-icons/io';
 import { useTranslation } from 'react-i18next';
 import Loader from '../loader/Loader';
 import { clearSelectedProduct, setSelectedProduct } from '../../model/reducer/selectedProduct';
 import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
-import { setFavourite, setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
+import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
 import Popup from '../same-seller-popup/Popup';
 import useGetProductRatingsById from '../../hooks/useGetProductRatingsById';
 import { OverlayTrigger, Popover, ProgressBar } from 'react-bootstrap';
@@ -38,7 +35,6 @@ const ProductDetails = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const cookies = new Cookies();
     const { slug } = useParams();
     const location = useLocation();
 
@@ -118,7 +114,7 @@ const ProductDetails = () => {
 
     const getProductDatafromApi = (slug) => {
         if (slug !== null || slug !== undefined) {
-            api.getProductbyId(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, -1, cookies.get('jwt_token'), slug)
+            api.getProductbyId(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, -1, user?.jwtToken, slug)
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
@@ -154,7 +150,7 @@ const ProductDetails = () => {
     // const fetchRelatedProducts = () => {
     //     api.getProductbyFilter(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, {
     //         category_id: productdata.category_id,
-    //     }, cookies.get('jwt_token'))
+    //     }, user?.jwtToken)
     //         .then(response => response.json())
     //         .then(result => {
     //             if (result.status === 1) {
@@ -287,8 +283,8 @@ const ProductDetails = () => {
     };
     const [limit, setLimit] = useState(12);
     const [offset, setOffset] = useState(0);
-    const { productRating, totalData, loading: Loading, error } = useGetProductRatingsById(cookies.get("jwt_token"), productdata?.id, limit, offset);
-    const { ratingImages, totalImages } = useGetProductRatingImages(cookies.get("jwt_token"), productdata?.id, 8, offset);
+    const { productRating, totalData, loading: Loading, error } = useGetProductRatingsById(user?.jwtToken, productdata?.id, limit, offset);
+    const { ratingImages, totalImages } = useGetProductRatingImages(user?.jwtToken, productdata?.id, 8, offset);
 
     // useEffect(() => {
     //     if (productdata && selectedVariant === null && productdata.variants) {
@@ -300,7 +296,7 @@ const ProductDetails = () => {
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
         setCartLoader(true);
-        await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
+        await api.addToCart(user?.jwtToken, product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -338,7 +334,7 @@ const ProductDetails = () => {
     //remove from Cart
     const removefromCart = async (product_id, product_variant_id) => {
         setisLoading(true);
-        await api.removeFromCart(cookies.get('jwt_token'), product_id, product_variant_id)
+        await api.removeFromCart(user?.jwtToken, product_id, product_variant_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -361,7 +357,7 @@ const ProductDetails = () => {
     //Add to favorite
     const addToFavorite = async (product_id) => {
         // setisLoading(true);
-        await api.addToFavotite(cookies.get('jwt_token'), product_id)
+        await api.addToFavotite(user?.jwtToken, product_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -380,7 +376,7 @@ const ProductDetails = () => {
 
     const removefromFavorite = async (product_id) => {
         // setisLoading(true);
-        await api.removeFromFavorite(cookies.get('jwt_token'), product_id)
+        await api.removeFromFavorite(user?.jwtToken, product_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -520,7 +516,7 @@ const ProductDetails = () => {
     };
 
     const handleValidateAddNewProduct = (productQuantity, productdata) => {
-        if (cookies.get('jwt_token') !== undefined) {
+        if (user?.jwtToken !== "") {
             if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
                 toast.error(t("limited_product_stock_error"));
             }
@@ -712,26 +708,6 @@ const ProductDetails = () => {
                                                                         <button type='button' id={`Add-to-cart-quickview`} className='add-to-cart'
                                                                             onClick={() => {
                                                                                 const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                                // if (cookies.get('jwt_token') !== undefined) {
-                                                                                //     if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
-                                                                                //         toast.error('Oops, Limited Stock Available');
-                                                                                //     }
-                                                                                //     else if (Number(productdata.is_unlimited_stock)) {
-                                                                                //         addtoCart(productdata.id, selectedVariant.id, 1);
-                                                                                //     } else {
-                                                                                //         if (selectedVariant.status) {
-                                                                                //             addtoCart(productdata.id, selectedVariant.id, 1);
-                                                                                //             setP_id(productdata.id);
-                                                                                //             setP_V_id(selectedVariant.id);
-                                                                                //             setQnty(1);
-                                                                                //         } else {
-                                                                                //             toast.error('Oops, Limited Stock Available');
-                                                                                //         }
-                                                                                //     }
-                                                                                // }
-                                                                                // else {
-                                                                                //     toast.error(t("required_login_message_for_cartRedirect"));
-                                                                                // }
                                                                                 handleValidateAddNewProduct(productQuantity, productdata);
                                                                             }}>{t("add_to_cart")}</button>
                                                                     </>)
@@ -788,7 +764,7 @@ const ProductDetails = () => {
                                                                 <>
                                                                     <button type='button' id={`Add-to-cart-quickview`} className='add-to-cart'
                                                                         onClick={() => {
-                                                                            if (cookies.get('jwt_token') !== undefined) {
+                                                                            if (user?.jwtToken !== undefined) {
                                                                                 if (Number(productdata.is_unlimited_stock)) {
                                                                                     addtoCart(productdata.id, productdata.varinats[0].id, 1);
 
@@ -813,7 +789,7 @@ const ProductDetails = () => {
 
                                                             {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == productdata.id) ? (
                                                                 <button type="button" className='wishlist-product' onClick={() => {
-                                                                    if (cookies.get('jwt_token') !== undefined) {
+                                                                    if (user?.jwtToken !== "") {
                                                                         removefromFavorite(productdata.id);
                                                                     } else {
                                                                         toast.error(t('required_login_message_for_cart'));
@@ -823,7 +799,7 @@ const ProductDetails = () => {
                                                                 </button>)
                                                                 : (
                                                                     <button key={productdata.id} type="button" className='wishlist-product' onClick={() => {
-                                                                        if (cookies.get('jwt_token') !== undefined) {
+                                                                        if (user?.jwtToken !== "") {
                                                                             addToFavorite(productdata.id);
                                                                         } else {
                                                                             toast.error(t("required_login_message_for_cart"));
@@ -1070,7 +1046,7 @@ const ProductDetails = () => {
                                                         <div className='border-end '>
                                                             {favorite.favorite && favorite.favorite.data.some(element => element.id === related_product.id) ? (
                                                                 <button type="button" className='wishlist-product' onClick={() => {
-                                                                    if (cookies.get('jwt_token') !== undefined) {
+                                                                    if (user?.jwtToken !== undefined) {
                                                                         removefromFavorite(related_product.id);
                                                                     } else {
                                                                         toast.error(t('required_login_message_for_cart'));
@@ -1081,7 +1057,7 @@ const ProductDetails = () => {
                                                                 </button>
                                                             ) : (
                                                                 <button key={related_product.id} type="button" className='wishlist-product' onClick={() => {
-                                                                    if (cookies.get('jwt_token') !== undefined) {
+                                                                    if (user?.jwtToken !== undefined) {
                                                                         addToFavorite(related_product.id);
                                                                     } else {
                                                                         toast.error(t("required_login_message_for_cart"));
@@ -1151,7 +1127,7 @@ const ProductDetails = () => {
                                                                 </div>
                                                             </> : <>
                                                                 <button type="button" id={`Add-to-cart-section${index}`} className={`w-100 h-100 add-to-cart active ${(!Number(related_product.is_unlimited_stock) && (related_product.variants[0].stock <= 0)) ? "buttonDisabled" : ""} `} onClick={() => {
-                                                                    if (cookies.get('jwt_token') !== undefined) {
+                                                                    if (user?.jwtToken !== undefined) {
 
                                                                         if (cart.cart && cart.cart.data.cart.some(element => element.product_id === related_product.id) && cart.cart.data.cart.some(element => element.product_variant_id === related_product.variants[0].id)) {
                                                                             toast.info('Product already in Cart');
@@ -1205,7 +1181,7 @@ const ProductDetails = () => {
 
 
                         <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} setP_V_id={setP_V_id} setP_id={setP_id} />
-                        <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} cookies={cookies} toast={toast} city={city} />
+                        <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} toast={toast} city={city} />
                     </div>
 
                 </div> :

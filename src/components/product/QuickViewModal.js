@@ -6,30 +6,25 @@ import { BiMinus, BiLink } from 'react-icons/bi';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import api from '../../api/api';
-import Cookies from 'universal-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import { FacebookIcon, FacebookShareButton, TelegramIcon, TelegramShareButton, WhatsappIcon, WhatsappShareButton } from 'react-share';
 import Loader from '../loader/Loader';
 import Slider from 'react-slick';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'react-bootstrap';
-// import { AddToCart, AddToFavorite, RemoveFromCart, RemoveFromFavorite } from '../../functions/Functions';
 import { setProductSizes } from '../../model/reducer/productSizesReducer';
 import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
-import { setFavourite, setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
-import Popup from '../same-seller-popup/Popup';
+import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
 
 
 const QuickViewModal = (props) => {
-    const setting = useSelector(state => state.setting);
 
 
-    const cookies = new Cookies();
     const dispatch = useDispatch();
 
+    const setting = useSelector(state => state.setting);
     const city = useSelector(state => state.city);
     const sizes = useSelector(state => state.productSizes);
-
     const cart = useSelector(state => state.cart);
     const favorite = useSelector(state => state.favourite);
     const user = useSelector(state => state.user);
@@ -61,7 +56,7 @@ const QuickViewModal = (props) => {
 
     const fetchProduct = async (product_id) => {
         // console.log("fetchProduct Called");
-        await api.getProductbyId(city.city.latitude, city.city.longitude, product_id, cookies.get('jwt_token'))
+        await api.getProductbyId(city.city.latitude, city.city.longitude, product_id, user?.jwtToken)
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -76,7 +71,7 @@ const QuickViewModal = (props) => {
     };
 
     const fetchProductVariant = async (product_id) => {
-        await api.getProductbyId(city.city.latitude, city.city.longitude, product_id, cookies.get('jwt_token'))
+        await api.getProductbyId(city.city.latitude, city.city.longitude, product_id, user?.jwtToken)
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -94,7 +89,7 @@ const QuickViewModal = (props) => {
     useEffect(() => {
         if (sizes.sizes === null || sizes.status === 'loading') {
             if (city.city !== null) {
-                api.getProductbyFilter(city.city.latitude, city.city.longitude, cookies.get('jwt_token'))
+                api.getProductbyFilter(city.city.latitude, city.city.longitude, user?.jwtToken)
                     .then(response => response.json())
                     .then(result => {
                         if (result.status === 1) {
@@ -147,7 +142,7 @@ const QuickViewModal = (props) => {
     const addtoCart = async (product_id, product_variant_id, qty) => {
         // console.log("QuickView Add to Cart -> ", product_id, product_variant_id, qty);
         setisLoader(true);
-        await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
+        await api.addToCart(user?.jwtToken, product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -184,7 +179,7 @@ const QuickViewModal = (props) => {
 
     //remove from Cart
     const removefromCart = async (product_id, product_variant_id) => {
-        await api.removeFromCart(cookies.get('jwt_token'), product_id, product_variant_id)
+        await api.removeFromCart(user?.jwtToken, product_id, product_variant_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -205,7 +200,7 @@ const QuickViewModal = (props) => {
 
     //Add to favorite
     const addToFavorite = async (product_id) => {
-        await api.addToFavotite(cookies.get('jwt_token'), product_id)
+        await api.addToFavotite(user?.jwtToken, product_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -223,7 +218,7 @@ const QuickViewModal = (props) => {
     };
 
     const removefromFavorite = async (product_id) => {
-        await api.removeFromFavorite(cookies.get('jwt_token'), product_id)
+        await api.removeFromFavorite(user?.jwtToken, product_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -336,7 +331,7 @@ const QuickViewModal = (props) => {
     };
 
     const handleValidateAddNewProduct = (productQuantity, product) => {
-        if (cookies.get('jwt_token') !== undefined) {
+        if (user?.jwtToken !== "") {
             if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.total_allowed_quantity)) {
                 toast.error('Oops, Limited Stock Available');
             }
@@ -353,7 +348,7 @@ const QuickViewModal = (props) => {
         else {
             toast.error(t("required_login_message_for_cartRedirect"));
         }
-};
+    };
     return (
         <Modal
             size='lg'
@@ -532,23 +527,6 @@ const QuickViewModal = (props) => {
                                                                     onClick={(e) => {
                                                                         e.preventDefault();
                                                                         const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                        // if (cookies.get('jwt_token') !== undefined) {
-                                                                        //     if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.total_allowed_quantity)) {
-                                                                        //         toast.error('Oops, Limited Stock Available');
-                                                                        //     }
-                                                                        //     else if (Number(product.is_unlimited_stock)) {
-                                                                        //         addtoCart(product.id, selectedVariant.id, 1);
-                                                                        //     } else {
-                                                                        //         if (selectedVariant.status) {
-                                                                        //             addtoCart(product.id, selectedVariant.id, 1);
-                                                                        //         } else {
-                                                                        //             toast.error('Oops, Limited Stock Available');
-                                                                        //         }
-                                                                        //     }
-                                                                        // }
-                                                                        // else {
-                                                                        //     toast.error(t("required_login_message_for_cartRedirect"));
-                                                                        // }
                                                                         handleValidateAddNewProduct(productQuantity, product);
                                                                     }}>{t("add_to_cart")}</button>
                                                             </>)
@@ -556,7 +534,7 @@ const QuickViewModal = (props) => {
                                                     }
                                                     {favorite.favorite && favorite.favouriteProductIds?.some(id => id == product.id) ? (
                                                         <button type="button" className='wishlist-product' onClick={() => {
-                                                            if (cookies.get('jwt_token') !== undefined) {
+                                                            if (user?.jwtToken !== "") {
                                                                 removefromFavorite(product.id);
                                                             } else {
                                                                 toast.error(t('required_login_message_for_cart'));
@@ -567,7 +545,7 @@ const QuickViewModal = (props) => {
                                                         </button>
                                                     ) : (
                                                         <button key={product.id} type="button" className='wishlist-product' onClick={() => {
-                                                            if (cookies.get('jwt_token') !== undefined) {
+                                                            if (user?.jwtToken !== "") {
                                                                 addToFavorite(product.id);
                                                             } else {
                                                                 toast.error(t("required_login_message_for_cart"));

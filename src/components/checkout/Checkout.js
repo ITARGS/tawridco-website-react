@@ -13,7 +13,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import paypal from "../../utils/ic_paypal.svg";
 import Midtrans from "../../utils/Icons/Midtrans.svg";
 import PhonepeSVG from "../../utils/Icons/Phonepe.svg";
-import Cookies from 'universal-cookie';
 import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -36,7 +35,7 @@ import PaystackPop from '@paystack/inline-js';
 import Loader from '../loader/Loader';
 import Promo from '../cart/Promo';
 import { useTranslation } from 'react-i18next';
-import { clearCartPromo, setCart, setCartCheckout, setCartProducts, setCartPromo, setCartSubTotal, setWallet } from '../../model/reducer/cartReducer';
+import { setCart, setCartCheckout, setCartProducts, setCartPromo, setCartSubTotal, setWallet } from '../../model/reducer/cartReducer';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { PiWallet } from "react-icons/pi";
 import { deductUserBalance } from '../../model/reducer/authReducer';
@@ -47,7 +46,6 @@ import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
 const Checkout = () => {
     const dispatch = useDispatch();
-    const cookies = new Cookies();
     const navigate = useNavigate();
 
     const city = useSelector(state => state.city);
@@ -89,7 +87,7 @@ const Checkout = () => {
 
     // console.log("Payment Methods ->", setting?.payment_setting, expectedTime);
     useEffect(() => {
-        api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude, 1)
+        api.getCart(user?.jwtToken, city.city.latitude, city.city.longitude, 1)
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -111,7 +109,7 @@ const Checkout = () => {
                 };
             });
 
-        api.getCartSeller(cookies.get('jwt_token'), city.city.latitude, city.city.longitude, 1)
+        api.getCartSeller(user?.jwtToken, city.city.latitude, city.city.longitude, 1)
             .then(res => res.json())
             .then(result => {
                 setCodAllow(result?.data?.cod_allowed);
@@ -125,7 +123,7 @@ const Checkout = () => {
     useEffect(() => {
         // console.log("address.selected_address useEffect");
         if (address?.selected_address?.latitude && address?.selected_address?.longitude)
-            api.getCart(cookies.get('jwt_token'), address?.selected_address?.latitude, address?.selected_address?.longitude, 1)
+            api.getCart(user?.jwtToken, address?.selected_address?.latitude, address?.selected_address?.longitude, 1)
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
@@ -214,7 +212,7 @@ const Checkout = () => {
             handler: async (res) => {
                 if (res.razorpay_payment_id) {
                     setloadingPlaceOrder(true);
-                    await api.addRazorpayTransaction(cookies.get('jwt_token'), order_id, res.razorpay_payment_id, res.razorpay_order_id, res.razorpay_payment_id, res.razorpay_signature)
+                    await api.addRazorpayTransaction(user?.jwtToken, order_id, res.razorpay_payment_id, res.razorpay_order_id, res.razorpay_payment_id, res.razorpay_signature)
                         .then(response => response.json())
                         .then(result => {
                             setloadingPlaceOrder(false);
@@ -266,7 +264,7 @@ const Checkout = () => {
             handleRazorpayCancel(order_id);
         });
         rzpay.on('payment.failed', function (response) {
-            api.deleteOrder(cookies.get('jwt_token'), order_id);
+            api.deleteOrder(user?.jwtToken, order_id);
         });
         rzpay.open();
 
@@ -290,7 +288,7 @@ const Checkout = () => {
     };
 
     const handleRazorpayCancel = (order_id) => {
-        api.deleteOrder(cookies.get('jwt_token'), order_id);
+        api.deleteOrder(user?.jwtToken, order_id);
         setWalletDeductionAmt(walletDeductionAmt);
         setWalletAmount(user.user.balance);
         // setTotalPayment(totalPayment);
@@ -306,14 +304,14 @@ const Checkout = () => {
             ref: (new Date()).getTime().toString(),
             label: support_email,
             onClose: function () {
-                api.deleteOrder(cookies.get('jwt_token'), orderid);
+                api.deleteOrder(user?.jwtToken, orderid);
                 setWalletAmount(user.user.balance);
                 dispatch(setWallet({ data: 0 }));
             },
             callback: async function (response) {
 
                 setloadingPlaceOrder(true);
-                await api.addTransaction(cookies.get('jwt_token'), orderid, response.reference, paymentMethod, "order")
+                await api.addTransaction(user?.jwtToken, orderid, response.reference, paymentMethod, "order")
                     .then(response => response.json())
                     .then(result => {
                         setloadingPlaceOrder(false);
@@ -390,7 +388,7 @@ const Checkout = () => {
             }
             else if (paymentMethod === 'COD') {
                 // place order
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async (result) => {
                         setisLoader(false);
@@ -417,13 +415,13 @@ const Checkout = () => {
                     });
             }
             else if (paymentMethod === 'Razorpay') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
 
                         // fetchOrders();
                         if (result.status === 1) {
-                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Razorpay", "order")
+                            await api.initiate_transaction(user?.jwtToken, result.data.order_id, "Razorpay", "order")
                                 .then(resp => resp.json())
                                 .then(res => {
                                     setisLoader(false);
@@ -435,7 +433,7 @@ const Checkout = () => {
                                         handleRozarpayPayment(result.data.order_id, res.data.transaction_id, totalPayment, user.user.name, user.user.email, user.user.mobile, setting.setting?.app_name);
                                     }
                                     else {
-                                        api.deleteOrder(cookies.get('jwt_token'), result.data.order_id);
+                                        api.deleteOrder(user?.jwtToken, result.data.order_id);
                                         toast.error(res.message);
                                         setloadingPlaceOrder(false);
                                         setWalletAmount(walletDeductionAmt);
@@ -454,7 +452,7 @@ const Checkout = () => {
                     .catch(error => console.log(error));
             }
             else if (paymentMethod === 'Paystack') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(result => {
                         // fetchOrders();
@@ -476,11 +474,11 @@ const Checkout = () => {
             }
             else if (paymentMethod === "Stripe") {
                 setStripeModalShow(true);
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
                         if (result.status === 1) {
-                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, 'Stripe', "order")
+                            await api.initiate_transaction(user?.jwtToken, result.data.order_id, 'Stripe', "order")
                                 .then(resp => resp.json())
                                 .then(res => {
                                     if (res.status) {
@@ -491,7 +489,7 @@ const Checkout = () => {
                                         setstripeTransactionId(res.data.id);
                                     } else {
                                         setIsOrderPlaced(false);
-                                        api.deleteOrder(cookies.get('jwt_token'), result.data.order_id);
+                                        api.deleteOrder(user?.jwtToken, result.data.order_id);
 
                                     }
                                     setloadingPlaceOrder(false);
@@ -509,13 +507,13 @@ const Checkout = () => {
                 setloadingPlaceOrder(false);
             }
             else if (paymentMethod === 'Paypal') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
                         // fetchOrders();
                         if (result.status === 1) {
                             setOrderID(result.data.order_id);
-                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Paypal", "order")
+                            await api.initiate_transaction(user?.jwtToken, result.data.order_id, "Paypal", "order")
                                 .then(resp => resp.json())
                                 .then(res => {
                                     console.log(res.data);
@@ -546,7 +544,7 @@ const Checkout = () => {
                     .catch(error => console.log(error));
             }
             else if (paymentMethod === 'Wallet') {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async (result) => {
                         setisLoader(false);
@@ -573,7 +571,7 @@ const Checkout = () => {
                     });
 
                 // else if (paymentMethod === "Paytm") {
-                //      await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? cart.promo_code.discounted_amount: cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time)
+                //      await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, cart.promo_code ? cart.promo_code.discounted_amount: cart.checkout.total_amount, paymentMethod, address.selected_address.id, delivery_time)
                 //         .then(response => response.json())
                 //         .then(async result => {
                 //             if (result.status === 1) {
@@ -585,13 +583,13 @@ const Checkout = () => {
                 // }
 
             } else if (paymentMethod == "Midtrans") {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
                         // fetchOrders();
                         if (result.status === 1) {
                             setOrderID(result.data.order_id);
-                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Midtrans", "order")
+                            await api.initiate_transaction(user?.jwtToken, result.data.order_id, "Midtrans", "order")
                                 .then(resp => resp.json())
                                 .then(res => {
                                     console.log(res.data);
@@ -617,13 +615,13 @@ const Checkout = () => {
                     })
                     .catch(error => console.log(error));
             } else if (paymentMethod == "Phonepe") {
-                await api.placeOrder(cookies.get('jwt_token'), cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
                     .then(response => response.json())
                     .then(async result => {
                         // fetchOrders();
                         if (result.status === 1) {
                             setOrderID(result.data.order_id);
-                            await api.initiate_transaction(cookies.get('jwt_token'), result.data.order_id, "Phonepe", "order")
+                            await api.initiate_transaction(user?.jwtToken, result.data.order_id, "Phonepe", "order")
                                 .then(resp => resp.json())
                                 .then(res => {
                                     console.log(res.data);
@@ -653,7 +651,7 @@ const Checkout = () => {
     };
     const handleClose = () => {
         setisLoader(true);
-        api.removeCart(cookies.get('jwt_token')).then(response => response.json())
+        api.removeCart(user?.jwtToken).then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
                     dispatch(setCart({ data: null }));

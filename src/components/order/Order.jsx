@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import './order.css';
 import api from '../../api/api';
-import Cookies from 'universal-cookie';
 import { FaRupeeSign } from "react-icons/fa";
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import Loader from '../loader/Loader';
@@ -39,19 +38,18 @@ const Order = () => {
     const [isLoader, setisLoader] = useState(false);
     const [showTracker, setShowTracker] = useState(false);
 
-    //initialize Cookies
-    const cookies = new Cookies();
     const componentRef = useRef();
     const total_orders_per_page = 10;
 
     const navigate = useNavigate();
 
     const setting = useSelector(state => state.setting);
+    const user = useSelector(state => state.user);
     const [orderId, setOrderId] = useState(null);
     const [isNetworkError, setIsNetworkError] = useState(false);
 
     const fetchOrders = async () => {
-        await api.getOrders(cookies.get('jwt_token'), total_orders_per_page, offset)
+        await api.getOrders(user?.jwtToken, total_orders_per_page, offset)
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -70,7 +68,7 @@ const Order = () => {
                 }
             });
 
-        await api.getOrders(cookies.get('jwt_token'), total_orders_per_page, offset, 0)
+        await api.getOrders(user?.jwtToken, total_orders_per_page, offset, 0)
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -108,7 +106,7 @@ const Order = () => {
             /*responseType: 'application/pdf',*/
             data: postData,
             headers: {
-                Authorization: `Bearer ${cookies.get('jwt_token')}`
+                Authorization: `Bearer ${user?.jwtToken}`
             }
         }).then(response => {
 

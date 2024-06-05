@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../../api/api";
-import Cookies from "universal-cookie";
 import { useSelector } from "react-redux";
 import { formatDate, formatTime } from "../../utils/formatDate";
 import Loader from "../loader/Loader";
@@ -18,12 +17,13 @@ import { ValidateNoInternet } from "../../utils/NoInternetValidator";
 import { MdSignalWifiConnectedNoInternet0 } from "react-icons/md";
 
 const AllRatingsAndReviews = () => {
+
     const { slug } = useParams();
-    const cookies = new Cookies();
     const { t } = useTranslation();
 
     // const city = useSelector(state => state.city);
     const setting = useSelector(state => state.setting);
+    const user = useSelector(state => state.user);
 
     const [currPage, setCurrPage] = useState(1);
     const [limit, setLimit] = useState(12);
@@ -76,7 +76,7 @@ const AllRatingsAndReviews = () => {
     const fetchProductRatingById = async () => {
         setLoading(true);
         try {
-            const response = await api.getProductRatings(cookies.get("jwt_token"), productId, limit, offset);
+            const response = await api.getProductRatings(user?.jwtToken, productId, limit, offset);
             const result = await response.json();
             setProductRating(result.data);
             setTotalData(result.total);
@@ -88,7 +88,7 @@ const AllRatingsAndReviews = () => {
     const fetchProductRatingImages = async () => {
         setImageLoading(true);
         try {
-            const response = await api.getProductRatingImages(cookies.get("jwt_token"), productId, limit, 0);
+            const response = await api.getProductRatingImages(user?.jwtToken, productId, limit, 0);
             const result = await response.json();
             setRatingImages(result.data);
             setTotalImages(result.total);

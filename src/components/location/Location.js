@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import './location.css';
 import { StandaloneSearchBox, GoogleMap, MarkerF } from '@react-google-maps/api';
 import api from '../../api/api';
@@ -10,14 +10,14 @@ import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setCity } from '../../model/reducer/locationReducer';
 import { setSetting } from '../../model/reducer/settingReducer';
-import Cookies from 'universal-cookie';
 import { setShop } from '../../model/reducer/shopReducer';
 
 const Location = (props) => {
-  const dispatch = useDispatch();
 
+  const dispatch = useDispatch();
   const setting = useSelector(state => (state.setting));
-  const cookies = new Cookies();
+  const user = useSelector(state => (state.user));
+
   const [isloading, setisloading] = useState(false);
   const [currLocationClick, setcurrLocationClick] = useState(false);
   const [isInputFields, setisInputFields] = useState(false);
@@ -350,7 +350,7 @@ const Location = (props) => {
 
   const fetchShop = async (latitude, longitude) => {
     try {
-      const response = await api.getShop(latitude, longitude, cookies.get("jwt_token"));
+      const response = await api.getShop(latitude, longitude, user?.jwtToken);
       const result = await response.json();
       if (result?.status == 1) {
         dispatch(setShop({ data: result?.data }));

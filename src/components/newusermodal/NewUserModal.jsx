@@ -1,10 +1,8 @@
 import React, { useRef, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import Cookies from 'universal-cookie';
 import api from '../../api/api';
 import { toast } from 'react-toastify';
-import { ActionTypes } from '../../model/action-type';
 import '../login/login.css';
 import './newmodal.css';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +14,6 @@ import { setCurrentUser } from "../../model/reducer/authReducer";
 
 
 function NewUserModal() {
-    const cookies = new Cookies();
     const dispatch = useDispatch();
 
     const user = useSelector((state) => state.user);
@@ -34,12 +31,12 @@ function NewUserModal() {
         e.preventDefault();
 
         setisLoading(true);
-        if (cookies.get('jwt_token') !== undefined) {
-            api.edit_profile(username, useremail, selectedFile, cookies.get('jwt_token'))
+        if (user?.jwtToken !== "") {
+            api.edit_profile(username, useremail, selectedFile, user?.jwtToken)
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
-                        getCurrentUser(cookies.get('jwt_token'));
+                        getCurrentUser(user?.jwtToken);
                         setuseremail();
                         setusername();
                         // closeModalRef.current.click()

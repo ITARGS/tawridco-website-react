@@ -11,14 +11,13 @@ import { BsHeart, BsShare, BsPlus, BsHeartFill } from "react-icons/bs";
 import { BiMinus, BiLink } from 'react-icons/bi';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import Cookies from 'universal-cookie';
 import QuickViewModal from './QuickViewModal';
 import { FacebookIcon, FacebookShareButton, TelegramIcon, TelegramShareButton, WhatsappIcon, WhatsappShareButton } from 'react-share';
 import { IoIosArrowDown } from 'react-icons/io';
 import { useTranslation } from 'react-i18next';
 
 import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from "../../model/reducer/cartReducer";
-import { setFavourite, setFavouriteLength, setFavouriteProductIds } from "../../model/reducer/favouriteReducer";
+import { setFavouriteLength, setFavouriteProductIds } from "../../model/reducer/favouriteReducer";
 import { setProductSizes } from "../../model/reducer/productSizesReducer";
 import { setFilterCategory, setFilterSection } from '../../model/reducer/productFilterReducer';
 import Popup from "../same-seller-popup/Popup";
@@ -31,8 +30,6 @@ import { setSelectedProduct } from '../../model/reducer/selectedProduct';
 
 const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOfferArray }) => {
 
-    //initialize cookies
-    const cookies = new Cookies();
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -81,7 +78,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
         setP_id(product_id);
         setP_V_id(product_variant_id);
         setQnty(qty);
-        await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
+        await api.addToCart(user?.jwtToken, product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -113,7 +110,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
 
     //remove from Cart
     const removefromCart = async (product_id, product_variant_id, section_id) => {
-        await api.removeFromCart(cookies.get('jwt_token'), product_id, product_variant_id)
+        await api.removeFromCart(user?.jwtToken, product_id, product_variant_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -129,7 +126,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
 
     //Add to favorite
     const addToFavorite = async (product_id) => {
-        await api.addToFavotite(cookies.get('jwt_token'), product_id)
+        await api.addToFavotite(user?.jwtToken, product_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -148,7 +145,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
 
 
     const removefromFavorite = async (product_id) => {
-        await api.removeFromFavorite(cookies.get('jwt_token'), product_id)
+        await api.removeFromFavorite(user?.jwtToken, product_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -383,7 +380,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                             <div className='border-end'>
                                                                                 {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == product.id) ? (
                                                                                     <button type="button" className='w-100 h-100' onClick={() => {
-                                                                                        if (cookies.get('jwt_token') !== undefined) {
+                                                                                        if (user?.jwtToken !== "") {
                                                                                             removefromFavorite(product.id);
                                                                                         } else {
                                                                                             toast.error(t('required_login_message_for_cart'));
@@ -394,7 +391,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                     </button>
                                                                                 ) : (
                                                                                     <button key={product.id} type="button" className='w-100 h-100' onClick={() => {
-                                                                                        if (cookies.get('jwt_token') !== undefined) {
+                                                                                        if (user?.jwtToken !== "") {
                                                                                             addToFavorite(product.id);
                                                                                         } else {
                                                                                             toast.error(t("required_login_message_for_cart"));
@@ -453,7 +450,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                     </div>
                                                                                 </> : <>
                                                                                     <button type="button" id={`Add-to-cart-section${index}${index0}`} className='w-100 h-100 add-to-cart active' onClick={() => {
-                                                                                        if (cookies.get('jwt_token') !== undefined) {
+                                                                                        if (user?.jwtToken !== "") {
                                                                                             const productQuantity = getProductQuantities(cart?.cartProducts);
                                                                                             if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) < Number(product.total_allowed_quantity)) {
                                                                                                 addtoCart(product.id, product.variants[0].id, 1);
@@ -513,7 +510,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                 }
                             })}
                             <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} setP_id={setP_id} setP_V_id={setP_V_id} />
-                            <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} setisLoader={setisLoader} cookies={cookies} toast={toast} city={city} />
+                            <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} setisLoader={setisLoader} toast={toast} city={city} />
                         </>
 
 

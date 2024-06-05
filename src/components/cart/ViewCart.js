@@ -5,8 +5,6 @@ import { BsPlus } from "react-icons/bs";
 import { BiMinus } from 'react-icons/bi';
 import api from '../../api/api';
 import { toast } from 'react-toastify';
-import Cookies from 'universal-cookie';
-import { ActionTypes } from '../../model/action-type';
 import EmptyCart from '../../utils/zero-state-screens/Empty_Cart.svg';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import coverImg from '../../utils/cover-img.jpg';
@@ -14,8 +12,7 @@ import { RiCoupon2Fill, RiDeleteBinLine } from 'react-icons/ri';
 import Loader from '../loader/Loader';
 import Promo from './Promo';
 import { useTranslation } from 'react-i18next';
-import { setProductSizes } from '../../model/reducer/productSizesReducer';
-import { clearCartPromo, setCart, setCartCheckout, setCartProducts, setCartPromo, setCartSubTotal, setPromoCodeApplied } from '../../model/reducer/cartReducer';
+import { clearCartPromo, setCart, setCartProducts, setCartSubTotal } from '../../model/reducer/cartReducer';
 import { ValidateNoInternet } from '../../utils/NoInternetValidator';
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
@@ -24,7 +21,6 @@ const ViewCart = () => {
 
 
     const dispatch = useDispatch();
-    const cookies = new Cookies();
     const navigate = useNavigate();
 
     const cart = useSelector(state => (state.cart));
@@ -42,7 +38,7 @@ const ViewCart = () => {
     const [isNetworkError, setIsNetworkError] = useState(false);
     useEffect(() => {
         if (location.pathname == "/cart")
-            api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude, 0)
+            api.getCart(user?.jwtToken, city.city.latitude, city.city.longitude, 0)
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
@@ -82,7 +78,7 @@ const ViewCart = () => {
     const addtoCart = async (product_id, product_variant_id, qty) => {
         // setisLoader(true);
 
-        await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
+        await api.addToCart(user?.jwtToken, product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -118,7 +114,7 @@ const ViewCart = () => {
     //remove from Cart
     const removefromCart = async (product_id, product_variant_id) => {
         // setisLoader(true);
-        await api.removeFromCart(cookies.get('jwt_token'), product_id, product_variant_id)
+        await api.removeFromCart(user?.jwtToken, product_id, product_variant_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {

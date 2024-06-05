@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Cookies from 'universal-cookie';
 import { Modal } from 'react-bootstrap';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { LuStar } from 'react-icons/lu';
@@ -9,13 +8,15 @@ import { toast } from "react-toastify";
 import "./rateproduct.css";
 import api from '../../api/api';
 import Loader from "../loader/Loader";
+import { useSelector } from 'react-redux';
 
 
 
 
 const UpdateRatingModal = (props) => {
-  const cookies = new Cookies();
+
   const { t } = useTranslation();
+  const user = useSelector(state => state.user);
 
   const [activeIndex, setActiveIndex] = useState(null);
   const [review, setReview] = useState("");
@@ -29,7 +30,7 @@ const UpdateRatingModal = (props) => {
     const fetchRating = async () => {
       setLoading(true);
       try {
-        const response = await api.getProductRatingById(cookies.get("jwt_token"), props.ratingId);
+        const response = await api.getProductRatingById(user?.jwtToken, props.ratingId);
         const result = await response.json();
         setRating(result?.data);
         setReview(result?.data?.review);
@@ -75,7 +76,7 @@ const UpdateRatingModal = (props) => {
       return;
     }
     try {
-      const response = await api.updateProductRating(cookies.get("jwt_token"), props?.ratingId, activeIndex, review, newFiles, deletedImageIds?.join(","));
+      const response = await api.updateProductRating(user?.jwtToken, props?.ratingId, activeIndex, review, newFiles, deletedImageIds?.join(","));
       const result = await response.json();
       props.setShowModal(false);
       if (result.message == "The image.0 must be an image.") {

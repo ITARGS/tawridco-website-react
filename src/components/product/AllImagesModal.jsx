@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import LightBox from '../lightbox/LightBox';
 import { Modal } from 'react-bootstrap';
-import Cookies from 'universal-cookie';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import api from '../../api/api';
+import { useSelector } from 'react-redux';
 
 const AllImagesModal = (props) => {
     // console.log(props);
-    const cookies = new Cookies();
+    const user = useSelector(state => state?.user);
     const [open, setOpen] = useState(false);
     const [lightBoxImages, setLightBoxImages] = useState([]);
     const [currImageIndex, setCurrImageIndex] = useState(-1);
@@ -21,7 +21,7 @@ const AllImagesModal = (props) => {
         setLoading(true);
         const fetchAllRatingImages = async () => {
             try {
-                const response = await api.getProductRatingImages(cookies.get("jwt_token"), props.product_id, props.totalImages, 0);
+                const response = await api.getProductRatingImages(user?.jwtToken, props.product_id, props.totalImages, 0);
                 const result = await response.json();
                 setRatingImages(result.data);
                 setTotalImages(result.total);

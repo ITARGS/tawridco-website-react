@@ -1,9 +1,7 @@
 import { ElementsConsumer, CardElement } from '@stripe/react-stripe-js';
 import React, { useState, useRef } from 'react';
 import './checkout.css';
-import { AiOutlineCloseCircle } from 'react-icons/ai';
 import api from '../../api/api';
-import Cookies from 'universal-cookie';
 import { toast } from 'react-toastify';
 import Loader from '../loader/Loader';
 import { Button, Modal } from 'react-bootstrap';
@@ -12,7 +10,6 @@ import animate2 from '../../utils/order_success_tick_animation.json';
 import Lottie from 'lottie-react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { ActionTypes } from '../../model/action-type';
 import { setCart, setCartCheckout, setCartProducts, setCartSubTotal, setWallet } from '../../model/reducer/cartReducer';
 import { deductUserBalance } from '../../model/reducer/authReducer';
 
@@ -40,7 +37,6 @@ const CARD_OPTIONS = {
 
 const StripeModal = (props) => {
 
-    const cookies = new Cookies();
     const closeModal = useRef();
     const navigate = useNavigate();
 
@@ -93,7 +89,7 @@ const StripeModal = (props) => {
         },);
         if (error) {
             // console.log(error.message);
-            api.deleteOrder(cookies.get('jwt_token'), orderID);
+            api.deleteOrder(user?.jwtToken, orderID);
             toast.error(error.message);
             props.setWalletAmount(props.walletAmount);
             dispatch(setWallet({ data: 0 }));
@@ -103,7 +99,7 @@ const StripeModal = (props) => {
             // Redirect the customer to a success page
             // window.location.href = '/success';
             // props.setShow(false)
-            await api.addTransaction(cookies.get('jwt_token'), orderID, props.transaction_id, "Stripe", "order")
+            await api.addTransaction(user?.jwtToken, orderID, props.transaction_id, "Stripe", "order")
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
@@ -124,7 +120,7 @@ const StripeModal = (props) => {
             props.setIsOrderPlaced(true);
         } else {
             // Handle other payment status scenarios
-            api.deleteOrder(cookies.get('jwt_token'), orderID);
+            api.deleteOrder(user?.jwtToken, orderID);
             setloadingPay(false);
             console.log('Payment failed');
             props.setShow(false);
@@ -135,7 +131,7 @@ const StripeModal = (props) => {
     const [isOrderPlaced, setIsOrderPlaced] = useState(false);
     const [show, setShow] = useState(false);
     const handleClose = () => {
-        api.removeCart(cookies.get('jwt_token')).then(response => response.json())
+        api.removeCart(user?.jwtToken).then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
                     dispatch(setCart({ data: null }));

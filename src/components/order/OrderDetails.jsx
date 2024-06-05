@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import './order.css';
 import api from '../../api/api';
-import Cookies from 'universal-cookie';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import RateProductModal from '../rate-product/RateProductModal';
@@ -12,7 +11,6 @@ import axios from 'axios';
 import RateProductStar from "../../utils/stars.svg";
 import { LuStar } from "react-icons/lu";
 import UpdateRatingModal from '../rate-product/UpdateRatingModal';
-import { ImCheckboxChecked } from "react-icons/im";
 import { Modal } from 'react-bootstrap';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { ValidateNoInternet } from '../../utils/NoInternetValidator';
@@ -25,6 +23,7 @@ const OrderDetails = React.memo(() => {
 
     const setting = useSelector(state => state.setting);
     const user = useSelector(state => state?.user?.user);
+    const jwtToken = useSelector(state => state.user?.jwtToken);
     // console.log(user);
 
     const [orderData, setOrderData] = useState(null);
@@ -56,7 +55,6 @@ const OrderDetails = React.memo(() => {
         }
     }, [orderData]);
 
-    const cookies = new Cookies();
 
     const placeHolderImage = (e) => {
 
@@ -64,7 +62,7 @@ const OrderDetails = React.memo(() => {
     };
 
     const fetchOrderDetails = async () => {
-        api.getOrders(cookies.get('jwt_token'), null, null, null, urlParams?.id).then(result => result.json()).then((response) => {
+        api.getOrders(jwtToken, null, null, null, urlParams?.id).then(result => result.json()).then((response) => {
 
             if (response.status) {
                 setOrderData(response.data[0]);
@@ -98,7 +96,7 @@ const OrderDetails = React.memo(() => {
             /*responseType: 'application/pdf',*/
             data: postData,
             headers: {
-                Authorization: `Bearer ${cookies.get('jwt_token')}`
+                Authorization: `Bearer ${jwtToken}`
             }
         }).then(response => {
 
@@ -124,7 +122,7 @@ const OrderDetails = React.memo(() => {
     const navigate = useNavigate();
 
     const handleUpdateStatus = async (item_id, status, return_reason) => {
-        await api.updateOrderStatus(cookies.get('jwt_token'), orderData?.id, item_id, status, return_reason)
+        await api.updateOrderStatus(jwtToken, orderData?.id, item_id, status, return_reason)
             .then((result) => result.json())
             .then((response) => {
                 if (response.status) {

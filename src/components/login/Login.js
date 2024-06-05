@@ -6,13 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Loader from '../loader/Loader';
 import 'react-phone-input-2/lib/style.css';
-//phone number input
-//otp
 import OTPInput from 'otp-input-react';
-//firebase
 import { signInWithPhoneNumber } from "firebase/auth";
-import Cookies from 'universal-cookie';
-// import jwt from 'jwt-decode';
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import FirebaseData from '../../utils/firebase/FirebaseData';
@@ -63,8 +58,6 @@ const Login = React.memo((props) => {
     }, [setting]);
     // console.log(fcm);
 
-    //initialize Cookies
-    const cookies = new Cookies();
     const Navigate = useNavigate();
     const closeModalRef = useRef();
     const dispatch = useDispatch();
@@ -252,13 +245,6 @@ const Login = React.memo((props) => {
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    // const decoded = jwt(result.data.access_token);
-
-                    const tomorrow = new Date();
-                    tomorrow.setDate(new Date().getDate() + 1);
-                    cookies.set("jwt_token", result.data.access_token, {
-                        expires: new Date(tomorrow)
-                    });
                     getCurrentUser(result.data.access_token);
                     api.getSettings(1, result.data.access_token)
                         .then((req) => req.json())

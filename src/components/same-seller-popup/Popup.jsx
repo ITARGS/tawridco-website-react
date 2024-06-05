@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
@@ -8,20 +8,21 @@ import { AiOutlineCloseCircle } from "react-icons/ai";
 import "./popup.css";
 import api from "../../api/api";
 
-const Popup = React.memo(({ product_id, product_variant_id, quantity, toast, cookies, city }) => {
+const Popup = React.memo(({ product_id, product_variant_id, quantity, toast, city }) => {
     const cart = useSelector(state => state.cart);
+    const user = useSelector(state => state.user);
 
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
     const handleYes = async () => {
-        await api.removeCart(cookies.get('jwt_token'));
-        await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, quantity)
+        await api.removeCart(user?.jwtToken);
+        await api.addToCart(user?.jwtToken, product_id, product_variant_id, quantity)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
+                    await api.getCart(user?.jwtToken, city.city.latitude, city.city.longitude)
                         .then(resp => resp.json())
                         .then(res => {
                             if (res.status === 1) {

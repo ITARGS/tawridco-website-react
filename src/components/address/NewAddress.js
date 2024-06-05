@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { toast } from 'react-toastify';
-import Cookies from 'universal-cookie';
 import api from '../../api/api';
 import './address.css';
 import { GoogleMap, MarkerF } from '@react-google-maps/api';
@@ -14,11 +13,10 @@ import { BiCurrentLocation } from 'react-icons/bi';
 
 
 const NewAddress = (props) => {
-    //initialize cookies
-    const cookies = new Cookies();
     const dispatch = useDispatch();
 
     const setting = useSelector(state => (state.setting));
+    const user = useSelector(state => (state.user));
 
     const address = useSelector((state) => state.address);
     const city = useSelector((state) => state.city);
@@ -79,7 +77,7 @@ const NewAddress = (props) => {
         let lng = center.lng;
         if (!props.isAddressSelected) {
             props.setisLoader(true);
-            api.addAddress(cookies.get('jwt_token'), addressDetails.name, addressDetails.mobile_num, addressDetails.address_type, addressDetails.address, addressDetails.landmark, addressDetails.area, addressDetails.pincode, addressDetails.city, addressDetails.state, addressDetails.country, addressDetails.alternate_mobile_num, lat, lng, addressDetails.is_default)
+            api.addAddress(user?.jwtToken, addressDetails.name, addressDetails.mobile_num, addressDetails.address_type, addressDetails.address, addressDetails.landmark, addressDetails.area, addressDetails.pincode, addressDetails.city, addressDetails.state, addressDetails.country, addressDetails.alternate_mobile_num, lat, lng, addressDetails.is_default)
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
@@ -98,7 +96,7 @@ const NewAddress = (props) => {
                             address_type: 'Home',
                             is_default: false,
                         });
-                        api.getAddress(cookies.get('jwt_token'))
+                        api.getAddress(user?.jwtToken)
                             .then(resp => resp.json())
                             .then(res => {
                                 props.setisLoader(false);
@@ -119,7 +117,7 @@ const NewAddress = (props) => {
         }
         else {
             props.setisLoader(true);
-            api.updateAddress(cookies.get('jwt_token'), address.selected_address.id, addressDetails.name, addressDetails.mobile_num, addressDetails.address_type, addressDetails.address, addressDetails.landmark, addressDetails.area, addressDetails.pincode, addressDetails.city, addressDetails.state, addressDetails.country, addressDetails.alternate_mobile_num, lat, lng, addressDetails.is_default)
+            api.updateAddress(user?.jwtToken, address.selected_address.id, addressDetails.name, addressDetails.mobile_num, addressDetails.address_type, addressDetails.address, addressDetails.landmark, addressDetails.area, addressDetails.pincode, addressDetails.city, addressDetails.state, addressDetails.country, addressDetails.alternate_mobile_num, lat, lng, addressDetails.is_default)
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
@@ -127,7 +125,7 @@ const NewAddress = (props) => {
                         props.setIsAddressSelected(false);
                         setaddressDetails({ name: '', mobile_num: '', alternate_mobile_num: '', address: '', landmark: '', city: '', area: '', pincode: '', state: '', country: '', address_type: 'Home', is_default: false, });
                         setisconfirmAddress(false);
-                        api.getAddress(cookies.get('jwt_token'))
+                        api.getAddress(user?.jwtToken)
                             .then(resp => resp.json())
                             .then(res => {
                                 props.setisLoader(false);

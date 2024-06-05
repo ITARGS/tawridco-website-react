@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
@@ -9,9 +9,7 @@ import RazorPaySVG from "../../utils/Razorpay.svg";
 import StripeSVG from "../../utils/Stripe.svg";
 import MidtransSVG from "../../utils/Icons/Midtrans.svg";
 import PhonePeSVG from "../../utils/Icons/Phonepe.svg";
-import PaytmSVG from "../../utils/Paytm.svg";
 import api from '../../api/api';
-import Cookies from 'universal-cookie';
 import useRazorpay from 'react-razorpay';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from "react-toastify";
@@ -23,7 +21,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import InjectCheckout from './AddWalletStripeModal';
 
 const AddWalletModal = (props) => {
-    const cookies = new Cookies();
+
     const { t } = useTranslation();
 
     const setting = useSelector(state => state.setting);
@@ -87,7 +85,7 @@ const AddWalletModal = (props) => {
             handler: async (res) => {
                 // console.log(res);
                 if (res.razorpay_payment_id) {
-                    await api.addTransaction(cookies.get('jwt_token'), null, razorpay_transaction_id, "Razorpay", "wallet", amount)
+                    await api.addTransaction(user?.jwtToken, null, razorpay_transaction_id, "Razorpay", "wallet", amount)
                         .then(response => response.json())
                         .then(result => {
                             // console.log(result);
@@ -146,7 +144,7 @@ const AddWalletModal = (props) => {
             ref: (new Date()).getTime().toString(),
             label: support_email,
             callback: async function (response) {
-                await api.addTransaction(cookies.get('jwt_token'), null, response.reference, "Paystack", "wallet", amount)
+                await api.addTransaction(user?.jwtToken, null, response.reference, "Paystack", "wallet", amount)
                     .then(response => response.json())
                     .then(result => {
                         if (result.status === 1) {
@@ -177,7 +175,7 @@ const AddWalletModal = (props) => {
         try {
             let response, result;
             if (paymentMethod === "paypal" || paymentMethod === "stripe" || paymentMethod === "razorpay" || paymentMethod === "midtrans" || paymentMethod === "phonepe") {
-                response = await api.initiate_transaction(cookies.get("jwt_token"), null, paymentMethod, "wallet", walletAmount);
+                response = await api.initiate_transaction(user?.jwtToken, null, paymentMethod, "wallet", walletAmount);
                 result = await response.json();
             }
             if (paymentMethod === "razorpay") {

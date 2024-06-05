@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import './transaction.css';
 import api from '../../api/api';
-import Cookies from 'universal-cookie';
 import { FaRupeeSign } from "react-icons/fa";
 import Loader from '../loader/Loader';
 import Pagination from 'react-js-pagination';
 import No_Transactions from '../../utils/zero-state-screens/No_Transaction.svg';
 import { useTranslation } from 'react-i18next';
-import { toast } from 'react-toastify';
 import { ValidateNoInternet } from '../../utils/NoInternetValidator';
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
+import { useSelector } from 'react-redux';
 
 
 const Transaction = () => {
 
-    //initialize cookies
-    const cookies = new Cookies();
+    
     const { t } = useTranslation();
     const total_transactions_per_page = 10;
     const type = 'transactions';
 
+    const user = useSelector(state => state.user);
 
     const [transactions, settransactions] = useState(null);
     const [totalTransactions, settotalTransactions] = useState(null);
@@ -30,7 +29,7 @@ const Transaction = () => {
 
 
     const fetchTransactions = () => {
-        api.getTransactions(cookies.get('jwt_token'), total_transactions_per_page, offset, type)
+        api.getTransactions(user?.jwtToken, total_transactions_per_page, offset, type)
             .then(response => response.json())
             .then(result => {
                 // console.log(result,'transREsult')

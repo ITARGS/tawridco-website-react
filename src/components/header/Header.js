@@ -3,7 +3,7 @@ import './header.css';
 import { BsShopWindow } from 'react-icons/bs';
 import { BiUserCircle } from 'react-icons/bi';
 import { MdSearch, MdGTranslate, MdNotificationsActive } from "react-icons/md";
-import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast } from 'react-icons/io5';
+import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline } from 'react-icons/io5';
 import { IoMdArrowDropdown, IoIosArrowDown } from "react-icons/io";
 import { GoLocation } from 'react-icons/go';
 import { FiMenu, FiFilter } from 'react-icons/fi';
@@ -13,7 +13,6 @@ import Location from '../location/Location';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../../api/api';
 import Login from '../login/Login';
-import Cookies from 'universal-cookie';
 import Cart from '../cart/Cart';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
@@ -21,21 +20,16 @@ import { Dropdown } from 'react-bootstrap';
 
 import { setCity } from "../../model/reducer/locationReducer";
 import { setPaymentSetting } from '../../model/reducer/settingReducer';
-import { setCart } from "../../model/reducer/cartReducer";
 import { setLanguage, setLanguageList } from "../../model/reducer/languageReducer";
-import { setNotification } from "../../model/reducer/notificationReducer";
-import { setFavourite } from "../../model/reducer/favouriteReducer";
 import { setFilterSearch } from "../../model/reducer/productFilterReducer";
 import { Modal } from 'antd';
 import "../location/location.css";
-import { diffInTime } from '../../utils/TimeUtilites';
 import { setCSSMode } from '../../model/reducer/cssmodeReducer';
 
 const Header = () => {
     const closeSidebarRef = useRef();
     const searchNavTrigger = useRef();
     const { t } = useTranslation();
-    const cookies = new Cookies();
     const curr_url = useLocation();
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -58,9 +52,6 @@ const Header = () => {
     const [isDesktopView, setIsDesktopView] = useState(window.innerWidth > 768);
     const [search, setsearch] = useState("");
     const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
-
-    //initialize cookies
-
 
     // to open Location modal 
     const openModal = () => {
@@ -175,16 +166,16 @@ const Header = () => {
     // };
 
     // useEffect(() => {
-    //     if (city.city !== null && cookies.get('jwt_token') !== undefined && user.user == null) {
-    //         fetchCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude);
-    //         // fetchFavorite(cookies.get('jwt_token'), city?.city?.latitude, city?.city?.longitude);
-    //         // fetchNotification(cookies.get('jwt_token'));
+    //     if (city.city !== null && user?.jwtToken !== undefined && user.user == null) {
+    //         fetchCart(user?.jwtToken, city.city.latitude, city.city.longitude);
+    //         // fetchFavorite(user?.jwtToken, city?.city?.latitude, city?.city?.longitude);
+    //         // fetchNotification(user?.jwtToken);
     //     }
     // }, [user]);
 
 
     const fetchPaymentSetting = async () => {
-        await api.getPaymentSettings(cookies.get('jwt_token'))
+        await api.getPaymentSettings(user?.jwtToken)
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -555,7 +546,7 @@ const Header = () => {
 
                             <div className='d-flex col-md-3 w-auto order-3  justify-content-end align-items-center'>
                                 <button type='button' whiletap={{ scale: 0.6 }} className='icon position-relative hide-mobile mx-sm-4' onClick={() => {
-                                    if (cookies.get('jwt_token') === undefined) {
+                                    if (user?.jwtToken === undefined) {
                                         toast.error(t("required_login_message_for_notification"));
                                     }
                                     else {
@@ -567,10 +558,10 @@ const Header = () => {
 
                                 </button>
 
-                                {city.city === null || cookies.get('jwt_token') === undefined
+                                {city.city === null || user?.jwtToken === undefined
                                     ? <button whiletap={{ scale: 0.6 }} className='icon mx-sm-4 position-relative hide-mobile-screen'
                                         onClick={() => {
-                                            if (cookies.get('jwt_token') === undefined) {
+                                            if (user?.jwtToken === undefined) {
                                                 toast.error(t("required_login_message_for_cartRedirect"));
                                             }
                                             else if (city.city === null) {
@@ -581,7 +572,7 @@ const Header = () => {
                                     </button>
                                     : <button whiletap={{ scale: 0.6 }} className='icon mx-4 position-relative hide-mobile-screen'
                                         onClick={() => {
-                                            if (cookies.get('jwt_token') === undefined) {
+                                            if (user?.jwtToken === undefined) {
                                                 toast.error(t("required_login_message_for_cartRedirect"));
                                             }
                                             else if (city.city === null) {
@@ -606,7 +597,7 @@ const Header = () => {
                                 {
                                     curr_url.pathname === "/checkout" ?
                                         null :
-                                        city.city === null || cookies.get('jwt_token') === undefined
+                                        city.city === null || user?.jwtToken === undefined
                                             ?
                                             <>
                                                 <button type='button' className={isDesktopView ? "d-none" : "d-block mt-2"} onClick={openCanvasModal}>
@@ -614,7 +605,7 @@ const Header = () => {
                                                 </button>
                                                 <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative'
                                                     onClick={() => {
-                                                        if (cookies.get('jwt_token') === undefined) {
+                                                        if (user?.jwtToken === undefined) {
                                                             toast.error(t("required_login_message_for_cartRedirect"));
                                                         }
                                                         else if (city.city === null) {
@@ -630,7 +621,7 @@ const Header = () => {
                                                 </button>
                                                 <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
                                                     onClick={() => {
-                                                        if (cookies.get('jwt_token') === undefined) {
+                                                        if (user?.jwtToken === undefined) {
                                                             toast.error(t("required_login_message_for_cartRedirect"));
                                                         }
                                                         else if (city.city === null) {
@@ -723,10 +714,10 @@ const Header = () => {
                             ) : ""}
 
                             <li className='menu-item'>
-                                {city.city === null || cookies.get('jwt_token') === undefined
+                                {city.city === null || user?.jwtToken === undefined
                                     ? <button type='button' className={`wishlist ${mobileNavActKey == 4 ? "active" : ""}`} onClick={() => {
 
-                                        if (cookies.get('jwt_token') === undefined) {
+                                        if (user?.jwtToken === undefined) {
                                             toast.error(t("required_login_message_for_wishlist"));
                                         }
                                         else if (city.city === null) {
@@ -747,7 +738,7 @@ const Header = () => {
                                     </button>
                                     : <button type='button' className={`wishlist ${mobileNavActKey == 4 ? "active" : ""}`} onClick={() => {
 
-                                        if (cookies.get('jwt_token') === undefined) {
+                                        if (user?.jwtToken === undefined) {
                                             toast.error(t("required_login_message_for_cartRedirect"));
                                         }
                                         else if (city.city === null) {

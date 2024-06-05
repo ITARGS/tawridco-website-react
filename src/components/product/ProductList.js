@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { BsArrowDown, BsPlusCircle } from "react-icons/bs";
 import { AiOutlineEye, AiOutlineCloseCircle } from 'react-icons/ai';
 import { BsHeart, BsShare, BsPlus, BsHeartFill } from "react-icons/bs";
 import { BiMinus, BiLink } from 'react-icons/bi';
@@ -8,7 +7,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../api/api';
 import Pagination from 'react-js-pagination';
 import { toast } from 'react-toastify';
-import Cookies from 'universal-cookie';
 import { setSelectedProductId } from '../../utils/manageLocalStorage';
 import { FacebookIcon, FacebookShareButton, TelegramIcon, TelegramShareButton, WhatsappIcon, WhatsappShareButton } from 'react-share';
 import Loader from '../loader/Loader';
@@ -25,19 +23,17 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Popup from "../same-seller-popup/Popup";
 import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
-import { setFavourite, setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
+import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
 import { LuStar } from 'react-icons/lu';
 import "./product.css";
 import CategoryComponent from './Categories';
 import { MdSignalWifiConnectedNoInternet0 } from "react-icons/md";
-import { Breadcrumb } from 'react-bootstrap';
 
 const ProductList2 = React.memo(() => {
     const total_products_per_page = 12;
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const cookies = new Cookies();
 
 
     const closeCanvas = useRef();
@@ -103,7 +99,7 @@ const ProductList2 = React.memo(() => {
 
     const filterProductsFromApi = async (filter) => {
         setisLoader(true);
-        await api.getProductbyFilter(city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
+        await api.getProductbyFilter(city?.city?.latitude, city?.city?.longitude, filter, user?.jwtToken)
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -224,7 +220,7 @@ const ProductList2 = React.memo(() => {
 
     // const FilterProductByPrice = async (filter) => {
     //     // setisLoader(true);
-    //     await api.getProductbyFilter(city?.city?.latitude, city?.city?.longitude, filter, cookies.get('jwt_token'))
+    //     await api.getProductbyFilter(city?.city?.latitude, city?.city?.longitude, filter, user?.jwtToken)
     //         .then(response => response.json())
     //         .then(result => {
     //             if (result.status === 1) {
@@ -454,7 +450,7 @@ const ProductList2 = React.memo(() => {
         setP_id(product_id);
         setP_V_id(product_variant_id);
         setQnty(qty);
-        await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
+        await api.addToCart(user?.jwtToken, product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -490,7 +486,7 @@ const ProductList2 = React.memo(() => {
 
     //remove from Cart
     const removefromCart = async (product_id, product_variant_id) => {
-        await api.removeFromCart(cookies.get('jwt_token'), product_id, product_variant_id)
+        await api.removeFromCart(user?.jwtToken, product_id, product_variant_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -506,7 +502,7 @@ const ProductList2 = React.memo(() => {
 
     //Add to favorite
     const addToFavorite = async (product_id) => {
-        await api.addToFavotite(cookies.get('jwt_token'), product_id)
+        await api.addToFavotite(user?.jwtToken, product_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -524,7 +520,7 @@ const ProductList2 = React.memo(() => {
     };
 
     const removefromFavorite = async (product_id) => {
-        await api.removeFromFavorite(cookies.get('jwt_token'), product_id)
+        await api.removeFromFavorite(user?.jwtToken, product_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -579,7 +575,7 @@ const ProductList2 = React.memo(() => {
     };
 
     const handleValidateAddNewProduct = (productQuantity, product) => {
-        if (cookies.get('jwt_token') !== undefined) {
+        if (user?.jwtToken !== "") {
             if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) >= Number(product?.total_allowed_quantity)) {
                 toast.error('Oops, Limited Stock Available');
             }
@@ -740,7 +736,7 @@ const ProductList2 = React.memo(() => {
 
                                                                                                     favorite.favorite && favorite.favorite.data.some(element => element.id === product.id) ? (
                                                                                                         <button type="button" className='wishlist-product' onClick={() => {
-                                                                                                            if (cookies.get('jwt_token') !== undefined) {
+                                                                                                            if (user?.jwtToken !== "") {
                                                                                                                 removefromFavorite(product.id);
                                                                                                             } else {
                                                                                                                 toast.error(t('required_login_message_for_cart'));
@@ -751,7 +747,7 @@ const ProductList2 = React.memo(() => {
                                                                                                         </button>
                                                                                                     ) : (
                                                                                                         <button key={product.id} type="button" className='wishlist-product' onClick={() => {
-                                                                                                            if (cookies.get('jwt_token') !== undefined) {
+                                                                                                            if (user?.jwtToken !== "") {
                                                                                                                 addToFavorite(product.id);
                                                                                                             } else {
                                                                                                                 toast.error(t("required_login_message_for_cart"));
@@ -818,7 +814,7 @@ const ProductList2 = React.memo(() => {
                                                                                                 </> : <>
 
                                                                                                     <button type="button" id={`Add-to-cart-section${index}`} className='w-100 h-100 add-to-cart active' onClick={(e) => {
-                                                                                                        if (cookies.get('jwt_token') !== undefined) {
+                                                                                                        if (user?.jwtToken !== "") {
 
                                                                                                             e.preventDefault();
 
@@ -947,7 +943,7 @@ const ProductList2 = React.memo(() => {
                                                                                     <div className='border-end '>
                                                                                         {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == product.id) ? (
                                                                                             <button type="button" className='wishlist-product' onClick={() => {
-                                                                                                if (cookies.get('jwt_token') !== undefined) {
+                                                                                                if (user?.jwtToken !== "") {
                                                                                                     removefromFavorite(product.id);
                                                                                                 } else {
                                                                                                     toast.error(t('required_login_message_for_cart'));
@@ -958,7 +954,7 @@ const ProductList2 = React.memo(() => {
                                                                                             </button>
                                                                                         ) : (
                                                                                             <button key={product.id} type="button" className='wishlist-product' onClick={() => {
-                                                                                                if (cookies.get('jwt_token') !== undefined) {
+                                                                                                if (user?.jwtToken !== "") {
                                                                                                     addToFavorite(product.id);
                                                                                                 } else {
                                                                                                     toast.error(t("required_login_message_for_cart"));
@@ -1021,23 +1017,6 @@ const ProductList2 = React.memo(() => {
                                                                                             <>
                                                                                                 <button type="button" id={`Add-to-cart-section${index}`} className='w-100 h-100 add-to-cart active' onClick={() => {
                                                                                                     const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                                                    // if (cookies.get('jwt_token') !== undefined) {
-                                                                                                    //     if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) >= Number(product?.total_allowed_quantity)) {
-                                                                                                    //         toast.error('Oops, Limited Stock Available');
-                                                                                                    //     }
-                                                                                                    //     else if (Number(product.is_unlimited_stock)) {
-                                                                                                    //         addtoCart(product.id, product?.variants?.[0].id, 1);
-                                                                                                    //     } else {
-                                                                                                    //         if (product?.variants?.[0]?.status) {
-                                                                                                    //             addtoCart(product.id, product?.variants?.[0].id, 1);
-                                                                                                    //         } else {
-                                                                                                    //             toast.error('Oops, Limited Stock Available');
-                                                                                                    //         }
-                                                                                                    //     }
-                                                                                                    // }
-                                                                                                    // else {
-                                                                                                    //     toast.error(t("required_login_message_for_cartRedirect"));
-                                                                                                    // }
                                                                                                     handleValidateAddNewProduct(productQuantity, product);
                                                                                                 }} disabled={!Number(product.is_unlimited_stock) && product.variants[0].status === 0}>{t("add_to_cart")}</button>
                                                                                             </>}
@@ -1084,7 +1063,7 @@ const ProductList2 = React.memo(() => {
                                                                 setP_id={setP_id}
                                                                 setP_V_id={setP_V_id}
                                                             />
-                                                            <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} setisLoader={setisLoader} cookies={cookies} toast={toast} city={city} />
+                                                            <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} setisLoader={setisLoader} toast={toast} city={city} />
 
 
                                                         </div>

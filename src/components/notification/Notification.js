@@ -4,7 +4,6 @@ import './notification.css';
 import { IoNotifications } from 'react-icons/io5';
 import Pagination from 'react-js-pagination';
 import api from '../../api/api';
-import Cookies from 'universal-cookie';
 import Loader from '../loader/Loader';
 import coverImg from '../../utils/cover-img.jpg';
 import No_Notification from '../../utils/zero-state-screens/No_Notification.svg';
@@ -23,8 +22,6 @@ const Notification = () => {
 
   const total_notification_per_page = 10;
 
-  //initialize cookies
-  const cookies = new Cookies();
 
   const [totalNotification, settotalNotification] = useState(null);
   const [currPage, setcurrPage] = useState(1);
@@ -34,7 +31,7 @@ const Notification = () => {
   const [isNetworkError, setIsNetworkError] = useState(false);
 
   const fetchNotification = () => {
-    api.getNotification(cookies.get('jwt_token'), total_notification_per_page, offset)
+    api.getNotification(user?.jwtToken, total_notification_per_page, offset)
       .then(response => response.json())
       .then(result => {
         if (result.status === 1) {
@@ -53,11 +50,6 @@ const Notification = () => {
       });
   };
 
-  // useEffect(() => {
-  //   if (cookies.get('jwt_token') !== undefined && user.user !== null) {
-  //     fetchNotification();
-  //   }
-  // }, [user]);
 
   useEffect(() => {
     setisLoader(true);

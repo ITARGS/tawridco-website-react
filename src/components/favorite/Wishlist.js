@@ -9,8 +9,6 @@ import { BsPlus } from "react-icons/bs";
 import { BiMinus } from 'react-icons/bi';
 import api from '../../api/api';
 import { toast } from 'react-toastify';
-import Cookies from 'universal-cookie';
-import { ActionTypes } from '../../model/action-type';
 import { RiDeleteBinLine } from 'react-icons/ri';
 import Loader from '../loader/Loader';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -29,13 +27,13 @@ const Wishlist = () => {
     const closeCanvas = useRef();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const cookies = new Cookies();
 
     const favorite = useSelector(state => (state.favourite));
     const city = useSelector(state => (state.city));
     const sizes = useSelector(state => (state.productSizes));
     const cart = useSelector((state) => state.cart);
     const setting = useSelector((state) => state.setting);
+    const user = useSelector((state) => state.user);
 
     const [productSizes, setproductSizes] = useState(null);
     const [isfavoriteEmpty, setisfavoriteEmpty] = useState(false);
@@ -72,7 +70,7 @@ const Wishlist = () => {
     }, [favorite]);
 
     useEffect(() => {
-        api.getFavorite(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
+        api.getFavorite(user?.jwtToken, city.city.latitude, city.city.longitude)
             .then(response => response.json())
             .then((result) => {
                 dispatch(setFavourite({ data: result }));
@@ -88,7 +86,7 @@ const Wishlist = () => {
 
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
-        await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
+        await api.addToCart(user?.jwtToken, product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -124,7 +122,7 @@ const Wishlist = () => {
     //remove from Cart
     const removefromCart = async (product_id, product_variant_id) => {
         setisLoader(true);
-        await api.removeFromCart(cookies.get('jwt_token'), product_id, product_variant_id)
+        await api.removeFromCart(user?.jwtToken, product_id, product_variant_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -149,12 +147,12 @@ const Wishlist = () => {
     //remove from favorite
     const removefromFavorite = async (product_id) => {
         setisLoader(true);
-        await api.removeFromFavorite(cookies.get('jwt_token'), product_id)
+        await api.removeFromFavorite(user?.jwtToken, product_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getFavorite(cookies.get("jwt_token"), city?.city?.latitude, city?.city?.longitude)
+                    await api.getFavorite(user?.jwtToken, city?.city?.latitude, city?.city?.longitude)
                         .then((res) => res.json())
                         .then((result) => {
                             dispatch(setFavourite({ data: result }));
@@ -297,7 +295,7 @@ const Wishlist = () => {
                                                                         <>
                                                                             <button type='button' id={`Add-to-cart-wishlist${index}`} className='add-to-cart active'
                                                                                 onClick={() => {
-                                                                                    if (cookies.get('jwt_token') !== undefined) {
+                                                                                    if (user?.jwtToken !== "") {
                                                                                         addtoCart(product.id, product.variants[0]?.id, 1);
                                                                                         setP_id(product.id);
                                                                                         setP_V_id(product.variants[0]?.id);
@@ -339,7 +337,6 @@ const Wishlist = () => {
                         product_variant_id={p_v_id}
                         quantity={qnty}
                         setisLoader={setisLoader}
-                        cookies={cookies}
                         toast={toast}
                         city={city}
                         setP_V_id={setP_V_id}

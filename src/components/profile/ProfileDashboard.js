@@ -1,26 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ActionTypes } from '../../model/action-type';
+import { useLocation, useNavigate } from 'react-router-dom';
 import './profile.css';
-
 import coverImg from '../../utils/cover-img.jpg';
 import { FaUserCircle, FaListAlt, FaHome, FaEdit, FaWallet } from 'react-icons/fa';
 import { GoChecklist } from 'react-icons/go';
 import { IoIosArrowForward, IoMdLogOut } from 'react-icons/io';
 import { AiFillDelete, AiOutlineCloseCircle } from 'react-icons/ai';
-import Cookies from 'universal-cookie';
 import { toast } from 'react-toastify';
 import Order from '../order/Order';
 import Address from '../address/Address';
 import Transaction from '../transaction/Transaction';
 import { confirmAlert } from 'react-confirm-alert';
 import 'react-confirm-alert/src/react-confirm-alert.css';
-import { removelocalstorageOTP, gelocalstoragetOTP } from '../../utils/manageLocalStorage';
+import { removelocalstorageOTP } from '../../utils/manageLocalStorage';
 import api from '../../api/api';
 import { useTranslation } from 'react-i18next';
 import FirebaseData from '../../utils/firebase/FirebaseData';
-import { logoutAuth, setAuthId, setCurrentUser } from "../../model/reducer/authReducer";
+import { logoutAuth, setCurrentUser } from "../../model/reducer/authReducer";
 import { setFilterBrands, setFilterCategory, setFilterSearch, setFilterSection } from "../../model/reducer/productFilterReducer";
 import WalletTransaction from '../wallet-transaction/WalletTransaction';
 import { PiWallet } from "react-icons/pi";
@@ -28,8 +25,7 @@ import { setCartProducts, setCartSubTotal } from '../../model/reducer/cartReduce
 
 
 const ProfileDashboard = (props) => {
-    //initialize Cookies
-    const cookies = new Cookies();
+
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
@@ -114,12 +110,12 @@ const ProfileDashboard = (props) => {
 
             if (selectedFile.type === 'image/png' || selectedFile.type === 'image/jpg' || selectedFile.type === 'image/jpeg') {
                 setisupdating(true);
-                if (cookies.get('jwt_token') !== undefined) {
-                    await api.edit_profile(username, useremail, selectedFile, cookies.get('jwt_token'))
+                if (user?.jwtToken !== "") {
+                    await api.edit_profile(username, useremail, selectedFile, user?.jwtToken)
                         .then(response => response.json())
                         .then(result => {
                             if (result.status === 1) {
-                                getCurrentUser(cookies.get('jwt_token'));
+                                getCurrentUser(user?.jwtToken);
                             }
                             else {
                                 toast.error(result.message);
@@ -134,12 +130,12 @@ const ProfileDashboard = (props) => {
             }
         } else {
             setisupdating(true);
-            if (cookies.get('jwt_token') !== undefined) {
-                await api.edit_profile(username, useremail, selectedFile, cookies.get('jwt_token'))
+            if (user?.jwtToken !== "") {
+                await api.edit_profile(username, useremail, selectedFile, user?.jwtToken)
                     .then(response => response.json())
                     .then(result => {
                         if (result.status === 1) {
-                            getCurrentUser(cookies.get('jwt_token'));
+                            getCurrentUser(user?.jwtToken);
                         }
                         else {
                             toast.error(result.message);
@@ -163,10 +159,9 @@ const ProfileDashboard = (props) => {
                 {
                     label: t("Ok"),
                     onClick: async () => {
-                        await api.logout(cookies.get('jwt_token')).then(response => response.json())
+                        await api.logout(user?.jwtToken).then(response => response.json())
                             .then(result => {
                                 if (result.status === 1) {
-                                    cookies.remove('jwt_token');
                                     removelocalstorageOTP();
                                     dispatch(setFilterBrands({ data: [] }));
                                     dispatch(setFilterCategory({ data: null }));
@@ -205,10 +200,9 @@ const ProfileDashboard = (props) => {
                     label: t('Ok'),
                     onClick: async () => {
 
-                        await api.deleteAccount(cookies.get('jwt_token'), user?.authId).then(response => response.json())
+                        await api.deleteAccount(user?.jwtToken, user?.authId).then(response => response.json())
                             .then(result => {
                                 if (result.status === 1) {
-                                    cookies.remove('jwt_token');
                                     let user = firebase.auth().currentUser;
                                     user.delete().then((response) => {
                                     });

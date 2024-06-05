@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect } from 'react';
 import { Route, Routes } from "react-router-dom";
 import Header from "./components/header/Header";
 import MainContainer from "./components/MainContainer";
@@ -6,15 +6,11 @@ import NewUserModal from "./components/newusermodal/NewUserModal";
 import { AnimatePresence } from "framer-motion";
 import { Footer } from "./components/footer/Footer";
 import ProfileDashboard from './components/profile/ProfileDashboard';
-import Cookies from 'universal-cookie';
 import { useDispatch, useSelector } from 'react-redux';
 import api from './api/api';
-
 //react-toast
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
-
-import ShowAllCategories from './components/category/ShowAllCategories';
+import { ToastContainer } from 'react-toastify';
 import ProductList from './components/product/ProductList';
 import ProductDetails from './components/product/ProductDetails';
 import ViewCart from './components/cart/ViewCart';
@@ -34,26 +30,20 @@ import { initReactI18next } from 'react-i18next';
 import ScrollTop from './components/scrolltoTop/ScrollTop';
 import OrderDetails from './components/order/OrderDetails';
 import BrandList from './components/brands/BrandList';
-
-import { logoutAuth, setCurrentUser } from "./model/reducer/authReducer";
+import { setCurrentUser } from "./model/reducer/authReducer";
 import { setLanguage } from './model/reducer/languageReducer';
 import { setSetting } from './model/reducer/settingReducer';
 import { setShop } from "./model/reducer/shopReducer";
 import ShopByCountriesPage from './components/shop-by-countries/ShopByCountriesPage';
 import ShopBySellersPage from './components/shop-by-seller/ShopBySellersPage';
 import AllRatingsAndReviews from './components/product/AllRatingsAndReviews';
-import AllRatingImages from './components/product/AllRatingImages';
 import PayPalPaymentHandler from './components/paypalPaymentHandler/PayPalPaymentHandler';
 import jsonFile from "./utils/en.json";
-import { diffInTime, } from './utils/TimeUtilites';
 import { setFavouriteLength, setFavouriteProductIds } from './model/reducer/favouriteReducer';
 import CategoryChild from './components/category/CategoryChild';
 import { Helmet } from 'react-helmet-async';
 
 const App = () => {
-  //initialize cookies
-  const cookies = new Cookies();
-
   const dispatch = useDispatch();
 
   const setting = useSelector(state => (state.setting));
@@ -65,13 +55,9 @@ const App = () => {
   const shop = useSelector((state) => (state.shop));
 
   useEffect(() => {
-    if (cookies.get('jwt_token') !== undefined) {
-      getCurrentUser(cookies.get('jwt_token'));
+    if (user?.jwtToken !== "") {
+      getCurrentUser(user?.jwtToken);
     }
-    // else if (cookies.get("jwt_token")) {:80
-
-    //   dispatch(logoutAuth({ data: null }));
-    // }
     getSetting();
   }, []);
 
@@ -133,7 +119,7 @@ const App = () => {
   //fetching app-settings
   const getSetting = async () => {
     // if (setting?.setting == null)
-    await api.getSettings(user?.user ? 1 : 0, user?.user ? cookies.get("jwt_token") : null).then(response => response.json())
+    await api.getSettings(user?.user ? 1 : 0, user?.user ? user?.jwtToken : null).then(response => response.json())
       .then(result => {
         if (result.status === 1) {
           if (result?.data?.default_city == undefined && city?.city) {
@@ -163,7 +149,7 @@ const App = () => {
 
   useEffect(() => {
     const fetchShop = (latitude, longitude) => {
-      api.getShop(latitude, longitude, cookies.get('jwt_token'))
+      api.getShop(latitude, longitude, user?.jwtToken)
         .then(response => response.json())
         .then(result => {
           if (result.status === 1) {

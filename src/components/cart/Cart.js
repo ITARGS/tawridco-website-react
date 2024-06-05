@@ -6,14 +6,12 @@ import { BsPlus } from "react-icons/bs";
 import { BiMinus } from 'react-icons/bi';
 import api from '../../api/api';
 import { toast } from 'react-toastify';
-import Cookies from 'universal-cookie';
-import { ActionTypes } from '../../model/action-type';
 import EmptyCart from '../../utils/zero-state-screens/Empty_Cart.svg';
 import { Link, useNavigate } from 'react-router-dom';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setProductSizes } from "../../model/reducer/productSizesReducer";
-import { clearCartPromo, setCart, setCartProducts, setPromoCodeApplied, setCartSubTotal } from "../../model/reducer/cartReducer";
+import { clearCartPromo, setCart, setCartProducts, setCartSubTotal } from "../../model/reducer/cartReducer";
 import Promo from "./Promo";
 import { RiCoupon2Fill } from 'react-icons/ri';
 
@@ -22,12 +20,12 @@ import { RiCoupon2Fill } from 'react-icons/ri';
 const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
 
     const closeCanvas = useRef();
-    const cookies = new Cookies();
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
 
     const cart = useSelector(state => (state.cart));
+    const user = useSelector(state => (state.user));
     const city = useSelector(state => (state.city));
     const sizes = useSelector(state => (state.productSizes));
     const setting = useSelector(state => (state.setting));
@@ -77,7 +75,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
     const fetchCartData = async () => {
         setisLoader(true);
         try {
-            const response = await api.getCart(cookies.get("jwt_token"), city?.city?.latitude, city?.city?.longitude);
+            const response = await api.getCart(user?.jwtToken, city?.city?.latitude, city?.city?.longitude);
             const result = await response.json();
             if (result.status == 1) {
                 const productsData = result?.data?.cart?.map((product) => {
@@ -103,7 +101,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
 
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
-        await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
+        await api.addToCart(user?.jwtToken, product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
@@ -139,7 +137,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
     //remove from Cart
     const removefromCart = async (product_id, product_variant_id) => {
         // setisLoader(true);
-        await api.removeFromCart(cookies.get('jwt_token'), product_id, product_variant_id)
+        await api.removeFromCart(user?.jwtToken, product_id, product_variant_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {

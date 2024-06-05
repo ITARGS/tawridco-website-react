@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Cookies from 'universal-cookie';
 import api from '../../api/api';
 import './address.css';
 import { FiEdit } from 'react-icons/fi';
@@ -17,7 +16,6 @@ import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
 const Address = () => {
 
-    const cookies = new Cookies();
     const dispatch = useDispatch();
 
     const [isAddressSelected, setIsAddressSelected] = useState(false);
@@ -51,8 +49,8 @@ const Address = () => {
 
 
     useEffect(() => {
-        if (cookies.get('jwt_token') !== undefined && user.user !== null) {
-            fetchAddress(cookies.get('jwt_token'));
+        if (user?.jwtToken !== "" && user.user !== null) {
+            fetchAddress(user?.jwtToken);
         }
     }, [user]);
 
@@ -68,12 +66,12 @@ const Address = () => {
                     onClick: async () => {
 
                         setisLoader(true);
-                        api.deleteAddress(cookies.get('jwt_token'), address_id)
+                        api.deleteAddress(user?.jwtToken, address_id)
                             .then(response => response.json())
                             .then(result => {
                                 if (result.status === 1) {
                                     toast.success('Succesfully Deleted Address!');
-                                    fetchAddress(cookies.get('jwt_token'));
+                                    fetchAddress(user?.jwtToken);
                                 }
                             })
                             .catch(error => console.log(error));

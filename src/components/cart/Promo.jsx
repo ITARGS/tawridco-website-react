@@ -2,24 +2,22 @@ import React, { useEffect, useRef, useState } from 'react';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../../api/api';
-import Cookies from 'universal-cookie';
-import { ActionTypes } from '../../model/action-type';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import Loader from '../loader/Loader';
 import { Offcanvas } from 'react-bootstrap';
-import { setCartPromo, setPromoCodeApplied } from '../../model/reducer/cartReducer';
+import { setCartPromo } from '../../model/reducer/cartReducer';
 
 
 function Promo(props) {
 
-    const cookies = new Cookies();
 
     const dispatch = useDispatch();
 
     const closeCanvas = useRef();
 
     const cart = useSelector((state) => state.cart);
+    const user = useSelector((state) => state.user);
     const setting = useSelector((state) => state.setting);
 
     const [promo_detail, setPromoDetail] = useState(null);
@@ -29,7 +27,7 @@ function Promo(props) {
 
     const fetchpromo_codes = async () => {
 
-        await api.getPromo(cookies.get('jwt_token'), amount).then(response => response.json())
+        await api.getPromo(user?.jwtToken, amount).then(response => response.json())
             .then((result) => {
                 // console.log(result);
                 if (result.status === 1) {
@@ -40,7 +38,7 @@ function Promo(props) {
     };
     const applyPromoCode = async (promo) => {
         setLoading(true);
-        await api.setPromo(cookies.get('jwt_token'), promo.promo_code, amount).then(response => response.json()).then((result) => {
+        await api.setPromo(user?.jwtToken, promo.promo_code, amount).then(response => response.json()).then((result) => {
             setLoading(false);
             if (result.status) {
                 dispatch(setCartPromo({ data: result.data }));

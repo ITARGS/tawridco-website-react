@@ -9,8 +9,6 @@ import { BsPlus } from "react-icons/bs";
 import { BiMinus } from 'react-icons/bi';
 import api from '../../api/api';
 import { toast } from 'react-toastify';
-import Cookies from 'universal-cookie';
-import { ActionTypes } from '../../model/action-type';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
@@ -22,12 +20,12 @@ const Favorite = React.memo(() => {
     const closeCanvas = useRef();
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const cookies = new Cookies();
 
     const favorite = useSelector(state => (state.favourite));
     const setting = useSelector(state => (state.setting));
     const city = useSelector(state => (state.city));
     const cart = useSelector(state => (state.cart));
+    const user = useSelector(state => (state.user));
     const [isfavoriteEmpty, setisfavoriteEmpty] = useState(false);
     const [isLoader, setisLoader] = useState(false);
     const [p_id, setP_id] = useState(0);
@@ -54,12 +52,12 @@ const Favorite = React.memo(() => {
         // console.log("Favourite State ->", product_id, product_variant_id, qty);
         // console.log("Favourite State -> ", p_id, p_v_id, qnty);
         setisLoader(true);
-        await api.addToCart(cookies.get('jwt_token'), product_id, product_variant_id, qty)
+        await api.addToCart(user?.jwtToken, product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
+                    await api.getCart(user?.jwtToken, city.city.latitude, city.city.longitude)
                         .then(resp => resp.json())
                         .then(res => {
                             setisLoader(false);
@@ -82,12 +80,12 @@ const Favorite = React.memo(() => {
     //remove from Cart
     const removefromCart = async (product_id, product_variant_id) => {
         setisLoader(true);
-        await api.removeFromCart(cookies.get('jwt_token'), product_id, product_variant_id)
+        await api.removeFromCart(user?.jwtToken, product_id, product_variant_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getCart(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
+                    await api.getCart(user?.jwtToken, city.city.latitude, city.city.longitude)
                         .then(resp => resp.json())
                         .then(res => {
                             setisLoader(false);
@@ -114,12 +112,12 @@ const Favorite = React.memo(() => {
     //remove from favorite
     const removefromFavorite = async (product_id) => {
         setisLoader(true);
-        await api.removeFromFavorite(cookies.get('jwt_token'), product_id)
+        await api.removeFromFavorite(user?.jwtToken, product_id)
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getFavorite(cookies.get('jwt_token'), city.city.latitude, city.city.longitude)
+                    await api.getFavorite(user?.jwtToken, city.city.latitude, city.city.longitude)
                         .then(resp => resp.json())
                         .then(res => {
                             setisLoader(false);
@@ -237,7 +235,7 @@ const Favorite = React.memo(() => {
                                                                     ) : (
                                                                         <button type='button' id={`Add-to-cart-favoritesidebar${index}`} className='add-to-cart active'
                                                                             onClick={() => {
-                                                                                if (cookies.get('jwt_token') !== undefined) {
+                                                                                if (user?.jwtToken !== "") {
                                                                                     if (product.variants[0].status) {
                                                                                         addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
                                                                                         setP_id(product.id);
@@ -256,7 +254,7 @@ const Favorite = React.memo(() => {
                                                                     (
                                                                         <button type='button' id={`Add-to-cart-favoritesidebar${index}`} className='add-to-cart active'
                                                                             onClick={() => {
-                                                                                if (cookies.get('jwt_token') !== undefined) {
+                                                                                if (user?.jwtToken !== "") {
                                                                                     if (Number(product.variants[0].stock > 1)) {
                                                                                         addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
                                                                                         setP_id(product.id);
@@ -304,7 +302,6 @@ const Favorite = React.memo(() => {
                                         product_variant_id={p_v_id}
                                         quantity={qnty}
                                         setisLoader={setisLoader}
-                                        cookies={cookies}
                                         toast={toast}
                                         city={city}
                                     />

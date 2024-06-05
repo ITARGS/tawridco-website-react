@@ -4,12 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import coverImg from '../../utils/cover-img.jpg';
 import { useTranslation } from 'react-i18next';
-import { setFilterBrands, setFilterByCountry, setFilterBySeller, setFilterCategory } from "../../model/reducer/productFilterReducer";
+import { setFilterBrands } from "../../model/reducer/productFilterReducer";
 import Pagination from 'react-js-pagination';
-import Cookies from 'universal-cookie';
 import useShopByBrands from '../../hooks/useShopByBrands';
 import Skeleton from 'react-loading-skeleton';
-import { ValidateNoInternet } from "../../utils/NoInternetValidator";
 import { MdSignalWifiConnectedNoInternet0 } from "react-icons/md";
 
 
@@ -17,16 +15,16 @@ const BrandList = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const cookies = new Cookies();
 
     const setting = useSelector(state => state.setting);
+    const user = useSelector(state => state.user);
     const filter = useSelector(state => state.productFilter);
 
     const [limit, setLimit] = useState(12);
     const [offset, setOffset] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
-    const { data, totalData, loading, error } = useShopByBrands(cookies.get("jwt_token"), limit, offset);
+    const { data, totalData, loading, error } = useShopByBrands(user?.jwtToken, limit, offset);
 
     if (error === "Failed to fetch") {
         return (<div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>

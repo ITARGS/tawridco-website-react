@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
-import Cookies from 'universal-cookie';
 import api from '../../api/api';
 import useGetProductRatingImages from '../../hooks/useGetProductRatingImages';
 import "./all-rating-images.css";
@@ -11,12 +10,13 @@ import Pagination from 'react-js-pagination';
 import LightBox from '../lightbox/LightBox';
 
 const AllRatingImages = () => {
+
     const { slug } = useParams();
-    const cookies = new Cookies();
     const { t } = useTranslation();
 
     const city = useSelector(state => state.city);
     const setting = useSelector(state => state.setting);
+    const user = useSelector(state => state.user);
 
     const [currPage, setCurrPage] = useState(1);
     const [limit, setLimit] = useState(25);
@@ -38,7 +38,7 @@ const AllRatingImages = () => {
         window.scrollTo({ top: 0, behavior: "smooth" });
         const getProductData = async () => {
 
-            await api.getProductbyFilter(city.city?.latitude, city.city?.longitude, { slug: slug }, cookies.get('jwt_token'))
+            await api.getProductbyFilter(city.city?.latitude, city.city?.longitude, { slug: slug }, user?.jwtToken)
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
@@ -53,7 +53,7 @@ const AllRatingImages = () => {
         getProductData();
     }, [slug]);
 
-    const { ratingImages, totalImages, loading } = useGetProductRatingImages(cookies.get("jwt_token"), productId, limit, offset);
+    const { ratingImages, totalImages, loading } = useGetProductRatingImages(user?.jwtToken, productId, limit, offset);
 
     const handlePageChange = (pageNum) => {
         window.scrollTo({ top: 0, behavior: "smooth" });

@@ -8,16 +8,16 @@ import animate1 from '../../utils/order_placed_back_animation.json';
 import animate2 from '../../utils/order_success_tick_animation.json';
 import NoOrderSVG from "../../utils/zero-state-screens/No_Orders.svg";
 import api from '../../api/api';
-import Cookies from 'universal-cookie';
 import { setCart, setCartCheckout, setCartProducts, setCartSubTotal } from '../../model/reducer/cartReducer';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const PayPalPaymentHandler = () => {
-    const cookies = new Cookies();
+
     const location = useLocation();
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const navigate = useNavigate();
+    const user = useSelector(state => state?.user);
     const queryParams = new URLSearchParams(location.search);
     // console.log(queryParams);
     const queryParamsObj = {};
@@ -50,7 +50,7 @@ const PayPalPaymentHandler = () => {
         else {
             setIsOrderPayment(true);
             try {
-                api.removeCart(cookies.get("jwt_token")).then((res) => res.json()).then((result) => {
+                api.removeCart(user?.jwtToken).then((res) => res.json()).then((result) => {
                     if (result?.status === 1) {
                         dispatch(setCart({ data: null }));
                         dispatch(setCartCheckout({ data: null }));

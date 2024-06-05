@@ -1,6 +1,5 @@
 import { CardElement, ElementsConsumer } from "@stripe/react-stripe-js";
 import Loader from "../loader/Loader";
-import Cookies from "universal-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { useState } from "react";
 import api from "../../api/api";
@@ -28,12 +27,9 @@ const CARD_OPTIONS = {
 };
 
 const StripeModal = (props) => {
-    // console.log(props);
-    const cookies = new Cookies();
 
     const dispatch = useDispatch();
-
-
+    
     const user = useSelector((state) => state.user);
 
     const [loadingPay, setloadingPay] = useState(false);
@@ -81,7 +77,7 @@ const StripeModal = (props) => {
             props.setAddWalletModal(false);
 
         } else if (paymentIntent.status === 'succeeded') {
-            await api.addTransaction(cookies.get('jwt_token'), null, props.transaction_id, "Stripe", "wallet", props.amount)
+            await api.addTransaction(user?.jwtToken, null, props.transaction_id, "Stripe", "wallet", props.amount)
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {

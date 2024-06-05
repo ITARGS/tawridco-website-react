@@ -1,30 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { setFilterBrands, setFilterBySeller } from '../../model/reducer/productFilterReducer';
+import { setFilterBySeller } from '../../model/reducer/productFilterReducer';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import coverImg from '../../utils/cover-img.jpg';
 import useShopBySellers from '../../hooks/useShopBySellers';
-import Cookies from 'universal-cookie';
 import Pagination from 'react-js-pagination';
 import Skeleton from 'react-loading-skeleton';
 import "./shop-by-seller.css";
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
 const ShopBySellersPage = () => {
-    const cookies = new Cookies();
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { t } = useTranslation();
+
+    const setting = useSelector(state => state.setting);
+    const user = useSelector(state => state.user);
+    const filter = useSelector(state => state.productFilter);
+    const city = useSelector(state => state.city.city);
 
     const [limit, setLimit] = useState(12);
     const [offset, setOffset] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
 
-    const setting = useSelector(state => state.setting);
-    const filter = useSelector(state => state.productFilter);
-    const city = useSelector(state => state.city.city);
 
     useEffect(() => {
         window.scrollTo({
@@ -34,7 +35,7 @@ const ShopBySellersPage = () => {
 
     }, []);
 
-    const { data, totalData, loading, error } = useShopBySellers(cookies.get("jwt_token"), city.latitude, city.longitude, limit, offset);
+    const { data, totalData, loading, error } = useShopBySellers(user?.jwtToken, city.latitude, city.longitude, limit, offset);
 
     if (error === "Failed to fetch") {
         return (

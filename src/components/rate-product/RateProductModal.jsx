@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Modal } from "react-bootstrap";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import "./rateproduct.css";
-import Cookies from "universal-cookie";
 import { toast } from "react-toastify";
 import api from "../../api/api";
 import { useSelector } from "react-redux";
@@ -13,10 +12,9 @@ import { LuStar } from "react-icons/lu";
 
 
 const RateProductModal = (props) => {
-    // console.log(props);
-    const cookies = new Cookies();
+
     const { t } = useTranslation();
-    // const user = useSelector(state => state.user.user);
+    const user = useSelector(state => state.user);
 
 
     const [activeIndex, setActiveIndex] = useState(null);
@@ -47,7 +45,7 @@ const RateProductModal = (props) => {
             return;
         }
         try {
-            const response = await api.addProductRating(cookies.get("jwt_token"), props.product_id, activeIndex, review, files);
+            const response = await api.addProductRating(user?.jwtToken, props.product_id, activeIndex, review, files);
             const result = await response.json();
             props.setShowPdtRatingModal(false);
             if (result.message == "The image.0 must be an image.") {
