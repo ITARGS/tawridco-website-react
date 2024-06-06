@@ -987,59 +987,7 @@ const Checkout = () => {
                                                                         </div>
                                                                     </> : <></>}
 
-                                                                    {/* {cart.is_promocode_applied && cart.is_wallet_checked ? <>
-                                                                    <div className='d-flex justify-content-between'>
-                                                                        <span>{t("Wallet")}</span>
-                                                                        <div className='d-flex align-items-center'>
 
-                                                                            <span>- {setting.setting && setting.setting.currency}    {Number(cart.checkout?.total_amount - cart.promo_code?.discount).toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </> : !cart.is_promocode_applied && cart.is_wallet_checked ?
-                                                                    (cart.checkout.user_balance < cart.checkout.total_amount) ? <>
-                                                                        <div className='d-flex justify-content-between'>
-                                                                            <span>{t("Wallet")}</span>
-                                                                            <div className='d-flex align-items-center'>
-
-                                                                                <span>- {setting.setting && setting.setting.currency}    {Number(cart.checkout.user_balance).toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    </> :
-                                                                        <>
-                                                                            <div className='d-flex justify-content-between'>
-                                                                                <span>{t("Wallet")}</span>
-                                                                                <div className='d-flex align-items-center'>
-
-                                                                                    <span>- {setting.setting && setting.setting.currency}    {Number(cart.checkout.total_amount).toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </> :
-                                                                    <></>
-                                                                } */}
-                                                                    {/* {cart.cart.data.user_balance && cart.is_wallet_checked && (cart.checkout.total_amount <= cart.checkout.user_balance) && !cart.promo_code ? <>
-                                                                    <div className='d-flex justify-content-between'>
-                                                                        <span>{t("Wallet")}</span>
-                                                                        <div className='d-flex align-items-center'>
-
-                                                                            <span>- {setting.setting && setting.setting.currency}    {Number(cart.checkout.total_amount).toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </> : cart.checkout.user_balance >= cart.checkout.total_amount && !cart.is_wallet_checked ? <> {null}
-
-                                                                </>
-                                                                    : cart.checkout.user_balance <= cart.checkout.total_amount && !cart.is_wallet_checked ? <>{null}</>
-                                                                        : cart.is_wallet_checked && cart.promo_code && cart.promo_code.discount && (cart.promo_code.discount + cart.checkout.user_balance >= cart.checkout.total_amount) ? <>
-                                                                            {null}
-                                                                        </> : <>
-                                                                            <div className='d-flex justify-content-between'>
-                                                                                <span>{t("Wallet")}</span>
-                                                                                <div className='d-flex align-items-center'>
-
-                                                                                    <span>- {setting.setting && setting.setting.currency}    {Number(cart.checkout.total_amount).toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                                </div>
-                                                                            </div>
-                                                                        </>
-                                                                } */}
                                                                     <div className='d-flex justify-content-between total'>
                                                                         <span>{t("total")}</span>
                                                                         <div className='d-flex align-items-center total-amount' style={{ color: "var(--secondary-color)" }}>
@@ -1047,17 +995,7 @@ const Checkout = () => {
                                                                                 {setting.setting && setting.setting.currency}
                                                                                 {Number(totalPayment)?.toFixed(setting.setting && setting.setting.decimal_point)}
                                                                             </span>
-                                                                            {/* {cart.promo_code ?
-                                                                            <span>
-                                                                                {setting.setting && setting.setting.currency}
-                                                                                {(cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge).toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                            </span>
-                                                                            : <>
-                                                                                <span>{
-                                                                                    setting.setting && setting.setting.currency}
-                                                                                    {(cart.checkout.total_amount).toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                                </span>
-                                                                            </>} */}
+
                                                                         </div>
                                                                     </div>
 
@@ -1069,22 +1007,25 @@ const Checkout = () => {
                                                                         <Loader screen='full' background='none' />
                                                                         : <>
                                                                             {
-                                                                                setting.payment_setting.cod_payment_method === "1" && codAllow == '1' ||
+                                                                                (setting.payment_setting.cod_payment_method === "1" && codAllow == '1') ||
                                                                                     setting.payment_setting.razorpay_payment_method === "1" ||
                                                                                     setting.payment_setting.paystack_payment_method === "1" ||
                                                                                     setting.payment_setting.stripe_payment_method === "1" ||
-                                                                                    setting.payment_setting.paypal_payment_method === "1" ? (
-
-                                                                                    <div className='button-container'>
-
-
-
-                                                                                        {paymentMethod === "Stripe" && setting
-                                                                                            ? <motion.button whiletap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
-                                                                                            : <motion.button whiletap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
-                                                                                        }
-                                                                                    </div>
-                                                                                ) : null
+                                                                                    setting.payment_setting.paypal_payment_method === "1" ||
+                                                                                    setting?.payment_setting?.phonepay_payment_method === "1" ||
+                                                                                    setting?.payment_setting?.midtrans_payment_method === "1"
+                                                                                    ? (
+                                                                                        <div className='button-container'>
+                                                                                            {paymentMethod === "Stripe" && setting
+                                                                                                ? <motion.button whiletap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
+                                                                                                : <motion.button whiletap={{ scale: 0.8 }} type='button' className='checkout' onClick={(e) => { e.preventDefault(); HandlePlaceOrder(); }}>{t("place_order")}</motion.button>
+                                                                                            }
+                                                                                        </div>
+                                                                                    ) : (
+                                                                                        <div className='button-container'>
+                                                                                            <button type='button' className='checkout' disabled>{t("enable_payment_methods")}</button>
+                                                                                        </div>
+                                                                                    )
                                                                             }
                                                                         </>
                                                                     }

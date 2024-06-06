@@ -169,8 +169,8 @@ const AddWalletModal = (props) => {
     };
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (paymentMethod === "") {
-            toast.error(t("please_select_payment_method"));
+        if (paymentMethod == "") {
+            return toast.error(t("please_select_payment_method"));
         }
         try {
             let response, result;
@@ -259,7 +259,14 @@ const AddWalletModal = (props) => {
                     <div className='fw-bold modalHeading'>
                         {t("add_to_wallet")}
                     </div>
-                    <div className='closeModalBtn' onClick={() => props.setShowModal(false)}><AiOutlineCloseCircle size={34} /></div>
+                    <div className='closeModalBtn' onClick={() => {
+                        props.setShowModal(false);
+                        setPaymentMethod("");
+                        setWalletAmount(0);
+                        setStripeModalShow(false);
+                        setStripeTransId(null);
+                        setstripeClientSecret(null);
+                    }}><AiOutlineCloseCircle size={34} /></div>
                 </Modal.Header>
                 <Modal.Body>
                     {!loader ? <form onSubmit={handleSubmit}>
