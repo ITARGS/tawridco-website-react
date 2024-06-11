@@ -176,62 +176,68 @@ const ProductDetails = () => {
 
 
 
-    const CustomPrevButton = ({ currentSlide, slideCount, ...props }) => (
-        <button {...props} type="button" className="slick-prev">
-            <FaChevronLeft fill='black' size={30} className="prev-arrow" />
-        </button>
-    );
-    const CustomNextButton = ({ currentSlide, slideCount, ...props }) => (
-        <button {...props} type="button" className="slick-next">
-            <FaChevronRight fill='black' size={30} className='next-arrow' />
-        </button>
-    );
-    const settings = {
-        infinite: false,
-        slidesToShow: 5,
-        initialSlide: 0,
-        prevArrow:
-            // (
-            //     <button type="button" className="slick-prev">
-            //         <FaChevronLeft fill='black' size={30} className="prev-arrow" />
-            //     </button>
-            // ),
-            <CustomPrevButton />,
-        nextArrow:
-            // (
-            //     <button type="button" className="slick-next">
-            //         <FaChevronRight fill='black' size={30} className='next-arrow' />
-            //     </button>
-            // )
-            <CustomNextButton />,
-        responsive: [
-            {
-                breakpoint: 1199,
-                settings: {
-                    slidesToShow: 4,
-                }
-            },
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 3,
-                }
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 2,
-                }
-            },
-            {
-                breakpoint: 425,
-                settings: {
-                    slidesToShow: 1,
-                    arrows: true,
-                }
-            }
-        ]
+    const CustomPrevButton = (props) => {
+        const { slideCount, currentSlide, ...remainingProps } = props;
+        return (
+            <button {...remainingProps} type="button" className="slick-prev">
+                <FaChevronLeft fill='black' size={30} className="product-details-prev-arrow" />
+            </button>
+        );
     };
+    const CustomNextButton = (props) => {
+        const { slideCount, currentSlide, ...remainingProps } = props;
+        return (
+            <button {...remainingProps} type="button" className="slick-next">
+                <FaChevronRight fill='black' size={30} className='product-details-next-arrow' />
+            </button>
+        );
+    };
+    // const settings = {
+    //     infinite: false,
+    //     slidesToShow: 5,
+    //     initialSlide: 0,
+    //     prevArrow:
+    //         // (
+    //         //     <button type="button" className="slick-prev">
+    //         //         <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+    //         //     </button>
+    //         // ),
+    //         <CustomPrevButton />,
+    //     nextArrow:
+    //         // (
+    //         //     <button type="button" className="slick-next">
+    //         //         <FaChevronRight fill='black' size={30} className='next-arrow' />
+    //         //     </button>
+    //         // )
+    //         <CustomNextButton />,
+    //     responsive: [
+    //         {
+    //             breakpoint: 1199,
+    //             settings: {
+    //                 slidesToShow: 4,
+    //             }
+    //         },
+    //         {
+    //             breakpoint: 1024,
+    //             settings: {
+    //                 slidesToShow: 3,
+    //             }
+    //         },
+    //         {
+    //             breakpoint: 768,
+    //             settings: {
+    //                 slidesToShow: 2,
+    //             }
+    //         },
+    //         {
+    //             breakpoint: 425,
+    //             settings: {
+    //                 slidesToShow: 1,
+    //                 arrows: true,
+    //             }
+    //         }
+    //     ]
+    // };
 
     const settings_subImage = {
         infinite: false,
@@ -240,29 +246,31 @@ const ProductDetails = () => {
         // centerMargin: "10px",
         horizontal: true,
         margin: "20px",
-        prevArrow: (
-            <button type="button"
-                className="slick-prev"
-            // onClick={(e) => {
-            //     setmainimage(e.target.value);
-            // }}
-            >
-                <FaChevronLeft fill='black' size={30} className="prev-arrow" />
-            </button>),
-        nextArrow: (
-            <button
-                type="button"
-                className="slick-next"
-            // onClick={(e) => {
-            //     setmainimage(e.target.value);
-            // }}
-            >
-                <FaChevronRight
-                    fill='black'
-                    size={30}
-                    className="next-arrow"
-                />
-            </button>),
+        // prevArrow: (
+        //     <button type="button"
+        //         className="slick-prev"
+        //     // onClick={(e) => {
+        //     //     setmainimage(e.target.value);
+        //     // }}
+        //     >
+        //         <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+        //     </button>),
+        // nextArrow: (
+        //     <button
+        //         type="button"
+        //         className="slick-next"
+        //     // onClick={(e) => {
+        //     //     setmainimage(e.target.value);
+        //     // }}
+        //     >
+        //         <FaChevronRight
+        //             fill='black'
+        //             size={30}
+        //             className="next-arrow"
+        //         />
+        //     </button>),
+        prevArrow: (<CustomPrevButton />),
+        nextArrow: (<CustomNextButton />),
         responsive: [
             {
                 breakpoint: 1024,
@@ -276,6 +284,13 @@ const ProductDetails = () => {
                 breakpoint: 768,
                 settings: {
                     slidesToShow: 3,
+                    slidesToScroll: 1,
+                },
+            },
+            {
+                breakpoint: 320,
+                settings: {
+                    slidesToShow: 2,
                     slidesToScroll: 1,
                 },
             },
@@ -483,7 +498,7 @@ const ProductDetails = () => {
     );
 
     function getProductQuantities(products) {
-        return Object.entries(products.reduce((quantities, product) => {
+        return Object?.entries(products?.reduce((quantities, product) => {
             const existingQty = quantities[product.product_id] || 0;
             return { ...quantities, [product.product_id]: existingQty + product.qty };
         }, {})).map(([productId, qty]) => ({
@@ -707,6 +722,9 @@ const ProductDetails = () => {
                                                                     </> : <>
                                                                         <button type='button' id={`Add-to-cart-quickview`} className='add-to-cart'
                                                                             onClick={() => {
+                                                                                if (user?.user === null) {
+                                                                                    return toast.error(t("required_login_message_for_cart"));
+                                                                                }
                                                                                 const productQuantity = getProductQuantities(cart?.cartProducts);
                                                                                 handleValidateAddNewProduct(productQuantity, productdata);
                                                                             }}>{t("add_to_cart")}</button>

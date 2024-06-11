@@ -37,9 +37,40 @@
   top: -250%;
   padding: 8px;
   box-shadow: 4px 0px 100px 5px rgba(0, 0, 0, 0.2);
-  border: 5px solid #f7f7f7;
+  border: 5px solid var(--body-background);
+}
+.product-details-next-arrow {
+  position: absolute;
+  background: var(--second-cards-color);
+  border-radius: 0px 8px 8px 0px;
+  width: 40px;
+  height: 40px;
+  right: 0px;
+  /* left: -23px; */
+  top: -19px;
+  padding: 8px;
+  box-shadow: 4px 0px 100px 5px rgba(0, 0, 0, 0.2);
+  border: 5px solid var(--body-background);
+}
+.product-details-next-arrow:hover {
+  background-color: var(--secondary-color);
 }
 
+.product-details-prev-arrow {
+  position: absolute;
+  background: var(--second-cards-color);
+  border-radius: 8px 0px 0px 8px;
+  width: 40px;
+  height: 40px;
+  left: 15px;
+  top: -15px;
+  padding: 8px;
+  box-shadow: 4px 0px 100px 5px rgba(0, 0, 0, 0.2);
+  border: 5px solid var(--body-background);
+}
+.product-details-prev-arrow:hover {
+  background-color: var(--secondary-color);
+}
 .prev-arrow:hover {
   background-color: var(--secondary-color);
 }

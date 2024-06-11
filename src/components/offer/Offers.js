@@ -17,12 +17,12 @@ const Offers = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
 
-    const CustomPrevButton = ({ currentSlide, slideCount, ...props }) => (
+    const CustomPrevButton = (props) => (
         <button {...props} type="button" className="slick-prev">
             <FaChevronLeft size={30} className="prev-arrow" />
         </button>
     );
-    const CustomNextButton = ({ currentSlide, slideCount, ...props }) => (
+    const CustomNextButton = (props) => (
         <button {...props} type="button" className="slick-next" >
             <FaChevronRight color='#f7f7f7' size={30} className='next-arrow' />
         </button>

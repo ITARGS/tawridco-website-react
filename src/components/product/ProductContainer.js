@@ -25,7 +25,8 @@ import { LuStar } from 'react-icons/lu';
 import Loader from '../loader/Loader';
 import { setSelectedProduct } from '../../model/reducer/selectedProduct';
 
-
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
 
 
 const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOfferArray }) => {
@@ -161,19 +162,25 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
             });
     };
 
-    const CustomPrevButton = ({ currentSlide, slideCount, ...props }) => (
-        <button {...props} type="button" className="slick-prev">
-            <FaChevronLeft fill='black' size={30} className="prev-arrow" />
-        </button>
-    );
-    const CustomNextButton = ({ currentSlide, slideCount, ...props }) => (
-        <button {...props} type="button" className="slick-next">
-            <FaChevronRight fill='black' size={30} className='next-arrow' />
-        </button>
-    );
+    const CustomPrevButton = (props) => {
+        const { slideCount, currentSlide, ...remainingProps } = props;
+        return (
+            <button {...remainingProps} type="button" className="slick-prev">
+                <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+            </button>
+        );
+    };
+    const CustomNextButton = (props) => {
+        const { slideCount, currentSlide, ...remainingProps } = props;
+        return (
+            <button {...remainingProps} type="button" className="slick-next">
+                <FaChevronRight fill='black' size={30} className='next-arrow' />
+            </button>
+        );
+    };
     const settings = {
         infinite: false,
-        slidesToShow: 5.5,
+        slidesToShow: 5,
         slidesPerRow: 1,
         initialSlide: 0,
         // centerMode: true,
@@ -313,13 +320,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                         }} className='text-decoration-none text-reset'>
 
                                                                             <div className='image-container' >
-
-
-                                                                                <img onError={placeHolderImage} src={product.image_url} alt={product.slug} className=
-                                                                                    {` card-img-top `}
-                                                                                    onClick={() => {
-
-                                                                                    }} />
+                                                                                <img onLoadStart={(e) => { e.target.src = setting.setting?.web_logo; }} onError={placeHolderImage} src={product.image_url} alt={product.slug} className={`card-img-top`} loading='lazy' />
                                                                                 {!Number(product.is_unlimited_stock) && parseInt(product.variants[0].status) === 0 &&
                                                                                     <div className="out_of_stockOverlay">
                                                                                         <p className="out_of_stockText">{t("out_of_stock")}</p>

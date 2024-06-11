@@ -334,9 +334,7 @@ const ProductList2 = React.memo(() => {
                                     <Loader />
                                 )
                                 : (
-                                    <div
-                                        className='slider'
-                                    >
+                                    <div className='slider'>
                                         <Range
                                             draggableTrack
                                             values={values}

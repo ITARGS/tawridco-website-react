@@ -186,4 +186,13 @@
   .login .body img {
     width: 200px !important;
   }
+  .login .body .otp-container > input[type="tel"] {
+    margin-right: 5px !important;
+  }
+  .login .body span {
+    flex-wrap: wrap;
+  }
+  .login .body .react-tel-input input {
+    width: 100% !important;
+  }
 }

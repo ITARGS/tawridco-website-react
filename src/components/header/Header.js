@@ -276,6 +276,7 @@ const Header = () => {
                                                     closeSidebarRef.current.click();
                                                     navigate('/cart');
                                                 } else {
+                                                    closeSidebarRef.current.click();
                                                     toast.error(t('required_login_message_for_cartRedirect'));
                                                 }
                                             }}>{t("cart")}</button>
@@ -287,6 +288,7 @@ const Header = () => {
                                                     closeSidebarRef.current.click();
                                                     navigate('/checkout');
                                                 } else {
+                                                    closeSidebarRef.current.click();
                                                     toast.error(t('required_login_message_for_checkout'));
                                                 }
                                             }}>{t("checkout")}</button>
@@ -295,10 +297,11 @@ const Header = () => {
                                         <li className='dropdown-item menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
                                             <button type='button' onClick={() => {
                                                 if (user.user) {
-
                                                     closeSidebarRef.current.click();
                                                     navigate('/profile');
                                                 } else {
+                                                    closeSidebarRef.current.click();
+
                                                     toast.error(t('required_login_message_for_profile'));
                                                 }
                                             }}>{t("myAccount")}</button>
@@ -307,10 +310,10 @@ const Header = () => {
                                         <li className='dropdown-item menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
                                             <button type='button' onClick={() => {
                                                 if (user.user) {
-
                                                     closeSidebarRef.current.click();
                                                     navigate('/wishlist');
                                                 } else {
+                                                    closeSidebarRef.current.click();
                                                     toast.error(t('required_login_message_for_wishlist'));
                                                 }
                                             }}>{t("wishList")}</button>
@@ -346,10 +349,10 @@ const Header = () => {
                                 <li className='dropdown-item menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
                                     <button type='button' onClick={() => {
                                         if (user.user) {
-
                                             closeSidebarRef.current.click();
                                             navigate('/notification');
                                         } else {
+                                            closeSidebarRef.current.click();
                                             toast.error(t('required_login_message_for_notification'));
                                         }
                                     }}>{t("notification")}</button>
@@ -546,7 +549,7 @@ const Header = () => {
 
                             <div className='d-flex col-md-3 w-auto order-3  justify-content-end align-items-center'>
                                 <button type='button' whiletap={{ scale: 0.6 }} className='icon position-relative hide-mobile mx-sm-4' onClick={() => {
-                                    if (user?.jwtToken === undefined) {
+                                    if (user?.jwtToken === "") {
                                         toast.error(t("required_login_message_for_notification"));
                                     }
                                     else {
@@ -558,10 +561,10 @@ const Header = () => {
 
                                 </button>
 
-                                {city.city === null || user?.jwtToken === undefined
+                                {city.city === null || user?.jwtToken === ""
                                     ? <button whiletap={{ scale: 0.6 }} className='icon mx-sm-4 position-relative hide-mobile-screen'
                                         onClick={() => {
-                                            if (user?.jwtToken === undefined) {
+                                            if (user?.jwtToken === "") {
                                                 toast.error(t("required_login_message_for_cartRedirect"));
                                             }
                                             else if (city.city === null) {
@@ -572,7 +575,7 @@ const Header = () => {
                                     </button>
                                     : <button whiletap={{ scale: 0.6 }} className='icon mx-4 position-relative hide-mobile-screen'
                                         onClick={() => {
-                                            if (user?.jwtToken === undefined) {
+                                            if (user?.jwtToken === "") {
                                                 toast.error(t("required_login_message_for_cartRedirect"));
                                             }
                                             else if (city.city === null) {
@@ -597,7 +600,7 @@ const Header = () => {
                                 {
                                     curr_url.pathname === "/checkout" ?
                                         null :
-                                        city.city === null || user?.jwtToken === undefined
+                                        city.city === null || user?.jwtToken === ""
                                             ?
                                             <>
                                                 <button type='button' className={isDesktopView ? "d-none" : "d-block mt-2"} onClick={openCanvasModal}>
@@ -605,7 +608,7 @@ const Header = () => {
                                                 </button>
                                                 <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative'
                                                     onClick={() => {
-                                                        if (user?.jwtToken === undefined) {
+                                                        if (user?.jwtToken === "") {
                                                             toast.error(t("required_login_message_for_cartRedirect"));
                                                         }
                                                         else if (city.city === null) {
@@ -621,7 +624,7 @@ const Header = () => {
                                                 </button>
                                                 <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
                                                     onClick={() => {
-                                                        if (user?.jwtToken === undefined) {
+                                                        if (user?.jwtToken === "") {
                                                             toast.error(t("required_login_message_for_cartRedirect"));
                                                         }
                                                         else if (city.city === null) {
@@ -633,7 +636,7 @@ const Header = () => {
                                                     <IoCartOutline />
                                                     {cart?.cartProducts?.length !== 0 ?
                                                         <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
-                                                            {cart.cartProducts.length != 0 ? cart?.cartProducts?.length : null}
+                                                            {cart?.cartProducts?.length != 0 ? cart?.cartProducts?.length : null}
                                                             <span className="visually-hidden">unread messages</span>
                                                         </span>
                                                         : null}
@@ -714,10 +717,10 @@ const Header = () => {
                             ) : ""}
 
                             <li className='menu-item'>
-                                {city.city === null || user?.jwtToken === undefined
+                                {city.city === null || user?.jwtToken === ""
                                     ? <button type='button' className={`wishlist ${mobileNavActKey == 4 ? "active" : ""}`} onClick={() => {
 
-                                        if (user?.jwtToken === undefined) {
+                                        if (user?.jwtToken === "") {
                                             toast.error(t("required_login_message_for_wishlist"));
                                         }
                                         else if (city.city === null) {
@@ -738,7 +741,7 @@ const Header = () => {
                                     </button>
                                     : <button type='button' className={`wishlist ${mobileNavActKey == 4 ? "active" : ""}`} onClick={() => {
 
-                                        if (user?.jwtToken === undefined) {
+                                        if (user?.jwtToken === "") {
                                             toast.error(t("required_login_message_for_cartRedirect"));
                                         }
                                         else if (city.city === null) {

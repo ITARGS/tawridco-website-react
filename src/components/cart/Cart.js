@@ -92,6 +92,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                 setCartSidebarData(result?.data?.cart);
             } else if (result.message == "No item(s) found in users cart") {
                 setCartSidebarData([]);
+                dispatch(setCartProducts({ data: [] }));
             }
         } catch (err) {
             console.log(err?.message);

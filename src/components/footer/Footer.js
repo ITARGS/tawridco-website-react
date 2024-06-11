@@ -117,7 +117,7 @@ export const Footer = () => {
                                     <div className="download_desc">
                                         <p>{setting.setting.web_settings.app_short_description}</p>
                                     </div>
-                                    <div className='gap-3 d-flex justify-content-center'>
+                                    <div className='gap-3 d-flex justify-content-start mt-3'>
                                         {setting.setting.web_settings.is_android_app === "1" ?
                                             <a href={setting.setting.web_settings.android_app_url} className='download-button'>
                                                 <img src={setting.setting.web_settings.play_store_logo} alt='google-play'></img>
@@ -128,8 +128,6 @@ export const Footer = () => {
                                                 <img src={setting.setting.web_settings.ios_store_logo} alt='google-play'></img>
                                             </a>
                                             : <></>}
-
-
                                     </div>
                                 </>
                                     : <></>}
