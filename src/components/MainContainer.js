@@ -47,7 +47,7 @@ const MainContainer = () => {
                                     <Modal className='popup'
                                         centered
                                         show={showPop}
-                                        onBackdropClick={() => setShowPop(false)}
+                                        // onBackdropClick={() => setShowPop(false)}
                                         backdrop={"static"}
                                     >
                                         <Modal.Header onClick={() => { setShowPop(false); }}>

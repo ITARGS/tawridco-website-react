@@ -53,12 +53,14 @@ const App = () => {
   const cart = useSelector(state => (state.cart));
   const language = useSelector((state) => (state.language));
   const shop = useSelector((state) => (state.shop));
+  const cssmode = useSelector(state => state.cssmode);
 
   useEffect(() => {
     if (user?.jwtToken !== "") {
       getCurrentUser(user?.jwtToken);
     }
     getSetting();
+    window.addEventListener('load', applyTheme);
   }, []);
 
   useEffect(() => {
@@ -93,6 +95,7 @@ const App = () => {
             }
           }
         });
+
   }, []);
 
 
@@ -177,7 +180,12 @@ const App = () => {
     link.href = setting.setting && setting.setting.web_settings.favicon;
   });
 
-
+  const applyTheme = () => {
+    const storedTheme = cssmode?.cssmode;
+    if (storedTheme) {
+      document.body.setAttribute('data-bs-theme', storedTheme);
+    }
+  };
 
   const RootCss = `
   :root {
@@ -195,20 +203,26 @@ const App = () => {
     --primary-color-dark: #e5e5e5;
     --gray-hover-color: #dcdcdc;
     --bg-danger: rgba(209, 31, 31, 0.3);
-
+    --font-color: black;
     --bd-radius-8: 8px;
     --bd-radius-5: 5px;
     --bd-radius-10: 10px;
   }
   [data-bs-theme="dark"]{
     --body-background: #141414;
-    --primary-color: white;
+    --primary-color: #202934;
     --secondary-color:${setting.setting && setting.setting.web_settings.dark_color};
     --sub-text-color: #8b8b8b;
-    --second-cards-color: black;
+    --second-cards-color: #202934;
     --text-field-color: white;
     --gray-hover-color: #dcdcdc;
-
+    --container-bg: #f2f3f9;
+    --font-color: white;
+    --font-sub-heading-and-text-8b8b8b: #8B8B8B;
+    --background-f2f3f9: #F2F3F9;
+    --card-ffffff: #FFFFFF;
+    --font-heading: #141A1F;
+    --primary-51bd88: #51BD88;
   }
   input[type="radio"]:checked {
     background-color: var(--secondary-color); /* Change background color when checked */

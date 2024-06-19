@@ -3,7 +3,7 @@ import './header.css';
 import { BsShopWindow } from 'react-icons/bs';
 import { BiUserCircle } from 'react-icons/bi';
 import { MdSearch, MdGTranslate, MdNotificationsActive } from "react-icons/md";
-import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline } from 'react-icons/io5';
+import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast } from 'react-icons/io5';
 import { IoMdArrowDropdown, IoIosArrowDown } from "react-icons/io";
 import { GoLocation } from 'react-icons/go';
 import { FiMenu, FiFilter } from 'react-icons/fi';
@@ -400,13 +400,13 @@ const Header = () => {
 
 
                 {/* top header */}
-                <div className={`header-top  hide-mobile ${(cssmode.cssmode === "dark") ? "dark-header-top" : ''}`}>
+                <div className={`header-top  hide-mobile border-bottom ${(cssmode.cssmode === "dark") ? "dark-header-top" : ''}`}>
                     <div className="container">
                         <div className={`row justify-content-between`}>
                             <div className='col-md-6 d-flex justify-content-start align-items-center'>
-                                <Link to='/about' className={`borderPad ${(cssmode.cssmode === "dark") ? "dark-header-1" : ''}`} > {t('about_us')}</Link>
-                                <Link to='/contact' className={`borderPad`} > {t('contact_us')}</Link>
-                                <Link to='/faq' className={`borderPad`} >{t('faq')}</Link>
+                                <Link to='/about' className={`borderPad  border-end ${(cssmode.cssmode === "dark") ? "dark-header-1" : ''}`} > {t('about_us')}</Link>
+                                <Link to='/contact' className={`borderPad border-end `} > {t('contact_us')}</Link>
+                                <Link to='/faq' className={`borderPad border-end `} >{t('faq')}</Link>
                             </div>
                             <div className='col-md-6 d-flex justify-content-end'>
                                 {/* 2nd Phase feature */}
@@ -420,10 +420,10 @@ const Header = () => {
                                     </select>
                                 </div> */}
 
-                                {/* <div className='d-flex align-items-center px-2 border-start border-end'>
-                                    <Dropdown>
+                                <div className='d-flex align-items-center px-2 border-start border-end'>
+                                    <Dropdown className='themeDropdown'>
                                         <Dropdown.Toggle>
-                                            <IoContrast className='me-2' />
+                                            <IoContrast size={20} className='me-2' />
                                             {t(cssmode.cssmode)}
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu>
@@ -431,9 +431,9 @@ const Header = () => {
                                             {cssmode?.cssmode === "light" ? <Dropdown.Item key={"light"} onClick={() => handleThemeChange("dark")}>Dark</Dropdown.Item> : null}
                                         </Dropdown.Menu>
                                     </Dropdown>
-                                </div> */}
+                                </div>
 
-                                <div className='language-container bg-white' >
+                                <div className='language-container' >
                                     <Dropdown>
                                         <Dropdown.Toggle>
                                             <MdGTranslate size={20} className='me-2' />

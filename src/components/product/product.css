@@ -307,7 +307,7 @@ a:focus .product-card {
 .product-card .product-card-body h3 {
   font-weight: 600;
   font-size: 14px;
-  color: var(--primary-color);
+  color: var(--text-field-color);
   width: 100%;
   float: left;
   letter-spacing: 0.2px;

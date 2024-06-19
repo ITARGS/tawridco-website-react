@@ -7,7 +7,6 @@ import "swiper/css/pagination";
 import "swiper/css";
 import { useDispatch, useSelector } from 'react-redux';
 import Loader from '../loader/Loader';
-import { ActionTypes } from '../../model/action-type';
 import { useNavigate } from 'react-router-dom';
 import { setSelectedProductId } from '../../utils/manageLocalStorage';
 import { setFilterCategory } from '../../model/reducer/productFilterReducer';
@@ -29,13 +28,14 @@ const Slider = () => {
             case "category":
                 dispatch(setFilterCategory({ data: slide.type_id }));
                 // dispatch({ type: ActionTypes.SET_FILTER_CATEGORY, payload: slide.type_id });
-                navigate('/products/');
+                navigate('/products');
                 break;
             case "product":
                 // dispatch({ type: ActionTypes.SET_SELECTED_PRODUCT, payload: slide.type_id });
                 dispatch(setSelectedProduct({ data: slide.type_id }));
                 setSelectedProductId(slide.type_id);
-                navigate('/product/');
+                const productNameArr = slide.type_name?.split(" ")?.map(name => name.toLowerCase());
+                navigate(`/product/${productNameArr?.join("-")}`);
                 break;
 
             default:
@@ -93,7 +93,6 @@ const Slider = () => {
 
                                     {shop?.shop?.sliders?.map((sld, index) => {
                                         return (
-
                                             <SwiperSlide key={index} >
                                                 {sld.type === "slider_url" ?
                                                     <a href={sld.slider_url}>

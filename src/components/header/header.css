@@ -4,12 +4,42 @@
   background: var(--body-background-dark);
   color: var(--primary-color-dark);
 } */
+.themeDropdown > button {
+  font-size: 12px !important;
+  color: var(--font-color);
+  border: none;
+  padding: 8px 10px;
+  background-color: transparent;
+}
+.themeDropdown .dropdown-menu.show .dropdown-item {
+  font-size: 12px;
+  width: 100%;
+}
+.themeDropdown > button:hover {
+  border-color: unset !important;
+  color: unset !important;
+  background-color: unset !important;
+}
+.themeDropdown > .btn.show {
+  border-color: unset !important ;
+  color: unset !important ;
+  background-color: unset !important ;
+}
+.themeDropdown > button::after {
+  color: var(--font-color);
+}
+.themeDropdown .dropdown-item:active {
+  background-color: var(--secondary-color);
+}
 
+.header-main .icon.location > svg {
+  fill: var(--font-color);
+}
 .site-header .header-top {
   font-size: 14px;
   position: relative;
   background-color: var(--second-cards-color);
-  border-bottom: 1px solid #ddd;
+  /* border-bottom: 1px solid var(--font-color); */
   -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
   transition: all 0.5s;
@@ -30,7 +60,7 @@
 .borderPad {
   padding: 7px 10px !important;
   border-right: 1px solid #ddd;
-  color: black;
+  color: var(--font-color);
   text-decoration: none;
 }
 
@@ -804,7 +834,7 @@
 }
 .language-container .dropdown-toggle {
   font-size: 12px !important;
-  color: #000;
+  color: var(--font-color);
   border: none;
   padding: 8px 10px;
   background-color: transparent;
@@ -814,7 +844,7 @@
 .language-container .dropdown-toggle:focus,
 .language-container .dropdown-toggle:active {
   background-color: var(--second-cards-color) !important;
-  color: #000 !important;
+  color: var(--font-color) !important;
 }
 .language-container .dropdown-menu {
   font-size: 12px !important;
@@ -822,4 +852,7 @@
 }
 .language-container .dropdown-item:active {
   background-color: var(--secondary-color);
+}
+.language-container .dropdown > button::after {
+  color: var(--font-color);
 }

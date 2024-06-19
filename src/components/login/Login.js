@@ -409,35 +409,3 @@ const Login = React.memo((props) => {
 });
 
 export default Login;
-// useEffect(() => {
-//     if (navigator.serviceWorker.controller) {
-//         navigator.serviceWorker.controller.postMessage({
-//             type: 'FIREBASE_CONFIG',
-//             config: {
-//                 apiKey: setting?.setting && setting?.setting?.firebase?.apiKey,
-//                 authDomain: setting?.setting && setting?.setting?.firebase?.authDomain,
-//                 projectId: setting?.setting && setting?.setting?.firebase?.projectId,
-//                 storageBucket: setting?.setting && setting?.setting?.firebase?.storageBucket,
-//                 messagingSenderId: setting?.setting && setting?.setting?.firebase?.messagingSenderId,
-//                 appId: setting?.setting && setting?.setting?.firebase?.appId,
-//                 measurementId: setting?.setting && setting?.setting?.firebase?.measurementId,
-//             },
-//         });
-//     } else {
-//         navigator.serviceWorker.ready.then(registration => {
-//             registration.active.postMessage({
-//                 type: 'FIREBASE_CONFIG',
-//                 config: {
-//                     apiKey: setting?.setting && setting?.setting?.firebase?.apiKey,
-//                     authDomain: setting?.setting && setting?.setting?.firebase?.authDomain,
-//                     projectId: setting?.setting && setting?.setting?.firebase?.projectId,
-//                     storageBucket: setting?.setting && setting?.setting?.firebase?.storageBucket,
-//                     messagingSenderId: setting?.setting && setting?.setting?.firebase?.messagingSenderId,
-//                     appId: setting?.setting && setting?.setting?.firebase?.appId,
-//                     measurementId: setting?.setting && setting?.setting?.firebase?.measurementId,
-//                 },
-//             });
-//         });
-//     }
-
-// }, [setting?.setting?.firebase]);

@@ -105,13 +105,13 @@ const ProductList2 = React.memo(() => {
                 if (result.status === 1) {
                     // console.log("Filter Product From Api ->", result);
                     if (minPrice == null && maxPrice == null && filter?.price_filter == null) {
-                        setMinPrice(result.total_min_price);
+                        setMinPrice(parseInt(result.total_min_price));
                         if (result.total_min_price === result.total_max_price) {
-                            setMaxPrice(result.total_max_price + 100);
-                            setValues([result.total_min_price, result.total_max_price + 100]);
+                            setMaxPrice(parseInt(result.total_max_price) + 100);
+                            setValues([parseInt(result.total_min_price), parseInt(result.total_max_price) + 100]);
                         } else {
-                            setMaxPrice(result.total_max_price);
-                            setValues([result.total_min_price, result.total_max_price]);
+                            setMaxPrice(parseInt(result.total_max_price));
+                            setValues([parseInt(result.total_min_price), parseInt(result.total_max_price)]);
                         }
                     }
                     setproductresult(result.data);
@@ -259,6 +259,7 @@ const ProductList2 = React.memo(() => {
         }));
     };
 
+
     const Filter = () => {
         return (
             <>
@@ -338,7 +339,7 @@ const ProductList2 = React.memo(() => {
                                         <Range
                                             draggableTrack
                                             values={values}
-                                            step={1}
+                                            step={0.01}
                                             min={minPrice}
                                             max={maxPrice}
                                             onChange={(newValues) => {
@@ -347,7 +348,6 @@ const ProductList2 = React.memo(() => {
                                             i18nIsDynamicList
                                             onFinalChange={(newValues) => {
                                                 // console.log(newValues);
-
                                                 dispatch(setFilterMinMaxPrice({ data: { min_price: newValues[0], max_price: newValues[1] } }));
                                             }}
                                             renderTrack={({ props, children }) => (

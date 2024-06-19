@@ -121,7 +121,6 @@ const Checkout = () => {
     }, []);
 
     useEffect(() => {
-        // console.log("address.selected_address useEffect");
         if (address?.selected_address?.latitude && address?.selected_address?.longitude)
             api.getCart(user?.jwtToken, address?.selected_address?.latitude, address?.selected_address?.longitude, 1)
                 .then(response => response.json())
