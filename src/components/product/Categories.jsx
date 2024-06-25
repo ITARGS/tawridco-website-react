@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { IoIosArrowDown, IoIosArrowDropright, IoIosArrowUp } from 'react-icons/io';
+import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { useDispatch } from 'react-redux';
 import { setFilterCategory } from '../../model/reducer/productFilterReducer';
 import api from '../../api/api';
 import Skeleton from 'react-loading-skeleton';
-import { MdOutlineKeyboardArrowRight } from "react-icons/md";
+
+
 const CategoryComponent = ({ data, selectedCategories,
     setSelectedCategories }) => {
     const dispatch = useDispatch();

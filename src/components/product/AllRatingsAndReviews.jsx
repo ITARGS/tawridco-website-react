@@ -347,6 +347,7 @@ const AllRatingsAndReviews = () => {
                                         </div>
                                     ))}
                                     <Pagination
+                                        itemClass="allRatingsPagination"
                                         activePage={currPage}
                                         itemsCountPerPage={limit}
                                         totalItemsCount={totalData}

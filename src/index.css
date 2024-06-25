@@ -19,7 +19,7 @@
 
 html {
   font-size: 50%;
-  width: 100vw;
+  /* width: 100vw; */
   overflow-x: hidden;
   scroll-padding-top: 6.5rem;
   scroll-behavior: smooth;
@@ -46,7 +46,9 @@ button {
   font-size: 2rem;
   right: 0;
 }
-
+.toast-body {
+  color: var(--font-color);
+}
 .modal-dialog {
   padding: 0;
 }
@@ -62,8 +64,11 @@ button {
 
 body.modal-open {
   overflow: auto;
+  padding-right: 0px !important;
 }
-
+body:not(.modal-open) {
+  padding-right: 0px !important;
+}
 .green-text {
   color: var(--secondary-color);
 }
@@ -80,6 +85,8 @@ body.modal-open {
 .react-confirm-alert-body {
   font-weight: bold;
   font-size: 1.755rem;
+  background-color: var(--second-cards-color) !important;
+  color: var(--font-color) !important;
 }
 
 .react-confirm-alert-button-group button:first-child {
@@ -235,10 +242,15 @@ input[type="number"] {
 .noInternetContainer > p {
   font-size: 24px;
   font-weight: 700;
+  color: var(--font-color);
 }
 
 @media screen and (min-width: 0px) and (max-width: 425px) {
   .Toastify__toast {
     margin: 15px !important;
   }
+}
+.react-loading-skeleton {
+  --highlight-color: var(--skeleton-highlight-color) !important;
+  --base-color: var(--skeleton-base-color) !important;
 }

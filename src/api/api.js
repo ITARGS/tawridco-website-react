@@ -20,7 +20,7 @@ const api = {
         formdata.append("auth_uid", Uid);
         formdata.append("fcm_token", fcm);
         formdata.append("country_code", countrycode);
-
+        formdata.append("platform", "web");
         var requestOptions = {
             method: 'POST',
             headers: myHeaders,

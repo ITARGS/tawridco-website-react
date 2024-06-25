@@ -45,7 +45,7 @@ const Policy = () => {
                                 : policy_type === 'ReturnsAndExchangesPolicy'
                                     ? <div className='policy-container' dangerouslySetInnerHTML={{ __html: setting.setting.returns_and_exchanges_policy }}></div>
                                     : policy_type === 'Shipping_Policy'
-                                        ? <div className='policy-container' dangerouslySetInnerHTML={{ __html: setting.setting.shipping_policy }}></div>
+                                        ? <div className='policy-container ShippingPolicy' dangerouslySetInnerHTML={{ __html: setting.setting.shipping_policy }}></div>
                                         : policy_type === 'Cancellation_Policy'
                                             ? <div className='policy-container' dangerouslySetInnerHTML={{ __html: setting.setting.cancellation_policy }}></div>
                                             : null}

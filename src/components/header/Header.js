@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './header.css';
-import { BsShopWindow } from 'react-icons/bs';
+import { BsMoon, BsShopWindow } from 'react-icons/bs';
 import { BiUserCircle } from 'react-icons/bi';
 import { MdSearch, MdGTranslate, MdNotificationsActive } from "react-icons/md";
 import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast } from 'react-icons/io5';
@@ -25,6 +25,7 @@ import { setFilterSearch } from "../../model/reducer/productFilterReducer";
 import { Modal } from 'antd';
 import "../location/location.css";
 import { setCSSMode } from '../../model/reducer/cssmodeReducer';
+import { MdOutlineWbSunny } from "react-icons/md";
 
 const Header = () => {
     const closeSidebarRef = useRef();
@@ -266,7 +267,10 @@ const Header = () => {
                                 </li>
 
                                 <li className='dropdown mega-menu menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children' >
-                                    <button type="button" >
+                                    <button type="button" onClick={() => {
+                                        closeSidebarRef.current.click();
+                                        navigate("/products");
+                                    }} >
                                         {t("shop")}
                                     </button>
                                     <ul className="sub-menu dropdown-menu" aria-labelledby="ShopDropDown">
@@ -362,7 +366,7 @@ const Header = () => {
 
 
                             <div className='lang-mode-utils'>
-                                <div className='language-container bg-white' >
+                                <div className='language-container' >
                                     <MdGTranslate size={24} />
                                     <Dropdown>
                                         <Dropdown.Toggle>
@@ -606,7 +610,7 @@ const Header = () => {
                                                 <button type='button' className={isDesktopView ? "d-none" : "d-block mt-2"} onClick={openCanvasModal}>
                                                     <GoLocation size={25} style={{ backgroundColor: `var(--second-cards-color)` }} />
                                                 </button>
-                                                <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative'
+                                                <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4  position-relative'
                                                     onClick={() => {
                                                         if (user?.jwtToken === "") {
                                                             toast.error(t("required_login_message_for_cartRedirect"));
@@ -617,12 +621,16 @@ const Header = () => {
                                                     }}>
                                                     <IoCartOutline />
                                                 </button>
+                                                {cssmode?.cssmode === "light" ?
+                                                    <button className='themeBtn' onClick={() => handleThemeChange("dark")}><BsMoon size={25} className={isDesktopView ? "d-none " : "d-block mt-2 "} /></button>
+                                                    :
+                                                    <button className='themeBtn' onClick={() => handleThemeChange("light")}><MdOutlineWbSunny size={25} className={isDesktopView ? "d-none " : "d-block mt-2 "} /></button>}
                                             </>
                                             : <>
                                                 <button type='button' className={isDesktopView ? "d-none" : "d-block mt-2"} onClick={openCanvasModal}>
                                                     <GoLocation size={25} style={{ backgroundColor: `var(--second-cards-color)` }} />
                                                 </button>
-                                                <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4 me-sm-5 position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
+                                                <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4  position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
                                                     onClick={() => {
                                                         if (user?.jwtToken === "") {
                                                             toast.error(t("required_login_message_for_cartRedirect"));
@@ -641,30 +649,47 @@ const Header = () => {
                                                         </span>
                                                         : null}
                                                 </button>
+                                                {cssmode?.cssmode === "light" ?
+                                                    <button className='themeBtn' onClick={() => handleThemeChange("dark")}><BsMoon size={25} className={isDesktopView ? "d-none " : "d-block mt-2 "} /></button>
+                                                    :
+                                                    <button className='themeBtn' onClick={() => handleThemeChange("light")}><MdOutlineWbSunny size={25} className={isDesktopView ? "d-none " : "d-block mt-2 "} /></button>}
+
                                             </>
                                 }
 
                                 {user.status === 'loading'
                                     ? (
-                                        <div className='hide-mobile-screen px-3'>
-                                            <div whiletap={{ scale: 0.6 }} className='d-flex flex-row user-profile gap-1' onClick={() => setShowModal(true)}>
-                                                <div className='d-flex align-items-center user-info my-auto'>
-                                                    <span className='btn-success'><IoPersonOutline className='user_icon' /></span>
-                                                    <span className='pe-3'>{t("login")}</span>
+                                        <>
+                                            {cssmode?.cssmode === "light" ?
+                                                <button className='themeBtn tabletScreen icon position-relative hide-mobile-screen mx-3' onClick={() => handleThemeChange("dark")}><BsMoon size={25} /></button>
+                                                :
+                                                <button className='themeBtn tabletScreen icon position-relative hide-mobile-screen mx-3' onClick={() => handleThemeChange("light")}><MdOutlineWbSunny size={25} /></button>}
+                                            <div className='hide-mobile-screen px-3'>
+                                                <div whiletap={{ scale: 0.6 }} className='d-flex flex-row user-profile gap-1' onClick={() => setShowModal(true)}>
+                                                    <div className='d-flex align-items-center user-info my-auto'>
+                                                        <span className='btn-success'><IoPersonOutline className='user_icon' /></span>
+                                                        <span className='pe-3'>{t("login")}</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </>
                                     )
                                     : (
-                                        <div className='hide-mobile-screen ms-5'>
-                                            <Link to='/profile' className='d-flex align-items-center flex-row user-profile gap-1' >
-                                                <div className='d-flex flex-column user-info my-auto'>
-                                                    <span className='number'> {t("welcome")}</span>
-                                                    <span className='name'> {user.user && user.user.name.split(' ')[0]}</span>
-                                                </div>
-                                                <img onError={placeHolderImage} src={user.user && user.user.profile} alt="user"></img>
-                                            </Link>
-                                        </div>
+                                        <>
+                                            {cssmode?.cssmode === "light" ?
+                                                <button className='themeBtn tabletScreen icon position-relative hide-mobile-screen mx-3' onClick={() => handleThemeChange("dark")}><BsMoon size={25} /></button>
+                                                :
+                                                <button className='themeBtn tabletScreen icon position-relative hide-mobile-screen mx-3' onClick={() => handleThemeChange("light")}><MdOutlineWbSunny size={25} /></button>}
+                                            <div className='hide-mobile-screen ms-5'>
+                                                <Link to='/profile' className='d-flex align-items-center flex-row user-profile gap-1' >
+                                                    <div className='d-flex flex-column user-info my-auto'>
+                                                        <span className='number'> {t("welcome")}</span>
+                                                        <span className='name'> {user.user && user.user.name.split(' ')[0]}</span>
+                                                    </div>
+                                                    <img onError={placeHolderImage} src={user.user && user.user.profile} alt="user"></img>
+                                                </Link>
+                                            </div>
+                                        </>
                                     )}
 
                             </div>

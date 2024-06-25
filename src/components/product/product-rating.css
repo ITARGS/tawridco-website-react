@@ -1,6 +1,10 @@
+.productDetailTabs .ant-tabs-nav .ant-tabs-nav-operations .ant-tabs-nav-more {
+  display: none;
+}
+
 .description-wrapper {
   margin: 30px 0 40px 0;
-  background-color: #ffffff;
+  background-color: var(--second-cards-color);
   padding: 15px;
   border-radius: 10px;
 }
@@ -10,9 +14,10 @@
 .description-header {
   font-size: 16px;
   font-weight: 500;
-  line-height: 24px;
+  /* line-height: 24px; */
   /* height: 24px; */
   padding: 12px 6px;
+  color: var(--font-color);
 }
 .productTabActive {
   background-color: var(--secondary-color-dark);
@@ -23,13 +28,13 @@
 }
 
 #ratings-section {
-  background-color: #ffffff;
+  background-color: inherit;
   padding: 0px 15px;
   border-radius: 10px;
   font-size: 14px;
 }
 .reviewRatingButton {
-  background-color: var(--bs-white);
+  background-color: var(--body-background);
   border-radius: 5px;
   padding: 2px 5px;
   /* padding-top: 5px; */
@@ -67,9 +72,10 @@
   font-size: 25px;
 }
 .ratingContainer {
-  background-color: #f7f7f7;
+  background-color: var(--body-background);
   padding: 16px;
   border-radius: 4px;
+  color: var(--font-color);
 }
 .ratingCircleContainer {
   gap: 8px;
@@ -118,7 +124,7 @@
   line-height: 50px;
   font-weight: 700;
   /* border-bottom: 1px solid #8080802b; */
-  color: rgb(35, 35, 35);
+  color: var(--font-color);
 }
 
 #ratings-section .viewAllReviewsLink:hover .rightArrowLogo {
@@ -126,9 +132,10 @@
 }
 
 #ratings-section .customerReviewsContainer .reviewList {
-  background-color: #f7f7f7;
+  background-color: var(--body-background);
   padding: 16px;
   border-radius: 4px;
+  color: var(--font-color);
 }
 
 #ratings-section
@@ -150,6 +157,7 @@
 #ratings-section .noRatingFoundText {
   font-weight: 700;
   font-size: 28px;
+  color: var(--font-color);
 }
 
 #ratings-section .reviewList .overlayParent {

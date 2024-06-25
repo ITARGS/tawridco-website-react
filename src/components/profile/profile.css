@@ -79,11 +79,11 @@
 
 #profile .sidebar .navigation-container-button span {
   font-size: 14px;
-  color: #000;
+  color: var(--font-color);
 }
 
 #profile .sidebar {
-  background: #fff;
+  background: var(--second-cards-color);
   padding: 5px;
   border-radius: 10px;
   display: flex;
@@ -91,6 +91,7 @@
   align-items: center;
   min-width: 250px;
   overflow: auto;
+  color: var(--font-color);
 }
 
 #profile .bar {
@@ -145,12 +146,12 @@
 }
 
 #profile .table-content .heading {
-  background: #fff;
-
+  background: var(--second-cards-color);
   font-size: 2.5rem;
   font-weight: bolder;
   padding: 15px;
   border-radius: 5px;
+  color: var(--font-color);
 }
 #profile .table-content .addMoneyBtn {
   background-color: var(--secondary-color);
@@ -163,7 +164,7 @@
 }
 #profile .table-content .actual-content {
   padding-top: 20px;
-  background: #fff;
+  background: var(--second-cards-color);
   border-radius: 8px;
 }
 
@@ -222,7 +223,7 @@ input[type="file"] {
   border-radius: 10px;
   margin: 0 15px;
 
-  background-color: #f8f8f8;
+  background-color: var(--body-background);
   height: 56px;
   transition: all 0.3s;
 }
@@ -233,7 +234,7 @@ input[type="file"] {
 
 #profile .table-content .actual-content .inputs-container input:focus {
   border: 1px solid #51bd88;
-  background-color: white;
+  /* background-color: white; */
 }
 
 #profile .table-content .actual-content .inputs-container input::placeholder {

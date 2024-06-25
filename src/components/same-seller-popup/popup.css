@@ -19,3 +19,10 @@
   background-color: #d22b2b;
   color: var(--body-background);
 }
+.singleSellerPopup .modal-body .header .closeBtn {
+  background-color: inherit;
+}
+
+.singleSellerPopup .modal-body .header .closeBtn svg {
+  fill: var(--font-color);
+}

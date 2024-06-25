@@ -192,83 +192,13 @@ const ProductDetails = () => {
             </button>
         );
     };
-    // const settings = {
-    //     infinite: false,
-    //     slidesToShow: 5,
-    //     initialSlide: 0,
-    //     prevArrow:
-    //         // (
-    //         //     <button type="button" className="slick-prev">
-    //         //         <FaChevronLeft fill='black' size={30} className="prev-arrow" />
-    //         //     </button>
-    //         // ),
-    //         <CustomPrevButton />,
-    //     nextArrow:
-    //         // (
-    //         //     <button type="button" className="slick-next">
-    //         //         <FaChevronRight fill='black' size={30} className='next-arrow' />
-    //         //     </button>
-    //         // )
-    //         <CustomNextButton />,
-    //     responsive: [
-    //         {
-    //             breakpoint: 1199,
-    //             settings: {
-    //                 slidesToShow: 4,
-    //             }
-    //         },
-    //         {
-    //             breakpoint: 1024,
-    //             settings: {
-    //                 slidesToShow: 3,
-    //             }
-    //         },
-    //         {
-    //             breakpoint: 768,
-    //             settings: {
-    //                 slidesToShow: 2,
-    //             }
-    //         },
-    //         {
-    //             breakpoint: 425,
-    //             settings: {
-    //                 slidesToShow: 1,
-    //                 arrows: true,
-    //             }
-    //         }
-    //     ]
-    // };
 
     const settings_subImage = {
         infinite: false,
         slidesToShow: 3,
         initialSlide: 0,
-        // centerMargin: "10px",
         horizontal: true,
         margin: "20px",
-        // prevArrow: (
-        //     <button type="button"
-        //         className="slick-prev"
-        //     // onClick={(e) => {
-        //     //     setmainimage(e.target.value);
-        //     // }}
-        //     >
-        //         <FaChevronLeft fill='black' size={30} className="prev-arrow" />
-        //     </button>),
-        // nextArrow: (
-        //     <button
-        //         type="button"
-        //         className="slick-next"
-        //     // onClick={(e) => {
-        //     //     setmainimage(e.target.value);
-        //     // }}
-        //     >
-        //         <FaChevronRight
-        //             fill='black'
-        //             size={30}
-        //             className="next-arrow"
-        //         />
-        //     </button>),
         prevArrow: (<CustomPrevButton />),
         nextArrow: (<CustomNextButton />),
         responsive: [
@@ -301,12 +231,6 @@ const ProductDetails = () => {
     const { productRating, totalData, loading: Loading, error } = useGetProductRatingsById(user?.jwtToken, productdata?.id, limit, offset);
     const { ratingImages, totalImages } = useGetProductRatingImages(user?.jwtToken, productdata?.id, 8, offset);
 
-    // useEffect(() => {
-    //     if (productdata && selectedVariant === null && productdata.variants) {
-    //         setSelectedVariant(productdata.variants[0]);
-    //     }
-
-    // }, [productdata, cart]);
 
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
@@ -573,11 +497,9 @@ const ProductDetails = () => {
                     <div className='container' style={{ gap: "20px" }}>
                         <div className='top-wrapper'>
 
-                            {product.selectedProduct_id === null || Object.keys(productdata).length === 0 ? (
-                                <div className="d-flex justify-content-center">
-                                    <Loader width={"100%"} height={"600px"} />
-                                </div>
-                            )
+                            {product.selectedProduct_id === null || Object.keys(productdata).length === 0 ?
+                                <Loader width={"100%"} height={"600px"} background={"var(--second-cards-color"} />
+
                                 : (
 
                                     <div className='row body-wrapper '>
@@ -662,7 +584,7 @@ const ProductDetails = () => {
                                                                                         <input type="radio" name="variant" id={`variant${index}`} checked={variant_index == variant.id} disabled={Number(productdata.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)} />
                                                                                     </div>
                                                                                     <div className="h-100">
-                                                                                        <span className="d-flex align-items-center flex-column">{variant.measurement} {variant.stock_unit_name} </span>
+                                                                                        <span className="d-flex align-items-center flex-column variantMeasure">{variant.measurement} {variant.stock_unit_name} </span>
                                                                                     </div>
                                                                                 </label>
 
@@ -694,26 +616,6 @@ const ProductDetails = () => {
                                                                             <button type='button' onClick={() => {
 
                                                                                 const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                                // console.log("Product Quantity ->", productQuantity);
-                                                                                // if (Number(productdata.is_unlimited_stock)) {
-                                                                                //     if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
-                                                                                //         toast.error('Apologies, maximum product quantity limit reached');
-                                                                                //     }
-                                                                                //     else {
-                                                                                //         addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
-                                                                                //     }
-                                                                                // }
-                                                                                // else {
-                                                                                //     if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
-                                                                                //         toast.error('Oops, Limited Stock Available');
-                                                                                //     }
-                                                                                //     else if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= Number(setting.setting.max_cart_items_count)) {
-                                                                                //         toast.error('Apologies, maximum cart quantity limit reached');
-                                                                                //     }
-                                                                                //     else {
-                                                                                //         addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
-                                                                                //     }
-                                                                                // }
                                                                                 handleValidateAddExistingProduct(productQuantity, productdata);
                                                                             }} className="wishlist-button"><BsPlus fill='#fff' /> </button>
 
@@ -729,82 +631,7 @@ const ProductDetails = () => {
                                                                                 handleValidateAddNewProduct(productQuantity, productdata);
                                                                             }}>{t("add_to_cart")}</button>
                                                                     </>)
-                                                                : null
-                                                            }
-                                                            {/*
-                                                         productdata.variants[0].cart_count >= 1 ?
-                                                                <>
-                                                                    <div id={`input-cart-quickview`} className="input-to-cart">
-                                                                        <button type='button' onClick={() => {
-
-                                                                            if (productdata.variants[0].cart_count === 1) {
-
-                                                                                removefromCart(productdata.id, productdata.variants[0].id);
-                                                                            }
-                                                                            else {
-                                                                                addtoCart(productdata.id, productdata.variants[0].id, productdata.variants[0].cart_count - 1);
-                                                                                setQuantity(quantity - 1);
-                                                                            }
-
-                                                                        }} className="wishlist-button"><BiMinus fill='#fff' /></button>
-                                                                        <span id={`input-quickview`} >{productdata.variants[0].cart_count}</span>
-                                                                        <button type='button' onClick={() => {
-
-                                                                            if (Number(productdata.is_unlimited_stock)) {
-                                                                                if (productdata.variants[0].cart_count >= Number(setting.setting.max_cart_items_count)) {
-                                                                                    toast.error('Apologies, maximum product quantity limit reached');
-                                                                                }
-
-                                                                                else {
-                                                                                    addtoCart(productdata.id, productdata.variants[0].id, productdata.variants[0].cart_count + 1);
-
-                                                                                }
-                                                                            }
-                                                                            else {
-
-                                                                                if (productdata.variants[0].cart_count >= Number(setting.setting.max_cart_items_count)) {
-                                                                                    toast.error('Apologies, maximum product quantity limit reached');
-                                                                                }
-                                                                                else if (productdata.variants[0].cart_count >= Number(productdata.variants[0].stock)) {
-                                                                                    toast.error('OOps, Limited Stock Available');
-                                                                                }
-                                                                                else {
-                                                                                    addtoCart(productdata.id, productdata.variants[0].id, productdata.variants[0].cart_count + 1);
-
-                                                                                }
-                                                                            }
-
-                                                                        }} className="wishlist-button"><BsPlus fill='#fff' /> </button>
-
-
-                                                                    </div>
-                                                                </> :
-                                                                <>
-                                                                    <button type='button' id={`Add-to-cart-quickview`} className='add-to-cart'
-                                                                        onClick={() => {
-                                                                            if (user?.jwtToken !== undefined) {
-                                                                                if (Number(productdata.is_unlimited_stock)) {
-                                                                                    addtoCart(productdata.id, productdata.varinats[0].id, 1);
-
-                                                                                } else {
-
-                                                                                    if (selectedVariant.status) {
-                                                                                        addtoCart(productdata.id, productdata.variants[0].id, 1);
-                                                                                        setP_id(productdata.id);
-                                                                                        setP_V_id(productdata.variants[0].id);
-                                                                                        setQnty(1);
-                                                                                    } else {
-                                                                                        toast.error('OOps, Limited Stock Available');
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                            else {
-                                                                                toast.error(t("required_login_message_for_cartRedirect"));
-                                                                            }
-                                                                        }}>{t("add_to_cart")}</button>
-
-                                                                </> */}
-
+                                                                : null}
                                                             {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == productdata.id) ? (
                                                                 <button type="button" className='wishlist-product' onClick={() => {
                                                                     if (user?.jwtToken !== "") {
@@ -845,13 +672,6 @@ const ProductDetails = () => {
                                                                 <span className='seller-title'>{t("brand")}:</span>
                                                                 <span className='seller-name'>{productbrand?.name} </span>
                                                             </div>
-                                                            {/* {productdata.tags !== "" ? (
-
-                                                        <div className='product-tags'>
-                                                            <span className='tag-title'>{t("product_tags")}:</span>
-                                                            <span className='tag-name'>{productdata.tags} </span>
-                                                        </div>
-                                                    ) : ""} */}
                                                         </div> : null}
                                                     {productRating?.rating_list?.length !== 0 ?
                                                         <div className='mt-3 cursorPointer'>
@@ -861,7 +681,6 @@ const ProductDetails = () => {
                                                                 overlay={popover}
                                                                 rootClose={true}
                                                             >
-                                                                {/* {console.log(productRating)} */}
                                                                 <div className='d-flex justify-content-start align-items-center overlay-content'>
                                                                     <LuStar className='me-1' style={productRating?.average_rating >= 1 ? { fill: "#F4CD32", stroke: "#F4CD32" } : {}} />
                                                                     <span className='pe-2 me-2 border-end border-2'>
@@ -884,50 +703,52 @@ const ProductDetails = () => {
                                                             </div>
                                                         : null}
                                                     {productdata?.cancelable_status == 1 ?
-                                                        <div className='d-flex align-items-center mt-3'>
+                                                        <div className='d-flex align-items-center mt-3 cancelContainer'>
                                                             <img src={Cancelable} alt='cancelableIcon' className='me-3' />
-                                                            {t("cancelable")}
-                                                            {productdata?.till_status == 1 ?
-                                                                t("payment_pending")
-                                                                :
-                                                                null
-                                                            }
-                                                            {productdata?.till_status == 2 ?
-                                                                t("received")
-                                                                :
-                                                                null
-                                                            }
-                                                            {productdata?.till_status == 3 ?
-                                                                t("processed")
-                                                                :
-                                                                null
-                                                            }
-                                                            {productdata?.till_status == 4 ?
-                                                                t("shipped")
-                                                                :
-                                                                null
-                                                            }
-                                                            {productdata?.till_status == 5 ?
-                                                                t("out_for_delivery")
-                                                                :
-                                                                null
-                                                            }
+                                                            <span className='cancelDetail'>
+                                                                {t("cancelable")}
+                                                                {productdata?.till_status == 1 ?
+                                                                    t("payment_pending")
+                                                                    :
+                                                                    null
+                                                                }
+                                                                {productdata?.till_status == 2 ?
+                                                                    t("received")
+                                                                    :
+                                                                    null
+                                                                }
+                                                                {productdata?.till_status == 3 ?
+                                                                    t("processed")
+                                                                    :
+                                                                    null
+                                                                }
+                                                                {productdata?.till_status == 4 ?
+                                                                    t("shipped")
+                                                                    :
+                                                                    null
+                                                                }
+                                                                {productdata?.till_status == 5 ?
+                                                                    t("out_for_delivery")
+                                                                    :
+                                                                    null
+                                                                }
+                                                            </span>
                                                         </div>
                                                         :
-                                                        <div className='d-flex align-items-center mt-3'>
+                                                        <div className='d-flex align-items-center mt-3 cancelContainer'>
                                                             <img src={NonCancelable} alt='nonCancelableIcon' className='me-3' />
-                                                            {t("non-cancelable")}
+                                                            <span className='cancelDetail'>{t("non-cancelable")}</span>
                                                         </div>
                                                     }
                                                     {productdata?.return_status == 1 ?
-                                                        <div className='d-flex align-items-center mt-3'>
+                                                        <div className='d-flex align-items-center mt-3 returnContainer'>
                                                             <img src={Returnable} alt='returnableIcon' className='me-3' />
-                                                            {t("returnable")} {productdata?.return_days} {t("days")}
+                                                            <span className='returnDetail'>{t("returnable")} {productdata?.return_days} {t("days")}</span>
                                                         </div>
                                                         :
-                                                        <div className='d-flex align-items-center mt-3'>
+                                                        <div className='d-flex align-items-center mt-3 returnContainer'>
                                                             <img src={NotReturnable} alt='nonReturnableIcon' className='me-3' />
-                                                            {t("non-returnable")}
+                                                            <span className='returnDetail'>{t("non-returnable")}</span>
                                                         </div>
                                                     }
                                                     <div className="share-product-container">

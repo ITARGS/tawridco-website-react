@@ -173,9 +173,7 @@ const OrderDetails = React.memo(() => {
                                                     <thead>
                                                         <th>{t('product')}</th>
                                                         <th>{t('price')}</th>
-                                                        {/* {console.log(orderData)} */}
                                                         {orderData?.items?.some((item) => (Number(item?.active_status) >= 6)) ? <th>{t('rating')}</th> : null}
-                                                        {/* <th>{t('action')}</th> */}
                                                     </thead>
                                                     <tbody>
                                                         {/* console.log(item); */}

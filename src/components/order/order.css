@@ -18,6 +18,7 @@
 }
 .orderStatusText {
   font-size: 16px;
+  color: var(--font-color);
 }
 .orderProgressBar .progress-bar {
   background-color: var(--secondary-color) !important;
@@ -114,6 +115,7 @@
 .order-list .order-list-table tbody tr th {
   padding: 5px;
   font-weight: 500;
+  color: var(--font-color);
 }
 
 .order-list .order-list-table tbody tr th.button-container {
@@ -162,8 +164,11 @@
 
 #mainContentTrack .page-header {
   font-size: 14px;
+  color: var(--font-color);
 }
-
+#mainContentTrack button.closeBtn {
+  background-color: inherit;
+}
 /* Order Details Page */
 
 .cover {
@@ -229,6 +234,7 @@
   padding: 40px;
   border: 0.5px solid #141a1f26;
   background-color: var(--second-cards-color);
+  color: var(--font-color);
 }
 
 .order-container .container-heading span {
@@ -298,6 +304,7 @@
 .order-container .container-body .table-container td {
   border: 0 !important;
   vertical-align: middle;
+  background-color: var(--second-cards-color);
 }
 
 .order-container .container-body .table-container .item-container .item-name {
@@ -317,6 +324,7 @@
   .item-variant {
   padding: 8px;
   background-color: var(--container-bg);
+  color: #000;
   font-size: 12px;
   border-radius: 6px;
 }
@@ -401,6 +409,7 @@
   border: 0.5px solid #141a1f26;
   background-color: var(--second-cards-color);
   width: 100%;
+  color: var(--font-color);
 }
 
 .order-info .order-info-container .container-heading {
@@ -501,7 +510,7 @@
   .address-heading {
   font-size: 18px;
   font-weight: 600;
-  color: #000;
+  color: var(--font-color);
 }
 .order-info .order-billing-container .payment-info {
   gap: 15px;
@@ -624,4 +633,7 @@
 .returnProductModalBody .reasonLabel {
   font-size: 18px;
   font-weight: 550;
+}
+.orderPagination > a {
+  color: var(--font-color) !important;
 }

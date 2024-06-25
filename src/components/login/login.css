@@ -56,7 +56,7 @@
 }
 
 .login .body .react-tel-input input {
-  color: var(--primary-color);
+  color: var(--font-color);
   position: relative !important;
   border-radius: 5px;
   background: #141a1f0d;
@@ -67,7 +67,13 @@
   font-size: 16px;
   order: 1;
 }
-
+.login .body .react-tel-input .loginInput {
+  color: var(--font-color);
+  border: 1px solid var(--font-color);
+}
+.login .body .react-tel-input .loginSearch .loginSearch-box {
+  color: black;
+}
 .login .body .react-tel-input input::placeholder {
   text-align: start;
 }
@@ -90,7 +96,7 @@
   height: 50px;
   border-radius: 8px;
   background: #141a1f0d;
-  border: 1px solid #141a1f80;
+  border: 1px solid var(--font-color);
   color: var(--primary-color);
   justify-content: flex-start;
 }
@@ -121,7 +127,7 @@
   font-weight: 400 !important;
   letter-spacing: 1px;
   padding: 15px;
-  color: var(--second-cards-color);
+  color: var(--font-color);
   text-decoration: none;
   margin-left: 10px;
   background-color: var(--secondary-color);
@@ -159,6 +165,7 @@
 .login .body .otp-container > input {
   margin-right: 3px;
   background-color: #ddd;
+  color: black;
 }
 
 @media screen and (max-width: 75rem) {
@@ -180,7 +187,7 @@
   padding: 16px;
   width: 100%;
   font-size: 14px;
-  background-color: var(--container-bg);
+  background-color: var(--body-background);
 }
 @media (min-width: 0px) and (max-width: 420px) {
   .login .body img {
@@ -195,4 +202,13 @@
   .login .body .react-tel-input input {
     width: 100% !important;
   }
+}
+
+/* For Dark Theme */
+.login .modal-content {
+  background-color: var(--second-cards-color);
+}
+
+.login .modal-header .closeBtn {
+  fill: var(--font-color);
 }

@@ -186,7 +186,7 @@ const ViewCart = () => {
                                 <>
                                     <>
                                         {isLoader ? <Loader screen='full' background='none' /> : null}
-                                        <div className="row">
+                                        <div className="row justify-content-center">
 
                                             <div className='viewcart-product-wrapper col-8'>
                                                 <div className='product-heading'>

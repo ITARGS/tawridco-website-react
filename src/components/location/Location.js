@@ -378,7 +378,7 @@ const Location = (props) => {
                 setisAddressLoading(false);
                 props.bodyScroll(false);
               }
-              }><AiOutlineCloseCircle fill='black' /></button>
+              }><AiOutlineCloseCircle /></button>
               : <></>}
           </div>
 
@@ -410,8 +410,7 @@ const Location = (props) => {
                         <div className='input-container'>
                           <StandaloneSearchBox
                             onLoad={ref => inputRef.current = ref}
-                            onPlacesChanged={handlePlaceChanged}
-                          >
+                            onPlacesChanged={handlePlaceChanged}>
                             <input type="text" id='text-places' className='border-bottom' placeholder={t("select_delivery_location")} onFocus={() => {
                               setcurrLocationClick(false);
                               setisInputFields(true);
@@ -429,7 +428,7 @@ const Location = (props) => {
                             streetViewControl: false
                           }} zoom={11} center={center} mapContainerStyle={{ height: "400px" }}>
                             <button className='current-location-click' whiletap={{ scale: 0.6 }} onClick={handleCurrentLocationClick} >
-                              <BiCurrentLocation className='mx-3' /></button>
+                              <BiCurrentLocation fill='black' className='mx-3' /></button>
                             <MarkerF position={center} draggable={true} onDragStart={onMarkerDragStart} onDragEnd={onMarkerDragEnd}>
                             </MarkerF>
                           </GoogleMap>

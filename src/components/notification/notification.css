@@ -4,9 +4,9 @@
 .notification-container .notifications {
   border-radius: 10px;
   border: 1px solid #eee;
-  /* margin-top: 20px; */
   padding: 20px;
-  background-color: var(--container-bg);
+  background-color: var(--second-cards-color);
+  color: var(--font-color);
 }
 .notification-container .heading {
   padding: 20px;
@@ -34,6 +34,7 @@
   font-size: 2.455rem;
   font-weight: bolder;
   margin-top: 20px;
+  color: var(--font-color);
 }
 
 .notification-container .notification-body .wrapper {
@@ -57,7 +58,7 @@
 
 .notification-container .notification-body .wrapper .content p.title {
   font-weight: bold;
-  color: var(--primary-color);
+  color: var(--font-color);
 }
 
 .pagination,
@@ -89,4 +90,12 @@
 }
 .pagination li.active a {
   color: #fff !important;
+}
+.notificationPagination > a {
+  color: var(--font-color) !important;
+}
+@media screen and (max-width: 425px) {
+  .notification-container {
+    padding: 0px;
+  }
 }

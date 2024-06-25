@@ -293,7 +293,7 @@ const ProductList2 = React.memo(() => {
                                     }} className={`d-flex justify-content-between align-items-center filter-bar border-bottom ${filter.brand_ids?.length != 0 ? filter.brand_ids.includes(brand.id) ? 'active' : null : null}`} key={index} >
                                         <div className='d-flex gap-3 align-items-baseline'>
                                             <div className='image-container'>
-                                                <img onError={placeHolderImage} src={brand.image_url} alt="category"></img>
+                                                <img onError={placeHolderImage} src={brand.image_url} alt="category" />
                                             </div>
                                             <p>{brand.name}</p>
                                         </div>
@@ -327,7 +327,7 @@ const ProductList2 = React.memo(() => {
                     <CategoryComponent data={category} selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories} />
                 </div>
                 {showPriceFilter ?
-                    <div className='filter-row'>
+                    <div className='filter-row priceFilter'>
                         <h5> {t("filter")} {t("by_price")}</h5>
                         {
                             (minPrice === null || maxPrice === null)
@@ -352,6 +352,7 @@ const ProductList2 = React.memo(() => {
                                             }}
                                             renderTrack={({ props, children }) => (
                                                 <div
+                                                    key={`track-${props['aria-valuemax']}-${props['aria-valuemin']}`}
                                                     className='track'
                                                     onMouseDown={props.onMouseDown}
                                                     onTouchStart={props.onTouchStart}
@@ -370,7 +371,7 @@ const ProductList2 = React.memo(() => {
                                                             borderRadius: '4px',
                                                             background: getTrackBackground({
                                                                 values,
-                                                                colors: ['white', `var(--secondary-color)`, 'white'],
+                                                                colors: ['var(--second-cards-color)', `var(--secondary-color)`, 'var(--second-cards-color)'],
                                                                 min: minPrice,
                                                                 max: maxPrice,
 
@@ -383,25 +384,28 @@ const ProductList2 = React.memo(() => {
                                                     </div>
                                                 </div>
                                             )}
-                                            renderThumb={({ props, isDragged }) => (
-                                                <div
-                                                    {...props}
-                                                    className='thumb'
-                                                    tabIndex={0}
-                                                    onKeyDown={(e) => {
-                                                        // Handle keyboard events here
-                                                        if (e.key === 'ArrowLeft') {
-                                                            // setMaxPrice(maxPrice - 1);
-                                                            setValues([values[0] - 1, values[1]]);
-                                                        } else if (e.key === 'ArrowRight') {
-                                                            // setMinPrice(minPrice + 1);
-                                                            setValues([values[0] + 1, values[1]]);
-                                                        }
-                                                    }}
-                                                >   {props['aria-valuenow']}
+                                            renderThumb={({ props, isDragged }) => {
+                                                const { key, ...remainingProps } = props;
+                                                return (
+                                                    <div
+                                                        {...remainingProps}
+                                                        className='thumb'
+                                                        tabIndex={0}
+                                                        onKeyDown={(e) => {
+                                                            // Handle keyboard events here
+                                                            if (e.key === 'ArrowLeft') {
+                                                                // setMaxPrice(maxPrice - 1);
+                                                                setValues([values[0] - 1, values[1]]);
+                                                            } else if (e.key === 'ArrowRight') {
+                                                                // setMinPrice(minPrice + 1);
+                                                                setValues([values[0] + 1, values[1]]);
+                                                            }
+                                                        }}
+                                                    >   {props['aria-valuenow']}
 
-                                                </div>
-                                            )}
+                                                    </div>
+                                                );
+                                            }}
                                         />
                                     </div>
                                 )
@@ -833,7 +837,7 @@ const ProductList2 = React.memo(() => {
                                                                                             </div>
 
                                                                                             <div className='dropup share'>
-                                                                                                <button type="button" className='w-100 h-100' data-bs-toggle="dropdown" aria-expanded="false"><BsShare size={16} /></button>
+                                                                                                <button type="button" className='w-100 h-100 shareBtn' data-bs-toggle="dropdown" aria-expanded="false"><BsShare size={16} /></button>
 
                                                                                                 <ul className='dropdown-menu'>
                                                                                                     <li><WhatsappShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${product.slug}`}><WhatsappIcon size={32} round={true} /> <span>WhatsApp</span></WhatsappShareButton></li>
@@ -940,7 +944,7 @@ const ProductList2 = React.memo(() => {
                                                                                 <div className='d-flex flex-row border-top product-card-footer'>
                                                                                     <div className='border-end '>
                                                                                         {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == product.id) ? (
-                                                                                            <button type="button" className='wishlist-product' onClick={() => {
+                                                                                            <button type="button" className='wishlist-product favouriteBtn' onClick={() => {
                                                                                                 if (user?.jwtToken !== "") {
                                                                                                     removefromFavorite(product.id);
                                                                                                 } else {
@@ -951,7 +955,7 @@ const ProductList2 = React.memo(() => {
                                                                                                 <BsHeartFill size={16} fill='green' />
                                                                                             </button>
                                                                                         ) : (
-                                                                                            <button key={product.id} type="button" className='wishlist-product' onClick={() => {
+                                                                                            <button key={product.id} type="button" className='wishlist-product favouriteBtn' onClick={() => {
                                                                                                 if (user?.jwtToken !== "") {
                                                                                                     addToFavorite(product.id);
                                                                                                 } else {
@@ -1022,7 +1026,7 @@ const ProductList2 = React.memo(() => {
                                                                                     </div>
 
                                                                                     <div className='dropup share'>
-                                                                                        <button type="button" className='w-100 h-100' data-bs-toggle="dropdown" aria-expanded="false"><BsShare size={16} /></button>
+                                                                                        <button type="button" className='w-100 h-100 shareBtn' data-bs-toggle="dropdown" aria-expanded="false"><BsShare size={16} /></button>
 
                                                                                         <ul className='dropdown-menu'>
                                                                                             <li className='dropDownLi'><WhatsappShareButton url={`${share_parent_url}/${product.slug}`}><WhatsappIcon size={32} round={true} /> <span>WhatsApp</span></WhatsappShareButton></li>
@@ -1049,6 +1053,7 @@ const ProductList2 = React.memo(() => {
                                                             <div>
                                                                 {(totalProducts > total_products_per_page) ?
                                                                     <Pagination
+                                                                        itemClass='productListingItems'
                                                                         activePage={currPage}
                                                                         itemsCountPerPage={total_products_per_page}
                                                                         totalItemsCount={totalProducts}

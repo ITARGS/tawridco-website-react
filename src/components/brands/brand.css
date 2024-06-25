@@ -7,7 +7,7 @@
 #all-brands .brand_section_header p {
   font-size: 18px;
   line-height: 32px;
-  color: var(--primary-color);
+  color: var(--font-color);
   letter-spacing: 2px;
   font-weight: 700 !important;
   margin: 0;
@@ -29,6 +29,13 @@
   background-color: var(--secondary-color);
   text-align: center;
   color: var(--text-field-color) !important;
+}
+
+#all-brands .brand_section_header .prev-arrow-brand > svg {
+  fill: var(--font-color) !important;
+}
+#all-brands .brand_section_header .next-arrow-brand > svg {
+  fill: var(--font-color) !important;
 }
 #all-brands .brand_section_header .prev-arrow-brand {
   position: relative;

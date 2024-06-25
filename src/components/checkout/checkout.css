@@ -152,6 +152,7 @@
   padding: 4px 10px;
   font-size: 16px;
   font-weight: 600;
+  color: var(--font-color);
 }
 
 .checkout-container .order-container {
@@ -161,6 +162,7 @@
 
 .checkout-container .order-container .payment-wrapper .form-check-label {
   border-bottom: 1px solid #ddd;
+  color: var(--font-color);
 }
 
 .checkout-container
@@ -218,6 +220,7 @@
   padding: 20px;
   font-size: 1.555rem;
   font-weight: 700;
+  color: var(--font-color);
 }
 
 .checkout-container .order-container .order-summary-wrapper .summary > div {
@@ -385,6 +388,7 @@
   padding: 20px;
   font-size: 1.555rem;
   background-color: var(--second-cards-color);
+  color: var(--font-color);
   font-weight: 700;
 }
 
@@ -465,4 +469,15 @@
   .checkout-container .order-container {
     padding-right: 20px;
   }
+}
+.checkoutCalendar .react-calendar__navigation__label__labelText,
+.checkoutCalendar .react-calendar__navigation__arrow,
+.checkoutCalendar .react-calendar__tile {
+  color: black;
+}
+
+#checkout .calendarContainer {
+  background-color: var(--second-cards-color);
+  border-bottom-left-radius: var(--bd-radius-8);
+  border-bottom-right-radius: var(--bd-radius-8);
 }

@@ -315,7 +315,7 @@ const Login = React.memo((props) => {
                     <div>
                         <h5>{t("Login")}</h5>
                     </div>
-                    <AiOutlineCloseCircle type='button' fill='black' size={30} onClick={() => {
+                    <AiOutlineCloseCircle type='button' className='closeBtn' size={30} onClick={() => {
                         setError("");
                         setOTP("");
                         setPhonenum("");
@@ -386,6 +386,8 @@ const Login = React.memo((props) => {
                                         disableSearchIcon
                                         placeholder={t('please_enter_valid_phone_number')}
                                         disableDropdown={false}
+                                        inputClass='loginInput'
+                                        searchClass='loginSearch'
                                     />
                                 </div>
 

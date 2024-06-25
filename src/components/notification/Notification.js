@@ -81,7 +81,7 @@ const Notification = () => {
           </div>
           {notification === null
             ? (
-              <Loader width="100%" height="500px" />
+              <Loader width="100%" height="500px" background={"var(--second-cards-color)"} />
             )
             : (
               <div className="container">
@@ -118,6 +118,7 @@ const Notification = () => {
 
                           {notification.length !== 0 ?
                             <Pagination
+                              itemClass='notificationPagination'
                               activePage={currPage}
                               itemsCountPerPage={total_notification_per_page}
                               totalItemsCount={totalNotification}

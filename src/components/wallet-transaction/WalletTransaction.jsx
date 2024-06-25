@@ -147,6 +147,7 @@ const WalletTransaction = () => {
 
                                 {transactions.length !== 0 ?
                                     <Pagination
+                                        itemClass='transactionItems'
                                         activePage={currPage}
                                         itemsCountPerPage={total_transactions_per_page}
                                         totalItemsCount={totalTransactions}

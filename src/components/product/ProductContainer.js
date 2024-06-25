@@ -380,7 +380,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                         <div className='d-flex flex-row border-top product-card-footer'>
                                                                             <div className='border-end'>
                                                                                 {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == product.id) ? (
-                                                                                    <button type="button" className='w-100 h-100' onClick={() => {
+                                                                                    <button type="button" className='w-100 h-100 favouriteBtn' onClick={() => {
                                                                                         if (user?.jwtToken !== "") {
                                                                                             removefromFavorite(product.id);
                                                                                         } else {
@@ -391,7 +391,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                         <BsHeartFill size={16} fill='green' />
                                                                                     </button>
                                                                                 ) : (
-                                                                                    <button key={product.id} type="button" className='w-100 h-100' onClick={() => {
+                                                                                    <button key={product.id} type="button" className='w-100 h-100 favouriteBtn' onClick={() => {
                                                                                         if (user?.jwtToken !== "") {
                                                                                             addToFavorite(product.id);
                                                                                         } else {
@@ -427,25 +427,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                         </div>
                                                                                         <button type='button' className="wishlist-button" onClick={() => {
                                                                                             const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                                            // if (Number(product.is_unlimited_stock)) {
-                                                                                            //     if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product.total_allowed_quantity)) {
-                                                                                            //         // addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
-                                                                                            //         addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty + 1);
-
-                                                                                            //     } else {
-                                                                                            //         toast.error('Apologies, maximum product quantity limit reached!');
-                                                                                            //     }
-                                                                                            // } else {
-                                                                                            //     if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.variants[0].stock)) {
-                                                                                            //         toast.error(t("out_of_stock_message"));
-                                                                                            //     }
-                                                                                            //     else if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.total_allowed_quantity)) {
-                                                                                            //         toast.error('Apologies, maximum product quantity limit reached');
-                                                                                            //     } else {
-                                                                                            //         addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty + 1);
-                                                                                            //         // addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product?.variants[0]?.id)?.qty + 1);
-                                                                                            //     }
-                                                                                            // }
                                                                                             handleValidateAddExistingProduct(productQuantity, product);
                                                                                         }}><BsPlus size={20} fill='#fff' /> </button>
                                                                                     </div>
@@ -468,7 +449,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                             </div>
 
                                                                             <div className='dropup share'>
-                                                                                <button type="button" className='w-100 h-100 ' data-bs-toggle="dropdown" aria-expanded="false"><BsShare size={16} /></button>
+                                                                                <button type="button" className='w-100 h-100 shareBtn' data-bs-toggle="dropdown" aria-expanded="false"><BsShare size={16} /></button>
 
                                                                                 <ul className='dropdown-menu'>
                                                                                     <li className='dropDownLi'><WhatsappShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${product.slug}`}><WhatsappIcon size={32} round={true} /> <span>WhatsApp</span></WhatsappShareButton></li>

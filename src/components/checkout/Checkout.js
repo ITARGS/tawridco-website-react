@@ -7,7 +7,7 @@ import 'react-calendar/dist/Calendar.css';
 import api from '../../api/api';
 import rozerpay from '../../utils/ic_razorpay.svg';
 import paystack from '../../utils/ic_paystack.svg';
-import Stripe from '../../utils/ic_stripe.svg';
+import Stripe from '../../utils/Checkout_stripe.svg';
 import cod from '../../utils/ic_cod.svg';
 import { useDispatch, useSelector } from 'react-redux';
 import paypal from "../../utils/ic_paypal.svg";
@@ -743,7 +743,7 @@ const Checkout = () => {
 
                                                     <div className='delivery-day-wrapper checkout-component'>
                                                         <span className='heading'>{t("prefered_day")}</span>
-                                                        <div className='d-flex justify-content-center p-3'>
+                                                        <div className='d-flex justify-content-center p-3 calendarContainer'>
                                                             <Calendar value={expectedDate.toString() === "Invalid Date" ? new Date(current.setDate(current.getDate() + (Number(timeslots?.time_slots_delivery_starts_from) - 1))) : expectedDate} onChange={(e) => {
                                                                 if (new Date(e) >= new Date()) {
                                                                     setexpectedDate(new Date(e));
@@ -756,6 +756,7 @@ const Checkout = () => {
                                                                 }
                                                             }}
                                                                 calendarType={"gregory"}
+                                                                className={"checkoutCalendar"}
                                                                 minDate={new Date(current.setDate(current.getDate() + (Number(timeslots?.time_slots_delivery_starts_from) - 1)))}
                                                                 maxDate={new Date(current.setDate(current.getDate() + (Number(timeslots?.time_slots_allowed_days - 1))))}
                                                             />
@@ -1003,7 +1004,7 @@ const Checkout = () => {
 
                                                                     {loadingPlaceOrder
                                                                         ?
-                                                                        <Loader screen='full' background='none' />
+                                                                        <Loader screen='full' background='none' content={"Your transaction is being processed.Please don't refresh the page."} />
                                                                         : <>
                                                                             {
                                                                                 (setting.payment_setting.cod_payment_method === "1" && codAllow == '1') ||

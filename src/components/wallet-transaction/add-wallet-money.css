@@ -14,7 +14,7 @@
 }
 
 .addMoneyToWalletModal .paymentContainer {
-  border: 1.5px solid #141a1f75;
+  border: 1.5px solid #ddd;
   padding: 16px;
   gap: 16px;
   border-radius: 4px;

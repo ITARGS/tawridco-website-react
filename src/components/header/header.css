@@ -4,6 +4,12 @@
   background: var(--body-background-dark);
   color: var(--primary-color-dark);
 } */
+#sidebaroffcanvasExample,
+#cartoffcanvasExample,
+#promooffcanvas {
+  transition: all ease 0.8s;
+}
+
 .themeDropdown > button {
   font-size: 12px !important;
   color: var(--font-color);
@@ -34,6 +40,18 @@
 
 .header-main .icon.location > svg {
   fill: var(--font-color);
+}
+.header-main .themeBtn {
+  background-color: var(--second-cards-color);
+}
+
+.header-main .themeBtn.tabletScreen {
+  display: none;
+}
+@media screen and (min-width: 769px) and (max-width: 1201px) {
+  .header-main .themeBtn.tabletScreen {
+    display: block;
+  }
 }
 .site-header .header-top {
   font-size: 14px;
@@ -321,7 +339,9 @@
   background: none;
   align-items: center;
 }
-
+.site-header .header-mobile-nav .menu-item .shop svg {
+  fill: var(--font-color);
+}
 .mobile-nav-wrapper ul li {
   display: flex;
   align-items: center;
@@ -438,7 +458,9 @@
   background: none;
   border-radius: 50%;
 }
-
+.offcanvas .canvas-header .close-canvas > svg {
+  fill: var(--font-color);
+}
 .offcanvas .site-location {
   padding: 1.25rem 1.25rem 0.625rem;
   justify-content: center;
@@ -446,13 +468,15 @@
 
 .offcanvas .site-location button {
   max-width: 100%;
-  background-color: var(--text-field-color);
-  color: var(--primary-color);
+  background-color: var(--second-cards-color);
+  color: var(--font-color);
   border: 1px solid var(--secondary-color);
   border-radius: 8px;
   padding: 1.365rem 7rem;
 }
-
+.offcanvas .site-location button svg {
+  fill: var(--font-color);
+}
 .offcanvas .all-categories > button {
   position: relative;
   display: -webkit-inline-box;
@@ -554,10 +578,12 @@
   -webkit-transition: all 0.4s cubic-bezier(0.83, 0.26, 0.19, 0.87);
   transition: all 0.4s cubic-bezier(0.83, 0.26, 0.19, 0.87);
 }
-
+.offcanvas .canvas-menu .menu .menu-item button {
+  color: var(--font-color);
+}
 .offcanvas .canvas-menu .menu .menu-item button:hover,
 .offcanvas .canvas-menu .menu .menu-item a:hover {
-  background: var(--text-field-color);
+  color: var(--secondary-color);
 }
 
 .offcanvas .canvas-menu .menu .menu-item .sub-menu {
@@ -809,7 +835,7 @@
   }
 }
 
-@media screen and (min-width: 75rem) {
+@media screen and (min-width: 1201px) {
   .hide-desktop {
     display: none !important;
   }
@@ -855,4 +881,7 @@
 }
 .language-container .dropdown > button::after {
   color: var(--font-color);
+}
+#ShopDropDown > svg {
+  fill: var(--font-color);
 }

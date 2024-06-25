@@ -8,18 +8,20 @@
   border-radius: 5px;
 }
 #all-ratings-section {
-  background-color: var(--bs-white);
+  background-color: var(--second-cards-color);
   border-radius: 8px;
 }
 .allReviewTitle {
   font-weight: 700;
   font-size: 24px;
   line-height: 34px;
+  color: var(--font-color);
 }
 #all-ratings-section .productContainer .productName {
   font-weight: 700;
   font-size: 20px;
   line-height: 24px;
+  color: var(--font-color);
 }
 #all-ratings-section .productContainer .productPrice {
   font-weight: 700;
@@ -38,9 +40,10 @@
   font-weight: 500;
 }
 #all-ratings-section .reviewList {
-  background-color: #f7f7f7;
+  background-color: var(--body-background);
   padding: 16px;
   border-radius: 4px;
+  color: var(--font-color);
 }
 #all-ratings-section .reviewList .overlayParent {
   position: relative;
@@ -85,6 +88,7 @@
 #all-ratings-section .allImagesTitle {
   font-weight: 700;
   font-size: 16px;
+  color: var(--font-color);
 }
 #all-ratings-section .allRatingImagesContainer .overlayParent {
   position: relative;
@@ -108,4 +112,7 @@
   color: var(--bs-white);
   font-size: 20px;
   z-index: 2;
+}
+#all-ratings-section .allRatingsPagination > a {
+  color: var(--font-color);
 }

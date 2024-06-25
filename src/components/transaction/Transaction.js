@@ -13,7 +13,7 @@ import { useSelector } from 'react-redux';
 
 const Transaction = () => {
 
-    
+
     const { t } = useTranslation();
     const total_transactions_per_page = 10;
     const type = 'transactions';
@@ -117,6 +117,7 @@ const Transaction = () => {
 
                                 {transactions.length !== 0 ?
                                     <Pagination
+                                        itemClass='transactionItems'
                                         activePage={currPage}
                                         itemsCountPerPage={total_transactions_per_page}
                                         totalItemsCount={totalTransactions}

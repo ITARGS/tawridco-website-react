@@ -54,47 +54,55 @@ const App = () => {
   const language = useSelector((state) => (state.language));
   const shop = useSelector((state) => (state.shop));
   const cssmode = useSelector(state => state.cssmode);
-
+  const applyTheme = () => {
+    const storedTheme = cssmode?.cssmode;
+    if (storedTheme) {
+      document.body.setAttribute('data-bs-theme', storedTheme);
+    }
+  };
   useEffect(() => {
     if (user?.jwtToken !== "") {
       getCurrentUser(user?.jwtToken);
     }
     getSetting();
     window.addEventListener('load', applyTheme);
+    return () => {
+      window.removeEventListener("load", applyTheme);
+    };
   }, []);
 
   useEffect(() => {
-    if (language?.current_language === null)
-      api.getSystemLanguage(0, 1)
-        .then(response => response.json())
-        .then(result => {
-          document.documentElement.dir = result?.data?.type;
-          if (result.status === 1) {
-            if (language.current_language === null) {
-              // console.log(result.data);
-              if (result.data !== undefined) {
-                dispatch(setLanguage({ data: result.data }));
-              }
-              else {
-                dispatch(setLanguage({
-                  data: {
-                    "id": 15,
-                    "name": "English",
-                    "code": "en",
-                    "type": "LTR",
-                    "system_type": 3,
-                    "is_default": 1,
-                    "json_data": jsonFile,
-                    "display_name": "English",
-                    "system_type_name": "Website"
-                  }
-                }));
-              }
-            } else {
-              document.documentElement.dir = language.current_language.type ? language.current_language.type : "LTR";
+    // if (language?.current_language === null)
+    api.getSystemLanguage(0, 1)
+      .then(response => response.json())
+      .then(result => {
+        document.documentElement.dir = result?.data?.type;
+        if (result.status === 1) {
+          if (language.current_language === null) {
+            // console.log(result.data);
+            if (result.data !== undefined) {
+              dispatch(setLanguage({ data: result.data }));
             }
+            else {
+              dispatch(setLanguage({
+                data: {
+                  "id": 15,
+                  "name": "English",
+                  "code": "en",
+                  "type": "LTR",
+                  "system_type": 3,
+                  "is_default": 1,
+                  "json_data": jsonFile,
+                  "display_name": "English",
+                  "system_type_name": "Website"
+                }
+              }));
+            }
+          } else {
+            document.documentElement.dir = language.current_language.type ? language.current_language.type : "LTR";
           }
-        });
+        }
+      });
 
   }, []);
 
@@ -108,6 +116,7 @@ const App = () => {
       lng: language?.current_language?.code,
       fallbackLng: "en",
     });
+
 
 
   const getCurrentUser = (token) => {
@@ -180,12 +189,7 @@ const App = () => {
     link.href = setting.setting && setting.setting.web_settings.favicon;
   });
 
-  const applyTheme = () => {
-    const storedTheme = cssmode?.cssmode;
-    if (storedTheme) {
-      document.body.setAttribute('data-bs-theme', storedTheme);
-    }
-  };
+
 
   const RootCss = `
   :root {
@@ -207,6 +211,9 @@ const App = () => {
     --bd-radius-8: 8px;
     --bd-radius-5: 5px;
     --bd-radius-10: 10px;
+    --loader-bg: #fff;
+    --skeleton-highlight-color: #f5f5f5;
+    --skeleton-base-color: #ebebeb;
   }
   [data-bs-theme="dark"]{
     --body-background: #141414;
@@ -218,11 +225,11 @@ const App = () => {
     --gray-hover-color: #dcdcdc;
     --container-bg: #f2f3f9;
     --font-color: white;
-    --font-sub-heading-and-text-8b8b8b: #8B8B8B;
-    --background-f2f3f9: #F2F3F9;
-    --card-ffffff: #FFFFFF;
+    
     --font-heading: #141A1F;
-    --primary-51bd88: #51BD88;
+    --loader-bg: transparent;
+    --skeleton-highlight-color: #3a4a5a;
+    --skeleton-base-color: #2e3a47;
   }
   input[type="radio"]:checked {
     background-color: var(--secondary-color); /* Change background color when checked */
@@ -307,7 +314,7 @@ const App = () => {
           <ScrollTop key="scrollTop" />
         </main>
         <Footer key="footer" />
-        <ToastContainer key="toastContainer" bodyStyle={{ color: "#000" }} className={"toastContainer"} toastClassName='toast-container-class' />
+        <ToastContainer theme={cssmode?.cssmode} key="toastContainer" bodyClassName={"toast-body"} className={"toastContainer"} toastClassName='toast-container-class' />
       </div>
     </AnimatePresence>
 

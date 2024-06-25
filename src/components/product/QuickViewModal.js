@@ -234,6 +234,23 @@ const QuickViewModal = (props) => {
             });
     };
 
+    const CustomPrevButton = (props) => {
+        const { slideCount, currentSlide, ...remainingProps } = props;
+        return (
+            <button {...remainingProps} type="button" className="slick-prev">
+                <FaChevronLeft fill='black' size={30} className="product-details-prev-arrow" />
+            </button>
+        );
+    };
+    const CustomNextButton = (props) => {
+        const { slideCount, currentSlide, ...remainingProps } = props;
+        return (
+            <button {...remainingProps} type="button" className="slick-next">
+                <FaChevronRight fill='black' size={30} className='product-details-next-arrow' />
+            </button>
+        );
+    };
+
     const settings_subImage = {
         infinite: false,
         slidesToShow: 3,
@@ -242,26 +259,28 @@ const QuickViewModal = (props) => {
         //         margin: "20px",
         rows: 1,
         prevArrow: (
-            <button
-                type="button"
-                className="slick-prev"
-                onClick={(e) => {
-                    setmainimage(e.target.value);
-                }}
-            >
-                <FaChevronLeft fill='black' size={30} className="prev-arrow" />
-            </button>
+            // <button
+            //     type="button"
+            //     className="slick-prev"
+            //     onClick={(e) => {
+            //         setmainimage(e.target.value);
+            //     }}
+            // >
+            //     <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+            // </button>
+            <CustomPrevButton />
         ),
         nextArrow: (
-            <button
-                type="button"
-                className="slick-next"
-                onClick={(e) => {
-                    setmainimage(e.target.value);
-                }}
-            >
-                <FaChevronRight fill='black' size={30} className="next-arrow" />
-            </button>
+            // <button
+            //     type="button"
+            //     className="slick-next"
+            //     onClick={(e) => {
+            //         setmainimage(e.target.value);
+            //     }}
+            // >
+            //     <FaChevronRight fill='black' size={30} className="next-arrow" />
+            // </button>
+            <CustomNextButton />
         ),
         responsive: [
             {
@@ -368,7 +387,7 @@ const QuickViewModal = (props) => {
                             setQuantity(0);
                             setVariantIndex(0);
                             props.setShowModal(false);
-                        }} className="bg-white"><AiOutlineCloseCircle size={30} /></button>
+                        }} className="closeBtn"><AiOutlineCloseCircle size={30} /></button>
                     </div>
 
                     {

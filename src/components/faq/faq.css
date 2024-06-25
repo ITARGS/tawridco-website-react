@@ -66,3 +66,6 @@
   font-weight: bolder;
   margin-top: 20px;
 }
+.faqPagination > a {
+  color: var(--font-color);
+}

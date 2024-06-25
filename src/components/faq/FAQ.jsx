@@ -109,6 +109,7 @@ const FAQ = () => {
                                                     ))}
                                                     {faqs.length !== 0 ?
                                                         <Pagination
+                                                            itemClass='faqPagination'
                                                             activePage={currPage}
                                                             itemsCountPerPage={total_faqs_per_page}
                                                             totalItemsCount={totalFaq}

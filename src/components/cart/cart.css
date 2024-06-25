@@ -17,7 +17,7 @@
 .cart-sidebar-container .empty-cart p {
   font-size: 22px;
   font-weight: bolder;
-  color: var(--primary-color);
+  color: var(--font-color);
   text-align: center;
 }
 
@@ -70,7 +70,9 @@
   background: none;
   border-radius: 50%;
 }
-
+.cart-sidebar-container .cart-sidebar-header .close-canvas > svg {
+  fill: var(--font-color);
+}
 .cart-sidebar-container .cart-sidebar-header h5 {
   font-size: 2.435rem;
 
@@ -314,7 +316,7 @@
 .cart-sidebar-container .cart-sidebar-footer .button-container .view-cart {
   background: none;
   border: 1px solid #ddd;
-  color: var(--primary-color);
+  color: var(--font-color);
 }
 
 .cart-sidebar-container .cart-sidebar-footer .button-container .checkout {
@@ -420,21 +422,22 @@
 }
 
 .view-cart-container .viewcart-product-wrapper {
-  flex-grow: 1;
   padding: 20px;
   background: var(--second-cards-color);
   border-radius: 8px;
-  overflow-x: scroll;
+  overflow-x: auto;
 }
 
 .view-cart-container .viewcart-product-wrapper .product-heading h3 {
   font-size: 3.755rem;
   font-weight: bolder;
+  color: var(--font-color);
 }
 
 .view-cart-container .viewcart-product-wrapper .product-heading span {
   font-size: 1.755rem;
   font-weight: 600;
+  color: var(--font-color);
 }
 
 .view-cart-container .viewcart-product-wrapper .product-heading .title {
@@ -446,7 +449,7 @@
 }
 
 .view-cart-container .viewcart-product-wrapper .products-table thead tr th {
-  color: #000;
+  color: var(--font-color);
   font-size: 1.755rem;
 
   padding: 8px 15px;
@@ -461,7 +464,7 @@
 .view-cart-container .viewcart-product-wrapper tbody tr th.first-column {
   padding: 8px 25px;
   border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
+  /* border-bottom-left-radius: 8px; */
 }
 
 .view-cart-container
@@ -473,7 +476,7 @@
 .view-cart-container .viewcart-product-wrapper tbody tr th.last-column {
   padding: 8px 25px;
   border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
+  /* border-bottom-right-radius: 8px; */
 }
 
 .view-cart-container .viewcart-product-wrapper tbody tr th {
@@ -561,6 +564,7 @@
   padding: 20px;
   font-size: 1.555rem;
   background-color: var(--second-cards-color);
+  color: var(--font-color);
   font-weight: 700;
 }
 
@@ -623,6 +627,7 @@
   padding: 20px;
   font-size: 1.555rem;
   font-weight: 700;
+  color: var(--font-color);
 }
 
 .view-cart-container .cart-summary-wrapper .summary > div {
@@ -678,7 +683,7 @@
 .view-cart-container .empty-cart p {
   font-size: 2.555rem;
   font-weight: bolder;
-  color: var(--primary-color);
+  color: var(--font-color);
   text-align: center;
 }
 

@@ -62,7 +62,7 @@ const AllImagesModal = (props) => {
                     setOpen(false);
                     props.setUserImages(null);
                     props.setIndex(-1);
-                }} fill='black' className='cursorPointer' size={30} />
+                }} fill='var(--font-color)' className='cursorPointer' size={30} />
             </Modal.Header>
             <Modal.Body style={{ overflowX: 'auto', maxHeight: '500px', minHeight: "500px", }}>
                 <div className='d-flex flex-row flex-wrap justify-content-center align-items-center gap-5'>

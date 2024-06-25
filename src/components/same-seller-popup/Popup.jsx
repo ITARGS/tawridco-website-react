@@ -50,12 +50,13 @@ const Popup = React.memo(({ product_id, product_variant_id, quantity, toast, cit
             centered
             backdrop={"static"}
             onHide={() => dispatch(setSellerFlag({ data: 0 }))}
+            className="singleSellerPopup"
         >
             <Modal.Body >
                 <div className="d-flex flex-row justify-content-end header">
                     <button type="button" aria-label="Close" onClick={() => {
                         dispatch(setSellerFlag({ data: 0 }));
-                    }} className="bg-white"><AiOutlineCloseCircle size={25} /></button>
+                    }} className="closeBtn"><AiOutlineCloseCircle size={25} /></button>
                 </div>
                 <div className="mt-5 mb-5 ps-5 pe-5">
                     <p className="text-center">
