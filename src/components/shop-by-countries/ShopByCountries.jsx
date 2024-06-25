@@ -7,6 +7,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineArrowRight } from 'react-icons/ai';
 import { setFilterByCountry } from '../../model/reducer/productFilterReducer';
 import "./shop-by-countries.css";
+import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
 
 const ShopByCountries = () => {
@@ -101,7 +102,8 @@ const ShopByCountries = () => {
                                     navigate('/products');
                                 }}>
                                     <div className='card'>
-                                        <img onError={placeHolderImage} className='card-img-top' src={`${process.env.REACT_APP_API_URL}/storage/${country.logo}`} alt='sellers' loading='lazy' />
+                                        {/* <img onError={placeHolderImage} className='card-img-top' src={`${process.env.REACT_APP_API_URL}/storage/${country.logo}`} alt='sellers' loading='lazy' /> */}
+                                        <ImageWithPlaceholder className='card-img-top' src={`${process.env.REACT_APP_API_URL}/storage/${country.logo}`} alt='sellers' />
                                         <div className='card-body' style={{ cursor: "pointer" }} >
                                             <p>{country.name}</p>
                                         </div>

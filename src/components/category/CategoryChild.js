@@ -12,7 +12,8 @@ import Loader from '../loader/Loader';
 import Skeleton from 'react-loading-skeleton';
 import { ValidateNoInternet } from '../../utils/NoInternetValidator';
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
-
+import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
+import ImagePlaceholder from "../../utils/image-placeholder/image.png";
 
 const CategoryChild = () => {
     const total_products_per_page = 12;
@@ -133,7 +134,8 @@ const CategoryChild = () => {
                                     onClick={(e) => { handleGetCategory(ctg); }}
                                 >
                                     <div className='card'>
-                                        <img onError={placeHolderImage} className='card-img-top' src={ctg.image_url} alt='allCategories' loading='lazy' />
+                                        {/* <img onError={placeHolderImage} className='card-img-top' src={ctg.image_url} alt='allCategories' loading='lazy' /> */}
+                                        <ImageWithPlaceholder src={ctg?.image_url} className='card-img-top' alt={"allCategories"} />
                                         <div className='card-body' style={{ cursor: "pointer" }}>
                                             <p>
                                                 {ctg.name}

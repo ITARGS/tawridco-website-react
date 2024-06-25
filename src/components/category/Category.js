@@ -11,6 +11,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { setCategory, setSelectedCategory } from '../../model/reducer/categoryReducer';
 import { setFilterCategory } from '../../model/reducer/productFilterReducer';
+import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
 
 const Category = () => {
@@ -146,7 +147,8 @@ const Category = () => {
                                                 {ctg.has_child
                                                     ? (
                                                         <Card onClick={() => selectCategory(ctg)}>
-                                                            <Card.Img onError={placeHolderImage} variant='top' src={ctg.image_url} alt={ctg.subtitle} className='card-img-top category_image' />
+                                                            {/* <Card.Img onError={placeHolderImage} variant='top' src={ctg.image_url} alt={ctg.subtitle} className='card-img-top category_image' /> */}
+                                                            <ImageWithPlaceholder src={ctg.image_url} alt={ctg.subtitle} className={"card-img-top category_image"} />
                                                             <Card.Body className='card-body'>
                                                                 <Card.Title className="card-title">{ctg.name}</Card.Title>
                                                             </Card.Body>
@@ -157,7 +159,8 @@ const Category = () => {
 
 
                                                         <Card onClick={() => selectCategory(ctg)}>
-                                                            <Card.Img onError={placeHolderImage} variant='top' src={ctg.image_url} alt={ctg.subtitle} className='card-img-top category_image' />
+                                                            {/* <Card.Img onError={placeHolderImage} variant='top' src={ctg.image_url} alt={ctg.subtitle} className='card-img-top category_image' /> */}
+                                                            <ImageWithPlaceholder src={ctg.image_url} alt={ctg.subtitle} className={'card-img-top category_image'} />
                                                             <Card.Body className='card-body'>
                                                                 <Card.Title className="card-title">{ctg.name}</Card.Title>
                                                             </Card.Body>

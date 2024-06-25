@@ -9,6 +9,7 @@ import Pagination from 'react-js-pagination';
 import Skeleton from 'react-loading-skeleton';
 import "./shop-by-seller.css";
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
+import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
 const ShopBySellersPage = () => {
 
@@ -87,7 +88,8 @@ const ShopBySellersPage = () => {
                                 }}>
 
                                     <div className='card'>
-                                        <img onError={placeHolderImage} className='card-img-top' src={seller.logo_url} alt='sellers' loading='lazy' />
+                                        {/* <img onError={placeHolderImage} className='card-img-top' src={seller.logo_url} alt='sellers' loading='lazy' /> */}
+                                        <ImageWithPlaceholder className='card-img-top' src={seller.logo_url} alt='sellers' />
                                         <div className='card-body' style={{ cursor: "pointer" }} >
                                             <p>{seller.name} </p>
                                         </div>

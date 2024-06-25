@@ -9,6 +9,7 @@ import Pagination from 'react-js-pagination';
 import useShopByBrands from '../../hooks/useShopByBrands';
 import Skeleton from 'react-loading-skeleton';
 import { MdSignalWifiConnectedNoInternet0 } from "react-icons/md";
+import ImageWithPlaceholder from "../image-with-placeholder/ImageWithPlaceholder";
 
 
 const BrandList = () => {
@@ -99,7 +100,8 @@ const BrandList = () => {
                                 }}>
 
                                     <div className='card'>
-                                        <img onError={placeHolderImage} className='card-img-top' src={ctg.image_url} alt='' loading='lazy' />
+                                        {/* <img onError={placeHolderImage} className='card-img-top' src={ctg.image_url} alt='' loading='lazy' /> */}
+                                        <ImageWithPlaceholder className='card-img-top' src={ctg.image_url} alt='brandImage' />
                                         <div className='card-body' style={{ cursor: "pointer" }} >
                                             <p>{ctg.name} </p>
                                         </div>

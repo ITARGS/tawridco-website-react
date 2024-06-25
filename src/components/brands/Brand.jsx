@@ -8,6 +8,7 @@ import { AiOutlineArrowRight } from 'react-icons/ai';
 import Slider from 'react-slick';
 import { setFilterBrands, setFilterByCountry, setFilterBySeller, setFilterCategory } from '../../model/reducer/productFilterReducer';
 import "./brand.css";
+import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
 const Brand = () => {
   const shop = useSelector(state => state.shop);
@@ -103,7 +104,8 @@ const Brand = () => {
 
 
                     <div className='card'>
-                      <img onError={placeHolderImage} className='card-img-top' src={ctg.image_url} alt='' />
+                      {/* <img onError={placeHolderImage} className='card-img-top' src={ctg.image_url} alt='' /> */}
+                      <ImageWithPlaceholder className='card-img-top' src={ctg.image_url} alt='brandImage' />
                       <div className='card-body' style={{ cursor: "pointer" }} >
                         <p>{ctg.name} </p>
                       </div>

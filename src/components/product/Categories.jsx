@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { setFilterCategory } from '../../model/reducer/productFilterReducer';
 import api from '../../api/api';
 import Skeleton from 'react-loading-skeleton';
+import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
 
 const CategoryComponent = ({ data, selectedCategories,
@@ -88,7 +89,8 @@ const CategoryComponent = ({ data, selectedCategories,
                             handleSelectedCategories(subcategory.id);
                         }}>
                         <div className='image-container'>
-                            <img src={subcategory.image_url} alt="category" />
+                            {/* <img src={subcategory.image_url} alt="category" /> */}
+                            <ImageWithPlaceholder src={subcategory.image_url} alt="subCategoryImage" />
                         </div>
                         <p>{subcategory.name}</p>
                     </div>
@@ -137,7 +139,8 @@ const CategoryComponent = ({ data, selectedCategories,
                             handleSelectedCategories(category.id);
                         }}>
                             <div className='image-container'>
-                                <img src={category.image_url} alt="category" />
+                                {/* <img src={category.image_url} alt="category" /> */}
+                                <ImageWithPlaceholder src={category.image_url} alt="categoryImage" />
                             </div>
                             <p>{category.name}</p>
                         </div>

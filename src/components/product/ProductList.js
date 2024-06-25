@@ -28,6 +28,7 @@ import { LuStar } from 'react-icons/lu';
 import "./product.css";
 import CategoryComponent from './Categories';
 import { MdSignalWifiConnectedNoInternet0 } from "react-icons/md";
+import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
 const ProductList2 = React.memo(() => {
     const total_products_per_page = 12;
@@ -293,7 +294,8 @@ const ProductList2 = React.memo(() => {
                                     }} className={`d-flex justify-content-between align-items-center filter-bar border-bottom ${filter.brand_ids?.length != 0 ? filter.brand_ids.includes(brand.id) ? 'active' : null : null}`} key={index} >
                                         <div className='d-flex gap-3 align-items-baseline'>
                                             <div className='image-container'>
-                                                <img onError={placeHolderImage} src={brand.image_url} alt="category" />
+                                                {/* <img onError={placeHolderImage} src={brand.image_url} alt="category" /> */}
+                                                <ImageWithPlaceholder src={brand.image_url} alt="brandImage" />
                                             </div>
                                             <p>{brand.name}</p>
                                         </div>
@@ -720,7 +722,13 @@ const ProductList2 = React.memo(() => {
                                                                             </span>
                                                                             <Link to={`/product/${product.slug}`} className='text-decoration-none text-reset'>
                                                                                 <div className={`image-container  ${!filter.grid_view ? 'border-end col-3 ' : 'col-12'}`} >
-                                                                                    <img onError={placeHolderImage} src={product.image_url} alt={product.slug} className='card-img-top' onClick={(e) => {
+                                                                                    {/* <img onError={placeHolderImage} src={product.image_url} alt={product.slug} className='card-img-top' onClick={(e) => {
+                                                                                        e.preventDefault();
+                                                                                        dispatch(setSelectedProduct({ data: product.id }));
+                                                                                        setSelectedProductId(product.id);
+                                                                                        navigate(`/product/${product.slug}`);
+                                                                                    }} /> */}
+                                                                                    <ImageWithPlaceholder src={product.image_url} alt={product.slug} className={"card-img-top"} handleOnClick={(e) => {
                                                                                         e.preventDefault();
                                                                                         dispatch(setSelectedProduct({ data: product.id }));
                                                                                         setSelectedProductId(product.id);

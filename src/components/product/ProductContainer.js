@@ -27,6 +27,7 @@ import { setSelectedProduct } from '../../model/reducer/selectedProduct';
 
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
+import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
 
 const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOfferArray }) => {
@@ -320,7 +321,8 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                         }} className='text-decoration-none text-reset'>
 
                                                                             <div className='image-container' >
-                                                                                <img onLoadStart={(e) => { e.target.src = setting.setting?.web_logo; }} onError={placeHolderImage} src={product.image_url} alt={product.slug} className={`card-img-top`} loading='lazy' />
+                                                                                {/* <img onLoadStart={(e) => { e.target.src = setting.setting?.web_logo; }} onError={placeHolderImage} src={product.image_url} alt={product.slug} className={`card-img-top`} loading='lazy' /> */}
+                                                                                <ImageWithPlaceholder src={product.image_url} alt={product.slug} className={`card-img-top`} />
                                                                                 {!Number(product.is_unlimited_stock) && parseInt(product.variants[0].status) === 0 &&
                                                                                     <div className="out_of_stockOverlay">
                                                                                         <p className="out_of_stockText">{t("out_of_stock")}</p>

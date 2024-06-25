@@ -20,7 +20,7 @@ import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../
 import Popup from '../same-seller-popup/Popup';
 import { ValidateNoInternet } from '../../utils/NoInternetValidator';
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
-
+import ImageWithPlaceholder from "../image-with-placeholder/ImageWithPlaceholder.jsx";
 
 const Wishlist = () => {
 
@@ -227,7 +227,8 @@ const Wishlist = () => {
                                                             <tr key={index} className=''>
                                                                 <th className='products-image-container first-column'>
                                                                     <div className='image-container'>
-                                                                        <img onError={placeHolderImage} src={product.image_url} alt='product'></img>
+                                                                        {/* <img onError={placeHolderImage} src={product.image_url} alt='product'></img> */}
+                                                                        <ImageWithPlaceholder src={product.image_url} alt='productImage' />
                                                                         {!Number(product.is_unlimited_stock) && product.variants[0].status === 0 &&
                                                                             <div className="out_of_stockOverlay">
                                                                                 <span className="out_of_stockText">{t("out_of_stock")}</span>

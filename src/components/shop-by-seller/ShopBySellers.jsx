@@ -7,6 +7,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import { setFilterBySeller } from '../../model/reducer/productFilterReducer';
 import "./shop-by-seller.css";
+import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
 
 const ShopBySellers = () => {
@@ -102,7 +103,8 @@ const ShopBySellers = () => {
 
 
                                     <div className='card'>
-                                        <img onError={placeHolderImage} className='card-img-top' src={seller.logo_url} alt='country' loading='lazy' />
+                                        {/* <img onError={placeHolderImage} className='card-img-top' src={seller.logo_url} alt='country' loading='lazy' /> */}
+                                        <ImageWithPlaceholder className='card-img-top' src={seller.logo_url} alt='country' />
                                         <div className='card-body' style={{ cursor: "pointer" }} >
                                             <p>{seller.store_name} </p>
                                         </div>

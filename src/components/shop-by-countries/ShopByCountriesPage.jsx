@@ -9,6 +9,7 @@ import useShopByCountries from '../../hooks/useShopByCountries';
 import Skeleton from 'react-loading-skeleton';
 import "./shop-by-countries.css";
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
+import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
 const ShopByCountriesPage = () => {
 
@@ -80,7 +81,8 @@ const ShopByCountriesPage = () => {
                                 }}>
 
                                     <div className='card'>
-                                        <img onError={placeHolderImage} className='card-img-top' src={`${process.env.REACT_APP_API_URL}/storage/${country.logo}`} alt='countryLogo' loading='lazy' />
+                                        {/* <img onError={placeHolderImage} className='card-img-top' src={`${process.env.REACT_APP_API_URL}/storage/${country.logo}`} alt='countryLogo' loading='lazy' /> */}
+                                        <ImageWithPlaceholder className='card-img-top' src={`${process.env.REACT_APP_API_URL}/storage/${country.logo}`} alt='countryLogo' />
                                         <div className='card-body' style={{ cursor: "pointer" }} >
                                             <p>{country.name} </p>
                                         </div>
