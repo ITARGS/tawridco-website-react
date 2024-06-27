@@ -411,7 +411,11 @@
   width: 100%;
   color: var(--font-color);
 }
-
+.order-note-container .order-note-details {
+  font-size: 13px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
 .order-info .order-info-container .container-heading {
   display: flex;
   justify-content: space-between;

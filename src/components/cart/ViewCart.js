@@ -12,7 +12,7 @@ import { RiCoupon2Fill, RiDeleteBinLine } from 'react-icons/ri';
 import Loader from '../loader/Loader';
 import Promo from './Promo';
 import { useTranslation } from 'react-i18next';
-import { clearCartPromo, setCart, setCartProducts, setCartSubTotal } from '../../model/reducer/cartReducer';
+import { addtoGuestCart, clearCartPromo, setCart, setCartProducts, setCartSubTotal } from '../../model/reducer/cartReducer';
 import { ValidateNoInternet } from '../../utils/NoInternetValidator';
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 
@@ -36,8 +36,10 @@ const ViewCart = () => {
     const [showPromoOffcanvas, setShowPromoOffcanvas] = useState(false);
     const [cartProducts, setViewCartProducts] = useState([]);
     const [isNetworkError, setIsNetworkError] = useState(false);
+    const [guestCartSubTotal, setGuestCartSubTotal] = useState(null);
+
     useEffect(() => {
-        if (location.pathname == "/cart")
+        if (location.pathname == "/cart" && cart?.isGuest === false) {
             api.getCart(user?.jwtToken, city.city.latitude, city.city.longitude, 0)
                 .then(response => response.json())
                 .then(result => {
@@ -65,11 +67,40 @@ const ViewCart = () => {
                         setIsNetworkError(isNoInternet);
                     }
                 });
+        } else if (location.pathname == "/cart" && cart?.isGuest === true && cart?.guestCart?.length !== 0) {
+            fetchGuestCart();
+        } else if (location.pathname == "/cart" && cart?.isGuest === true && cart?.guestCart?.length === 0) {
+            setiscartEmpty(true);
+        }
 
     }, [user]);
 
     useEffect(() => {
-        if (cart?.cartProducts?.length == 0) {
+        if (location.pathname == "/cart" && cart?.isGuest === true) {
+            fetchGuestCart();
+        }
+    }, []);
+
+    const fetchGuestCart = async () => {
+        setisLoader(true);
+        try {
+            const variantIds = cart?.guestCart?.map((p) => p.product_variant_id);
+            const quantities = cart?.guestCart?.map((p) => p.qty);
+            const response = await api.getGuestCart(city?.city?.latitude, city?.city?.longitude, variantIds?.join(","), quantities?.join(","));
+            const result = await response.json();
+            if (result.status == 1) {
+                setViewCartProducts(result.data.cart);
+                setGuestCartSubTotal(result.data.sub_total);
+                result?.data?.cart?.length > 0 ? setiscartEmpty(false) : setiscartEmpty(true);
+            }
+        } catch (e) {
+            console.log(e?.message);
+        }
+        setisLoader(false);
+    };
+
+    useEffect(() => {
+        if (cart?.cartProducts?.length == 0 && cart?.isGuest === false) {
             setiscartEmpty(true);
         }
     }, [cart?.cartProducts]);
@@ -157,7 +188,83 @@ const ViewCart = () => {
             navigate('/checkout');
         });
     };
-    // console.log(cartProducts);
+
+    function getProductQuantities(products) {
+        return Object.entries(products.reduce((quantities, product) => {
+            const existingQty = quantities[product.product_id] || 0;
+            return { ...quantities, [product.product_id]: existingQty + product.qty };
+        }, {})).map(([productId, qty]) => ({
+            product_id: parseInt(productId),
+            qty
+        }));
+    }
+
+    const AddToGuestCart = (productId, productVariantId, Qty, isExisting) => {
+        if (isExisting) {
+            const updatedProducts = cart?.guestCart?.map((product) => {
+                if (product?.product_id == productId && product?.product_variant_id == productVariantId) {
+                    return { ...product, qty: Qty };
+                } else {
+                    return product;
+                }
+            }).filter(product => product?.qty !== 0);
+            const updatedCartProducts = cartProducts?.map(product => {
+                if ((product.product_id == productId) && (product?.product_variant_id == productVariantId)) {
+                    return { ...product, qty: Qty };
+                } else {
+                    return product;
+                }
+            });
+            computeSubTotal(updatedCartProducts);
+            setViewCartProducts(updatedCartProducts);
+            dispatch(addtoGuestCart({ data: updatedProducts }));
+        } else {
+            const productData = { product_id: productId, product_variant_id: productVariantId, qty: Qty };
+            dispatch(addtoGuestCart({ data: [...cart?.guestCart, productData] }));
+        }
+    };
+    const computeSubTotal = (products) => {
+        const subTotal = products.reduce((prev, curr) => {
+            console.log(prev, curr);
+            prev += (curr.discounted_price !== 0 ? curr.discounted_price * curr.qty : curr.price * curr.qty);
+            return prev;
+        }, 0);
+        console.log(subTotal);
+        setGuestCartSubTotal(subTotal);
+    };
+    const RemoveFromGuestCart = (productVariantId) => {
+        const updatedProducts = cart?.guestCart?.filter((p) => p.product_variant_id != productVariantId);
+        const updatedSideBarProducts = cartProducts.filter((p) => p.product_variant_id != productVariantId);
+        computeSubTotal(updatedSideBarProducts);
+        setViewCartProducts(updatedSideBarProducts);
+        if (updatedProducts?.length === 0) {
+            setiscartEmpty(true);
+        }
+        dispatch(addtoGuestCart({ data: updatedProducts }));
+    };
+
+    const handleValidateAddExistingGuestProduct = (productQuantity, product, quantity) => {
+        if (Number(product.is_unlimited_stock)) {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.product_id)?.qty >= Number(product?.total_allowed_quantity)) {
+                toast.error(t("max_cart_limit_error"));
+            }
+            else {
+                AddToGuestCart(product?.product_id, product?.product_variant_id, quantity, 1);
+            }
+        }
+        else {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.product_id)?.qty >= Number(product?.total_allowed_quantity)) {
+                toast.error(t("max_cart_limit_error"));
+            }
+            else if (productQuantity?.find(prdct => prdct?.product_id == product?.product_id)?.qty >= Number(product?.stock)) {
+                toast.error(t("limited_product_stock_error"));
+            }
+            else {
+                AddToGuestCart(product?.product_id, product?.product_variant_id, quantity, 1);
+            }
+        }
+    };
+
     return (
         <>
             {!isNetworkError ?
@@ -191,7 +298,7 @@ const ViewCart = () => {
                                             <div className='viewcart-product-wrapper col-8'>
                                                 <div className='product-heading'>
                                                     <h3>{t("your_cart")}</h3>
-                                                    <span>{t("there_are")} </span><span className='title'>{cart?.cartProducts?.length}</span> <span> {t("product_in_your_cart")}  </span>
+                                                    <span>{t("there_are")} </span><span className='title'>{cart?.isGuest === false ? cart?.cartProducts?.length : cart?.guestCart?.length}</span> <span> {t("product_in_your_cart")}  </span>
                                                 </div>
 
                                                 <table className='products-table table'>
@@ -208,7 +315,7 @@ const ViewCart = () => {
 
                                                     <tbody>
                                                         {cartProducts?.map((product, index) => {
-                                                            if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.product_variant_id)?.qty > 0) {
+                                                            if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.product_variant_id)?.qty > 0 || cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.product_variant_id)?.qty > 0) {
                                                                 return (
                                                                     <tr key={index} className={`${!product.status ? "danger" : ""}`}>
                                                                         <th className='products-image-container first-column'>
@@ -217,7 +324,7 @@ const ViewCart = () => {
                                                                             </div>
 
                                                                             <div className=''>
-                                                                                <span>{product.measurement} {product.unit} | {product.name}</span>
+                                                                                <span>{product.measurement} {product.unit_code} | {product.name}</span>
 
                                                                             </div>
                                                                         </th>
@@ -233,33 +340,55 @@ const ViewCart = () => {
 
                                                                         <th className='quantity'>
                                                                             <div>
-                                                                                <button type='button' onClick={() => {
-
-                                                                                    if (product.qty > 1) {
-                                                                                        addtoCart(product.product_id, product.product_variant_id, product.qty - 1);
-                                                                                    }
-
-                                                                                }}><BiMinus fill='#fff' fontSize={'2rem'} /></button>
-                                                                                <span >{product.qty}</span>
-                                                                                <button type='button' onClick={() => {
-                                                                                    if (Number(product.is_unlimited_stock) === 1) {
-                                                                                        if (Number(product.qty) < Number(setting.setting.max_cart_items_count)) {
-                                                                                            addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
+                                                                                <button
+                                                                                    type='button'
+                                                                                    onClick={() => {
+                                                                                        if (cart?.isGuest && product.qty > 1) {
+                                                                                            AddToGuestCart(product.product_id, product.product_variant_id, Number(product.qty) - 1, 1);
                                                                                         } else {
-                                                                                            toast.error('Apologies, maximum product quantity limit reached!');
+                                                                                            if (product.qty > 1) {
+                                                                                                addtoCart(product.product_id, product.product_variant_id, product.qty - 1);
+                                                                                            }
                                                                                         }
-                                                                                    } else {
-                                                                                        if (Number(product.qty) >= Number(product.stock)) {
-                                                                                            toast.error(t("out_of_stock_message"));
 
-                                                                                        } else if (Number(product.qty) >= Number(setting.setting.max_cart_items_count)) {
-                                                                                            toast.error('Apologies, maximum product quantity limit reached!');
+                                                                                    }}>
+                                                                                    <BiMinus fill='#fff' fontSize={'2rem'} />
+                                                                                </button>
+
+                                                                                <span >{product.qty}</span>
+
+                                                                                <button
+                                                                                    type='button'
+                                                                                    onClick={() => {
+                                                                                        if (cart?.isGuest) {
+                                                                                            const productQuantity = getProductQuantities(cart?.guestCart);
+                                                                                            handleValidateAddExistingGuestProduct(
+                                                                                                productQuantity,
+                                                                                                product,
+                                                                                                Number(product.qty) + 1
+                                                                                            );
+                                                                                        } else {
+                                                                                            if (Number(product.is_unlimited_stock) === 1) {
+                                                                                                if (Number(product.qty) < Number(setting.setting.max_cart_items_count)) {
+                                                                                                    addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
+                                                                                                } else {
+                                                                                                    toast.error('Apologies, maximum product quantity limit reached!');
+                                                                                                }
+                                                                                            } else {
+                                                                                                if (Number(product.qty) >= Number(product.stock)) {
+                                                                                                    toast.error(t("out_of_stock_message"));
+
+                                                                                                } else if (Number(product.qty) >= Number(setting.setting.max_cart_items_count)) {
+                                                                                                    toast.error('Apologies, maximum product quantity limit reached!');
+                                                                                                }
+                                                                                                else {
+                                                                                                    addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
+                                                                                                }
+                                                                                            }
                                                                                         }
-                                                                                        else {
-                                                                                            addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
-                                                                                        }
-                                                                                    }
-                                                                                }}><BsPlus fill='#fff' fontSize={'2rem'} /></button>
+                                                                                    }}>
+                                                                                    <BsPlus fill='#fff' fontSize={'2rem'} />
+                                                                                </button>
                                                                             </div>
 
                                                                         </th>
@@ -271,7 +400,16 @@ const ViewCart = () => {
                                                                         </th>
 
                                                                         <th className='remove last-column'>
-                                                                            <button whiletap={{ scale: 0.8 }} type='button' onClick={() => removefromCart(product.product_id, product.product_variant_id)}>
+                                                                            <button
+                                                                                whiletap={{ scale: 0.8 }}
+                                                                                type='button'
+                                                                                onClick={() => {
+                                                                                    if (cart?.isGuest) {
+                                                                                        RemoveFromGuestCart(product.product_variant_id);
+                                                                                    } else {
+                                                                                        removefromCart(product.product_id, product.product_variant_id);
+                                                                                    }
+                                                                                }}>
                                                                                 <RiDeleteBinLine fill='red' fontSize={'2.985rem'} />
                                                                             </button>
                                                                         </th>
@@ -283,41 +421,41 @@ const ViewCart = () => {
                                                 </table>
                                             </div>
                                             <div className="billing col-3">
-                                                <div className="promo-section mb-3">
-
-                                                    <div className="heading">
-                                                        <span>{t("coupon")}</span>
-                                                    </div>
-                                                    <div className="promo-wrapper">
-                                                        <div className="promo-container">
-                                                            <div className="promo-button ">
-                                                                <span className="">{t("have_coupon")}</span>
-                                                                <button className="btn" onClick={() => setShowPromoOffcanvas(true)}>{t("view_coupon")}</button>
-                                                            </div>
-                                                            {cart.cart && cart.promo_code ?
-                                                                <>
-                                                                    <div className="promo-code">
-                                                                        <div className="">
-                                                                            <span><RiCoupon2Fill size={26} fill='var(--secondary-color)' /></span>
-                                                                        </div>
-                                                                        <div className="d-flex flex-column">
-                                                                            <span className='promo-name'>{cart.promo_code.promo_code}</span>
-                                                                            <span className='promo-discount-amount'>{cart.promo_code.message}</span>
-                                                                        </div>
-                                                                        <div className="d-flex flex-column">
-                                                                            <span>{setting.setting && setting.setting.currency} {cart.promo_code.discount.toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                            <span className='promo-remove' onClick={() => {
-                                                                                dispatch(clearCartPromo());
-                                                                                toast.info("Coupon Removed");
-                                                                            }}> {t("remove")}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </>
-                                                                : <></>}
+                                                {cart?.isGuest === false ?
+                                                    <div className="promo-section mb-3">
+                                                        <div className="heading">
+                                                            <span>{t("coupon")}</span>
                                                         </div>
-                                                    </div>
+                                                        <div className="promo-wrapper">
+                                                            <div className="promo-container">
+                                                                <div className="promo-button ">
+                                                                    <span className="">{t("have_coupon")}</span>
+                                                                    <button className="btn" onClick={() => setShowPromoOffcanvas(true)}>{t("view_coupon")}</button>
+                                                                </div>
+                                                                {cart.cart && cart.promo_code ?
+                                                                    <>
+                                                                        <div className="promo-code">
+                                                                            <div className="">
+                                                                                <span><RiCoupon2Fill size={26} fill='var(--secondary-color)' /></span>
+                                                                            </div>
+                                                                            <div className="d-flex flex-column">
+                                                                                <span className='promo-name'>{cart.promo_code.promo_code}</span>
+                                                                                <span className='promo-discount-amount'>{cart.promo_code.message}</span>
+                                                                            </div>
+                                                                            <div className="d-flex flex-column">
+                                                                                <span>{setting.setting && setting.setting.currency} {cart.promo_code.discount.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                                <span className='promo-remove' onClick={() => {
+                                                                                    dispatch(clearCartPromo());
+                                                                                    toast.info("Coupon Removed");
+                                                                                }}> {t("remove")}</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    </>
+                                                                    : <></>}
+                                                            </div>
+                                                        </div>
 
-                                                </div>
+                                                    </div> : null}
                                                 <div className='cart-summary-wrapper'>
                                                     <div className='heading'>
                                                         <span >{t("cart")} {t("total")}</span>
@@ -334,7 +472,12 @@ const ViewCart = () => {
                                                                     <span>{t("sub_total")}</span>
                                                                     <div className='d-flex align-items-center'>
                                                                         {setting.setting && setting.setting.currency}
-                                                                        <span>{(cart?.cartSubTotal)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                        <span>{
+                                                                            cart?.isGuest === false ?
+                                                                                (cart?.cartSubTotal)?.toFixed(setting.setting && setting.setting.decimal_point)
+                                                                                :
+                                                                                guestCartSubTotal?.toFixed(setting.setting && setting.setting.decimal_point)
+                                                                        }</span>
                                                                     </div>
                                                                 </div>
                                                                 {cart.promo_code && <>
@@ -347,7 +490,18 @@ const ViewCart = () => {
                                                                     </div>
                                                                 </>}
                                                                 <div className='d-flex justify-content-center mt-3 button-container'>
-                                                                    <button type='button' style={{ cursor: "pointer" }} onClick={stockValidation} className='checkout'>{t("proceed_to_checkout")}</button>
+                                                                    <button
+                                                                        type='button'
+                                                                        onClick={() => {
+                                                                            if (cart?.isGuest) {
+                                                                                toast.error(t("login_to_access_checkout_page"));
+                                                                            } else {
+                                                                                stockValidation();
+                                                                            }
+                                                                        }}
+                                                                        className='checkout cursorPointer'>
+                                                                        {t("proceed_to_checkout")}
+                                                                    </button>
                                                                 </div>
 
                                                             </div>)}

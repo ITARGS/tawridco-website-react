@@ -13,7 +13,7 @@ import QuickViewModal from './QuickViewModal';
 import { useTranslation } from 'react-i18next';
 import Loader from '../loader/Loader';
 import { clearSelectedProduct, setSelectedProduct } from '../../model/reducer/selectedProduct';
-import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
+import { addtoGuestCart, setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
 import Popup from '../same-seller-popup/Popup';
 import useGetProductRatingsById from '../../hooks/useGetProductRatingsById';
@@ -477,6 +477,51 @@ const ProductDetails = () => {
         }
     };
 
+    const handleValidateAddExistingGuestProduct = (productQuantity, product, quantity) => {
+        if (Number(product.is_unlimited_stock)) {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.total_allowed_quantity)) {
+                toast.error('Apologies, maximum product quantity limit reached');
+            }
+            else {
+                AddToGuestCart(product?.id, selectedVariant.id, quantity, 1);
+            }
+        }
+        else {
+            if (selectedVariant.cart_count >= Number(selectedVariant.stock)) {
+                toast.error('Oops, Limited Stock Available');
+            }
+            else if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.total_allowed_quantity)) {
+                toast.error('Apologies, maximum cart quantity limit reached');
+            }
+            else {
+                AddToGuestCart(product?.id, selectedVariant.id, quantity, 1);
+            }
+        }
+    };
+
+    const AddToGuestCart = (productId, productVariantId, Qty, isExisting) => {
+        if (isExisting) {
+            const updatedProducts = cart?.guestCart?.map((product) => {
+                if (product?.product_id == productId && product?.product_variant_id == productVariantId) {
+                    return { ...product, qty: Qty };
+                } else {
+                    return product;
+                }
+            }).filter(product => product?.qty !== 0);
+            dispatch(addtoGuestCart({ data: updatedProducts }));
+        } else {
+            const productData = { product_id: productId, product_variant_id: productVariantId, qty: Qty };
+            dispatch(addtoGuestCart({ data: [...cart?.guestCart, productData] }));
+        }
+    };
+
+    const handleAddNewProductGuest = (productQuantity, product) => {
+        if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) < Number(product.total_allowed_quantity)) {
+            AddToGuestCart(product.id, selectedVariant.id, 1, 0);
+        } else {
+            toast.error(t("max_cart_limit_error"));
+        }
+    };
 
     return (
         <>
@@ -596,39 +641,77 @@ const ProductDetails = () => {
                                                         </div>
                                                         <div className="cart_option">
                                                             {selectedVariant ?
-                                                                (user?.user && cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= 1
+                                                                ((cart?.isGuest === false && user?.user && cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= 1)
+                                                                    || (cart?.isGuest === true && cart?.guestCart?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty > 0)
                                                                     ? <>
                                                                         <div id={`input-cart-quickview`} className="input-to-cart">
-                                                                            <button type='button' onClick={() => {
-                                                                                if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty == 1) {
-                                                                                    removefromCart(productdata.id, selectedVariant.id);
-                                                                                }
-                                                                                else {
-                                                                                    addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty - 1);
-                                                                                }
+                                                                            <button
+                                                                                type='button'
+                                                                                onClick={() => {
+                                                                                    if (cart?.isGuest) {
+                                                                                        AddToGuestCart(
+                                                                                            productdata?.id,
+                                                                                            selectedVariant?.id,
+                                                                                            cart?.guestCart?.find(prdct => prdct.product_id == productdata.id && prdct.product_variant_id == selectedVariant?.id)?.qty - 1,
+                                                                                            1
+                                                                                        );
+                                                                                    } else {
+                                                                                        if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty == 1) {
+                                                                                            removefromCart(productdata.id, selectedVariant.id);
+                                                                                        }
+                                                                                        else {
+                                                                                            addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty - 1);
+                                                                                        }
+                                                                                    }
+                                                                                }}
+                                                                                className="wishlist-button">
+                                                                                <BiMinus fill='#fff' />
+                                                                            </button>
 
-                                                                            }} className="wishlist-button"><BiMinus fill='#fff' /></button>
                                                                             <span id={`input-quickview`}>
                                                                                 {cartLoader ? <div className="spinner-border text-muted"></div> :
-                                                                                    cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
+                                                                                    cart?.isGuest === false ?
+                                                                                        cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
+                                                                                        :
+                                                                                        cart?.guestCart?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
                                                                                 }
                                                                             </span>
-                                                                            <button type='button' onClick={() => {
 
-                                                                                const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                                handleValidateAddExistingProduct(productQuantity, productdata);
-                                                                            }} className="wishlist-button"><BsPlus fill='#fff' /> </button>
-
-
+                                                                            <button
+                                                                                type='button'
+                                                                                onClick={() => {
+                                                                                    if (cart?.isGuest) {
+                                                                                        const productQuantity = getProductQuantities(cart?.guestCart);
+                                                                                        handleValidateAddExistingGuestProduct(
+                                                                                            productQuantity,
+                                                                                            productdata,
+                                                                                            cart?.guestCart?.find(prdct => prdct?.product_variant_id == selectedVariant?.id)?.qty + 1
+                                                                                        );
+                                                                                    } else {
+                                                                                        const productQuantity = getProductQuantities(cart?.cartProducts);
+                                                                                        handleValidateAddExistingProduct(productQuantity, productdata);
+                                                                                    }
+                                                                                }}
+                                                                                className="wishlist-button">
+                                                                                <BsPlus fill='#fff' />
+                                                                            </button>
                                                                         </div>
-                                                                    </> : <>
+                                                                    </>
+                                                                    :
+                                                                    <>
                                                                         <button type='button' id={`Add-to-cart-quickview`} className='add-to-cart'
                                                                             onClick={() => {
-                                                                                if (user?.user === null) {
-                                                                                    return toast.error(t("required_login_message_for_cart"));
+                                                                                if (cart?.isGuest) {
+                                                                                    const productQuantity = getProductQuantities(cart?.guestCart);
+                                                                                    handleAddNewProductGuest(productQuantity, productdata);
                                                                                 }
-                                                                                const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                                handleValidateAddNewProduct(productQuantity, productdata);
+                                                                                else {
+                                                                                    if (user?.user === null) {
+                                                                                        return toast.error(t("required_login_message_for_cart"));
+                                                                                    }
+                                                                                    const productQuantity = getProductQuantities(cart?.cartProducts);
+                                                                                    handleValidateAddNewProduct(productQuantity, productdata);
+                                                                                }
                                                                             }}>{t("add_to_cart")}</button>
                                                                     </>)
                                                                 : null}
@@ -637,7 +720,7 @@ const ProductDetails = () => {
                                                                     if (user?.jwtToken !== "") {
                                                                         removefromFavorite(productdata.id);
                                                                     } else {
-                                                                        toast.error(t('required_login_message_for_cart'));
+                                                                        toast.error(t('required_login_message_for_wishlist'));
                                                                     }
                                                                 }}>
                                                                     <BsHeartFill size={16} fill='green' />
@@ -647,8 +730,8 @@ const ProductDetails = () => {
                                                                         if (user?.jwtToken !== "") {
                                                                             addToFavorite(productdata.id);
                                                                         } else {
-                                                                            toast.error(t("required_login_message_for_cart"));
-                                                                        }
+                                                                            toast.error(t("required_login_message_for_wishlist"));
+                                                                    }
                                                                     }}>
                                                                         <BsHeart size={16} /></button>
                                                                 )}

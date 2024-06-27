@@ -316,5 +316,11 @@
   "dark": "Dark",
   "paymentPending": "Payment Pending",
   "outForDelivery": "Out for delivery",
-  "enable_payment_methods": "Please enable payment methods from admin panel"
+  "enable_payment_methods": "Please enable payment methods from admin panel",
+  "order_note": "Order note (Optional)",
+  "order_note_hint": "Please pack the parcel carefully.",
+  "hint": "Hint :",
+  "order_note_title": "Order note",
+  "login_to_access_checkout_page": "Please login to access checkout.",
+  "guest_products_added_to_cart": "Guest Products Added Successfully"
 }

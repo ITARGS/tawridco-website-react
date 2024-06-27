@@ -16,7 +16,7 @@ import { setAuthId, setCurrentUser, setFcmToken, setJWTToken } from '../../model
 import { Modal } from 'react-bootstrap';
 import { setSetting } from '../../model/reducer/settingReducer';
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
-import { setCart } from '../../model/reducer/cartReducer';
+import { addtoGuestCart, setCart, setIsGuest } from '../../model/reducer/cartReducer';
 
 
 const Login = React.memo((props) => {
@@ -25,6 +25,7 @@ const Login = React.memo((props) => {
     const setting = useSelector(state => (state.setting));
     const city = useSelector(state => state.city);
     const user = useSelector(state => state.user);
+    const cart = useSelector(state => state.cart);
     const [fcm, setFcm] = useState('');
 
     useEffect(() => {
@@ -239,6 +240,24 @@ const Login = React.memo((props) => {
         });
     };
 
+    const AddtoCartBulk = async (token) => {
+        try {
+            const variantIds = cart?.guestCart?.map((p) => p.product_variant_id);
+            const quantities = cart?.guestCart?.map((p) => p.qty);
+            const response = await api.bulkAddToCart(token, variantIds.join(","), quantities.join(","));
+            const result = await response.json();
+            if (result.status == 1) {
+                toast.success(t("guest_products_added_to_cart"));
+                dispatch(addtoGuestCart({ data: [] }));
+                dispatch(setIsGuest({ data: false }));
+            } else {
+                console.log("Add to Bulk Cart Error Occurred");
+            }
+        } catch (e) {
+            console.log(e?.message);
+        }
+    };
+
     const loginApiCall = async (num, Uid, countrycode) => {
         // console.log("Before Login API Call ->", num, Uid, countrycode);
         await api.login(num, Uid, countrycode, fcm)
@@ -260,6 +279,9 @@ const Login = React.memo((props) => {
                     );
                     dispatch(setJWTToken({ data: result.data.access_token }));
                     dispatch(setAuthId({ data: Uid }));
+                    if (cart?.isGuest === true) {
+                        AddtoCartBulk(result.data.access_token);
+                    }
                     // setlocalstorageOTP(Uid);
                     setError("");
                     setOTP("");
@@ -281,6 +303,9 @@ const Login = React.memo((props) => {
             .catch(error => console.log("error ", error));
 
     };
+
+
+
 
     const handleTerms = () => {
         props.setShow(false);

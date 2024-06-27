@@ -65,10 +65,7 @@ const App = () => {
       getCurrentUser(user?.jwtToken);
     }
     getSetting();
-    window.addEventListener('load', applyTheme);
-    return () => {
-      window.removeEventListener("load", applyTheme);
-    };
+    applyTheme();
   }, []);
 
   useEffect(() => {
@@ -78,29 +75,29 @@ const App = () => {
       .then(result => {
         document.documentElement.dir = result?.data?.type;
         if (result.status === 1) {
-          if (language.current_language === null) {
-            // console.log(result.data);
-            if (result.data !== undefined) {
-              dispatch(setLanguage({ data: result.data }));
-            }
-            else {
-              dispatch(setLanguage({
-                data: {
-                  "id": 15,
-                  "name": "English",
-                  "code": "en",
-                  "type": "LTR",
-                  "system_type": 3,
-                  "is_default": 1,
-                  "json_data": jsonFile,
-                  "display_name": "English",
-                  "system_type_name": "Website"
-                }
-              }));
-            }
-          } else {
-            document.documentElement.dir = language.current_language.type ? language.current_language.type : "LTR";
+          // if (language.current_language === null) {
+          // console.log(result.data);
+          if (result.data !== undefined) {
+            dispatch(setLanguage({ data: result.data }));
           }
+          else {
+            dispatch(setLanguage({
+              data: {
+                "id": 15,
+                "name": "English",
+                "code": "en",
+                "type": "LTR",
+                "system_type": 3,
+                "is_default": 1,
+                "json_data": jsonFile,
+                "display_name": "English",
+                "system_type_name": "Website"
+              }
+            }));
+          }
+          // } else {
+          //   document.documentElement.dir = language.current_language.type ? language.current_language.type : "LTR";
+          // }
         }
       });
 
@@ -292,6 +289,7 @@ const App = () => {
                 </>
                 :
                 <>
+                  <Route key="cart" exact path="/cart" element={<ViewCart />} />
                   <Route key="category" exact path='/category/:slug' element={<CategoryChild />} />
                   {/* <Route key="categories" exact path='/categories' element={<ShowAllCategories />} /> */}
                   <Route key="brands" exact path='/brands' element={<BrandList />} />

@@ -115,7 +115,29 @@
   flex-direction: column;
   background-color: var(--second-cards-color);
 }
-
+.checkout-container
+  .order-container
+  .order-instructions-wrapper
+  .order-instruction-body {
+  width: 100%;
+  height: 200px;
+  background-color: var(--second-cards-color);
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
+.checkout-container
+  .order-container
+  .order-instructions-wrapper
+  .order-instruction-body
+  .order-instructions-input {
+  resize: none;
+  width: 100%;
+  padding: 5px;
+  overflow: auto;
+  font-size: 14px;
+  border: 1px solid #ddd;
+}
 .checkout-container
   .order-container
   .payment-wrapper

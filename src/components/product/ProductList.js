@@ -22,7 +22,7 @@ import { setSelectedProduct } from '../../model/reducer/selectedProduct';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Popup from "../same-seller-popup/Popup";
-import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
+import { addtoGuestCart, setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
 import { LuStar } from 'react-icons/lu';
 import "./product.css";
@@ -598,6 +598,50 @@ const ProductList2 = React.memo(() => {
         }
     };
 
+    const handleAddNewProductGuest = (productQuantity, product) => {
+        if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) < Number(product.total_allowed_quantity)) {
+            AddToGuestCart(product.id, product.variants[0].id, 1, 0);
+        } else {
+            toast.error(t("out_of_stock_message"));
+        }
+    };
+    const AddToGuestCart = (productId, productVariantId, Qty, isExisting) => {
+        if (isExisting) {
+            const updatedProducts = Qty !== 0 ? cart?.guestCart?.map((product) => {
+                if (product?.product_id == productId && product?.product_variant_id == productVariantId) {
+                    return { ...product, qty: Qty };
+                } else {
+                    return product;
+                }
+            }) : cart?.guestCart?.filter(product => product?.product_id != productId && product?.productVariantId != productVariantId);
+            dispatch(addtoGuestCart({ data: updatedProducts }));
+        } else {
+            const productData = { product_id: productId, product_variant_id: productVariantId, qty: Qty };
+            dispatch(addtoGuestCart({ data: [...cart?.guestCart, productData] }));
+        }
+    };
+
+    const handleValidateAddExistingGuestProduct = (productQuantity, product, quantity) => {
+        if (Number(product.is_unlimited_stock)) {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.total_allowed_quantity)) {
+                toast.error('Apologies, maximum product quantity limit reached');
+            }
+            else {
+                AddToGuestCart(product?.id, product?.variants?.[0]?.id, quantity, 1);
+            }
+        }
+        else {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.variants?.[0]?.stock)) {
+                toast.error('Oops, Limited Stock Available');
+            }
+            else if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.total_allowed_quantity)) {
+                toast.error('Apologies, maximum cart quantity limit reached');
+            }
+            else {
+                AddToGuestCart(product?.id, product?.variants?.[0]?.id, quantity, 1);
+            }
+        }
+    };
 
     return (
         <>
@@ -975,19 +1019,34 @@ const ProductList2 = React.memo(() => {
                                                                                     </div>
 
                                                                                     <div className='border-end aes' style={{ flexGrow: "1" }} >
-                                                                                        {user?.user && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 0 ?
+                                                                                        {(cart?.isGuest === false && user?.user && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 0) ||
+                                                                                            (cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 0)
+                                                                                            ?
                                                                                             <>
                                                                                                 <div id={`input-cart-productdetail`} className="input-to-cart">
-                                                                                                    <button type='button' className="wishlist-button" onClick={() => {
-                                                                                                        if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty == 1) {
-                                                                                                            removefromCart(product.id, product.variants[0].id);
-                                                                                                            selectedVariant.cart_count = 0;
-                                                                                                        }
-                                                                                                        else {
-                                                                                                            addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty - 1);
-                                                                                                            selectedVariant.cart_count = selectedVariant.cart_count - 1;
-                                                                                                        }
-                                                                                                    }}>
+                                                                                                    <button
+                                                                                                        type='button'
+                                                                                                        className="wishlist-button"
+                                                                                                        onClick={() => {
+                                                                                                            if (cart?.isGuest) {
+                                                                                                                AddToGuestCart(
+                                                                                                                    product?.id,
+                                                                                                                    product?.variants?.[0]?.id,
+                                                                                                                    cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty - 1,
+                                                                                                                    1
+                                                                                                                );
+                                                                                                            } else {
+
+                                                                                                                if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty == 1) {
+                                                                                                                    removefromCart(product.id, product.variants[0].id);
+                                                                                                                    selectedVariant.cart_count = 0;
+                                                                                                                }
+                                                                                                                else {
+                                                                                                                    addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty - 1);
+                                                                                                                    selectedVariant.cart_count = selectedVariant.cart_count - 1;
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }}>
                                                                                                         <BiMinus size={20} fill='#fff' />
                                                                                                     </button>
                                                                                                     {/* <span id={`input-productdetail`} >{quantity}</span> */}
@@ -997,38 +1056,55 @@ const ProductList2 = React.memo(() => {
                                                                                                             min="1"
                                                                                                             max={product.variants[0].stock}
                                                                                                             className="quantity-input bg-transparent text-center"
-                                                                                                            value={cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty}
+                                                                                                            value={
+                                                                                                                cart.isGuest === false ?
+                                                                                                                    cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty
+                                                                                                                    : cart?.guestCart?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty
+                                                                                                            }
                                                                                                             disabled
                                                                                                         />
                                                                                                     </div>
 
-                                                                                                    <button type='button' className="wishlist-button" onClick={() => {
-                                                                                                        const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                                                        // if (Number(product.is_unlimited_stock)) {
-                                                                                                        //     if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product?.total_allowed_quantity)) {
-                                                                                                        //         addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
-                                                                                                        //     } else {
-                                                                                                        //         toast.error('Apologies, maximum product quantity limit reached!');
-                                                                                                        //     }
-                                                                                                        // } else {
-                                                                                                        //     if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.variants[0].stock)) {
-                                                                                                        //         toast.error(t("out_of_stock_message"));
-                                                                                                        //     }
-                                                                                                        //     else if (Number(productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty) >= Number(product.total_allowed_quantity)) {
-                                                                                                        //         toast.error('Apologies, maximum product quantity limit reached');
-                                                                                                        //     } else {
-                                                                                                        //         addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
-                                                                                                        //     }
-                                                                                                        // }
-                                                                                                        handleValidateAddExistingProduct(productQuantity, product);
-                                                                                                    }}><BsPlus size={20} fill='#fff' /> </button>
+                                                                                                    <button
+                                                                                                        type='button'
+                                                                                                        className="wishlist-button"
+                                                                                                        onClick={() => {
+                                                                                                            if (cart?.isGuest) {
+                                                                                                                const productQuantity = getProductQuantities(cart?.guestCart);
+                                                                                                                handleValidateAddExistingGuestProduct(
+                                                                                                                    productQuantity,
+                                                                                                                    product,
+                                                                                                                    cart?.guestCart?.find(prdct => prdct?.product_id == product?.id && prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty + 1
+                                                                                                                );
+                                                                                                            } else {
+                                                                                                                const productQuantity = getProductQuantities(cart?.cartProducts);
+                                                                                                                handleValidateAddExistingProduct(productQuantity, product);
+                                                                                                            }
+                                                                                                        }}>
+                                                                                                        <BsPlus size={20} fill='#fff' />
+                                                                                                    </button>
                                                                                                 </div>
                                                                                             </> :
                                                                                             <>
-                                                                                                <button type="button" id={`Add-to-cart-section${index}`} className='w-100 h-100 add-to-cart active' onClick={() => {
-                                                                                                    const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                                                    handleValidateAddNewProduct(productQuantity, product);
-                                                                                                }} disabled={!Number(product.is_unlimited_stock) && product.variants[0].status === 0}>{t("add_to_cart")}</button>
+                                                                                                <button
+                                                                                                    type="button"
+                                                                                                    id={`Add-to-cart-section${index}`}
+                                                                                                    className='w-100 h-100 add-to-cart active'
+                                                                                                    onClick={() => {
+                                                                                                        if (cart?.isGuest) {
+                                                                                                            const productQuantity = getProductQuantities(cart?.guestCart);
+                                                                                                            handleAddNewProductGuest(
+                                                                                                                productQuantity,
+                                                                                                                product
+                                                                                                            );
+                                                                                                        } else {
+                                                                                                            const productQuantity = getProductQuantities(cart?.cartProducts);
+                                                                                                            handleValidateAddNewProduct(productQuantity, product);
+                                                                                                        }
+                                                                                                    }}
+                                                                                                    disabled={!Number(product.is_unlimited_stock) && product.variants[0].status === 0}>
+                                                                                                    {t("add_to_cart")}
+                                                                                                </button>
                                                                                             </>}
 
                                                                                     </div>

@@ -21,7 +21,7 @@ import { logoutAuth, setCurrentUser } from "../../model/reducer/authReducer";
 import { setFilterBrands, setFilterCategory, setFilterSearch, setFilterSection } from "../../model/reducer/productFilterReducer";
 import WalletTransaction from '../wallet-transaction/WalletTransaction';
 import { PiWallet } from "react-icons/pi";
-import { setCartProducts, setCartSubTotal } from '../../model/reducer/cartReducer';
+import { setCartProducts, setCartSubTotal, setIsGuest } from '../../model/reducer/cartReducer';
 
 
 const ProfileDashboard = (props) => {
@@ -170,6 +170,7 @@ const ProfileDashboard = (props) => {
                                     dispatch(setCartProducts({ data: [] }));
                                     dispatch(setCartSubTotal({ data: 0 }));
                                     dispatch(logoutAuth({ data: null }));
+                                    dispatch(setIsGuest({ data: true }));
                                     toast.success("You're Successfully Logged Out");
                                     navigate('/');
                                 }
@@ -213,6 +214,7 @@ const ProfileDashboard = (props) => {
                                     dispatch(setCartProducts({ data: [] }));
                                     dispatch(setCartSubTotal({ data: 0 }));
                                     dispatch(logoutAuth({ data: null }));
+                                    dispatch(setIsGuest({ data: true }));
                                     toast.info("You're Account is Succesfully Deleted!!");
                                     navigate('/');
                                 }

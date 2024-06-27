@@ -577,7 +577,7 @@ const api = {
 
         return fetch(appUrl + appSubUrl + "/settings/time_slots", requestOptions);
     },
-    placeOrder(token, product_variant_id, quantity, total, delivery_charge, final_total, payment_method, address_id, deliveryTime, promocode_id = 0, wallet_balance, wallet_used) {
+    placeOrder(token, product_variant_id, quantity, total, delivery_charge, final_total, payment_method, address_id, deliveryTime, promocode_id = 0, wallet_balance, wallet_used, order_note) {
         // console.log(token, product_variant_id, quantity, total, delivery_charge, final_total, payment_method, address_id, deliveryTime, promocode_id, wallet_balance, wallet_used);
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
@@ -592,6 +592,9 @@ const api = {
         formdata.append("payment_method", payment_method);
         formdata.append("address_id", address_id);
         formdata.append("delivery_time", deliveryTime);
+        if (order_note !== "") {
+            formdata.append("order_note", order_note);
+        }
         if (wallet_balance) {
             formdata.append("wallet_balance", wallet_balance);
         }
@@ -1070,6 +1073,54 @@ const api = {
         };
 
         return fetch(appUrl + appSubUrl + "/products/rating/image_list", requestOptions);
+    },
+    getGuestCart(latitude, longitude, variantIds, quantities) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+
+        let params = {
+            latitude,
+            longitude,
+            variant_ids: variantIds,
+            quantities
+        };
+
+        let url = new URL(appUrl + appSubUrl + "/cart/guest_cart");
+
+        for (let p in params) {
+            url.searchParams.append(p, params[p]);
+        }
+
+        let requestOptions = {
+            method: 'GET',
+            headers: myHeaders,
+            redirect: 'follow'
+        };
+
+        return fetch(url, requestOptions);
+    },
+    bulkAddToCart(token, variantIds, quantities) {
+        var myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        myHeaders.append("Authorization", token_prefix + token);
+
+        let params = {
+            variant_ids: variantIds,
+            quantities
+        };
+
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            redirect: 'follow',
+        };
+
+        let url = new URL(appUrl + appSubUrl + "/cart/bulk_add_to_cart_items");
+
+        for (let p in params) {
+            url.searchParams.append(p, params[p]);
+        }
+        return fetch(url, requestOptions);
     }
 
 };

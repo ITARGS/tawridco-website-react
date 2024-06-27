@@ -179,8 +179,8 @@ const OrderDetails = React.memo(() => {
                                                         {/* console.log(item); */}
                                                         {orderData?.items?.map((item, index) => {
                                                             return (
-                                                                <>
-                                                                    <tr key={index} className={Number(item?.active_status) > 6 ? 'disabled' : ''}>
+                                                                <React.Fragment key={item?.id}>
+                                                                    <tr className={Number(item?.active_status) > 6 ? 'disabled' : ''}>
                                                                         <td>
                                                                             <div className="product">
 
@@ -351,7 +351,7 @@ const OrderDetails = React.memo(() => {
                                                                             </Modal.Body>
                                                                         </Modal>
                                                                         : null}
-                                                                </>
+                                                                </React.Fragment>
 
                                                             );
 
@@ -409,6 +409,22 @@ const OrderDetails = React.memo(() => {
                                             </div>
                                         </div>
                                     </div>
+                                    {orderData?.order_note !== "" ? <div className='order-info-container order-note-container'>
+                                        <div className='container-heading'>
+                                            <span>
+                                                {t("order_note_title")}
+                                            </span>
+                                        </div>
+                                        <div className='order-note-details'>
+                                            {console.log(orderData)}
+                                            {orderData?.order_note.split('\r\n').map((line, index) => (
+                                                <React.Fragment key={index}>
+                                                    {line}
+                                                    <br />
+                                                </React.Fragment>
+                                            ))}
+                                        </div>
+                                    </div> : null}
                                     <div className="order-info-container order-delivery-info">
                                         <div className="container-heading">
                                             <span>

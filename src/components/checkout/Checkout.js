@@ -81,6 +81,7 @@ const Checkout = () => {
     const [isLoader, setisLoader] = useState(false);
     const paypalStatus = useRef(false);
     const [isNetworkError, setIsNetworkError] = useState(false);
+    const [orderNote, setOrderNote] = useState("");
 
 
     const stripePromise = loadStripe(setting?.payment_setting && setting?.payment_setting?.stripe_publishable_key);
@@ -387,11 +388,12 @@ const Checkout = () => {
             }
             else if (paymentMethod === 'COD') {
                 // place order
-                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
                     .then(async (result) => {
                         setisLoader(false);
                         if (result.status === 1) {
+                            setOrderNote("");
                             toast.success("Order Successfully Placed!");
                             setloadingPlaceOrder(false);
                             dispatch(setWallet({ data: 0 }));
@@ -405,6 +407,7 @@ const Checkout = () => {
                         else {
                             toast.error(result.message);
                             setloadingPlaceOrder(false);
+                            setOrderNote("");
                         }
                     })
                     .catch(error => {
@@ -414,12 +417,13 @@ const Checkout = () => {
                     });
             }
             else if (paymentMethod === 'Razorpay') {
-                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
                     .then(async result => {
 
                         // fetchOrders();
                         if (result.status === 1) {
+                            setOrderNote("");
                             await api.initiate_transaction(user?.jwtToken, result.data.order_id, "Razorpay", "order")
                                 .then(resp => resp.json())
                                 .then(res => {
@@ -446,16 +450,18 @@ const Checkout = () => {
                         else {
                             toast.error(result.message);
                             setloadingPlaceOrder(false);
+                            setOrderNote("");
                         }
                     })
                     .catch(error => console.log(error));
             }
             else if (paymentMethod === 'Paystack') {
-                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
                     .then(result => {
                         // fetchOrders();
                         if (result.status === 1) {
+                            setOrderNote("");
                             // dispatch(deductUserBalance({ data: walletDeductionAmt }));
                             dispatch(setCartPromo({ data: null }));
                             setloadingPlaceOrder(false);
@@ -466,6 +472,7 @@ const Checkout = () => {
                         else {
                             toast.error(result.message);
                             setloadingPlaceOrder(false);
+                            setOrderNote("");
                         }
                     })
                     .catch(error => console.log(error));
@@ -473,10 +480,11 @@ const Checkout = () => {
             }
             else if (paymentMethod === "Stripe") {
                 setStripeModalShow(true);
-                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
                     .then(async result => {
                         if (result.status === 1) {
+                            setOrderNote("");
                             await api.initiate_transaction(user?.jwtToken, result.data.order_id, 'Stripe', "order")
                                 .then(resp => resp.json())
                                 .then(res => {
@@ -500,17 +508,19 @@ const Checkout = () => {
                             setStripeModalShow(false);
                             toast.error(result.message);
                             setloadingPlaceOrder(false);
+                            setOrderNote("");
                         }
                     })
                     .catch(error => console.log(error));
                 setloadingPlaceOrder(false);
             }
             else if (paymentMethod === 'Paypal') {
-                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
                     .then(async result => {
                         // fetchOrders();
                         if (result.status === 1) {
+                            setOrderNote("");
                             setOrderID(result.data.order_id);
                             await api.initiate_transaction(user?.jwtToken, result.data.order_id, "Paypal", "order")
                                 .then(resp => resp.json())
@@ -538,16 +548,18 @@ const Checkout = () => {
                             toast.error(result.message);
                             setloadingPlaceOrder(false);
                             setisLoader(false);
+                            setOrderNote("");
                         }
                     })
                     .catch(error => console.log(error));
             }
             else if (paymentMethod === 'Wallet') {
-                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
                     .then(async (result) => {
                         setisLoader(false);
                         if (result.status === 1) {
+                            setOrderNote("");
                             toast.success("Order Successfully Placed!");
                             setloadingPlaceOrder(false);
                             dispatch(setWallet({ data: 0 }));
@@ -561,6 +573,7 @@ const Checkout = () => {
                         else {
                             toast.error(result.message);
                             setloadingPlaceOrder(false);
+                            setOrderNote("");
                         }
                     })
                     .catch(error => {
@@ -582,11 +595,12 @@ const Checkout = () => {
                 // }
 
             } else if (paymentMethod == "Midtrans") {
-                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
                     .then(async result => {
                         // fetchOrders();
                         if (result.status === 1) {
+                            setOrderNote("");
                             setOrderID(result.data.order_id);
                             await api.initiate_transaction(user?.jwtToken, result.data.order_id, "Midtrans", "order")
                                 .then(resp => resp.json())
@@ -610,15 +624,17 @@ const Checkout = () => {
                             toast.error(result.message);
                             setloadingPlaceOrder(false);
                             setisLoader(false);
+                            setOrderNote("");
                         }
                     })
                     .catch(error => console.log(error));
             } else if (paymentMethod == "Phonepe") {
-                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0)
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
                     .then(async result => {
                         // fetchOrders();
                         if (result.status === 1) {
+                            setOrderNote("");
                             setOrderID(result.data.order_id);
                             await api.initiate_transaction(user?.jwtToken, result.data.order_id, "Phonepe", "order")
                                 .then(resp => resp.json())
@@ -642,6 +658,7 @@ const Checkout = () => {
                             toast.error(result.message);
                             setloadingPlaceOrder(false);
                             setisLoader(false);
+                            setOrderNote("");
                         }
                     })
                     .catch(error => console.log(error));
@@ -940,6 +957,19 @@ const Checkout = () => {
                                                 </div>
                                             }
 
+                                            <div className='checkout-component order-instructions-wrapper'>
+                                                <div className='heading'>{t("order_note")}</div>
+                                                <div className='order-instruction-body'>
+                                                    <textarea
+                                                        rows={4}
+                                                        cols={5}
+                                                        value={orderNote}
+                                                        className='order-instructions-input'
+                                                        placeholder={`${t("hint")} ${t("order_note_hint")}`}
+                                                        onChange={(e) => setOrderNote(e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
 
                                             <div className='order-summary-wrapper checkout-component'>
 

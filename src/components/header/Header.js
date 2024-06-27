@@ -213,6 +213,7 @@ const Header = () => {
     const handleThemeChange = (theme) => {
         document.body.setAttribute("data-bs-theme", theme);
         // console.log(document.body.getAttribute("data-bs-theme"));
+        localStorage.setItem("theme", theme);
         dispatch(setCSSMode({ data: theme }));
     };
 
@@ -611,15 +612,25 @@ const Header = () => {
                                                     <GoLocation size={25} style={{ backgroundColor: `var(--second-cards-color)` }} />
                                                 </button>
                                                 <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4  position-relative'
+                                                    data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
                                                     onClick={() => {
-                                                        if (user?.jwtToken === "") {
-                                                            toast.error(t("required_login_message_for_cartRedirect"));
+                                                        if (cart?.isGuest) {
+                                                            setIsCartSidebarOpen(true);
                                                         }
+                                                        // if (user?.jwtToken === "") {
+                                                        //     toast.error(t("required_login_message_for_cartRedirect"));
+                                                        // }
                                                         else if (city.city === null) {
                                                             toast.error("Please Select you delivery location first!");
                                                         }
                                                     }}>
                                                     <IoCartOutline />
+                                                    {cart?.isGuest === true && cart?.guestCart?.length !== 0 ?
+                                                        <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
+                                                            {cart?.guestCart?.length !== 0 ? cart?.guestCart?.length : null}
+                                                            <span className="visually-hidden">unread messages</span>
+                                                        </span>
+                                                        : null}
                                                 </button>
                                                 {cssmode?.cssmode === "light" ?
                                                     <button className='themeBtn' onClick={() => handleThemeChange("dark")}><BsMoon size={25} className={isDesktopView ? "d-none " : "d-block mt-2 "} /></button>
@@ -632,8 +643,12 @@ const Header = () => {
                                                 </button>
                                                 <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4  position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
                                                     onClick={() => {
-                                                        if (user?.jwtToken === "") {
-                                                            toast.error(t("required_login_message_for_cartRedirect"));
+
+                                                        // if (user?.jwtToken === "") {
+                                                        //     toast.error(t("required_login_message_for_cartRedirect"));
+                                                        // }
+                                                        if (cart?.isGuest) {
+                                                            setIsCartSidebarOpen(true);
                                                         }
                                                         else if (city.city === null) {
                                                             toast.error("Please Select you delivery location first!");
@@ -648,6 +663,7 @@ const Header = () => {
                                                             <span className="visually-hidden">unread messages</span>
                                                         </span>
                                                         : null}
+
                                                 </button>
                                                 {cssmode?.cssmode === "light" ?
                                                     <button className='themeBtn' onClick={() => handleThemeChange("dark")}><BsMoon size={25} className={isDesktopView ? "d-none " : "d-block mt-2 "} /></button>

@@ -10,8 +10,9 @@ const initialState = {
     is_wallet_checked: 0,
     same_seller_flag: 0,
     cartProducts: [],
-    cartSubTotal: 0
-
+    cartSubTotal: 0,
+    guestCart: [],
+    isGuest: true,
 };
 
 export const cartReducer = createSlice({
@@ -47,31 +48,27 @@ export const cartReducer = createSlice({
         },
         setCartSubTotal: (state, action) => {
             state.cartSubTotal = action.payload.data;
-        }
+        },
+        setIsGuest: (state, action) => {
+            state.isGuest = action.payload.data;
+        },
+        addtoGuestCart: (state, action) => {
+            state.guestCart = action.payload.data;
+        },
+
     }
-    // switch (type) {
-    //     case ActionTypes.SET_CART:
-    //         return {
-    //             ...state,
-    //             status: "fulfill",
-    //             cart: payload,
-    //         };
-    //     case ActionTypes.SET_CART_CHECKOUT:
-    //         return {
-    //             ...state,
-    //             status: "fulfill",
-    //             checkout: payload,
-    //         };
-    //     case ActionTypes.SET_CART_PROMO:
-    //         return {
-    //             ...state,
-    //             status: "fulfill",
-    //             promo_code: payload,
-    //         };
-    //     default:
-    //         return state;
-    // }
 });
 
-export const { setCart, setCartCheckout, setCartPromo, clearCartPromo, setWallet, setSellerFlag, setCartProducts, setCartSubTotal } = cartReducer.actions;
+export const {
+    setCart,
+    setCartCheckout,
+    setCartPromo,
+    clearCartPromo,
+    setWallet,
+    setSellerFlag,
+    setCartProducts,
+    setCartSubTotal,
+    setIsGuest,
+    addtoGuestCart,
+} = cartReducer.actions;
 export default cartReducer.reducer;
