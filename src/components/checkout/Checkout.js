@@ -965,8 +965,9 @@ const Checkout = () => {
                                                         cols={5}
                                                         value={orderNote}
                                                         className='order-instructions-input'
-                                                        placeholder={`${t("hint")} ${t("order_note_hint")}`}
+                                                        placeholder={`${t("order_note_hint")}`}
                                                         onChange={(e) => setOrderNote(e.target.value)}
+                                                        maxLength={191}
                                                     />
                                                 </div>
                                             </div>
