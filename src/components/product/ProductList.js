@@ -688,18 +688,6 @@ const ProductList2 = React.memo(() => {
                                     {!isLoader ? (<>
                                         <div className='d-flex col-12 flex-row justify-content-between align-items-center filter-view'>
                                             <div className='d-flex gap-3'>
-                                                {/* 3rd Phase feature - List View */}
-                                                {/* <div className={`icon ${!filter.grid_view ? 'active' : null}`} onClick={() => {
-                                        dispatch({ type: ActionTypes.SET_FILTER_VIEW, payload: false });
-                                    }}>
-                                        <BsListUl fontSize={"2rem"} />
-                                    </div>
-                                    <div className={`icon ${filter.grid_view ? 'active' : null}`} onClick={() => {
-                                        dispatch({ type: ActionTypes.SET_FILTER_VIEW, payload: true });
-                                    }}>
-                                        <BsGrid fontSize={"2rem"} />
-                                    </div> */}
-                                                {/* {!totalProducts ? */}
                                                 <span className='total_product_count'>{totalProducts} - {t("products_found")}</span>
 
                                             </div>
@@ -745,7 +733,7 @@ const ProductList2 = React.memo(() => {
                                         )
                                         : (
                                             <>
-                                                {productresult.length > 0
+                                                {productresult.length > 0 && isLoader == false
                                                     ? (
                                                         <div className='h-100 productList_content'>
                                                             <div className="row justify-content-center flex-wrap">

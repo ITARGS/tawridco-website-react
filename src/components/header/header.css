@@ -58,9 +58,9 @@
   position: relative;
   background-color: var(--second-cards-color);
   /* border-bottom: 1px solid var(--font-color); */
-  -webkit-transition: all 0.5s;
+  /* -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
-  transition: all 0.5s;
+  transition: all 0.5s; */
 }
 
 .site-header .header-top .container {

@@ -7,6 +7,7 @@ import '../login/login.css';
 import './newmodal.css';
 import { useTranslation } from 'react-i18next';
 import { setCurrentUser } from "../../model/reducer/authReducer";
+import { addtoGuestCart, setIsGuest } from '../../model/reducer/cartReducer';
 
 
 
@@ -18,6 +19,7 @@ function NewUserModal() {
 
     const user = useSelector((state) => state.user);
     const setting = useSelector((state) => state.setting);
+    const cart = useSelector((state) => state.cart);
 
     const [username, setusername] = useState();
     const [useremail, setuseremail] = useState();
@@ -37,6 +39,10 @@ function NewUserModal() {
                 .then(result => {
                     if (result.status === 1) {
                         getCurrentUser(user?.jwtToken);
+                        if (cart?.isGuest === true && cart?.guestCart?.length !== 0) {
+                            dispatch(setIsGuest({ data: false }));
+                            AddtoCartBulk(user?.jwtToken);
+                        }
                         setuseremail();
                         setusername();
                         // closeModalRef.current.click()
@@ -48,6 +54,23 @@ function NewUserModal() {
                 });
         }
 
+    };
+
+    const AddtoCartBulk = async (token) => {
+        try {
+            const variantIds = cart?.guestCart?.map((p) => p.product_variant_id);
+            const quantities = cart?.guestCart?.map((p) => p.qty);
+            const response = await api.bulkAddToCart(token, variantIds.join(","), quantities.join(","));
+            const result = await response.json();
+            if (result.status == 1) {
+                toast.success(t("guest_products_added_to_cart"));
+                dispatch(addtoGuestCart({ data: [] }));
+            } else {
+                console.log("Add to Bulk Cart Error Occurred");
+            }
+        } catch (e) {
+            console.log(e?.message);
+        }
     };
 
     const getCurrentUser = (token) => {

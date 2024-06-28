@@ -249,7 +249,6 @@ const Login = React.memo((props) => {
             if (result.status == 1) {
                 toast.success(t("guest_products_added_to_cart"));
                 dispatch(addtoGuestCart({ data: [] }));
-                dispatch(setIsGuest({ data: false }));
             } else {
                 console.log("Add to Bulk Cart Error Occurred");
             }
@@ -264,6 +263,7 @@ const Login = React.memo((props) => {
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
+                    console.log("Login Response ->", result?.data);
                     getCurrentUser(result.data.access_token);
                     api.getSettings(1, result.data.access_token)
                         .then((req) => req.json())
@@ -279,8 +279,12 @@ const Login = React.memo((props) => {
                     );
                     dispatch(setJWTToken({ data: result.data.access_token }));
                     dispatch(setAuthId({ data: Uid }));
-                    if (cart?.isGuest === true) {
+                    if (result.data?.user?.status == 1) {
+                        dispatch(setIsGuest({ data: false }));
+                    }
+                    if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && result.data?.user?.status == 1) {
                         AddtoCartBulk(result.data.access_token);
+                        // dispatch(setIsGuest({ data: false }));
                     }
                     // setlocalstorageOTP(Uid);
                     setError("");

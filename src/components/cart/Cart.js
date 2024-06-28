@@ -37,6 +37,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
     const [cartSidebarData, setCartSidebarData] = useState([]);
     const [guestCartSubTotal, setGuestCartSubTotal] = useState(null);
     // const [cartSubTotal, setCartSubTotal] = useState(0);
+    // console.log("Cart SideBar Open State ->", isCartSidebarOpen);
     useEffect(() => {
         if (sizes.sizes === null || sizes.status === 'loading') {
             if (city.city !== null && cart.cart !== null) {
@@ -72,6 +73,9 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
             fetchCartData();
         } else if (isCartSidebarOpen === true && cart?.isGuest === true && cart?.guestCart?.length !== 0) {
             fetchGuestCart();
+        }
+        if (cart?.isGuest === true && cart?.guestCart?.length === 0) {
+            setCartSidebarData([]);
         }
     }, [isCartSidebarOpen]);
 
@@ -110,7 +114,6 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
             const quantities = cart?.guestCart?.map((p) => p.qty);
             const response = await api.getGuestCart(city?.city?.latitude, city?.city?.longitude, variantIds?.join(","), quantities?.join(","));
             const result = await response.json();
-            console.log(result);
             if (result.status == 1) {
                 setCartSidebarData(result.data.cart);
                 setGuestCartSubTotal(result.data.sub_total);

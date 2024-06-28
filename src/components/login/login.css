@@ -164,8 +164,8 @@
 
 .login .body .otp-container > input {
   margin-right: 3px;
-  background-color: #ddd;
-  color: black;
+  background-color: var(--body-background);
+  color: var(--font-color);
 }
 
 @media screen and (max-width: 75rem) {
