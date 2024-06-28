@@ -57,8 +57,8 @@ export const Footer = () => {
         <section id="footer">
             <div className="container pb-3">
                 <div className="row ">
-                    <div className={`${setting.setting.web_settings.is_android_app === "1" ||
-                        setting.setting.web_settings.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "col-xs-4 col-sm-4 col-md-4 col-12"} `} >
+                    <div className={`${setting?.setting?.web_settings?.is_android_app === "1" ||
+                        setting?.setting?.web_settings?.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "col-xs-4 col-sm-4 col-md-4 col-12"} `} >
                         <h5>{t('category_footer')}</h5>
 
                         {shop?.shop?.categories === null
@@ -83,8 +83,8 @@ export const Footer = () => {
 
                     </div>
 
-                    <div className={`${setting.setting.web_settings.is_android_app === "1" ||
-                        setting.setting.web_settings.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "col-xs-4 col-sm-4 col-md-4 col-12"} `}>
+                    <div className={`${setting?.setting?.web_settings?.is_android_app === "1" ||
+                        setting?.setting?.web_settings?.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "col-xs-4 col-sm-4 col-md-4 col-12"} `}>
                         <h5>{t('store_info')}</h5>
                         <ul className="link-list">
                             <li><a href={`https://maps.google.com/?q=${setting.setting !== null ? setting.setting.store_address : "bhuj"}`} target='__blank'>{setting.setting !== null ? setting.setting.store_address : "address"}</a></li>
@@ -95,8 +95,8 @@ export const Footer = () => {
                     </div>
 
 
-                    <div className={`${setting.setting.web_settings.is_android_app === "1" ||
-                        setting.setting.web_settings.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "col-xs-4 col-sm-4 col-md-4 col-12"} `}>
+                    <div className={`${setting?.setting?.web_settings?.is_android_app === "1" ||
+                        setting?.setting?.web_settings?.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "col-xs-4 col-sm-4 col-md-4 col-12"} `}>
                         <h5>{t('company')}</h5>
                         <ul className="link-list" onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
                             <li><Link to={'/about'}>{t("about_us")}</Link></li>
@@ -112,8 +112,8 @@ export const Footer = () => {
 
 
 
-                    <div className={`${setting.setting.web_settings.is_android_app === "1" ||
-                        setting.setting.web_settings.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "d-none col-xs-4 col-sm-4 col-md-4 col-12"} `}>
+                    <div className={`${setting?.setting?.web_settings?.is_android_app === "1" ||
+                        setting?.setting?.web_settings?.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "d-none col-xs-4 col-sm-4 col-md-4 col-12"} `}>
                         <div className=' gap-3'>
                             <div>
                                 <h5 className='app-title'>{setting.setting && setting.setting.web_settings.app_title}</h5>

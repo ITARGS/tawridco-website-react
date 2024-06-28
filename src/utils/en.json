@@ -322,5 +322,6 @@
   "hint": "Hint :",
   "order_note_title": "Order note",
   "login_to_access_checkout_page": "Please login to access checkout.",
-  "guest_products_added_to_cart": "Guest Products Added Successfully"
+  "guest_products_added_to_cart": "Guest Products Added Successfully",
+  "under_maintenance": "Under Maintenance"
 }

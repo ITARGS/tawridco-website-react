@@ -42,6 +42,7 @@ import jsonFile from "./utils/en.json";
 import { setFavouriteLength, setFavouriteProductIds } from './model/reducer/favouriteReducer';
 import CategoryChild from './components/category/CategoryChild';
 import { Helmet } from 'react-helmet-async';
+import Maintenance from './components/maintenance/Maintenance';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -244,6 +245,18 @@ const App = () => {
 }
   `;
 
+  if (setting?.setting?.web_settings?.website_mode === "1") {
+    return (
+      <>
+        <style key={"override-style"}>{RootCss}</style>
+        <Helmet>
+          <meta name="title" content={setting?.setting?.web_settings?.common_meta_title} />
+          <meta name="description" content={setting?.setting?.web_settings?.common_meta_description} />
+        </Helmet>
+        <Maintenance />
+      </>
+    );
+  }
 
   return (
     <AnimatePresence>
@@ -319,4 +332,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default App;;
