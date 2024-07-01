@@ -55,12 +55,15 @@ const App = () => {
   const language = useSelector((state) => (state.language));
   const shop = useSelector((state) => (state.shop));
   const cssmode = useSelector(state => state.cssmode);
+  const { i18n } = useTranslation(); // Add this line
+
   const applyTheme = () => {
     const storedTheme = cssmode?.cssmode;
     if (storedTheme) {
       document.body.setAttribute('data-bs-theme', storedTheme);
     }
   };
+
   useEffect(() => {
     if (user?.jwtToken !== "") {
       getCurrentUser(user?.jwtToken);
@@ -104,9 +107,7 @@ const App = () => {
 
   }, []);
 
-  const { i18n } = useTranslation(); // Add this line
-
-  // ... other useSelector hooks and constants
+  
 
   useEffect(() => {
     if (language?.current_language) {

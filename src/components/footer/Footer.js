@@ -52,39 +52,52 @@ export const Footer = () => {
 
         // }
     };
-    // const footerLayout = 
+
+    const footerLayout = shop?.shop?.categories === undefined ?
+        (setting?.setting?.web_settings?.is_android_app === "0" || setting?.setting?.web_settings?.is_ios_app === "0") ?
+            "col-xs-6 col-sm-6 col-md-6 col-12" : "col-xs-3 col-sm-3 col-md-3 col-12" :
+        (setting?.setting?.web_settings?.is_android_app === "0" || setting?.setting?.web_settings?.is_ios_app === "0") ?
+            "col-xs-4 col-sm-4 col-md-4 col-12" : "col-xs-3 col-sm-3 col-md-3 col-12";
+
     return (
         <section id="footer">
             <div className="container pb-3">
                 <div className="row ">
-                    <div className={`${setting?.setting?.web_settings?.is_android_app === "1" ||
-                        setting?.setting?.web_settings?.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "col-xs-4 col-sm-4 col-md-4 col-12"} `} >
-                        <h5>{t('category_footer')}</h5>
+                    {shop?.shop?.categories !== undefined ?
+                        <div
+                            // className={`${setting?.setting?.web_settings?.is_android_app === "1" ||
+                            //     setting?.setting?.web_settings?.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "col-xs-4 col-sm-4 col-md-4 col-12"} `}
+                            className={`${footerLayout}`}
+                        >
+                            <h5>{t('category_footer')}</h5>
 
-                        {shop?.shop?.categories === null
-                            ? (
+                            {shop?.shop?.categories === null
+                                ? (
 
-                                <Loader background='none' width='fit-content' height='fit-content' />
-                            )
-                            : (
-                                <ul className='category-list'>
-                                    {shop?.shop?.categories?.map((ctg, index) => (
-                                        <li key={index}>
-                                            <button className='link' onClick={() => {
-                                                selectCategory(ctg);
-                                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                                            }}>
-                                                {ctg.name}
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
+                                    <Loader background='none' width='fit-content' height='fit-content' />
+                                )
+                                : (
+                                    <ul className='category-list'>
+                                        {shop?.shop?.categories?.map((ctg, index) => (
+                                            <li key={index}>
+                                                <button className='link' onClick={() => {
+                                                    selectCategory(ctg);
+                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                }}>
+                                                    {ctg.name}
+                                                </button>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
 
-                    </div>
+                        </div> : null}
 
-                    <div className={`${setting?.setting?.web_settings?.is_android_app === "1" ||
-                        setting?.setting?.web_settings?.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "col-xs-4 col-sm-4 col-md-4 col-12"} `}>
+                    <div
+                        // className={`${setting?.setting?.web_settings?.is_android_app === "1" ||
+                        //     setting?.setting?.web_settings?.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "col-xs-4 col-sm-4 col-md-4 col-12"} `}
+                        className={`${footerLayout}`}
+                    >
                         <h5>{t('store_info')}</h5>
                         <ul className="link-list">
                             <li><a href={`https://maps.google.com/?q=${setting.setting !== null ? setting.setting.store_address : "bhuj"}`} target='__blank'>{setting.setting !== null ? setting.setting.store_address : "address"}</a></li>
@@ -95,8 +108,11 @@ export const Footer = () => {
                     </div>
 
 
-                    <div className={`${setting?.setting?.web_settings?.is_android_app === "1" ||
-                        setting?.setting?.web_settings?.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "col-xs-4 col-sm-4 col-md-4 col-12"} `}>
+                    <div
+                        // className={`${setting?.setting?.web_settings?.is_android_app === "1" ||
+                        //     setting?.setting?.web_settings?.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "col-xs-4 col-sm-4 col-md-4 col-12"} `}
+                        className={`${footerLayout}`}
+                    >
                         <h5>{t('company')}</h5>
                         <ul className="link-list" onClick={() => { window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
                             <li><Link to={'/about'}>{t("about_us")}</Link></li>
@@ -112,33 +128,38 @@ export const Footer = () => {
 
 
 
-                    <div className={`${setting?.setting?.web_settings?.is_android_app === "1" ||
-                        setting?.setting?.web_settings?.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "d-none col-xs-4 col-sm-4 col-md-4 col-12"} `}>
-                        <div className=' gap-3'>
-                            <div>
-                                <h5 className='app-title'>{setting.setting && setting.setting.web_settings.app_title}</h5>
-                                {setting.setting ? <>
-                                    <div className="download_desc">
-                                        <p>{setting.setting.web_settings.app_short_description}</p>
-                                    </div>
-                                    <div className='gap-3 d-flex justify-content-start mt-3'>
-                                        {setting.setting.web_settings.is_android_app === "1" ?
-                                            <a href={setting.setting.web_settings.android_app_url} className='download-button'>
-                                                <img src={setting.setting.web_settings.play_store_logo} alt='google-play'></img>
-                                            </a>
-                                            : <></>}
-                                        {setting.setting.web_settings.is_ios_app === "1" ?
-                                            <a href={setting.setting.web_settings.ios_app_url} className='download-button'>
-                                                <img src={setting.setting.web_settings.ios_store_logo} alt='google-play'></img>
-                                            </a>
-                                            : <></>}
-                                    </div>
-                                </>
-                                    : <></>}
-                            </div>
+                    {setting?.setting?.web_settings?.is_android_app === "1" ||
+                        setting?.setting?.web_settings?.is_ios_app === "1" ?
+                        <div
+                            // className={`${setting?.setting?.web_settings?.is_android_app === "1" ||
+                            //     setting?.setting?.web_settings?.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "d-none col-xs-4 col-sm-4 col-md-4 col-12"} `}
+                            className={`${footerLayout}`}
+                        >
+                            <div className=' gap-3'>
+                                <div>
+                                    <h5 className='app-title'>{setting.setting && setting.setting.web_settings.app_title}</h5>
+                                    {setting.setting ? <>
+                                        <div className="download_desc">
+                                            <p>{setting.setting.web_settings.app_short_description}</p>
+                                        </div>
+                                        <div className='gap-3 d-flex justify-content-start mt-3'>
+                                            {setting.setting.web_settings.is_android_app === "1" ?
+                                                <a href={setting.setting.web_settings.android_app_url} className='download-button'>
+                                                    <img src={setting.setting.web_settings.play_store_logo} alt='google-play'></img>
+                                                </a>
+                                                : <></>}
+                                            {setting.setting.web_settings.is_ios_app === "1" ?
+                                                <a href={setting.setting.web_settings.ios_app_url} className='download-button'>
+                                                    <img src={setting.setting.web_settings.ios_store_logo} alt='google-play'></img>
+                                                </a>
+                                                : <></>}
+                                        </div>
+                                    </>
+                                        : <></>}
+                                </div>
 
-                        </div>
-                    </div>
+                            </div>
+                        </div> : null}
                 </div>
             </div>
             <div className="footer row">
