@@ -254,3 +254,6 @@ input[type="number"] {
   --highlight-color: var(--skeleton-highlight-color) !important;
   --base-color: var(--skeleton-base-color) !important;
 }
+.slick-slider .slick-track {
+  transform: translate3d(0, 0, 0) !important;
+}

@@ -52,7 +52,7 @@ export const Footer = () => {
 
         // }
     };
-
+    // const footerLayout = 
     return (
         <section id="footer">
             <div className="container pb-3">
@@ -141,10 +141,10 @@ export const Footer = () => {
                     </div>
                 </div>
             </div>
-            <div className="footer ">
-                <div className="container flex-sm-row flex-column  bottom-section-footer gap-5">
+            <div className="footer row">
+                <div className="container flex-sm-row flex-column  bottom-section-footer gap-5 ">
                     {setting.setting && setting.setting.social_media.length > 0 ?
-                        <div className="social-media-icons order-sm-0" key={"icons"} >
+                        <div className="social-media-icons order-sm-0 col-xs-3 col-sm-3 col-md-3 col-12" key={"icons"} >
                             <span>{t('follow_us')}:
 
                                 {setting.setting.social_media.map((icon, index) => {
@@ -158,13 +158,13 @@ export const Footer = () => {
                             </span>
                         </div>
                         : null}
-                    <div className="copyright order-sm-1 order-2">
-                        <div className="col-xs-12 col-sm-12 col-md-12 mt-2 mt-sm-2 text-center text-white">
+                    <div className="copyright order-sm-1 order-2 col-xs-3 col-sm-3 col-md-3 col-12">
+                        <div className="copyrightSubContainer col-xs-12 col-sm-12 col-md-12 mt-2 mt-sm-2 text-center text-white">
                             <span className='company_name'>{setting.setting !== null ? setting.setting.web_settings.copyright_details : "App Name"}</span>
                         </div>
                     </div>
                     {setting.payment_setting ?
-                        <div className="payment_methods_container order-sm-1">
+                        <div className="payment_methods_container order-sm-1 col-xs-3 col-sm-3 col-md-3 col-12">
                             {setting.payment_setting.cod_payment_method === "1" ?
                                 <span className='payment_methods'>
                                     <img src={cod_svg} alt="" srcSet="" />

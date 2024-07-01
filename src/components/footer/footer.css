@@ -109,6 +109,8 @@
   gap: 5px;
   font-size: 14px;
   font-weight: 700;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 #footer .payment_methods_container .payment_methods {
@@ -138,5 +140,11 @@
 @media screen and (min-width: 1024px) and (max-width: 1440px) {
   #footer .bottom-section-footer {
     padding: 8px 20px;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  #footer .copyright .copyrightSubContainer {
+    margin-bottom: 30px;
   }
 }

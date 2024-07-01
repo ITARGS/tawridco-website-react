@@ -23,7 +23,7 @@ function Promo(props) {
     const [promo_detail, setPromoDetail] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isapplied, setIsapplied] = useState(false);
-    const amount = cart?.cart?.data?.sub_total;
+    const amount = cart?.cartSubTotal;
 
     const fetchpromo_codes = async () => {
 

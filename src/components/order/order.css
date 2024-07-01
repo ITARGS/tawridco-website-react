@@ -160,6 +160,7 @@
   font-size: 2.455rem;
   font-weight: bolder;
   margin-top: 20px;
+  color: var(--font-color);
 }
 
 #mainContentTrack .page-header {

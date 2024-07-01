@@ -237,7 +237,9 @@ const Wishlist = () => {
                                                                     </div>
                                                                     <div className=''>
                                                                         <span>{product.name}</span>
-                                                                        <div className='variant-section' onClick={() => { setselectedProduct(product); }} >{product.variants[0]?.measurement} {product.variants[0]?.stock_unit_name} <IoIosArrowDown /></div>
+                                                                        <div className='variant-section' onClick={() => { setselectedProduct(product); }} >{product.variants[0]?.measurement} {product.variants[0]?.stock_unit_name}
+                                                                            {/* <IoIosArrowDown /> */}
+                                                                        </div>
                                                                     </div>
                                                                 </th>
 

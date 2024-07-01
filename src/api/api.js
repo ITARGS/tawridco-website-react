@@ -1121,6 +1121,23 @@ const api = {
             url.searchParams.append(p, params[p]);
         }
         return fetch(url, requestOptions);
+    },
+    checkUserExists(number) {
+        let myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+
+        let formData = new FormData();
+        formData.append("mobile", number);
+
+        let requestOptions = {
+            method: "POST",
+            headers: myHeaders,
+            body: formData,
+            redirect: "follow"
+        };
+
+        return fetch(appUrl + appSubUrl + "/verify_user", requestOptions);
+
     }
 
 };

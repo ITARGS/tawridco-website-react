@@ -47,6 +47,24 @@ const ProfileDashboard = (props) => {
     const [useremail, setuseremail] = useState(user.user && user.user.email);
     const [selectedFile, setselectedFile] = useState();
     const [isupdating, setisupdating] = useState(false);
+    const [isChanged, setIsChanged] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+
+    // Store original values
+    const [originalUsername, setOriginalUsername] = useState(user.user.name);
+    const [originalEmail, setOriginalEmail] = useState(user.user.email);
+
+    const checkIfChanged = () => {
+        if (
+            username !== originalUsername ||
+            useremail !== originalEmail ||
+            selectedFile !== null
+        ) {
+            setIsChanged(true);
+        } else {
+            setIsChanged(false);
+        }
+    };
 
     const handleButtonClick = (buttonName) => {
         setSelectedButton(buttonName);
@@ -59,26 +77,25 @@ const ProfileDashboard = (props) => {
             navigate('/');
         }
 
-        if (props.showOrders) {
+        if (location.pathname === "/profile/orders") {
             setprofileClick(false);
             setorderClick(true);
             setWalletTransactionClick(false);
             setaddressClick(false);
             settransactionClick(false);
-        } else if (props.showTransaction) {
+        } else if (location.pathname === "/profile/transactions") {
             settransactionClick(true);
             setprofileClick(false);
             setWalletTransactionClick(false);
             setaddressClick(false);
             setorderClick(false);
-        } else if (props.showAddress) {
-        } else if (props.showWalletTransaction) {
+        } else if (location.pathname === "/profile/wallet-transaction") {
             setWalletTransactionClick(true);
             setprofileClick(false);
             setorderClick(false);
             setaddressClick(false);
             settransactionClick(false);
-        } else if (props.showAddress) {
+        } else if (location.pathname === "/profile/address") {
             setaddressClick(true);
             setprofileClick(false);
             setWalletTransactionClick(false);
@@ -89,7 +106,18 @@ const ProfileDashboard = (props) => {
     }, [user]);
 
 
+    useEffect(() => {
+        checkIfChanged();
+    }, [username, useremail, selectedFile]);
 
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            setIsOpen(true);
+        }, 500);
+        return () => {
+            clearTimeout(timeoutId);
+        };
+    }, []);
 
     const getCurrentUser = (token) => {
         api.getUser(token)
@@ -116,6 +144,7 @@ const ProfileDashboard = (props) => {
                         .then(result => {
                             if (result.status === 1) {
                                 getCurrentUser(user?.jwtToken);
+                                setIsChanged(false);
                             }
                             else {
                                 toast.error(result.message);
@@ -136,6 +165,7 @@ const ProfileDashboard = (props) => {
                     .then(result => {
                         if (result.status === 1) {
                             getCurrentUser(user?.jwtToken);
+                            setIsChanged(false);
                         }
                         else {
                             toast.error(result.message);
@@ -150,6 +180,8 @@ const ProfileDashboard = (props) => {
         // setselectedFile()
         // setusername("")
     };
+
+
     const handleLogout = () => {
 
         confirmAlert({
@@ -191,6 +223,7 @@ const ProfileDashboard = (props) => {
 
     };
     // console.log(user?.authId);
+
     const handleDeleteAcount = () => {
 
         confirmAlert({
@@ -238,13 +271,18 @@ const ProfileDashboard = (props) => {
     const { t } = useTranslation();
 
     const profileNav = () => {
-        const placeHolderImage = (e) => {
 
-            e.target.src = setting.setting?.web_logo;
-        };
         return (
             <>
-                {isupdating
+                <div className='image-container d-flex align-items-center mt-4 walletContainer gap-3' >
+                    <PiWallet size={35} fill={'var(--secondary-color)'} />
+                    {t("Wallet Balance")}
+                    <p style={{ color: 'var(--secondary-color' }} className='mb-0'>
+                        {setting?.setting?.currency}
+                        {parseFloat(user?.user?.balance).toFixed(setting?.setting && setting?.setting?.decimal_point)}
+                    </p>
+                </div>
+                {/* {isupdating
                     ? (
                         <div className="d-flex justify-content-center">
                             <div className="spinner-border" role="status">
@@ -254,14 +292,29 @@ const ProfileDashboard = (props) => {
                     )
                     : <div className="basicInfo-container">
                         <div className="image-container">
-                            <img onError={placeHolderImage} src={user.user && user.user.profile} alt='logo'></img>
-                            <div className="button-container-badge">
-                                <label htmlFor="file">
-                                    <input type='file' onChange={(e) => [
-                                        setselectedFile(e.target.files[0])
-                                    ]} className="badge-img" /><FaEdit size={25} fill='var(--secondary-color)' />
-                                </label>
-                            </div>
+                            {selectedFile ?
+                                <>
+                                    <img src={URL.createObjectURL(selectedFile)} alt='userProfileImage' />
+                                    <div className="button-container-badge">
+                                        <label htmlFor="file">
+                                            <input type='file' onChange={(e) => {
+                                                setselectedFile(e.target.files[0]);
+                                            }} className="badge-img" /><FaEdit size={25} fill='var(--secondary-color)' />
+                                        </label>
+                                    </div>
+                                </>
+                                :
+                                <>
+                                    <img onError={placeHolderImage} src={user.user && user.user.profile} alt='logo'></img>
+                                    <div className="button-container-badge">
+                                        <label htmlFor="file">
+                                            <input type='file' onChange={(e) => {
+                                                setselectedFile(e.target.files[0]);
+                                            }} className="badge-img" /><FaEdit size={25} fill='var(--secondary-color)' />
+                                        </label>
+                                    </div>
+                                </>
+                            }
                         </div>
                         <p className='userName'>{user.user.name.split(' ')[0]}</p>
                         <span className='userEmail'>{user.user.email}</span>
@@ -274,7 +327,7 @@ const ProfileDashboard = (props) => {
                             </p>
                         </div>
                     </div>
-                }
+                } */}
 
 
                 <div className="navigation-container">
@@ -293,7 +346,7 @@ const ProfileDashboard = (props) => {
 
                         <span>
                             <FaUserCircle size={35} className='mx-3' fill={'var(--secondary-color)'} />
-                            {t("profile")}
+                            {t("edit_profile")}
                         </span>
                         <IoIosArrowForward className="profile-navigate-arrow" />
                     </button>
@@ -403,6 +456,9 @@ const ProfileDashboard = (props) => {
             </>
         );
     };
+    const placeHolderImage = (e) => {
+        e.target.src = setting.setting?.web_logo;
+    };
     return (
         <>
             {user.status === 'loading'
@@ -414,7 +470,7 @@ const ProfileDashboard = (props) => {
                     </div>
                 ) : (
                     <section id='profile'>
-                        <div className="hide-desktop offcanvas offcanvas-start" tabIndex="-1" id="profilenavoffcanvasExample" aria-labelledby="profilenavoffcanvasExampleLabel" data-bs-backdrop="false" >
+                        <div className={`hide-desktop offcanvas offcanvas-start ${isOpen ? "show" : ""} `} tabIndex="-1" id="profilenavoffcanvasExample" aria-labelledby="profilenavoffcanvasExampleLabel" data-bs-backdrop="false">
                             <div className="canvas-header">
                                 <div className='site-brand'>
                                     <img src={setting.setting && setting.setting.web_settings.web_logo} height="50px" alt="logo"></img>
@@ -422,7 +478,7 @@ const ProfileDashboard = (props) => {
 
                                 <button type="button" ref={closeCanvas} className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" onClick={() => {
                                     document.getElementsByClassName('profile-account')[0]?.classList.remove('active');
-
+                                    setIsOpen(false);
                                 }}><AiOutlineCloseCircle fill='black' /></button>
                             </div>
                             <div className='sidebar'>
@@ -451,7 +507,7 @@ const ProfileDashboard = (props) => {
                                         <>
                                             <div className='d-flex flex-column'>
                                                 <div className='heading'>
-                                                    {t("profile")}
+                                                    {t("edit_profile")}
                                                 </div>
                                                 <div className='actual-content my-5'>
                                                     {user.status === 'loading'
@@ -463,20 +519,94 @@ const ProfileDashboard = (props) => {
                                                             </div>
                                                         )
                                                         : (
-                                                            <form onSubmit={handleUpdateUser}>
-                                                                <div className='inputs-container'>
-                                                                    <input type='text' placeholder='user name' value={username} onChange={(e) => {
-                                                                        setusername(e.target.value);
-                                                                    }} required />
-                                                                    <input type='email' placeholder='email address' value={useremail} onChange={(e) => {
-                                                                        setuseremail(e.target.value);
-                                                                    }} required />
-                                                                    <input type='tel' placeholder='mobile number' value={user.user.mobile} readOnly style={{ color: "var(--sub-text-color)" }} />
-                                                                    {/* accept={'image/*'} */}
-                                                                    <input type="file" id="file" name='file' onChange={(e) => { setselectedFile(e.target.files[0]); }} accept='image/png, image/jpeg, image/jpg' />
+                                                            <div className='row'>
+                                                                <div className="basicInfo-container col-md-6">
+                                                                    <div className="image-container">
+                                                                        {selectedFile ?
+                                                                            <>
+                                                                                <img src={URL?.createObjectURL(selectedFile)} alt='userProfileImage' />
+                                                                                <div className="button-container-badge">
+                                                                                    <label htmlFor="file">
+                                                                                        <input
+                                                                                            type='file'
+                                                                                            onChange={(e) => {
+                                                                                                setselectedFile(e.target.files[0]);
+                                                                                            }}
+                                                                                            className="badge-img"
+                                                                                        />
+                                                                                        <FaEdit size={25} fill='var(--secondary-color)' />
+                                                                                    </label>
+                                                                                </div>
+                                                                            </>
+                                                                            :
+                                                                            <>
+                                                                                <img
+                                                                                    onError={placeHolderImage}
+                                                                                    src={user.user && user.user.profile}
+                                                                                    alt='logo'
+                                                                                />
+                                                                                <div className="button-container-badge">
+                                                                                    <label htmlFor="file">
+                                                                                        <input
+                                                                                            type='file'
+                                                                                            onChange={(e) => {
+                                                                                                setselectedFile(e.target.files[0]);
+                                                                                            }}
+                                                                                            className="badge-img"
+                                                                                        />
+                                                                                        <FaEdit size={25} fill='var(--secondary-color)' />
+                                                                                    </label>
+                                                                                </div>
+                                                                            </>
+                                                                        }
+                                                                    </div>
+                                                                    <p className='userName'>{user.user.name.split(' ')[0]}</p>
+                                                                    <span className='userEmail'>{user.user.email}</span>
+
                                                                 </div>
-                                                                <button whiletap={{ scale: 0.8 }} type='submit' disabled={isupdating} >{t("update_profile")}</button>
-                                                            </form>
+                                                                <form onSubmit={handleUpdateUser} className='col-md-6'>
+                                                                    <div className='inputs-container'>
+                                                                        <input
+                                                                            type='text'
+                                                                            placeholder='user name'
+                                                                            value={username}
+                                                                            onChange={(e) => {
+                                                                                setusername(e.target.value);
+                                                                            }}
+                                                                            required
+                                                                        />
+                                                                        <input
+                                                                            type='email'
+                                                                            placeholder='email address'
+                                                                            value={useremail}
+                                                                            onChange={(e) => {
+                                                                                setuseremail(e.target.value);
+                                                                            }}
+                                                                            required
+                                                                        />
+                                                                        <input
+                                                                            type='tel'
+                                                                            placeholder='mobile number'
+                                                                            value={user.user.mobile}
+                                                                            readOnly
+                                                                            style={{ color: "var(--sub-text-color)" }} />
+                                                                        {/* accept={'image/*'} */}
+                                                                        <input
+                                                                            type="file"
+                                                                            id="file"
+                                                                            name='file'
+                                                                            onChange={(e) => { setselectedFile(e.target.files[0]); }}
+                                                                            accept='image/png, image/jpeg, image/jpg'
+                                                                        />
+                                                                    </div>
+                                                                    <button
+                                                                        type='submit'
+                                                                        disabled={!isChanged || isupdating}
+                                                                    >
+                                                                        {t("update_profile")}
+                                                                    </button>
+                                                                </form>
+                                                            </div>
                                                         )}
                                                 </div>
                                             </div></>

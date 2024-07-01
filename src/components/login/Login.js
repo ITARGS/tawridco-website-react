@@ -17,6 +17,7 @@ import { Modal } from 'react-bootstrap';
 import { setSetting } from '../../model/reducer/settingReducer';
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
 import { addtoGuestCart, setCart, setIsGuest } from '../../model/reducer/cartReducer';
+import NewUserModal from '../newusermodal/NewUserModal';
 
 
 const Login = React.memo((props) => {
@@ -27,6 +28,9 @@ const Login = React.memo((props) => {
     const user = useSelector(state => state.user);
     const cart = useSelector(state => state.cart);
     const [fcm, setFcm] = useState('');
+    const [registerModalShow, setRegisterModalShow] = useState(false);
+    const [isVerified, setIsVerified] = useState(false);
+
 
     useEffect(() => {
         const initializeFirebaseMessaging = async () => {
@@ -78,6 +82,7 @@ const Login = React.memo((props) => {
     const [isLoading, setisLoading] = useState(false);
     const [timer, setTimer] = useState(null); // Initial timer value in seconds
     const [disabled, setDisabled] = useState(true);
+    const { t } = useTranslation();
 
 
     // console.log(phonenum, countryCode);
@@ -199,6 +204,7 @@ const Login = React.memo((props) => {
                 }
             });
     };
+
     const fetchCart = async (token, latitude, longitude) => {
         await api.getCart(token, latitude, longitude)
             .then(response => response.json())
@@ -223,13 +229,11 @@ const Login = React.memo((props) => {
         await confirmationResult.confirm(OTP).then((result) => {
             // User verified successfully.
             setUid(result.user.uid);
-
+            dispatch(setAuthId({ data: result.user.uid }));
             //login call
             // console.log(phonenum);
             const num = phonenum.replace(`${countryCode}`, "");
-            loginApiCall(num.replace("+", ""), result.user.uid, countryCode.replace("+", ""));
-
-
+            isUserVerified(num.replace("+", ""), result.user.uid);
 
         }).catch(() => {
             setisLoading(false);
@@ -238,6 +242,28 @@ const Login = React.memo((props) => {
             setError("Invalid Code");
 
         });
+    };
+
+    const isUserVerified = async (num, authId) => {
+        try {
+            const response = await api.checkUserExists(num);
+            const result = await response.json();
+            if (result.status === 0) {
+                setRegisterModalShow(true);
+                setIsVerified(false);
+                setIsOTP(false);
+                setOTP("");
+                setisLoading(false);
+                setError("");
+                setcheckboxSelected(false);
+                props.setShow(false);
+            } else {
+                loginApiCall(num.replace("+", ""), authId, countryCode.replace("+", ""));
+            }
+        } catch (e) {
+            console.log(e?.message);
+        }
+
     };
 
     const AddtoCartBulk = async (token) => {
@@ -263,7 +289,6 @@ const Login = React.memo((props) => {
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    console.log("Login Response ->", result?.data);
                     getCurrentUser(result.data.access_token);
                     api.getSettings(1, result.data.access_token)
                         .then((req) => req.json())
@@ -330,7 +355,6 @@ const Login = React.memo((props) => {
         setCountryCode(data?.dialCode);
         setOTP("");
     };
-    const { t } = useTranslation();
     const newReturn = (
         <>
             <Modal
@@ -387,7 +411,7 @@ const Login = React.memo((props) => {
                                 <span className='timer' >
                                     <button onClick={handleLogin} disabled={disabled}>
                                         {timer === 0 ?
-                                            `Resend OTP` : <>Resend OTP in : <strong> {formatTime(timer)} </strong> </>}
+                                            `Resend OTP` : <>Resend OTP in <strong> {formatTime(timer)} </strong> </>}
                                     </button> </span>
                                 <span className='button-container d-flex gap-5'>
 
@@ -434,6 +458,13 @@ const Login = React.memo((props) => {
                 </Modal.Body>
             </Modal>
             <div id="recaptcha-container" style={{ display: "none" }}></div>
+            <NewUserModal
+                registerModalShow={registerModalShow}
+                setRegisterModalShow={setRegisterModalShow}
+                phoneNum={phonenum}
+                setPhoneNum={setPhonenum}
+                countryCode={countryCode.replace("+", "")}
+            />
         </>
     );
     return newReturn;

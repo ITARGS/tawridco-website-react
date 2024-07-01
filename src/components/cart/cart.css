@@ -326,8 +326,8 @@
 }
 
 .cart-sidebar-footer .promo-code {
-  background-color: var(--secondary-color-light);
   border: 1px dashed var(--secondary-color);
+  color: var(--font-color);
   padding: 16px;
   font-size: 14px;
   font-weight: 600;
@@ -585,7 +585,7 @@
 }
 
 .billing .promo-section .promo-wrapper .promo-container .promo-code {
-  background-color: var(--secondary-color-light);
+  /* background-color: var(--secondary-color-light); */
   border: 1px dashed var(--secondary-color);
   padding: 16px;
   font-size: 14px;

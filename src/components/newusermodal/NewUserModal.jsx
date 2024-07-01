@@ -6,16 +6,18 @@ import { toast } from 'react-toastify';
 import '../login/login.css';
 import './newmodal.css';
 import { useTranslation } from 'react-i18next';
-import { setCurrentUser } from "../../model/reducer/authReducer";
+import { setCurrentUser, setJWTToken } from "../../model/reducer/authReducer";
 import { addtoGuestCart, setIsGuest } from '../../model/reducer/cartReducer';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
 
 
 
 
 
 
-function NewUserModal() {
+function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode }) {
     const dispatch = useDispatch();
+    const { t } = useTranslation();
 
     const user = useSelector((state) => state.user);
     const setting = useSelector((state) => state.setting);
@@ -33,26 +35,33 @@ function NewUserModal() {
         e.preventDefault();
 
         setisLoading(true);
-        if (user?.jwtToken !== "") {
-            api.edit_profile(username, useremail, selectedFile, user?.jwtToken)
-                .then(response => response.json())
-                .then(result => {
-                    if (result.status === 1) {
-                        getCurrentUser(user?.jwtToken);
-                        if (cart?.isGuest === true && cart?.guestCart?.length !== 0) {
-                            dispatch(setIsGuest({ data: false }));
-                            AddtoCartBulk(user?.jwtToken);
+        // if (user?.jwtToken !== "") {
+        api.login(phoneNum.replace(`+${countryCode}`, ""), user?.authId, countryCode)
+            .then((res) => res.json())
+            .then((result) => {
+                const token = result?.data?.access_token;
+                dispatch(setJWTToken({ data: token }));
+                api.edit_profile(username, useremail, selectedFile, token)
+                    .then(response => response.json())
+                    .then(result => {
+                        if (result.status === 1) {
+                            getCurrentUser(token);
+                            if (cart?.isGuest === true && cart?.guestCart?.length !== 0) {
+                                dispatch(setIsGuest({ data: false }));
+                                AddtoCartBulk(user?.jwtToken);
+                            }
+                            setuseremail();
+                            setusername();
+                            setRegisterModalShow(false);
+                            // closeModalRef.current.click()
                         }
-                        setuseremail();
-                        setusername();
-                        // closeModalRef.current.click()
-                    }
-                    else {
-                        setError(result.message);
-                        setisLoading(false);
-                    }
-                });
-        }
+                        else {
+                            setError(result.message);
+                            setisLoading(false);
+                        }
+                    });
+            });
+        // }
 
     };
 
@@ -80,11 +89,9 @@ function NewUserModal() {
                 if (!result.user.status) {
                     setisLoading(false);
                     dispatch(setCurrentUser({ data: result.user }));
-                    // dispatch({ type: ActionTypes.SET_CURRENT_USER, payload: result.user });
                 } else {
 
                     if (result.status === 1) {
-                        // dispatch({ type: ActionTypes.SET_CURRENT_USER, payload: result.user });
                         dispatch(setCurrentUser({ data: result.user }));
                         if (closeModalRef.current && result.user.status) {
                             closeModalRef.current.click();
@@ -95,43 +102,45 @@ function NewUserModal() {
                 }
             });
     };
-    const { t } = useTranslation();
+
     return (
-        <>
+        <Modal
+            // show={user.user && user.user.status == 2}
+            show={registerModalShow}
+            backdrop="static"
+            keyboard={true}
+            className='user_data_modal'>
 
-            <Modal
-                show={user.user && user.user.status == 2}
-                backdrop="static"
-                keyboard={true}
-                className='user_data_modal'>
 
+            <Modal.Header className='web_logo'>
 
-                <Modal.Header className='web_logo'>
-
-                    <img src={setting.setting && setting.setting.web_settings.web_logo} alt="" />
-
-                </Modal.Header>
-                <Modal.Body
-                    className='user_data_modal_body'>
-                    <span className='note'>{t("profile_note")}</span>
-                    <form onSubmit={handleUpdateUser} className='userData-Form'>
-                        <div className='inputs-container'>
-                            <input type='text' placeholder={t('user_name')} value={username} onChange={(e) => {
-                                setError("");
-                                setusername(e.target.value);
-                            }} required />
-                            <input type='email' placeholder={t('email_address')} value={useremail} onChange={(e) => {
-                                setError("");
-                                setuseremail(e.target.value);
-                            }} required />
-                            <input type='tel' placeholder={t('mobile_number')} value={user.user && user.user.mobile} readOnly style={{ color: "var(--sub-text-color)" }} />
-                        </div>
-                        <button whiletap={{ scale: 0.8 }} type='submit' disabled={isLoading} >{t("update")} {t("profile")}</button>
-                    </form>
-                    {error ? <p className='user_data_form_error'>{error}</p> : ""}
-                </Modal.Body>
-            </Modal>
-        </>
+                <img src={setting.setting && setting.setting.web_settings.web_logo} alt="" />
+                <AiOutlineCloseCircle className='cursorPointer' size={20} onClick={() => {
+                    setRegisterModalShow(false);
+                    setusername();
+                    setuseremail();
+                }} />
+            </Modal.Header>
+            <Modal.Body
+                className='user_data_modal_body'>
+                <span className='note'>{t("profile_note")}</span>
+                <form onSubmit={handleUpdateUser} className='userData-Form'>
+                    <div className='inputs-container'>
+                        <input type='text' placeholder={t('user_name')} value={username} onChange={(e) => {
+                            setError("");
+                            setusername(e.target.value);
+                        }} required />
+                        <input type='email' placeholder={t('email_address')} value={useremail} onChange={(e) => {
+                            setError("");
+                            setuseremail(e.target.value);
+                        }} required />
+                        <input type='tel' placeholder={t('mobile_number')} value={phoneNum} readOnly style={{ color: "var(--sub-text-color)" }} />
+                    </div>
+                    <button type='submit' disabled={isLoading} >{t("register")} {t("profile")}</button>
+                </form>
+                {error ? <p className='user_data_form_error'>{error}</p> : ""}
+            </Modal.Body>
+        </Modal>
     );
 }
 

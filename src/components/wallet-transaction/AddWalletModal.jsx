@@ -109,6 +109,7 @@ const AddWalletModal = (props) => {
                 ondismiss: async (reason) => {
                     if (reason === undefined) {
                         props.setShowModal(false);
+                        setPaymentMethod("");
                     }
                 }
             },

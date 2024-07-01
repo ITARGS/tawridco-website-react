@@ -344,10 +344,10 @@ const ViewCart = () => {
                                                                                     type='button'
                                                                                     onClick={() => {
                                                                                         if (cart?.isGuest && product.qty > 1) {
-                                                                                            AddToGuestCart(product.product_id, product.product_variant_id, Number(product.qty) - 1, 1);
+                                                                                            AddToGuestCart(product.product_id, product.product_variant_id, Number(cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.product_variant_id)?.qty) - 1, 1);
                                                                                         } else {
                                                                                             if (product.qty > 1) {
-                                                                                                addtoCart(product.product_id, product.product_variant_id, product.qty - 1);
+                                                                                                addtoCart(product.product_id, product.product_variant_id, cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.product_variant_id)?.qty - 1);
                                                                                             }
                                                                                         }
 
@@ -355,7 +355,9 @@ const ViewCart = () => {
                                                                                     <BiMinus fill='#fff' fontSize={'2rem'} />
                                                                                 </button>
 
-                                                                                <span >{product.qty}</span>
+                                                                                <span >{cart?.isGuest === false ?
+                                                                                    cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.product_variant_id)?.qty :
+                                                                                    cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.product_variant_id)?.qty}</span>
 
                                                                                 <button
                                                                                     type='button'
@@ -368,21 +370,22 @@ const ViewCart = () => {
                                                                                                 Number(product.qty) + 1
                                                                                             );
                                                                                         } else {
+                                                                                            const productQuantity = getProductQuantities(cart?.cartProducts);
                                                                                             if (Number(product.is_unlimited_stock) === 1) {
-                                                                                                if (Number(product.qty) < Number(setting.setting.max_cart_items_count)) {
-                                                                                                    addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
+                                                                                                if (productQuantity?.find(prdct => prdct?.product_id == product?.product_id)?.qty < Number(product?.total_allowed_quantity)) {
+                                                                                                    addtoCart(product.product_id, product.product_variant_id, cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.product_variant_id)?.qty + 1);
                                                                                                 } else {
-                                                                                                    toast.error('Apologies, maximum product quantity limit reached!');
+                                                                                                    toast.error(t("max_cart_limit_error"));
                                                                                                 }
                                                                                             } else {
                                                                                                 if (Number(product.qty) >= Number(product.stock)) {
                                                                                                     toast.error(t("out_of_stock_message"));
 
-                                                                                                } else if (Number(product.qty) >= Number(setting.setting.max_cart_items_count)) {
-                                                                                                    toast.error('Apologies, maximum product quantity limit reached!');
+                                                                                                } else if (productQuantity?.find(prdct => prdct?.product_id == product?.product_id)?.qty >= Number(product?.total_allowed_quantity)) {
+                                                                                                    toast.error(t("max_cart_limit_error"));
                                                                                                 }
                                                                                                 else {
-                                                                                                    addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
+                                                                                                    addtoCart(product.product_id, product.product_variant_id, cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.product_variant_id)?.qty + 1);
                                                                                                 }
                                                                                             }
                                                                                         }

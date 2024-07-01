@@ -4,7 +4,7 @@ import { BsMoon, BsShopWindow } from 'react-icons/bs';
 import { BiUserCircle } from 'react-icons/bi';
 import { MdSearch, MdGTranslate, MdNotificationsActive } from "react-icons/md";
 import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast } from 'react-icons/io5';
-import { IoMdArrowDropdown, IoIosArrowDown } from "react-icons/io";
+import { IoMdArrowDropdown, IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { GoLocation } from 'react-icons/go';
 import { FiMenu, FiFilter } from 'react-icons/fi';
 import { AiOutlineClose, AiOutlineCloseCircle } from 'react-icons/ai';
@@ -53,6 +53,7 @@ const Header = () => {
     const [isDesktopView, setIsDesktopView] = useState(window.innerWidth > 768);
     const [search, setsearch] = useState("");
     const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
 
     // to open Location modal 
     const openModal = () => {
@@ -87,6 +88,7 @@ const Header = () => {
             dispatch(setFilterSearch({ data: null }));
         }
     }, [curr_url]);
+
     useEffect(() => {
         if (setting.setting?.default_city && city.city == null) {
             setisLocationPresent(true);
@@ -106,13 +108,13 @@ const Header = () => {
 
 
     useEffect(() => {
-        if (languages?.available_languages === null) {
-            api.getSystemLanguage(0, 0)
-                .then((response) => response.json())
-                .then((result) => {
-                    dispatch(setLanguageList({ data: result.data }));
-                });
-        }
+        // if (languages?.available_languages === null) {
+        api.getSystemLanguage(0, 0)
+            .then((response) => response.json())
+            .then((result) => {
+                dispatch(setLanguageList({ data: result.data }));
+            });
+        // }
         if ((curr_url?.pathname == "/") || (curr_url?.pathname == "/profile/wallet-transaction") || (curr_url?.pathname == "/checkout")) {
             fetchPaymentSetting();
         }
@@ -121,7 +123,16 @@ const Header = () => {
         window.addEventListener('resize', handleResize);
 
         // Cleanup the event listener when the component unmounts
+        const handleClickOutside = (event) => {
+            if (closeSidebarRef.current && !closeSidebarRef.current.contains(event.target) && !event.target.closest(".lang-mode-utils")) {
+                setIsOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
         return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
             window.removeEventListener('resize', handleResize);
         };
     }, []);
@@ -174,7 +185,6 @@ const Header = () => {
     //     }
     // }, [user]);
 
-
     const fetchPaymentSetting = async () => {
         await api.getPaymentSettings(user?.jwtToken)
             .then(response => response.json())
@@ -212,9 +222,21 @@ const Header = () => {
 
     const handleThemeChange = (theme) => {
         document.body.setAttribute("data-bs-theme", theme);
-        // console.log(document.body.getAttribute("data-bs-theme"));
-        localStorage.setItem("theme", theme);
         dispatch(setCSSMode({ data: theme }));
+    };
+
+    const handleNavigation = (path, loginRequired = false, errorMessage = '') => {
+        closeSidebarRef.current.click();
+        if (loginRequired && !user.user) {
+            toast.error(t(errorMessage));
+        } else {
+            navigate(path);
+        }
+    };
+
+    const toggleMenu = (e) => {
+        e.preventDefault();
+        setIsOpen(!isOpen);
     };
 
     return (
@@ -228,7 +250,7 @@ const Header = () => {
                             <img src={setting.setting && setting.setting.web_settings.web_logo} height="70px" alt="logo"></img>
                         </div>
 
-                        <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeSidebarRef}><AiOutlineCloseCircle fill='black' /></button>
+                        <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeSidebarRef} onClick={() => setIsOpen(false)}><AiOutlineCloseCircle fill='black' /></button>
                     </div>
                     <div className="canvas-main">
                         <div className={isDesktopView ? "site-location " : "site-location d-none"}>
@@ -267,7 +289,7 @@ const Header = () => {
                                     }}>{t("home")}</button>
                                 </li>
 
-                                <li className='dropdown mega-menu menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children' >
+                                {/* <li className='dropdown mega-menu menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children' >
                                     <button type="button" onClick={() => {
                                         closeSidebarRef.current.click();
                                         navigate("/products");
@@ -323,14 +345,49 @@ const Header = () => {
                                                 }
                                             }}>{t("wishList")}</button>
                                         </li>
-
-                                        {/* <li className='dropdown-item menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
-                                            <button type='button'>Order Tracking</button>
-                                        </li> */}
                                     </ul>
                                     <button className='menu-dropdown' id="ShopDropDown" type='button' data-bs-toggle="dropdown" aria-expanded="false">
                                         <IoIosArrowDown />
                                     </button>
+                                </li> */}
+                                <li className='menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
+                                    <div className={`menu-header d-flex justify-content-between w-100 ${isOpen ? "borderBottom" : ""} `}>
+                                        <button type="button" onClick={() => handleNavigation("/products")}>
+                                            {t("shop")}
+                                        </button>
+                                        <button
+                                            className='menu-dropdown'
+                                            type='button'
+                                            onClick={toggleMenu}
+                                            aria-expanded={isOpen}
+                                        >
+                                            {isOpen ? <IoIosArrowUp fill='var(--font-color)' /> : <IoIosArrowDown fill='var(--font-color)' />}
+                                        </button>
+                                    </div>
+                                    {isOpen && (
+                                        <ul className="sub-menu">
+                                            <li className='menu-item menu-item-type-post_type menu-item-object-page'>
+                                                <button type='button' onClick={() => handleNavigation('/cart', true, 'required_login_message_for_cartRedirect')}>
+                                                    {t("cart")}
+                                                </button>
+                                            </li>
+                                            <li className='menu-item menu-item-type-post_type menu-item-object-page'>
+                                                <button type='button' onClick={() => handleNavigation('/checkout', true, 'required_login_message_for_checkout')}>
+                                                    {t("checkout")}
+                                                </button>
+                                            </li>
+                                            <li className='menu-item menu-item-type-post_type menu-item-object-page'>
+                                                <button type='button' onClick={() => handleNavigation('/profile', true, 'required_login_message_for_profile')}>
+                                                    {t("myAccount")}
+                                                </button>
+                                            </li>
+                                            <li className='menu-item menu-item-type-post_type menu-item-object-page'>
+                                                <button type='button' onClick={() => handleNavigation('/wishlist', true, 'required_login_message_for_wishlist')}>
+                                                    {t("wishList")}
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    )}
                                 </li>
 
                                 <li className=' menu-item menu-item-type-post_type menu-item-object-page'>
@@ -401,7 +458,7 @@ const Header = () => {
             </div>
 
             {/* header */}
-            <header className='site-header  desktop-shadow-disable mobile-shadow-enable bg-white  mobile-nav-enable border-bottom'>
+            <header className='site-header  desktop-shadow-disable mobile-shadow-enable bg-white  mobile-nav-enable border-bottom' >
 
 
                 {/* top header */}
@@ -461,7 +518,7 @@ const Header = () => {
 
 
                 {/* bottom header */}
-                <div className={isSticky ? "sticky header-main  w-100" : "header-main  w-100"}>
+                <div className={isSticky ? "sticky header-main  w-100" : "header-main  w-100"} >
                     <div className="container">
                         <div className='d-flex row-reverse justify-content-lg-between justify-content-center'>
 
@@ -479,7 +536,7 @@ const Header = () => {
                                 </div>
 
 
-                                <Link to='/' className='site-brand' style={curr_url.pathname === '/profile' ? { marginLeft: '4px' } : null}>
+                                <Link to='/' className='site-brand'>
                                     <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='desktop-logo hide-mobile' />
                                     <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='mobile-logo hide-desktop' />
                                 </Link>
@@ -716,7 +773,7 @@ const Header = () => {
 
 
                 {/* Mobile bottom Nav */}
-                <nav className='header-mobile-nav'>
+                <nav className='header-mobile-nav' >
                     <div className='mobile-nav-wrapper'>
                         <ul>
                             <li className='menu-item'>
@@ -812,7 +869,7 @@ const Header = () => {
 
                             {curr_url.pathname === '/profile' ? (
                                 <li className='menu-item'>
-                                    <button type='button' className={`profile-account user-profile ${mobileNavActKey == 5 ? "active" : ""}`} onClick={() => {
+                                    <button type='button' className={`profile-account user-profile ${curr_url?.pathname.includes("/profile") ? "active" : ""}`} onClick={() => {
                                         handleMobileNavActKey(5);
                                         document.getElementsByClassName('profile-account')[0].classList.toggle('active');
                                         document.getElementsByClassName('wishlist')[0].classList.remove('active');
@@ -826,10 +883,6 @@ const Header = () => {
                                         document.getElementsByClassName('header-search')[0].classList.remove('active');
 
                                     }} data-bs-toggle="offcanvas" data-bs-target="#profilenavoffcanvasExample" aria-controls="profilenavoffcanvasExample">
-                                        {/* <div>
-                                            <MdOutlineAccountCircle />
-
-                                        </div> */}
                                         <div>
                                             <img src={user?.user?.profile} alt='profile_image' />
                                         </div>
@@ -860,15 +913,16 @@ const Header = () => {
                                             )
                                             : (
                                                 <>
-                                                    <Link to='/profile' className={`d-flex user-profile account ${mobileNavActKey == 5 ? "active" : ""}`} onClick={() => {
+                                                    <button className={`d-flex user-profile account ${mobileNavActKey == 5 ? "active" : ""}`} onClick={() => {
                                                         handleMobileNavActKey(5);
-                                                    }} >
+                                                        navigate("/profile");
+                                                    }}>
                                                         <div className='d-flex flex-column user-info my-auto'>
                                                             <span className='name'> {user.user?.name}</span>
                                                         </div>
                                                         <img onError={placeHolderImage} src={user.user?.profile} alt="user"></img>
                                                         <span>{t("profile")}</span>
-                                                    </Link>
+                                                    </button>
                                                 </>
                                             )}
 

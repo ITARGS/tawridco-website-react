@@ -23,7 +23,7 @@
 }
 .login .body span.timer button {
   background-color: transparent;
-  color: var(--primary-color);
+  color: var(--font-color);
   font-size: 16px;
   font-weight: 900;
 }
@@ -31,6 +31,7 @@
   background-color: transparent !important;
   font-size: 16px;
   font-weight: 500;
+  color: var(--font-color);
 }
 .login .body span p {
   color: var(--secondary-color);

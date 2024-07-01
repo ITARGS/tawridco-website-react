@@ -2,7 +2,7 @@ import React from "react";
 import { Modal } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { setCart, setSellerFlag } from "../../model/reducer/cartReducer";
+import { setCart, setCartProducts, setCartSubTotal, setSellerFlag } from "../../model/reducer/cartReducer";
 import { useTranslation } from "react-i18next";
 import { AiOutlineCloseCircle } from "react-icons/ai";
 import "./popup.css";
@@ -22,15 +22,9 @@ const Popup = React.memo(({ product_id, product_variant_id, quantity, toast, cit
             .then(async (result) => {
                 if (result.status === 1) {
                     toast.success(result.message);
-                    await api.getCart(user?.jwtToken, city.city.latitude, city.city.longitude)
-                        .then(resp => resp.json())
-                        .then(res => {
-                            if (res.status === 1) {
-                                dispatch(setCart({ data: res }));
-                                // dispatch({ type: ActionTypes.SET_CART, payload: res });
-                            }
-
-                        });
+                    const updatedCartCount = [{ product_id: product_id, product_variant_id: product_variant_id, qty: quantity }];
+                    dispatch(setCartProducts({ data: updatedCartCount }));
+                    dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
 
                 }
                 else if (result?.data?.one_seller_error_code == 1) {

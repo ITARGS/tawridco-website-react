@@ -69,6 +69,9 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
 
 
     useEffect(() => {
+        if (cart?.cart) {
+            dispatch(clearCartPromo());
+        }
         if (isCartSidebarOpen === true && cart?.isGuest === false) {
             fetchCartData();
         } else if (isCartSidebarOpen === true && cart?.isGuest === true && cart?.guestCart?.length !== 0) {
@@ -77,7 +80,22 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
         if (cart?.isGuest === true && cart?.guestCart?.length === 0) {
             setCartSidebarData([]);
         }
+        const handleClickOutside = (event) => {
+            if (isCartSidebarOpen &&
+                !event.target.closest('.cart-sidebar-container') &&
+                !event.target.closest(".Toastify__toast-container") &&
+                !event.target.closest(".promo-sidebar-container")) {
+                setIsCartSidebarOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
     }, [isCartSidebarOpen]);
+
 
     const fetchCartData = async () => {
         setisLoader(true);
@@ -107,6 +125,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
         }
         setisLoader(false);
     };
+
     const fetchGuestCart = async () => {
         setisLoader(true);
         try {
@@ -247,15 +266,15 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
             dispatch(addtoGuestCart({ data: [...cart?.guestCart, productData] }));
         }
     };
+
     const computeSubTotal = (products) => {
         const subTotal = products.reduce((prev, curr) => {
-            console.log(prev, curr);
             prev += (curr.discounted_price !== 0 ? curr.discounted_price * curr.qty : curr.price * curr.qty);
             return prev;
         }, 0);
-        console.log(subTotal);
         setGuestCartSubTotal(subTotal);
     };
+
     const RemoveFromGuestCart = (productVariantId) => {
         const updatedProducts = cart?.guestCart?.filter((p) => p.product_variant_id != productVariantId);
         const updatedSideBarProducts = cartSidebarData.filter((p) => p.product_variant_id != productVariantId);
@@ -286,7 +305,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
         }
     };
     return (
-        <div tabIndex="-1" className={`cart-sidebar-container offcanvas offcanvas-end`} id="cartoffcanvasExample" aria-labelledby="cartoffcanvasExampleLabel">
+        <div tabIndex="-1" className={`cart-sidebar-container offcanvas offcanvas-end ${isCartSidebarOpen ? "show" : ""}`} id="cartoffcanvasExample" aria-labelledby="cartoffcanvasExampleLabel">
             <div className='cart-sidebar-header'>
                 <h5>{t("your_cart")}</h5>
                 <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeCanvas} onClick={() => setIsCartSidebarOpen(false)}>
@@ -322,7 +341,10 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                                         {cartSidebarData?.map((product, index) => (
                                             <div key={index} className='cart-card'>
                                                 <div className='left-wrapper'>
-                                                    <Link to={`/product/${product.slug}`}>
+                                                    <Link to={`/product/${product.slug}`} onClick={() => {
+                                                        setIsCartSidebarOpen(false);
+                                                        closeCanvas.current.click();
+                                                    }}>
                                                         <div className='image-container'>
                                                             <img src={product.image_url} alt='product' onError={placeHolderImage}></img>
                                                         </div>
@@ -366,10 +388,9 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                                                                         );
 
                                                                     } else {
-
                                                                         const productQuantity = getProductQuantities(cart?.cartProducts);
                                                                         if (Number(product.is_unlimited_stock) === 1) {
-                                                                            if (productQuantity?.find(prdct => prdct?.product_id == product?.product_id)?.qty <= Number(product?.total_allowed_quantity)) {
+                                                                            if (productQuantity?.find(prdct => prdct?.product_id == product?.product_id)?.qty < Number(product?.total_allowed_quantity)) {
                                                                                 addtoCart(product.product_id, product.product_variant_id, product.qty + 1);
                                                                             } else {
                                                                                 toast.error(t("max_cart_limit_error"));
@@ -378,7 +399,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                                                                             if (Number(product.qty) >= Number(product.stock)) {
                                                                                 toast.error(t("out_of_stock_message"));
 
-                                                                            } else if (productQuantity?.find(prdct => prdct?.product_id == product?.product_id)?.qty <= Number(product?.total_allowed_quantity)) {
+                                                                            } else if (productQuantity?.find(prdct => prdct?.product_id == product?.product_id)?.qty >= Number(product?.total_allowed_quantity)) {
                                                                                 toast.error(t("max_cart_limit_error"));
                                                                             }
                                                                             else {

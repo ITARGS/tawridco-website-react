@@ -100,6 +100,10 @@ const Checkout = () => {
                         setTotalPayment(result.data.total_amount);
                     }
                     setWalletAmount(user?.user?.balance);
+                } else if (result.status === 0) {
+                    dispatch(setCartCheckout({ data: null }));
+                    toast.error(t("no_items_found_in_cart"));
+                    navigate("/");
                 }
             })
             .catch(error => {

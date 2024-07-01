@@ -25,8 +25,7 @@ import Loader from './components/loader/Loader';
 import Terms from './components/terms/Terms';
 import Policy from './components/policy/Policy';
 import NotFound from './components/404/NotFound';
-import i18next from 'i18next';
-import { initReactI18next } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import ScrollTop from './components/scrolltoTop/ScrollTop';
 import OrderDetails from './components/order/OrderDetails';
 import BrandList from './components/brands/BrandList';
@@ -43,6 +42,7 @@ import { setFavouriteLength, setFavouriteProductIds } from './model/reducer/favo
 import CategoryChild from './components/category/CategoryChild';
 import { Helmet } from 'react-helmet-async';
 import Maintenance from './components/maintenance/Maintenance';
+import "./utils/i18n.js";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -104,16 +104,35 @@ const App = () => {
 
   }, []);
 
+  const { i18n } = useTranslation(); // Add this line
 
-  let translateFile = typeof (language?.current_language?.json_data) === "object" ? language?.current_language?.json_data : jsonFile;
-  i18next.use(initReactI18next)
-    .init({
-      resources: {
-        en: { translation: translateFile }
-      },
-      lng: language?.current_language?.code,
-      fallbackLng: "en",
-    });
+  // ... other useSelector hooks and constants
+
+  useEffect(() => {
+    if (language?.current_language) {
+      const translateFile = typeof language.current_language.json_data === "object"
+        ? language.current_language.json_data
+        : jsonFile;
+
+      i18n.addResourceBundle(
+        language.current_language.code,
+        'translation',
+        translateFile,
+        true,
+        true
+      );
+      i18n.changeLanguage(language.current_language.code);
+    }
+  }, [language, i18n]); // Add i18n to the dependency array
+  // let translateFile = typeof (language?.current_language?.json_data) === "object" ? language?.current_language?.json_data : jsonFile;
+  // i18next.use(initReactI18next)
+  //   .init({
+  //     resources: {
+  //       en: { translation: translateFile }
+  //     },
+  //     lng: language?.current_language?.code,
+  //     fallbackLng: "en",
+  //   });
 
 
 

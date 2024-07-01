@@ -9,7 +9,7 @@ const ImageWithPlaceholder = ({ src, alt, className, handleOnClick }) => {
         setIsLoaded(true);
         setImageSrc(src);
     };
-    
+
     const handleError = () => {
         setImageSrc(ImagePlaceholder);
     };
@@ -23,7 +23,6 @@ const ImageWithPlaceholder = ({ src, alt, className, handleOnClick }) => {
             onError={handleError}
             onClick={handleOnClick}
             loading='lazy'
-            style={{ opacity: isLoaded ? 1 : 0.5 }}
         />
     );
 };
