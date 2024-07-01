@@ -22,7 +22,7 @@ const ShopBySellersPage = () => {
     const filter = useSelector(state => state.productFilter);
     const city = useSelector(state => state.city.city);
 
-    const [limit, setLimit] = useState(12);
+    const [limit, setLimit] = useState(1);
     const [offset, setOffset] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -101,17 +101,18 @@ const ShopBySellersPage = () => {
                     }
 
                 </div>
+                {(limit < totalData) &&
+                    <Pagination
+                        itemClass='sellerListingPagination'
+                        activePage={currentPage}
+                        itemsCountPerPage={limit}
+                        totalItemsCount={totalData}
+                        pageRangeDisplayed={5}
+                        onChange={handlePageChange.bind(this)}
+                    />
+                }
             </section>
 
-            {(limit < totalData) &&
-                <Pagination
-                    activePage={currentPage}
-                    itemsCountPerPage={limit}
-                    totalItemsCount={totalData}
-                    pageRangeDisplayed={5}
-                    onChange={handlePageChange.bind(this)}
-                />
-            }
         </>
     );
 };

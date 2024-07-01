@@ -114,6 +114,7 @@ const BrandList = () => {
 
                     {(limit < totalData) &&
                         <Pagination
+                            itemClass="brandListingPagination"
                             activePage={currentPage}
                             itemsCountPerPage={limit}
                             totalItemsCount={totalData}

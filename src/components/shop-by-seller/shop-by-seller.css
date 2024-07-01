@@ -170,3 +170,7 @@
   margin-left: unset !important;
   margin-right: unset !important;
 }
+
+.allSellersContainer .sellerListingPagination > a {
+  color: var(--font-color);
+}

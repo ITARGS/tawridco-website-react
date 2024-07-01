@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import api from '../../api/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useLocation, useNavigate, useNavigation, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { t } from 'i18next';
 import coverImg from '../../utils/cover-img.jpg';
 import { setFilterCategory } from '../../model/reducer/productFilterReducer';
 import Pagination from 'react-js-pagination';
-import No_Orders from '../../utils/zero-state-screens/No_Orders.svg';
 import { setSelectedCategory } from '../../model/reducer/categoryReducer';
-import Loader from '../loader/Loader';
 import Skeleton from 'react-loading-skeleton';
 import { ValidateNoInternet } from '../../utils/NoInternetValidator';
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
-import ImagePlaceholder from "../../utils/image-placeholder/image.png";
 
 const CategoryChild = () => {
     const total_products_per_page = 12;
@@ -161,6 +158,7 @@ const CategoryChild = () => {
                     {totalProducts > total_products_per_page &&
                         <div className='mt-5 mb-5'>
                             <Pagination
+                                itemClass='categoryListPagination'
                                 activePage={currPage}
                                 itemsCountPerPage={total_products_per_page}
                                 totalItemsCount={totalProducts}

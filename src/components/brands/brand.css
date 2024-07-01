@@ -166,3 +166,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.brandListingPagination > a {
+  color: var(--font-color) !important;
+}

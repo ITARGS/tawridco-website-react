@@ -80,8 +80,8 @@
   text-decoration: none;
   min-width: 44px;
   min-height: 44px;
-  color: var(--primary-color);
-  box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.35);
+  color: var(--font-color);
+  /* box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.35); */
 }
 
 .pagination li.active {

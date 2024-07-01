@@ -174,3 +174,7 @@
   margin-left: unset !important;
   margin-right: unset !important;
 }
+
+.allCountriesContainer .countryListPagination > a {
+  color: var(--font-color);
+}

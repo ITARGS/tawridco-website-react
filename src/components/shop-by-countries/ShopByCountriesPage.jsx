@@ -95,6 +95,7 @@ const ShopByCountriesPage = () => {
                 </div>
                 {limit < totalData &&
                     <Pagination
+                        itemClass='countryListPagination'
                         activePage={currentPage}
                         itemsCountPerPage={limit}
                         totalItemsCount={totalData}
