@@ -41,6 +41,7 @@ import { PiWallet } from "react-icons/pi";
 import { deductUserBalance } from '../../model/reducer/authReducer';
 import { ValidateNoInternet } from '../../utils/NoInternetValidator';
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
+import { formatDate } from '../../utils/formatDate';
 
 
 
@@ -174,7 +175,7 @@ const Checkout = () => {
             .then(result => {
                 if (result.status === 1) {
                     if (result?.data?.time_slots_is_enabled == "false") {
-                        return toast.error(t("timeslots_not_enabled"));
+                        toast.error(t("timeslots_not_enabled"));
                     }
                     settimeslots(result.data);
                     setexpectedTime(result?.data?.time_slots.filter((element) => checkLastOrderTime(element?.last_order_time))[0]);
@@ -698,7 +699,16 @@ const Checkout = () => {
     const placeHolderImage = (e) => {
         e.target.src = setting.setting?.web_logo;
     };
+    const getEstimatedDeliveryDate = () => {
+        const daysToAdd = parseInt(setting?.setting?.web_settings?.delivery_estimate_days) || 0;
 
+        // Create a new date object for the current date
+        const currentDate = new Date();
+
+        // Add the specified number of days
+        const deliveryDate = new Date(currentDate.setDate(currentDate.getDate() + daysToAdd));
+        return formatDate(deliveryDate);
+    };
     const current = new Date();
     return (
         <>
@@ -815,7 +825,15 @@ const Checkout = () => {
                                                         </div>
                                                     </div>
                                                 </>
-                                                : <></>}
+                                                :
+                                                <>
+                                                    <div className='delivery-time-wrapper checkout-component'>
+                                                        <span className='heading'>{t("estimate_delivery_date")}</span>
+                                                        <div className='d-flex justify-content-start align-items-center estimateDeliveryDate'>
+                                                            <span>{t("estimate_delivery_date")} : {getEstimatedDeliveryDate()}</span>
+                                                        </div>
+                                                    </div>
+                                                </>}
 
 
                                         </div>

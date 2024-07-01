@@ -56,7 +56,7 @@ const Favorite = React.memo(() => {
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     await api.getCart(user?.jwtToken, city.city.latitude, city.city.longitude)
                         .then(resp => resp.json())
                         .then(res => {
@@ -84,7 +84,7 @@ const Favorite = React.memo(() => {
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     await api.getCart(user?.jwtToken, city.city.latitude, city.city.longitude)
                         .then(resp => resp.json())
                         .then(res => {
@@ -116,7 +116,7 @@ const Favorite = React.memo(() => {
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     await api.getFavorite(user?.jwtToken, city.city.latitude, city.city.longitude)
                         .then(resp => resp.json())
                         .then(res => {

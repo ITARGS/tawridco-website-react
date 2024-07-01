@@ -86,6 +86,7 @@
 
 .order-bill {
   background-color: var(--second-cards-color);
+  border-radius: 0px 0px 8px 8px;
 }
 
 .order-bill .heading {
@@ -116,6 +117,15 @@
   background-color: var(--second-cards-color);
 }
 .checkout-container
+  .checkout-util-container
+  .delivery-time-wrapper
+  .estimateDeliveryDate {
+  height: 75px;
+  margin-left: 25px;
+  font-size: 16px;
+}
+
+.checkout-container
   .order-container
   .order-instructions-wrapper
   .order-instruction-body {
@@ -125,6 +135,7 @@
   display: flex;
   justify-content: center;
   padding: 10px;
+  border-radius: 0px 0px 8px 8px;
 }
 .checkout-container
   .order-container
@@ -137,6 +148,7 @@
   overflow: auto;
   font-size: 14px;
   border: 1px solid #ddd;
+  border-radius: var(--bd-radius-5);
 }
 .checkout-container
   .order-container

@@ -83,10 +83,9 @@ const ShopBySellersPage = () => {
                         <div className='row justify-content-center'>
                             {data?.map((seller, index) => (
                                 <div className="col-md-3 col-lg-2 col-6 col-sm-3 my-3 content" key={index} onClick={() => {
-                                    dispatch(setFilterBySeller({ data: seller?.store_name }));
+                                    dispatch(setFilterBySeller({ data: seller?.id }));
                                     navigate('/products');
                                 }}>
-
                                     <div className='card'>
                                         {/* <img onError={placeHolderImage} className='card-img-top' src={seller.logo_url} alt='sellers' loading='lazy' /> */}
                                         <ImageWithPlaceholder className='card-img-top' src={seller.logo_url} alt='sellers' />

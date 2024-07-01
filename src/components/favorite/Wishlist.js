@@ -90,7 +90,7 @@ const Wishlist = () => {
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     if (cart?.cartProducts?.find((product) => (product?.product_id == product_id) && (product?.product_variant_id == product_variant_id))?.qty == undefined) {
                         dispatch(setCart({ data: result }));
                         dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
@@ -126,7 +126,7 @@ const Wishlist = () => {
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     dispatch(setCartSubTotal({ data: result?.sub_total }));
                     const updatedCartProducts = cart?.cartProducts?.filter(product => {
                         if (product?.product_variant_id != product_variant_id) {
@@ -151,7 +151,7 @@ const Wishlist = () => {
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     await api.getFavorite(user?.jwtToken, city?.city?.latitude, city?.city?.longitude)
                         .then((res) => res.json())
                         .then((result) => {
@@ -193,7 +193,7 @@ const Wishlist = () => {
                                 <img src={EmptyCart} className='no-data-img' alt='empty-cart'></img>
                                 <p>{t("enter_wishlist_message")}</p>
                                 <span>{t("enter_wishlist_description")}</span>
-                                <button type='button' className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" onClick={() => {
+                                <button type='button' onClick={() => {
                                     navigate('/products');
                                 }}>{t("empty_cart_list_button_name")}</button>
                             </div>

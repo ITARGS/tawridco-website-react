@@ -189,7 +189,7 @@ const ProductList2 = React.memo(() => {
                 sizes: filter?.search_sizes?.filter(obj => obj.checked).map(obj => obj["size"]).join(","),
                 offset: offset,
                 unit_ids: filter?.search_sizes?.filter(obj => obj.checked).map(obj => obj["unit_id"]).join(","),
-                seller_slug: filter?.seller_slug,
+                seller_id: filter?.seller_id,
                 country_id: filter?.country_id,
                 section_id: filter?.section_id
             });
@@ -458,7 +458,7 @@ const ProductList2 = React.memo(() => {
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     if (cart?.cartProducts?.find((product) => ((product?.product_id == product_id) && (product?.product_variant_id == product_variant_id)))?.qty == undefined) {
                         dispatch(setCart({ data: result }));
                         dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
@@ -494,7 +494,7 @@ const ProductList2 = React.memo(() => {
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     const updatedProducts = cart?.cartProducts?.filter(product => ((product?.product_id != product_id) && (product?.product_variant_id != product_variant_id)));
                     dispatch(setCartProducts({ data: updatedProducts }));
                 }
@@ -510,7 +510,7 @@ const ProductList2 = React.memo(() => {
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     const updatedFavouriteProducts = [...favorite.favouriteProductIds, product_id];
                     dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
                     const updatedFavouriteLength = favorite?.favouritelength + 1;
@@ -528,7 +528,7 @@ const ProductList2 = React.memo(() => {
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     const updatedFavouriteProducts = favorite?.favouriteProductIds.filter(id => id != product_id);
                     dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
                     const updatedFavouriteLength = favorite?.favouritelength - 1;

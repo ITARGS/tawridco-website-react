@@ -97,11 +97,9 @@ const ShopBySellers = () => {
                         <Slider {...settings} ref={sliderRef}>
                             {shop.shop?.sellers?.map((seller, index) => (
                                 <div className="my-3 content" key={index} onClick={() => {
-                                    dispatch(setFilterBySeller({ data: seller?.store_name }));
+                                    dispatch(setFilterBySeller({ data: seller?.id }));
                                     navigate('/products');
                                 }}>
-
-
                                     <div className='card'>
                                         {/* <img onError={placeHolderImage} className='card-img-top' src={seller.logo_url} alt='country' loading='lazy' /> */}
                                         <ImageWithPlaceholder className='card-img-top' src={seller.logo_url} alt='country' />

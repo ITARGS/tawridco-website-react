@@ -12,7 +12,7 @@ const initialState = {
     sort_filter: 'new',  //new,old,high,low,discount,popular
     section_products: null,
     search_sizes: [],
-    seller_slug: "",
+    seller_id: "",
     country_id: ""
 };
 
@@ -27,21 +27,21 @@ export const productFilterReducer = createSlice({
             state.section_id = action.payload.data;
             state.category_id = null;
             state.country_id = "";
-            state.seller_slug = "";
+            state.seller_id = "";
             state.brand_ids = [];
         },
         setFilterBrands: (state, action) => {
             state.brand_ids = action.payload.data;
             state.category_id = null;
             state.country_id = "";
-            state.seller_slug = "";
+            state.seller_id = "";
             state.section_id = null;
         },
         setFilterCategory: (state, action) => {
             state.category_id = action.payload.data;
             state.brand_ids = [];
             state.country_id = "";
-            state.seller_slug = "";
+            state.seller_id = "";
             state.section_id = null;
         },
         setFilterView: (state, action) => {
@@ -60,7 +60,7 @@ export const productFilterReducer = createSlice({
             state.search_sizes = action.payload.data;
         },
         setFilterBySeller: (state, action) => {
-            state.seller_slug = action.payload.data;
+            state.seller_id = action.payload.data;
             state.brand_ids = [];
             state.country_id = "";
             state.category_id = "";
@@ -69,7 +69,7 @@ export const productFilterReducer = createSlice({
         setFilterByCountry: (state, action) => {
             state.country_id = action.payload.data;
             state.brand_ids = [];
-            state.seller_slug = "";
+            state.seller_id = "";
             state.category_id = "";
             state.section_id = null;
         }

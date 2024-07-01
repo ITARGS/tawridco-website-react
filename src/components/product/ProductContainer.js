@@ -63,7 +63,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                         if (result.status === 1) {
                             setproductSizes(result.sizes);
                             dispatch(setProductSizes({ data: result.sizes }));
-                            // dispatch({ type: ActionTypes.SET_PRODUCT_SIZES, payload: result.sizes });
                         }
                     });
             }
@@ -84,7 +83,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     if (cart?.cartProducts?.find((product) => product?.product_id == product_id)?.qty == undefined) {
                         dispatch(setCart({ data: result }));
                         dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
@@ -116,7 +115,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     const updatedProducts = cart?.cartProducts?.filter(product => product?.product_id != product_id);
                     dispatch(setCartProducts({ data: updatedProducts }));
                 }
@@ -132,7 +131,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     const updatedFavouriteProducts = [...favorite.favouriteProductIds, product_id];
                     dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
                     const updatedFavouriteLength = favorite?.favouritelength + 1;
@@ -151,7 +150,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     const updatedFavouriteProducts = favorite?.favouriteProductIds.filter(id => id != product_id);
                     dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
                     const updatedFavouriteLength = favorite?.favouritelength - 1;

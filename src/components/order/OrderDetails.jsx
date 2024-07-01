@@ -409,6 +409,7 @@ const OrderDetails = React.memo(() => {
                                             </div>
                                         </div>
                                     </div>
+                                    {console.log(orderData)}
                                     {orderData?.order_note !== "" ? <div className='order-info-container order-note-container'>
                                         <div className='container-heading'>
                                             <span>
@@ -416,7 +417,6 @@ const OrderDetails = React.memo(() => {
                                             </span>
                                         </div>
                                         <div className='order-note-details'>
-                                            {console.log(orderData)}
                                             {orderData?.order_note.split('\r\n').map((line, index) => (
                                                 <React.Fragment key={index}>
                                                     {line}

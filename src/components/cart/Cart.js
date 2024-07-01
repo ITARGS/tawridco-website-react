@@ -150,7 +150,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     dispatch(setCartSubTotal({ data: result?.sub_total ? result?.sub_total : 0 }));
                     const updatedCartProducts = cartSidebarData?.map(product => {
                         if ((product.product_id == product_id) && (product?.product_variant_id == product_variant_id)) {
@@ -186,7 +186,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
             .then(response => response.json())
             .then(async (result) => {
                 if (result.status === 1) {
-                    toast.success(result.message);
+                    // toast.success(result.message);
                     const updatedCartProducts = cart?.cartProducts?.filter(product => {
                         if (product?.product_variant_id != product_variant_id) {
                             return product;
