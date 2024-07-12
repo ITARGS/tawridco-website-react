@@ -2,7 +2,7 @@ import React from 'react';
 import './slider.css';
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Thumbs, Mousewheel, Autoplay, Pagination } from "swiper";
+import { Navigation, Thumbs, Mousewheel, Autoplay, Pagination } from "swiper/modules";
 import "swiper/css/pagination";
 import "swiper/css";
 import { useDispatch, useSelector } from 'react-redux';

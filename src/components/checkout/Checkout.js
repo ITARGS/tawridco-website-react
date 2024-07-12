@@ -175,7 +175,7 @@ const Checkout = () => {
             .then(result => {
                 if (result.status === 1) {
                     if (result?.data?.time_slots_is_enabled == "false") {
-                        toast.error(t("timeslots_not_enabled"));
+                        // toast.error(t("timeslots_not_enabled"));
                     }
                     settimeslots(result.data);
                     setexpectedTime(result?.data?.time_slots.filter((element) => checkLastOrderTime(element?.last_order_time))[0]);
@@ -1059,6 +1059,7 @@ const Checkout = () => {
                                                                         ?
                                                                         <Loader screen='full' background='none' content={"Your transaction is being processed.Please don't refresh the page."} />
                                                                         : <>
+                                                                            {console.log("setting", setting)}
                                                                             {
                                                                                 (setting.payment_setting.cod_payment_method === "1" && codAllow == '1') ||
                                                                                     setting.payment_setting.razorpay_payment_method === "1" ||

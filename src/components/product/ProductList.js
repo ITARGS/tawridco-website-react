@@ -736,7 +736,7 @@ const ProductList2 = React.memo(() => {
                                                 {productresult.length > 0 && isLoader == false
                                                     ? (
                                                         <div className='h-100 productList_content'>
-                                                            <div className="row justify-content-center flex-wrap">
+                                                            <div className="row  flex-wrap">
                                                                 {productresult.map((product, index) => (
                                                                     <div key={product?.id} className={`${!filter.grid_view ? 'col-12 list-view ' : 'col-md-6 col-sm-6 col-lg-3 col-12'}`}>
                                                                         <div className={`product-card my-3 ${filter.grid_view ? "flex-column " : "my-3"}`}>

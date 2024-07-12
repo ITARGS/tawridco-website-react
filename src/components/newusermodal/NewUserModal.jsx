@@ -72,7 +72,7 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
             const response = await api.bulkAddToCart(token, variantIds.join(","), quantities.join(","));
             const result = await response.json();
             if (result.status == 1) {
-                toast.success(t("guest_products_added_to_cart"));
+                // toast.success(t("guest_products_added_to_cart"));
                 dispatch(addtoGuestCart({ data: [] }));
             } else {
                 console.log("Add to Bulk Cart Error Occurred");

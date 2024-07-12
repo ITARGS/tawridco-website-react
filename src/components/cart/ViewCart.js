@@ -496,7 +496,9 @@ const ViewCart = () => {
                                                                     <button
                                                                         type='button'
                                                                         onClick={() => {
+                                                                            // console.log("cart", cart?.isGuest)
                                                                             if (cart?.isGuest) {
+                                                                                // toast.error("login");
                                                                                 toast.error(t("login_to_access_checkout_page"));
                                                                             } else {
                                                                                 stockValidation();

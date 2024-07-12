@@ -46,7 +46,7 @@
     "react-toastify": "^9.1.1",
     "redux-persist": "^6.0.0",
     "slick-carousel": "^1.8.1",
-    "swiper": "^8.4.7",
+    "swiper": "^11.1.4",
     "validator": "^13.11.0",
     "yet-another-react-lightbox": "^3.17.1"
   },

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import './product.css';
 import { BsHeart, BsPlus, BsHeartFill } from "react-icons/bs";
 import { BiMinus, BiLink } from 'react-icons/bi';
@@ -30,6 +30,13 @@ import Returnable from "../../utils/Icons/Returnable.svg";
 import NotReturnable from "../../utils/Icons/NotReturnable.svg";
 import { ValidateNoInternet } from '../../utils/NoInternetValidator';
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/free-mode';
+import 'swiper/css/navigation';
+import 'swiper/css/thumbs';
+import { Navigation, Thumbs, Mousewheel, Autoplay, Pagination } from "swiper/modules";
+import 'swiper/css/pagination';
 
 const ProductDetails = () => {
 
@@ -37,7 +44,7 @@ const ProductDetails = () => {
     const navigate = useNavigate();
     const { slug } = useParams();
     const location = useLocation();
-
+    const sliderRef = useRef(null);
     const product = useSelector(state => state.selectedProduct);
     const cart = useSelector(state => state.cart);
     const city = useSelector(state => state.city);
@@ -45,6 +52,7 @@ const ProductDetails = () => {
     const favorite = useSelector(state => (state.favourite));
     const shop = useSelector(state => state.shop);
     const user = useSelector(state => state.user);
+
 
     useEffect(() => {
         window.scrollTo({ top: 0 });
@@ -55,7 +63,7 @@ const ProductDetails = () => {
         };
     }, []);
 
-
+    const [thumbsSwiper, setThumbsSwiper] = useState(null);
     const [mainimage, setmainimage] = useState("");
     const [images, setimages] = useState([]);
     const [productdata, setproductdata] = useState({});
@@ -128,56 +136,6 @@ const ProductDetails = () => {
     // };
 
 
-    const CustomPrevButton = (props) => {
-        const { slideCount, currentSlide, ...remainingProps } = props;
-        return (
-            <button {...remainingProps} type="button" className="slick-prev">
-                <FaChevronLeft fill='black' size={30} className="product-details-prev-arrow" />
-            </button>
-        );
-    };
-    const CustomNextButton = (props) => {
-        const { slideCount, currentSlide, ...remainingProps } = props;
-        return (
-            <button {...remainingProps} type="button" className="slick-next">
-                <FaChevronRight fill='black' size={30} className='product-details-next-arrow' />
-            </button>
-        );
-    };
-
-    const settings_subImage = {
-        infinite: false,
-        slidesToShow: 3,
-        initialSlide: 0,
-        horizontal: true,
-        margin: "20px",
-        prevArrow: (<CustomPrevButton />),
-        nextArrow: (<CustomNextButton />),
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 4,
-                    slidesToScroll: 1,
-                    infinite: true,
-                },
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                },
-            },
-            {
-                breakpoint: 320,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 1,
-                },
-            },
-        ],
-    };
     const [limit, setLimit] = useState(12);
     const [offset, setOffset] = useState(0);
     const { productRating, totalData, loading: Loading, error } = useGetProductRatingsById(user?.jwtToken, productdata?.id, limit, offset);
@@ -507,19 +465,58 @@ const ProductDetails = () => {
                                                     <img onError={placeHolderImage} src={mainimage} alt='main-product' className='col-12' />
                                                 </div>
 
-
+                                                {/* <button className='prev-arrow-country' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
+                                                <button className='next-arrow-country' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button> */}
                                                 <div className='sub-images-container'>
                                                     {images.length >= 1 ?
-                                                        <Slider {...settings_subImage} className='imageListSlider'>
-                                                            {images.map((image, index) => (
-                                                                <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
-                                                                    <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
-                                                                        setmainimage(image);
-                                                                    }} />
-                                                                </div>
+                                                        <Swiper style={{
+                                                            '--swiper-navigation-color': '#fff',
+                                                            '--swiper-pagination-color': '#fff',
+                                                        }}
+                                                            breakpoints={{
+                                                                0: {
+                                                                    slidesPerView: 3,
+                                                                    spaceBetween: 6
+                                                                },
+                                                                500: {
+                                                                    slidesPerView: 5,
+                                                                    spaceBetween: 2
+                                                                },
+                                                                992: {
+                                                                    slidesPerView: 3,
+                                                                    spaceBetween: 5
+                                                                }
+                                                            }}
+                                                            loop={true}
+                                                            navigation={true}
+                                                            thumbs={{ swiper: thumbsSwiper }}
+                                                            modules={[Navigation, Thumbs, Mousewheel, Autoplay, Pagination]}
+                                                            className="mySwiper2">
 
-                                                            ))}
-                                                        </Slider>
+                                                            {images?.map((image, index) => {
+                                                                return (
+                                                                    <SwiperSlide>
+                                                                        <div key={index} className={`sub-image border ${mainimage == image ? 'active' : ''}`}>
+                                                                            <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
+                                                                                setmainimage(image);
+                                                                            }} />
+                                                                        </div>
+                                                                    </SwiperSlide>
+                                                                )
+
+                                                            })}
+
+                                                        </Swiper>
+                                                        // <Slider {...settings_subImage} className='imageListSlider' ref={sliderRef}>
+                                                        //     {images.map((image, index) => (
+                                                        //         <div key={index} className={`sub-image border ${mainimage == image ? 'active' : ''}`}>
+                                                        //             <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
+                                                        //                 setmainimage(image);
+                                                        //             }} />
+                                                        //         </div>
+
+                                                        //     ))}
+                                                        // </Slider>
                                                         :
                                                         <>
                                                             {images.map((image, index) => (
@@ -683,7 +680,7 @@ const ProductDetails = () => {
                                                                             addToFavorite(productdata.id);
                                                                         } else {
                                                                             toast.error(t("required_login_message_for_wishlist"));
-                                                                    }
+                                                                        }
                                                                     }}>
                                                                         <BsHeart size={16} /></button>
                                                                 )}
@@ -795,7 +792,7 @@ const ProductDetails = () => {
                                                             <li className='share-product-icon'><FacebookShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${productdata.slug}`}><FacebookIcon size={32} round={true} /> </FacebookShareButton></li>
                                                             <li className='share-product-icon'>
                                                                 <button type='button' onClick={() => {
-                                                                    navigator.clipboard.writeText(`${setting.setting && setting.setting.web_settings.website_url}product/${productdata.slug}`);
+                                                                    navigator.clipboard.writeText(`${setting.setting && setting.setting.web_settings.website_url}/product/${productdata.slug}`);
                                                                     toast.success("Copied Succesfully!!");
                                                                 }} > <BiLink size={30} /></button>
                                                             </li>
@@ -1058,7 +1055,7 @@ const ProductDetails = () => {
                         <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} toast={toast} city={city} />
                     </div>
 
-                </div> :
+                </div > :
                 <div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>
                     <MdSignalWifiConnectedNoInternet0 />
                     <p>{t("no_internet_connection")}</p>

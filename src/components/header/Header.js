@@ -189,6 +189,7 @@ const Header = () => {
         await api.getPaymentSettings(user?.jwtToken)
             .then(response => response.json())
             .then(result => {
+                console.log("payment setting", result)
                 if (result.status === 1) {
                     dispatch(setPaymentSetting({ data: JSON.parse(atob(result.data)) }));
                 }
@@ -226,6 +227,7 @@ const Header = () => {
     };
 
     const handleNavigation = (path, loginRequired = false, errorMessage = '') => {
+        console.log("Hello")
         closeSidebarRef.current.click();
         if (loginRequired && !user.user) {
             toast.error(t(errorMessage));
@@ -366,11 +368,12 @@ const Header = () => {
                                     </div>
                                     {isOpen && (
                                         <ul className="sub-menu">
-                                            <li className='menu-item menu-item-type-post_type menu-item-object-page'>
+                                            <li className='menu-item menu-item-type-post_type menu-item-object-page' >
                                                 <button type='button' onClick={() => handleNavigation('/cart', true, 'required_login_message_for_cartRedirect')}>
                                                     {t("cart")}
                                                 </button>
                                             </li>
+
                                             <li className='menu-item menu-item-type-post_type menu-item-object-page'>
                                                 <button type='button' onClick={() => handleNavigation('/checkout', true, 'required_login_message_for_checkout')}>
                                                     {t("checkout")}
@@ -757,7 +760,11 @@ const Header = () => {
                                                 <Link to='/profile' className='d-flex align-items-center flex-row user-profile gap-1' >
                                                     <div className='d-flex flex-column user-info my-auto'>
                                                         <span className='number'> {t("welcome")}</span>
-                                                        <span className='name'> {user.user && user.user.name.split(' ')[0]}</span>
+                                                        <span className='name'>
+                                                            {user.user && user.user.name.split(' ')[0].length > 20
+                                                                ? user.user.name.split(' ')[0].substring(0, 20) + "..."
+                                                                : user.user.name.split(' ')[0]}
+                                                        </span>
                                                     </div>
                                                     <img onError={placeHolderImage} src={user.user && user.user.profile} alt="user"></img>
                                                 </Link>

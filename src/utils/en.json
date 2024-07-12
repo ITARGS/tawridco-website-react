@@ -179,6 +179,7 @@
   "cancellation_policy": "Cancellation Policy",
   "delete_user_message": "Are you sure?\nYou want to delete account?\nYou will not undone once delete account!",
   "proceed_to_checkout": "Proceed to Checkout",
+  "login_to_checkout": "Login to Checkout",
   "transaction_history": "Transaction History",
   "wallet_history": "Wallet History",
   "wallet_transactions": "Wallet Transactions",

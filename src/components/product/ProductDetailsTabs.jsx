@@ -186,7 +186,7 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
                             : null}
                     </div>
 
-
+                    {console.log("review", productRating?.rating_list)}
                     <div className='col-md-7 px-4 customerReviewsContainer'>
                         <h5 className='title'>{t("customer_reviews")}</h5>
                         {productRating?.rating_list?.slice(0, 3)?.sort((a, b) => new Date(b?.updated_at) - new Date(a?.updated_at))?.map((review) => (
@@ -238,10 +238,11 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
                                 </div>
                             </div>
                         ))}
-                        <div className='d-flex justfiy-content-center'>
+                        {productRating?.rating_list.length <= 3 ? <></> : <div className='d-flex justfiy-content-center'>
                             <Link style={{ textDecoration: "none", color: "#121418" }} className='viewAllReviewsLink' to={`/product/${slug}/rating-and-reviews`}>{t("view_all_reviews")}
                             </Link>
-                        </div>
+                        </div>}
+
                     </div>
                 </>
             }
