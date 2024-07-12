@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import './product.css';
-import { BsHeart, BsPlus, BsHeartFill } from "react-icons/bs";
+import { BsHeart, BsPlus, BsHeartFill, BsShare } from "react-icons/bs";
 import { BiMinus, BiLink } from 'react-icons/bi';
 import { toast } from 'react-toastify';
 import api from '../../api/api';
@@ -37,6 +37,8 @@ import 'swiper/css/navigation';
 import 'swiper/css/thumbs';
 import { Navigation, Thumbs, Mousewheel, Autoplay, Pagination } from "swiper/modules";
 import 'swiper/css/pagination';
+import { AiOutlineEye } from 'react-icons/ai';
+import { IoIosArrowDown } from "react-icons/io";
 
 const ProductDetails = () => {
 
@@ -120,6 +122,8 @@ const ProductDetails = () => {
     useEffect(() => {
         getProductDatafromApi(slug);
     }, [slug]);
+
+    console.log("related product->", productdata?.related_products)
 
     // const fetchRelatedProducts = () => {
     //     api.getProductbyFilter(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, {
@@ -454,19 +458,13 @@ const ProductDetails = () => {
 
                             {product.selectedProduct_id === null || Object.keys(productdata).length === 0 ?
                                 <Loader width={"100%"} height={"600px"} background={"var(--second-cards-color"} />
-
                                 : (
-
                                     <div className='row body-wrapper '>
                                         <div className="col-xl-3 col-lg-4 col-md-12 col-12">
-
                                             <div className='image-wrapper '>
                                                 <div className='main-image col-12 border'>
                                                     <img onError={placeHolderImage} src={mainimage} alt='main-product' className='col-12' />
                                                 </div>
-
-                                                {/* <button className='prev-arrow-country' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
-                                                <button className='next-arrow-country' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button> */}
                                                 <div className='sub-images-container'>
                                                     {images.length >= 1 ?
                                                         <Swiper style={{
@@ -507,16 +505,6 @@ const ProductDetails = () => {
                                                             })}
 
                                                         </Swiper>
-                                                        // <Slider {...settings_subImage} className='imageListSlider' ref={sliderRef}>
-                                                        //     {images.map((image, index) => (
-                                                        //         <div key={index} className={`sub-image border ${mainimage == image ? 'active' : ''}`}>
-                                                        //             <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
-                                                        //                 setmainimage(image);
-                                                        //             }} />
-                                                        //         </div>
-
-                                                        //     ))}
-                                                        // </Slider>
                                                         :
                                                         <>
                                                             {images.map((image, index) => (
@@ -814,241 +802,270 @@ const ProductDetails = () => {
                             ratingImages={ratingImages}
                             totalImages={totalImages}
                         />
+                        {
+                            productdata?.related_products?.length > 0 ? <div className='related-product-wrapper'>
+                                <h5>{t("related_product")}</h5>
+                                <div className='related-product-container'>
+                                    {productdata?.related_products === null
+                                        ? <div className="d-flex justify-content-center">
+                                            <Loader width={"100%"} height={"600px"} />
+                                        </div>
+                                        :
+                                        <div className="row">
+                                            <Swiper style={{
+                                                '--swiper-navigation-color': '#fff',
+                                                '--swiper-pagination-color': '#fff',
+                                            }}
+                                                breakpoints={{
+                                                    0: {
+                                                        slidesPerView: 1,
+                                                        spaceBetween: 6
+                                                    },
+                                                    500: {
+                                                        slidesPerView: 3,
+                                                        spaceBetween: 10
+                                                    },
+                                                    992: {
+                                                        slidesPerView: 5,
+                                                        spaceBetween: 30
+                                                    }
+                                                }}
+                                                // slidesPerView={5}
+                                                // spaceBetween={30}
+                                                // loop={true}
+                                                navigation={true}
+                                                thumbs={{ swiper: thumbsSwiper }}
+                                                modules={[Navigation, Thumbs, Mousewheel, Autoplay, Pagination]}
+                                            // className="mySwiper2"
+                                            >
+                                                {productdata?.related_products?.map((related_product, index) => (
+                                                    <div className="col-md-3 " key={related_product?.id}>
+                                                        <SwiperSlide>
+                                                            <div className='product-card'>
+                                                                <span className='border border-light rounded-circle p-2 px-3' id='aiEye' onClick={() => {
+                                                                    setShowModal(true);
+                                                                    setselectedProduct(related_product);
+                                                                    setP_id(related_product.id); setP_V_id(related_product.variants[0].id); setQnty(related_product.variants[0].cart_count + 1);
+                                                                }} >
+                                                                    <AiOutlineEye fill='black'
+                                                                    />
+                                                                </span>
+                                                                <Link to={`/product/${related_product.slug}`}>
 
-                        {/* <div className='related-product-wrapper'>
-                        <h5>{t("related_product")}</h5>
-                        <div className='related-product-container'>
-                            {relatedProducts === null
-                                ? <div className="d-flex justify-content-center">
-                                    <Loader width={"100%"} height={"600px"} />
-                                </div>
-                                :
-                                <div className="row">
-                                    <Slider {...settings}>
-                                        {relatedProducts.map((related_product, index) => (
-                                            <div className="col-md-3 col-lg-4" key={related_product?.id}>
-                                                <div className='product-card'>
-                                                    <span className='border border-light rounded-circle p-2 px-3' id='aiEye' onClick={() => {
-                                                        setShowModal(true);
-                                                        setselectedProduct(related_product);
-                                                        setP_id(related_product.id); setP_V_id(related_product.variants[0].id); setQnty(related_product.variants[0].cart_count + 1);
-                                                    }} >
-                                                        <AiOutlineEye fill='black'
-                                                        />
-                                                    </span>
-                                                    <Link to={`/product/${related_product.slug}`}>
+                                                                    <div className='image-container' >
 
-                                                        <div className='image-container' >
+                                                                        <img onError={placeHolderImage} src={related_product.image_url} alt={related_product.slug} className='card-img-top' onClick={() => {
+                                                                            navigate(`/product/${related_product.slug}`);
+                                                                            window.scrollTo({ top: 0, behavior: "smooth" });
+                                                                            // dispatch({ type: ActionTypes.SET_SELECTED_PRODUCT, payload: related_product.id });
+                                                                            dispatch(setSelectedProduct({ data: related_product.id }));
+                                                                            getProductDatafromApi();
 
-                                                            <img onError={placeHolderImage} src={related_product.image_url} alt={related_product.slug} className='card-img-top' onClick={() => {
-                                                                navigate(`/product/${related_product.slug}`);
-                                                                window.scrollTo({ top: 0, behavior: "smooth" });
-                                                                // dispatch({ type: ActionTypes.SET_SELECTED_PRODUCT, payload: related_product.id });
-                                                                dispatch(setSelectedProduct({ data: related_product.id }));
-                                                                getProductDatafromApi();
-
-                                                            }} />
-                                                            {!Number(related_product.is_unlimited_stock) && related_product.variants[0].status === 0 &&
-                                                                <div className="out_of_stockOverlay">
-                                                                    <p className="out_of_stockText">{t("out_of_stock")}</p>
-                                                                </div>
-                                                            }
-                                                        </div>
-                                                    </Link>
-
-                                                    <div className="d-flex flex-column justify-content-end card-body product-card-body p-3" onClick={() => {
-                                                        dispatch(setSelectedProduct({ data: related_product.id }));
-                                                        setSelectedVariant(null);
-                                                        setQuantity(0);
-                                                        getProductDatafromApi();
-                                                        navigate(`/product/${related_product.slug}`);
-                                                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                                                    }} >
-                                                        {related_product?.rating_count > 0 ? <div className='ratings d-flex align-items-center product-card-rating-content' style={{ fontSize: "14px" }}>
-                                                            <LuStar className='me-2' style={{ fill: "#fead0e", stroke: "#fead0e" }} />
-                                                            <div className='border-end border-2 pe-2 me-2 avgRating'>
-                                                                {related_product?.average_rating?.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                            </div>
-                                                            <div>
-                                                                {related_product?.rating_count}
-                                                            </div>
-                                                        </div> : null}
-                                                        <h3>{related_product.name}</h3>
-                                                        <div className='price'>
-
-                                                            <span id={`price${index}-section`} className="d-flex align-items-center">
-                                                                <p id='relatedproduct-fa-rupee' className='m-0'>
-                                                                    {setting.setting && setting.setting.currency}
-                                                                    {related_product.variants[0].discounted_price === 0 ? related_product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : related_product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                </p>
-                                                                {(related_product?.variants[0]?.price && (related_product?.variants[0]?.discounted_price != 0)) && (related_product?.variants[0]?.price !== related_product?.variants[0]?.discounted_price) ?
-                                                                    <span id={`price${index}-section`} className="d-flex align-items-center" >
-                                                                        <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
-                                                                            {related_product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                        </p>
-                                                                    </span>
-                                                                    : null}
-                                                            </span>
-                                                        </div>
-                                                        <div className='product_varients_drop'>
-                                                            {related_product.variants.length > 1 ?
-                                                                <>
-                                                                    <div className='variant_selection' onClick={() => {
-
-                                                                        setselectedProduct(related_product);
-                                                                    }} >
-                                                                        <span>{<>{related_product.variants[0].measurement} {related_product.variants[0].stock_unit_name}    </>}</span>
-                                                                        <IoIosArrowDown />
+                                                                        }} />
+                                                                        {!Number(related_product.is_unlimited_stock) && related_product.variants[0].status === 0 &&
+                                                                            <div className="out_of_stockOverlay">
+                                                                                <p className="out_of_stockText">{t("out_of_stock")}</p>
+                                                                            </div>
+                                                                        }
                                                                     </div>
-                                                                </>
-                                                                :
+                                                                </Link>
 
-                                                                <>
-                                                                    <span className={`variant_value select-arrow ${related_product.variants[0].stock > 0 ? '' : 'text-decoration-line-through'}`}>{related_product.variants[0].measurement + " " + related_product.variants[0].stock_unit_name}
-                                                                    </span>
-                                                                </>}
+                                                                <div className="d-flex flex-column justify-content-end card-body product-card-body p-3" onClick={() => {
+                                                                    dispatch(setSelectedProduct({ data: related_product.id }));
+                                                                    setSelectedVariant(null);
+                                                                    setQuantity(0);
+                                                                    getProductDatafromApi();
+                                                                    navigate(`/product/${related_product.slug}`);
+                                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                                }} >
+                                                                    {related_product?.rating_count > 0 ? <div className='ratings d-flex align-items-center product-card-rating-content' style={{ fontSize: "14px" }}>
+                                                                        <LuStar className='me-2' style={{ fill: "#fead0e", stroke: "#fead0e" }} />
+                                                                        <div className='border-end border-2 pe-2 me-2 avgRating'>
+                                                                            {related_product?.average_rating?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                        </div>
+                                                                        <div>
+                                                                            {related_product?.rating_count}
+                                                                        </div>
+                                                                    </div> : null}
+                                                                    <h3>{related_product.name}</h3>
+                                                                    <div className='price'>
+
+                                                                        <span id={`price${index}-section`} className="d-flex align-items-center">
+                                                                            <p id='relatedproduct-fa-rupee' className='m-0'>
+                                                                                {setting.setting && setting.setting.currency}
+                                                                                {related_product.variants[0].discounted_price === 0 ? related_product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : related_product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                            </p>
+                                                                            {(related_product?.variants[0]?.price && (related_product?.variants[0]?.discounted_price != 0)) && (related_product?.variants[0]?.price !== related_product?.variants[0]?.discounted_price) ?
+                                                                                <span id={`price${index}-section`} className="d-flex align-items-center" >
+                                                                                    <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
+                                                                                        {related_product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                                    </p>
+                                                                                </span>
+                                                                                : null}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className='product_varients_drop'>
+                                                                        {related_product.variants.length > 1 ?
+                                                                            <>
+                                                                                <div className='variant_selection' onClick={() => {
+
+                                                                                    setselectedProduct(related_product);
+                                                                                }} >
+                                                                                    <span>{<>{related_product.variants[0].measurement} {related_product.variants[0].stock_unit_name}    </>}</span>
+                                                                                    <IoIosArrowDown />
+                                                                                </div>
+                                                                            </>
+                                                                            :
+
+                                                                            <>
+                                                                                <span className={`variant_value select-arrow ${related_product.variants[0].stock > 0 ? '' : 'text-decoration-line-through'}`}>{related_product.variants[0].measurement + " " + related_product.variants[0].stock_unit_name}
+                                                                                </span>
+                                                                            </>}
 
 
 
-                                                        </div>
-                                                    </div>
+                                                                    </div>
+                                                                </div>
 
-                                                    <div className='d-flex flex-row border-top product-card-footer'>
-                                                        <div className='border-end '>
-                                                            {favorite.favorite && favorite.favorite.data.some(element => element.id === related_product.id) ? (
-                                                                <button type="button" className='wishlist-product' onClick={() => {
-                                                                    if (user?.jwtToken !== undefined) {
-                                                                        removefromFavorite(related_product.id);
-                                                                    } else {
-                                                                        toast.error(t('required_login_message_for_cart'));
-                                                                    }
-                                                                }}
-                                                                >
-                                                                    <BsHeartFill size={16} fill='green' />
-                                                                </button>
-                                                            ) : (
-                                                                <button key={related_product.id} type="button" className='wishlist-product' onClick={() => {
-                                                                    if (user?.jwtToken !== undefined) {
-                                                                        addToFavorite(related_product.id);
-                                                                    } else {
-                                                                        toast.error(t("required_login_message_for_cart"));
-                                                                    }
-                                                                }}>
-                                                                    <BsHeart size={16} /></button>
-                                                            )}
-                                                        </div>
-
-                                                        <div className='border-end' style={{ flexGrow: "1" }} >
-                                                            {related_product.variants[0].cart_count > 0 ? <>
-                                                                <div id={`input-cart-productdetail`} className="input-to-cart">
-                                                                    <button type='button' className="wishlist-button" onClick={() => {
-
-                                                                        if (related_product.variants[0].cart_count === 1) {
-                                                                            removefromCart(related_product.id, related_product.variants[0].id);
-
-                                                                        }
-                                                                        else {
-                                                                            addtoCart(related_product.id, related_product.variants[0].id, related_product.variants[0].cart_count - 1);
-
-
-                                                                        }
-
-                                                                    }}><BiMinus size={20} fill='#fff' /></button>
-                                                                    <span id={`input-productdetail`} >{quantity}</span>
-                                                                    <div className="quantity-container text-center">
-                                                                        <input
-                                                                            type="number"
-                                                                            min="1"
-                                                                            max={related_product.variants[0].stock}
-                                                                            className="quantity-input bg-transparent text-center"
-                                                                            value={related_product.variants[0].cart_count}
-                                                                            // value={cart.cart && cart.cart.data.cart.some(element => element.id === product.variants[0].id ? element.qty : 0)}
-                                                                            onChange={(e) => {
-                                                                                setQuantity(parseInt(e.target.value));
+                                                                <div className='d-flex flex-row border-top product-card-footer'>
+                                                                    <div className='border-end '>
+                                                                        {favorite.favorite && favorite.favorite.data.some(element => element.id === related_product.id) ? (
+                                                                            <button type="button" className='wishlist-product' onClick={() => {
+                                                                                if (user?.jwtToken !== undefined) {
+                                                                                    removefromFavorite(related_product.id);
+                                                                                } else {
+                                                                                    toast.error(t('required_login_message_for_cart'));
+                                                                                }
                                                                             }}
-                                                                            disabled
-                                                                        />
+                                                                            >
+                                                                                <BsHeartFill size={16} fill='green' />
+                                                                            </button>
+                                                                        ) : (
+                                                                            <button key={related_product.id} type="button" className='wishlist-product' onClick={() => {
+                                                                                if (user?.jwtToken !== undefined) {
+                                                                                    addToFavorite(related_product.id);
+                                                                                } else {
+                                                                                    toast.error(t("required_login_message_for_cart"));
+                                                                                }
+                                                                            }}>
+                                                                                <BsHeart size={16} /></button>
+                                                                        )}
                                                                     </div>
-                                                                    <button type='button' className="wishlist-button" onClick={() => {
 
-                                                                        if (Number(related_product.is_unlimited_stock)) {
+                                                                    <div className='border-end' style={{ flexGrow: "1" }} >
+                                                                        {related_product.variants[0].cart_count > 0 ? <>
+                                                                            <div id={`input-cart-productdetail`} className="input-to-cart">
+                                                                                <button type='button' className="wishlist-button" onClick={() => {
 
-                                                                            if (related_product.variants[0].cart_count < Number(setting.setting.max_cart_items_count)) {
-                                                                                addtoCart(related_product.id, related_product.variants[0].id, related_product.variants[0].cart_count + 1);
+                                                                                    if (related_product.variants[0].cart_count === 1) {
+                                                                                        removefromCart(related_product.id, related_product.variants[0].id);
 
-
-                                                                            } else {
-                                                                                toast.error('Apologies, maximum product quantity limit reached!');
-                                                                            }
-                                                                        } else {
-
-                                                                            if (related_product.variants[0].cart_count >= Number(related_product.variants[0].stock)) {
-                                                                                toast.error(t("out_of_stock_message"));
-                                                                            }
-                                                                            else if (related_product.variants[0].cart_count >= Number(related_product.total_allowed_quantity)) {
-                                                                                toast.error('Apologies, maximum product quantity limit reached');
-                                                                            } else {
-                                                                                addtoCart(related_product.id, related_product.variants[0].id, related_product.variants[0].cart_count + 1);
+                                                                                    }
+                                                                                    else {
+                                                                                        addtoCart(related_product.id, related_product.variants[0].id, related_product.variants[0].cart_count - 1);
 
 
-                                                                            }
-                                                                        }
+                                                                                    }
 
-                                                                    }}><BsPlus size={20} fill='#fff' /> </button>
+                                                                                }}><BiMinus size={20} fill='#fff' /></button>
+                                                                                <span id={`input-productdetail`} >{quantity}</span>
+                                                                                <div className="quantity-container text-center">
+                                                                                    <input
+                                                                                        type="number"
+                                                                                        min="1"
+                                                                                        max={related_product.variants[0].stock}
+                                                                                        className="quantity-input bg-transparent text-center"
+                                                                                        value={related_product.variants[0].cart_count}
+                                                                                        // value={cart.cart && cart.cart.data.cart.some(element => element.id === product.variants[0].id ? element.qty : 0)}
+                                                                                        onChange={(e) => {
+                                                                                            setQuantity(parseInt(e.target.value));
+                                                                                        }}
+                                                                                        disabled
+                                                                                    />
+                                                                                </div>
+                                                                                <button type='button' className="wishlist-button" onClick={() => {
+
+                                                                                    if (Number(related_product.is_unlimited_stock)) {
+
+                                                                                        if (related_product.variants[0].cart_count < Number(setting.setting.max_cart_items_count)) {
+                                                                                            addtoCart(related_product.id, related_product.variants[0].id, related_product.variants[0].cart_count + 1);
+
+
+                                                                                        } else {
+                                                                                            toast.error('Apologies, maximum product quantity limit reached!');
+                                                                                        }
+                                                                                    } else {
+
+                                                                                        if (related_product.variants[0].cart_count >= Number(related_product.variants[0].stock)) {
+                                                                                            toast.error(t("out_of_stock_message"));
+                                                                                        }
+                                                                                        else if (related_product.variants[0].cart_count >= Number(related_product.total_allowed_quantity)) {
+                                                                                            toast.error('Apologies, maximum product quantity limit reached');
+                                                                                        } else {
+                                                                                            addtoCart(related_product.id, related_product.variants[0].id, related_product.variants[0].cart_count + 1);
+
+
+                                                                                        }
+                                                                                    }
+
+                                                                                }}><BsPlus size={20} fill='#fff' /> </button>
+                                                                            </div>
+                                                                        </> : <>
+                                                                            <button type="button" id={`Add-to-cart-section${index}`} className={`w-100 h-100 add-to-cart active ${(!Number(related_product.is_unlimited_stock) && (related_product.variants[0].stock <= 0)) ? "buttonDisabled" : ""} `} onClick={() => {
+                                                                                if (user?.jwtToken !== undefined) {
+
+                                                                                    if (cart.cart && cart.cart.data.cart.some(element => element.product_id === related_product.id) && cart.cart.data.cart.some(element => element.product_variant_id === related_product.variants[0].id)) {
+                                                                                        toast.info('Product already in Cart');
+                                                                                    } else {
+                                                                                        if (Number(related_product.variants[0].stock) > 1) {
+
+                                                                                            addtoCart(related_product.id, related_product.variants[0].id, 1);
+                                                                                        } else {
+                                                                                            toast.error(t("out_of_stock_message"));
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                                else {
+                                                                                    toast.error("OOps! You need to login first to access the cart!");
+                                                                                }
+
+                                                                            }} disabled={!Number(related_product.is_unlimited_stock) && related_product.variants[0].stock <= 0}>{t("add_to_cart")}</button>
+                                                                        </>}
+
+                                                                    </div>
+
+
+                                                                    <div className='dropup share'>
+
+                                                                        <button type="button" className='w-100 h-100 ' data-bs-toggle="dropdown" aria-expanded="false"><BsShare size={16} /></button>
+
+                                                                        <ul className='dropdown-menu'>
+                                                                            <li className='dropDownLi'><WhatsappShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${related_product.slug}`}><WhatsappIcon size={32} round={true} /> <span>WhatsApp</span></WhatsappShareButton></li>
+                                                                            <li className='dropDownLi'><TelegramShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${related_product.slug}`}><TelegramIcon size={32} round={true} /> <span>Telegram</span></TelegramShareButton></li>
+                                                                            <li className='dropDownLi'><FacebookShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${related_product.slug}`}><FacebookIcon size={32} round={true} /> <span>Facebook</span></FacebookShareButton></li>
+                                                                            <li>
+                                                                                <button type='button' onClick={() => {
+                                                                                    navigator.clipboard.writeText(`${setting.setting && setting.setting.web_settings.website_url}product/${related_product.slug}`);
+                                                                                    toast.success("Copied Succesfully!!");
+                                                                                }} className="react-share__ShareButton"> <BiLink size={30} /> <span>{("TapToCopy")}</span></button>
+                                                                            </li>
+                                                                        </ul>
+                                                                    </div>
                                                                 </div>
-                                                            </> : <>
-                                                                <button type="button" id={`Add-to-cart-section${index}`} className={`w-100 h-100 add-to-cart active ${(!Number(related_product.is_unlimited_stock) && (related_product.variants[0].stock <= 0)) ? "buttonDisabled" : ""} `} onClick={() => {
-                                                                    if (user?.jwtToken !== undefined) {
-
-                                                                        if (cart.cart && cart.cart.data.cart.some(element => element.product_id === related_product.id) && cart.cart.data.cart.some(element => element.product_variant_id === related_product.variants[0].id)) {
-                                                                            toast.info('Product already in Cart');
-                                                                        } else {
-                                                                            if (Number(related_product.variants[0].stock) > 1) {
-
-                                                                                addtoCart(related_product.id, related_product.variants[0].id, 1);
-                                                                            } else {
-                                                                                toast.error(t("out_of_stock_message"));
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                    else {
-                                                                        toast.error("OOps! You need to login first to access the cart!");
-                                                                    }
-
-                                                                }} disabled={!Number(related_product.is_unlimited_stock) && related_product.variants[0].stock <= 0}>{t("add_to_cart")}</button>
-                                                            </>}
-
-                                                        </div>
-
-
-                                                        <div className='dropup share'>
-
-                                                            <button type="button" className='w-100 h-100 ' data-bs-toggle="dropdown" aria-expanded="false"><BsShare size={16} /></button>
-
-                                                            <ul className='dropdown-menu'>
-                                                                <li className='dropDownLi'><WhatsappShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${related_product.slug}`}><WhatsappIcon size={32} round={true} /> <span>WhatsApp</span></WhatsappShareButton></li>
-                                                                <li className='dropDownLi'><TelegramShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${related_product.slug}`}><TelegramIcon size={32} round={true} /> <span>Telegram</span></TelegramShareButton></li>
-                                                                <li className='dropDownLi'><FacebookShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${related_product.slug}`}><FacebookIcon size={32} round={true} /> <span>Facebook</span></FacebookShareButton></li>
-                                                                <li>
-                                                                    <button type='button' onClick={() => {
-                                                                        navigator.clipboard.writeText(`${setting.setting && setting.setting.web_settings.website_url}product/${related_product.slug}`);
-                                                                        toast.success("Copied Succesfully!!");
-                                                                    }} className="react-share__ShareButton"> <BiLink size={30} /> <span>{("TapToCopy")}</span></button>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
+                                                            </div>
+                                                        </SwiperSlide>
                                                     </div>
-                                                </div>
-                                            </div>
 
-                                        ))}
-                                    </Slider>
+                                                ))}
+                                            </Swiper>
+                                        </div>
+
+                                    }
+
                                 </div>
+                            </div> : <></>
+                        }
 
-                            }
-
-                        </div>
-                    </div> */}
 
 
                         <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal} setP_V_id={setP_V_id} setP_id={setP_id} />

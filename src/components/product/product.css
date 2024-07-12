@@ -794,8 +794,8 @@ input::placeholder {
 
 .product-details-view .image-wrapper .sub-images-container {
   margin-top: 15px;
-  display: flex;
-  justify-content: flex-start;
+  /* display: flex; */
+  /* justify-content: flex-start; */
   position: relative;
   gap: 20px;
 }
