@@ -186,7 +186,6 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
                             : null}
                     </div>
 
-                    {console.log("review", productRating?.rating_list)}
                     <div className='col-md-7 px-4 customerReviewsContainer'>
                         <h5 className='title'>{t("customer_reviews")}</h5>
                         {productRating?.rating_list?.slice(0, 3)?.sort((a, b) => new Date(b?.updated_at) - new Date(a?.updated_at))?.map((review) => (

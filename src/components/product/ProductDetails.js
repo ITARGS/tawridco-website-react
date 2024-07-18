@@ -46,7 +46,6 @@ const ProductDetails = () => {
     const navigate = useNavigate();
     const { slug } = useParams();
     const location = useLocation();
-    const sliderRef = useRef(null);
     const product = useSelector(state => state.selectedProduct);
     const cart = useSelector(state => state.cart);
     const city = useSelector(state => state.city);
@@ -123,7 +122,6 @@ const ProductDetails = () => {
         getProductDatafromApi(slug);
     }, [slug]);
 
-    console.log("related product->", productdata?.related_products)
 
     // const fetchRelatedProducts = () => {
     //     api.getProductbyFilter(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, {
@@ -355,7 +353,7 @@ const ProductDetails = () => {
             }
         }
         else {
-            if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
+            if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(selectedVariant.stock)) {
                 toast.error(t("limited_product_stock_error"));
             }
             else if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= Number(setting.setting.max_cart_items_count)) {
@@ -560,10 +558,10 @@ const ProductDetails = () => {
                                                                 {productdata.variants.map((variant, index) => {
                                                                     return (
                                                                         <div className="variant-section" key={variant?.id}>
-                                                                            <div className={`variant-element ${variant_index === variant.id ? 'active' : ''}  ${Number(productdata.is_unlimited_stock) ? "" : (variant.cart_count >= variant.stock ? "out_of_stock" : "")} `} key={index}>
+                                                                            <div className={`variant-element ${variant_index === variant.id ? 'active' : ''}   `} key={index}>
                                                                                 <label className="element_container " htmlFor={`variant${index}`}>
                                                                                     <div className="top-section">
-                                                                                        <input type="radio" name="variant" id={`variant${index}`} checked={variant_index == variant.id} disabled={Number(productdata.is_unlimited_stock) ? false : (variant.cart_count >= variant.stock ? true : false)} onChange={() => handleVariantChange(variant, variant.id)} />
+                                                                                        <input type="radio" name="variant" id={`variant${index}`} checked={variant_index == variant.id} onChange={() => handleVariantChange(variant, variant.id)} />
                                                                                     </div>
                                                                                     <div className="h-100">
                                                                                         <span className="d-flex align-items-center flex-column variantMeasure">{variant.measurement} {variant.stock_unit_name} </span>
@@ -929,7 +927,7 @@ const ProductDetails = () => {
 
                                                                 <div className='d-flex flex-row border-top product-card-footer'>
                                                                     <div className='border-end '>
-                                                                        {favorite.favorite && favorite.favorite.data.some(element => element.id === related_product.id) ? (
+                                                                        {favorite?.favorite && favorite?.favorite?.data?.some(element => element?.id === related_product?.id) ? (
                                                                             <button type="button" className='wishlist-product' onClick={() => {
                                                                                 if (user?.jwtToken !== undefined) {
                                                                                     removefromFavorite(related_product.id);

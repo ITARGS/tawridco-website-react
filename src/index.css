@@ -24,9 +24,11 @@ html {
   scroll-padding-top: 6.5rem;
   scroll-behavior: smooth;
 }
+
 body {
   overflow-x: hidden !important;
 }
+
 html::-webkit-scrollbar {
   /* width: 0; */
 }
@@ -46,9 +48,11 @@ button {
   font-size: 2rem;
   right: 0;
 }
+
 .toast-body {
   color: var(--font-color);
 }
+
 .modal-dialog {
   padding: 0;
 }
@@ -58,7 +62,7 @@ button {
 }
 
 .modal-content {
-  padding: 30px;
+  /* padding: 30px; */
   border-radius: 10px;
 }
 
@@ -66,9 +70,11 @@ body.modal-open {
   overflow: auto;
   padding-right: 0px !important;
 }
+
 body:not(.modal-open) {
   padding-right: 0px !important;
 }
+
 .green-text {
   color: var(--secondary-color);
 }
@@ -92,6 +98,7 @@ body:not(.modal-open) {
 .react-confirm-alert-button-group button:first-child {
   background-color: var(--secondary-color);
 }
+
 .react-confirm-alert-button-group button:last-child {
   background-color: #d23b3b;
 }
@@ -110,6 +117,7 @@ body:not(.modal-open) {
   align-items: center;
   z-index: 999;
 }
+
 .scroll-to-top {
   position: fixed;
   bottom: 60px;
@@ -118,6 +126,7 @@ body:not(.modal-open) {
   cursor: pointer;
   z-index: 10;
 }
+
 .scroll-to-top svg path {
   color: white;
 }
@@ -125,6 +134,7 @@ body:not(.modal-open) {
 /* media queries */
 
 @media (max-width: 468px) {
+
   /* html {
     font-size: 40%;
   } */
@@ -133,11 +143,13 @@ body:not(.modal-open) {
     margin-right: 0 !important;
   }
 }
+
 @media only screen and (min-width: 1300px) {
   .container {
     max-width: 1610px !important;
   }
 }
+
 @media (max-width: 768px) {
   /* .modal-dialog {
     min-width: 90vw;
@@ -164,6 +176,7 @@ body:not(.modal-open) {
     font-size: 14px;
   }
 }
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none !important;
@@ -179,6 +192,7 @@ input[type="number"] {
   background: transparent !important;
   border: 0 !important;
 }
+
 .popup.modal .modal-content .modal-header {
   border: 0;
   align-self: self-end;
@@ -192,6 +206,7 @@ input[type="number"] {
   gap: 10px;
   margin: 20px 0;
 }
+
 .fssai-details .image-container img {
   height: 25px;
   object-fit: contain;
@@ -207,6 +222,7 @@ input[type="number"] {
   aspect-ratio: 1/1;
   object-fit: contain;
 }
+
 .cursorPointer {
   cursor: pointer;
 }
@@ -216,11 +232,13 @@ input[type="number"] {
   width: 100%;
   height: auto;
 }
+
 .noInternetContainer {
   height: 75vh;
   margin-bottom: 45px;
 }
-.noInternetContainer > svg {
+
+.noInternetContainer>svg {
   width: 500px;
   height: 500px;
   fill: var(--secondary-color);
@@ -232,14 +250,17 @@ input[type="number"] {
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.1);
   }
+
   100% {
     transform: scale(1);
   }
 }
-.noInternetContainer > p {
+
+.noInternetContainer>p {
   font-size: 24px;
   font-weight: 700;
   color: var(--font-color);
@@ -250,10 +271,12 @@ input[type="number"] {
     margin: 15px !important;
   }
 }
+
 .react-loading-skeleton {
   --highlight-color: var(--skeleton-highlight-color) !important;
   --base-color: var(--skeleton-base-color) !important;
 }
+
 .slick-slider .slick-track {
   transform: translate3d(0, 0, 0) !important;
 }

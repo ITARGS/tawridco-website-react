@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import Slider from 'react-slick';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineArrowRight } from 'react-icons/ai';
-import { setFilterByCountry } from '../../model/reducer/productFilterReducer';
+import { clearAllFilter, setFilterByCountry } from '../../model/reducer/productFilterReducer';
 import "./shop-by-countries.css";
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
@@ -75,6 +75,12 @@ const ShopByCountries = () => {
         e.target.src = setting.setting?.web_logo;
     };
 
+    const handleCountryFilter = (id) => {
+        dispatch(clearAllFilter())
+        dispatch(setFilterByCountry({ data: id }));
+        navigate('/products');
+    }
+
     return (
         <>
             {(shop?.shop?.is_country_section_in_homepage && (shop?.shop?.countries?.length > 0)) ?
@@ -98,8 +104,9 @@ const ShopByCountries = () => {
                         <Slider {...settings} ref={sliderRef}>
                             {shop.shop?.countries?.map((country, index) => (
                                 <div className="my-3 content" key={index} onClick={() => {
-                                    dispatch(setFilterByCountry({ data: country?.id }));
-                                    navigate('/products');
+                                    handleCountryFilter(country?.id)
+                                    // dispatch(setFilterByCountry({ data: country?.id }));
+                                    // navigate('/products');
                                 }}>
                                     <div className='card'>
                                         {/* <img onError={placeHolderImage} className='card-img-top' src={`${process.env.REACT_APP_API_URL}/storage/${country.logo}`} alt='sellers' loading='lazy' /> */}

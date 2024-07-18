@@ -133,7 +133,6 @@ const ProfileDashboard = (props) => {
 
     const handleUpdateUser = async (e) => {
         e.preventDefault();
-
         if (selectedFile) {
 
             if (selectedFile.type === 'image/png' || selectedFile.type === 'image/jpg' || selectedFile.type === 'image/jpeg') {
@@ -143,6 +142,7 @@ const ProfileDashboard = (props) => {
                         .then(response => response.json())
                         .then(result => {
                             if (result.status === 1) {
+                                toast.success(result?.message)
                                 getCurrentUser(user?.jwtToken);
                                 setIsChanged(false);
                             }
@@ -164,6 +164,7 @@ const ProfileDashboard = (props) => {
                     .then(response => response.json())
                     .then(result => {
                         if (result.status === 1) {
+                            toast.success(result?.message)
                             getCurrentUser(user?.jwtToken);
                             setIsChanged(false);
                         }

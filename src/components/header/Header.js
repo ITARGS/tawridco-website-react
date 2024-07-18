@@ -189,7 +189,6 @@ const Header = () => {
         await api.getPaymentSettings(user?.jwtToken)
             .then(response => response.json())
             .then(result => {
-                console.log("payment setting", result)
                 if (result.status === 1) {
                     dispatch(setPaymentSetting({ data: JSON.parse(atob(result.data)) }));
                 }

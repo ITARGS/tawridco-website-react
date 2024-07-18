@@ -7,24 +7,24 @@ import '../login/login.css';
 import './newmodal.css';
 import { useTranslation } from 'react-i18next';
 import { setCurrentUser, setJWTToken } from "../../model/reducer/authReducer";
-import { addtoGuestCart, setIsGuest } from '../../model/reducer/cartReducer';
+import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
+import { addtoGuestCart, setCart, setIsGuest } from '../../model/reducer/cartReducer';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
+import { setSetting } from '../../model/reducer/settingReducer';
 
 
-
-
-
-
-function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode }) {
+function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode, userEmail, setUserEmail, userName, setUserName, authType, setLoginModal }) {
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
     const user = useSelector((state) => state.user);
     const setting = useSelector((state) => state.setting);
     const cart = useSelector((state) => state.cart);
-
-    const [username, setusername] = useState();
-    const [useremail, setuseremail] = useState();
+    const fcm_token = useSelector((state) => state.user.fcm_token)
+    const auth_id = useSelector((state) => state.user.authId)
+    const city = useSelector(state => state.city);
+    // const [username, setusername] = useState();
+    // const [useremail, setuseremail] = useState();
     const [isLoading, setisLoading] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [error, setError] = useState("");
@@ -41,7 +41,7 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
             .then((result) => {
                 const token = result?.data?.access_token;
                 dispatch(setJWTToken({ data: token }));
-                api.edit_profile(username, useremail, selectedFile, token)
+                api.edit_profile(userName, userName, selectedFile, token)
                     .then(response => response.json())
                     .then(result => {
                         if (result.status === 1) {
@@ -50,8 +50,8 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                                 dispatch(setIsGuest({ data: false }));
                                 AddtoCartBulk(user?.jwtToken);
                             }
-                            setuseremail();
-                            setusername();
+                            // setuseremail();
+                            // setusername();
                             setRegisterModalShow(false);
                             // closeModalRef.current.click()
                         }
@@ -63,6 +63,63 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
             });
         // }
 
+    };
+
+
+
+    const handleUserRegistration = async (e) => {
+        e.preventDefault();
+        try {
+            await api.register(auth_id, userName, userEmail, phoneNum, authType, fcm_token, countryCode).then(response => response.json()).then((result) => {
+                console.log("result", result)
+                if (result.status == 1) {
+                    getCurrentUser(result.data.access_token)
+                    api.getSettings(1, result.data.access_token)
+                        .then((req) => req.json())
+                        .then((res) => {
+                            if (res.status == 1) {
+                                dispatch(setSetting({ data: res?.data }));
+                                dispatch(setFavouriteLength({ data: res?.data?.favorite_product_ids?.length }));
+                                dispatch(setFavouriteProductIds({ data: res?.data?.favorite_product_ids }));
+                            }
+                        });
+                    fetchCart(result.data.access_token, city?.city?.latitude ? city?.city?.latitude : setting?.setting?.default_city?.latitude,
+                        city?.city?.longitude ? city?.city?.longitude : setting?.setting?.default_city?.longitude
+                    );
+                    dispatch(setJWTToken({ data: result.data.access_token }));
+                    // dispatch(setAuthId({ data: Uid }));
+
+                    if (result.data?.user?.status == 1) {
+                        dispatch(setIsGuest({ data: false }));
+                    }
+                    if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && result.data?.user?.status == 1) {
+                        AddtoCartBulk(result.data.access_token);
+                        // dispatch(setIsGuest({ data: false }));
+                    }
+                }
+                setRegisterModalShow(false)
+                toast.success(t("register_successfully"));
+                setLoginModal(false)
+            }).catch((err) => {
+                console.log(err)
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const fetchCart = async (token, latitude, longitude) => {
+        await api.getCart(token, latitude, longitude)
+            .then(response => response.json())
+            .then(result => {
+                if (result.status === 1) {
+                    dispatch(setCart({ data: result }));
+                }
+                else {
+                    dispatch(setCart({ data: null }));
+                }
+            })
+            .catch(error => console.log(error));
     };
 
     const AddtoCartBulk = async (token) => {
@@ -96,7 +153,7 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                         if (closeModalRef.current && result.user.status) {
                             closeModalRef.current.click();
                         }
-                        toast.success(t("profile_updated_successfully"));
+
                         setisLoading(false);
                     }
                 }
@@ -117,24 +174,26 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                 <img src={setting.setting && setting.setting.web_settings.web_logo} alt="" />
                 <AiOutlineCloseCircle className='cursorPointer' size={20} onClick={() => {
                     setRegisterModalShow(false);
-                    setusername();
-                    setuseremail();
+                    // setusername();
+                    // setuseremail();
                 }} />
             </Modal.Header>
             <Modal.Body
                 className='user_data_modal_body'>
                 <span className='note'>{t("profile_note")}</span>
-                <form onSubmit={handleUpdateUser} className='userData-Form'>
+                <form onSubmit={handleUserRegistration} className='userData-Form'>
                     <div className='inputs-container'>
-                        <input type='text' placeholder={t('user_name')} value={username} onChange={(e) => {
+                        <input type='text' placeholder={t('user_name')} value={userName} onChange={(e) => {
                             setError("");
-                            setusername(e.target.value);
+                            setUserName(e.target.value);
                         }} required />
-                        <input type='email' placeholder={t('email_address')} value={useremail} onChange={(e) => {
+                        <input type='email' placeholder={t('email_address')} disabled={authType == "google"} value={userEmail} onChange={(e) => {
                             setError("");
-                            setuseremail(e.target.value);
-                        }} required />
-                        <input type='tel' placeholder={t('mobile_number')} value={phoneNum} readOnly style={{ color: "var(--sub-text-color)" }} />
+                            setUserEmail(e.target.value);
+                        }}
+                            style={authType == "google" ? { color: "var(--sub-text-color)" } : { color: "black" }}
+                            required />
+                        <input type='tel' placeholder={t('mobile_number')} disabled={authType == "phone"} value={phoneNum} style={authType == "phone" ? { color: "var(--sub-text-color)" } : { color: "black" }} onChange={(e) => setPhoneNum(e.target.value)} />
                     </div>
                     <button type='submit' disabled={isLoading} >{t("register")} {t("profile")}</button>
                 </form>

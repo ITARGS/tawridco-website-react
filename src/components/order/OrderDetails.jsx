@@ -35,6 +35,7 @@ const OrderDetails = React.memo(() => {
     const [isNetworkError, setIsNetworkError] = useState(false);
     // const [showReturnModal, setShowReturnModal] = useState(false);
     const [showReturnModal, setShowReturnModal] = useState(Array(orderData?.items?.length).fill(false));
+    const [showCancelModal, setShowCancelModal] = useState(Array(orderData?.items?.length).fill(false));
     const urlParams = useParams();
 
     useEffect(() => {
@@ -57,7 +58,6 @@ const OrderDetails = React.memo(() => {
 
 
     const placeHolderImage = (e) => {
-
         e.target.src = setting.setting?.web_logo;
     };
 
@@ -85,6 +85,7 @@ const OrderDetails = React.memo(() => {
     }, [editRatingId]);
 
     const returnRef = useRef(null);
+    const cancelRef = useRef(null);
 
     const getInvoice = async (Oid) => {
         let postData = new FormData();
@@ -99,16 +100,12 @@ const OrderDetails = React.memo(() => {
                 Authorization: `Bearer ${jwtToken}`
             }
         }).then(response => {
-
-
             var fileURL = window.URL.createObjectURL(new Blob([response.data]));
             var fileLink = document.createElement('a');
             fileLink.href = fileURL;
             fileLink.setAttribute('download', 'Invoice-No:' + Oid + '.pdf');
             document.body.appendChild(fileLink);
             fileLink.click();
-
-
         }).catch(error => {
             if (error.request.statusText) {
                 toast.error(error.request.statusText);
@@ -131,12 +128,14 @@ const OrderDetails = React.memo(() => {
                     // console.log(response.data, "update_order_status");
                     toast.success(response.message);
                     setShowReturnModal(false);
+                    setShowCancelModal(false)
                 } else if (response.message == "This Order Item is already Returned!") {
                     fetchOrderDetails();
                     toast.error(response.message);
                 } else {
                     toast.info(response.message);
                 }
+                setShowCancelModal(false)
                 setShowReturnModal(false);
             }).catch((error) => {
                 console.error(error);
@@ -173,7 +172,7 @@ const OrderDetails = React.memo(() => {
                                                     <thead>
                                                         <th>{t('product')}</th>
                                                         <th>{t('price')}</th>
-                                                        {orderData?.items?.some((item) => (Number(item?.active_status) >= 6)) ? <th>{t('rating')}</th> : null}
+                                                        {orderData?.items?.some((item) => (Number(item?.active_status) <= 6)) ? <th>{t('rating')}</th> : null}
                                                     </thead>
                                                     <tbody>
                                                         {/* console.log(item); */}
@@ -249,7 +248,12 @@ const OrderDetails = React.memo(() => {
 
                                                                                 {(Number(item?.active_status) <= 6) && (Number(item?.active_status) <= item?.till_status) && (item?.cancelable_status == 1) ?
                                                                                     <span className="cancel">
-                                                                                        <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancel')}</button>
+                                                                                        <button onClick={() => setShowCancelModal(prevState => {
+                                                                                            const newState = [...prevState];
+                                                                                            newState[index] = true;
+                                                                                            return newState;
+                                                                                        })}>{t('cancel')}</button>
+                                                                                        {/* <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancel')}</button> */}
                                                                                     </span>
                                                                                     : null
                                                                                 }
@@ -269,7 +273,7 @@ const OrderDetails = React.memo(() => {
                                                                             </div>
 
                                                                         </td>
-                                                                        {(Number(item?.active_status) >= 6) ?
+                                                                        {(Number(item?.active_status) <= 6) ?
                                                                             <td>
                                                                                 <div className='rateProductText' >
                                                                                     {item.item_rating.find((rating) => rating.user.id === user.id) ?
@@ -298,6 +302,60 @@ const OrderDetails = React.memo(() => {
                                                                                 </div>
                                                                             </td> : null}
                                                                     </tr>
+                                                                    {showCancelModal[index] ?
+                                                                        <Modal
+                                                                            size='md'
+                                                                            show={showCancelModal[index]}
+                                                                            centered
+                                                                            // onHide={() => setShowReturnModal(false)}
+                                                                            onHide={() => setShowCancelModal(prevState => {
+                                                                                const newState = [...prevState];
+                                                                                newState[index] = false;
+                                                                                return newState;
+                                                                            })}
+                                                                            backdrop="static"
+                                                                        >
+                                                                            <Modal.Header className='d-flex justify-content-between returnProductModalHeader'>
+                                                                                <h5 className='title'>{t("cancel_order_item")}</h5>
+                                                                                <AiOutlineCloseCircle className='cursorPointer' size={28} fill='black' onClick={() => setShowCancelModal(prevState => {
+                                                                                    const newState = [...prevState];
+                                                                                    newState[index] = false;
+                                                                                    return newState;
+                                                                                })} />
+                                                                            </Modal.Header>
+                                                                            <Modal.Body className='returnProductModalBody'>
+                                                                                <form onSubmit={(e) => {
+                                                                                    e.preventDefault();
+                                                                                    // if (!returnRef.current.value.trim()) {
+                                                                                    //     toast.error(t('please_type_return_reason'));
+                                                                                    //     return; // Don't proceed further if the textarea is empty
+                                                                                    // }
+                                                                                    // handleUpdateStatus(item?.id, 8, returnRef.current.value);
+                                                                                    handleUpdateStatus(item?.id, 7, cancelRef.current.value)
+                                                                                }}>
+                                                                                    <div className='d-flex flex-column justify-content-center'>
+                                                                                        <label htmlFor='reasonTextArea' className='my-3 reasonLabel'>
+                                                                                            {t("cancel_reason")}
+                                                                                        </label>
+                                                                                        <textarea
+                                                                                            ref={cancelRef}
+                                                                                            id="reasonTextArea"
+                                                                                            rows={8}
+                                                                                            name='reasonTextArea'
+                                                                                            placeholder={t("write_cancel_reason")}
+                                                                                            className='reasonTextArea my-4'
+                                                                                            required
+                                                                                        />
+                                                                                    </div>
+                                                                                    <div className='d-flex justify-content-end mt-4'>
+                                                                                        <button type='submit' className='returnSubmitBtn'>
+                                                                                            {t("cancel_order")}
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </form>
+                                                                            </Modal.Body>
+                                                                        </Modal>
+                                                                        : null}
                                                                     {showReturnModal[index] ?
                                                                         <Modal
                                                                             size='md'

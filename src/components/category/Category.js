@@ -10,7 +10,7 @@ import Slider from 'react-slick';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { setCategory, setSelectedCategory } from '../../model/reducer/categoryReducer';
-import { setFilterCategory } from '../../model/reducer/productFilterReducer';
+import { clearAllFilter, setFilterCategory } from '../../model/reducer/productFilterReducer';
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
 
@@ -55,6 +55,7 @@ const Category = () => {
     }, []);
 
     const selectCategory = (category) => {
+        dispatch(clearAllFilter())
         dispatch(setFilterCategory({ data: category.id }));
         if (category?.has_child === true) {
             navigate(`/category/${category.slug}`);

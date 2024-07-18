@@ -166,6 +166,7 @@
   "product_variants": "Product Variants",
   "terms_of_service": "Terms of Service",
   "agreement_message": "I Agree to the",
+  "agreement_updated_message": "By continuing you agree to eGrocer",
   "enter_valid_email": "Enter Valid Email Address",
   "tell_us_about_you": "Tell us a little about you",
   "address_type_other": "Other",
@@ -222,6 +223,7 @@
   "required_login_message_for_profile": "Oops! You need to login first to access the Profile!",
   "myAccount": "My Account",
   "profile_updated_successfully": "Profile updated successfully",
+  "register_successfully": "Register successfully",
   "order_status_display_name_out_for_delivery": "Out for Delivery",
   "active_orders": "Active Orders",
   "previous_orders": "Previous Orders",
@@ -293,7 +295,11 @@
   "return_order_item": "Return Order Item",
   "return_reason": "Return reason :",
   "write_return_reason": "Write return reason...",
+  "cancel_order_item": "Cancel Order Item",
+  "cancel_reason": "Cancel reason :",
+  "write_cancel_reason": "Write cancel reason...",
   "request_a_return": "Request a return",
+  "cancel_order": "Cancel Order",
   "please_type_return_reason": "Please type a return reason.",
   "product_rating_is_required": "Product Rating is Required.",
   "vegetarian": "Vegetarian",
@@ -326,5 +332,6 @@
   "guest_products_added_to_cart": "Guest Products Added Successfully",
   "under_maintenance": "Under Maintenance",
   "no_items_found_in_cart": "No Items Found in Cart",
-  "estimate_delivery_date": "Estimate Delivery Date"
+  "estimate_delivery_date": "Estimate Delivery Date",
+  "otp_verify": "OTP Verify"
 }

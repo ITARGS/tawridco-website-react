@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import Loader from '../loader/Loader';
 import 'react-phone-input-2/lib/style.css';
 import OTPInput from 'otp-input-react';
-import { signInWithPhoneNumber } from "firebase/auth";
+import { signInWithPhoneNumber, GoogleAuthProvider, signInWithPopup, OAuthProvider } from "firebase/auth";
 import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import FirebaseData from '../../utils/firebase/FirebaseData';
@@ -18,6 +18,10 @@ import { setSetting } from '../../model/reducer/settingReducer';
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
 import { addtoGuestCart, setCart, setIsGuest } from '../../model/reducer/cartReducer';
 import NewUserModal from '../newusermodal/NewUserModal';
+import { IoCloseSharp } from "react-icons/io5";
+import GoogleAuthButton from "../../utils/buttons/googleLogin.svg"
+import AppleAuthButton from "../../utils/buttons/appleLogin.svg"
+import { isMacOs, isIOS } from "react-device-detect"
 
 
 const Login = React.memo((props) => {
@@ -30,6 +34,9 @@ const Login = React.memo((props) => {
     const [fcm, setFcm] = useState('');
     const [registerModalShow, setRegisterModalShow] = useState(false);
     const [isVerified, setIsVerified] = useState(false);
+    const [userEmail, setUserEmail] = useState("")
+    const [userName, setUserName] = useState("")
+    const [authType, setAuthType] = useState("")
 
 
     useEffect(() => {
@@ -62,6 +69,8 @@ const Login = React.memo((props) => {
         }
     }, [setting]);
     // console.log(fcm);
+
+
 
     const Navigate = useNavigate();
     const closeModalRef = useRef();
@@ -151,45 +160,44 @@ const Login = React.memo((props) => {
         setDisabled(true);
         setisLoading(true);
         e.preventDefault();
-        if (!checkboxSelected) {
-            setError("Accept Terms and Policies!");
+        // if (!checkboxSelected) {
+        //     setError("Accept Terms and Policies!");
+        //     setisLoading(false);
+        // }
+        // else {
+        if (phonenum?.length < countryCode.length || phonenum.slice(1) === countryCode) {
+            setError("Please enter phone number!");
             setisLoading(false);
         }
         else {
-            if (phonenum?.length < countryCode.length || phonenum.slice(1) === countryCode) {
-                setError("Please enter phone number!");
+            // setOTP("");
+
+            //OTP Generation
+            // generateRecaptcha();
+            let appVerifier = window?.recaptchaVerifier;
+            try {
+                signInWithPhoneNumber(auth, phonenum, appVerifier)
+                    .then(confirmationResult => {
+                        window.confirmationResult = confirmationResult;
+                        setTimer(90);
+                        setIsOTP(true);
+                        setisLoading(false);
+                    }).catch((err) => {
+                        setPhonenum();
+                        console.log(err.message);
+                        setError(err.message);
+                        setisLoading(false);
+                    });
+            } catch (error) {
                 setisLoading(false);
+                toast.error(error);
             }
-            else {
-                // setOTP("");
-
-                //OTP Generation
-                // generateRecaptcha();
-                let appVerifier = window?.recaptchaVerifier;
-                try {
-                    signInWithPhoneNumber(auth, phonenum, appVerifier)
-                        .then(confirmationResult => {
-                            window.confirmationResult = confirmationResult;
-                            setTimer(90);
-                            setIsOTP(true);
-                            setisLoading(false);
-                        }).catch((err) => {
-                            setPhonenum();
-                            console.log(err.message);
-                            setError(err.message);
-                            setisLoading(false);
-                        });
-                } catch (error) {
-                    setisLoading(false);
-                    toast.error(error);
-                }
-
-            }
-            // else {
-            //     setPhonenum()
-            //     setError("Enter a valid phone number")
-            // }
         }
+        // else {
+        //     setPhonenum()
+        //     setError("Enter a valid phone number")
+        // }
+        // }
     };
 
 
@@ -222,19 +230,16 @@ const Login = React.memo((props) => {
     const verifyOTP = async (e) => {
         e.preventDefault();
         setisLoading(true);
-
         let confirmationResult = window.confirmationResult;
-
-
-        await confirmationResult.confirm(OTP).then((result) => {
+        await confirmationResult.confirm(OTP).then(async (result) => {
             // User verified successfully.
             setUid(result.user.uid);
             dispatch(setAuthId({ data: result.user.uid }));
+            await loginApiCall(result.user, result.user.uid, fcm, "phone")
             //login call
             // console.log(phonenum);
             const num = phonenum.replace(`${countryCode}`, "");
-            isUserVerified(num.replace("+", ""), result.user.uid);
-
+            // isUserVerified(num.replace("+", ""), result.user.uid);
         }).catch(() => {
             setisLoading(false);
             // User couldn't sign in (bad verification code?)
@@ -244,27 +249,26 @@ const Login = React.memo((props) => {
         });
     };
 
-    const isUserVerified = async (num, authId) => {
-        try {
-            const response = await api.checkUserExists(num);
-            const result = await response.json();
-            if (result.status === 0) {
-                setRegisterModalShow(true);
-                setIsVerified(false);
-                setIsOTP(false);
-                setOTP("");
-                setisLoading(false);
-                setError("");
-                setcheckboxSelected(false);
-                props.setShow(false);
-            } else {
-                loginApiCall(num.replace("+", ""), authId, countryCode.replace("+", ""));
-            }
-        } catch (e) {
-            console.log(e?.message);
-        }
-
-    };
+    // const isUserVerified = async (num, authId) => {
+    //     try {
+    //         const response = await api.checkUserExists(num);
+    //         const result = await response.json();
+    //         if (result.status === 0) {
+    //             setRegisterModalShow(true);
+    //             setIsVerified(false);
+    //             setIsOTP(false);
+    //             setOTP("");
+    //             setisLoading(false);
+    //             setError("");
+    //             setcheckboxSelected(false);
+    //             props.setShow(false);
+    //         } else {
+    //             loginApiCall(num.replace("+", ""), authId, countryCode.replace("+", ""));
+    //         }
+    //     } catch (e) {
+    //         console.log(e?.message);
+    //     }
+    // };
 
     const AddtoCartBulk = async (token) => {
         try {
@@ -283,9 +287,9 @@ const Login = React.memo((props) => {
         }
     };
 
-    const loginApiCall = async (num, Uid, countrycode) => {
-        // console.log("Before Login API Call ->", num, Uid, countrycode);
-        await api.login(num, Uid, countrycode, fcm)
+    const loginApiCall = async (user, Uid, fcm, type) => {
+        dispatch(setAuthId({ data: Uid }));
+        await api.login(Uid, fcm)
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
@@ -293,7 +297,6 @@ const Login = React.memo((props) => {
                     api.getSettings(1, result.data.access_token)
                         .then((req) => req.json())
                         .then((res) => {
-                            console.log(setting)
                             if (res.status == 1) {
                                 dispatch(setSetting({ data: res?.data }));
                                 dispatch(setFavouriteLength({ data: res?.data?.favorite_product_ids?.length }));
@@ -304,7 +307,8 @@ const Login = React.memo((props) => {
                         city?.city?.longitude ? city?.city?.longitude : setting?.setting?.default_city?.longitude
                     );
                     dispatch(setJWTToken({ data: result.data.access_token }));
-                    dispatch(setAuthId({ data: Uid }));
+                    // dispatch(setAuthId({ data: Uid }));
+
                     if (result.data?.user?.status == 1) {
                         dispatch(setIsGuest({ data: false }));
                     }
@@ -323,17 +327,62 @@ const Login = React.memo((props) => {
                     // closeModalRef.current.click();
                 }
                 else {
-                    setError(result.message);
-                    setOTP("");
-                    console.log("Message", result?.message);
+                    setUserEmail(user?.providerData?.[0]?.email)
+                    setUserName(user?.providerData?.[0]?.displayName)
+                    setPhonenum(user?.providerData?.[0]?.phoneNumber)
+                    setAuthType(type)
+                    setRegisterModalShow(true)
+                    // setOTP("");
+                    // console.log("Message", result?.message);
                 }
-
                 setisLoading(false);
             })
             .catch(error => console.log("error ", error));
 
     };
 
+
+
+
+    const handleGoogleAuthentication = async () => {
+        const provider = new GoogleAuthProvider();
+        signInWithPopup(auth, provider).then(async (result) => {
+            const credential = GoogleAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            const user = result.user;
+
+            await loginApiCall(user, user.uid, fcm, "google")
+        }).catch((error) => {
+            console.log(error)
+        })
+    }
+
+    const handleAppleAuthentication = async () => {
+        const provider = new OAuthProvider('apple.com');
+        provider.setCustomParameters({
+            // Localize the Apple authentication screen in French.
+            locale: 'en'
+        });
+        provider.setDefaultLanguage("en")
+
+        provider.addScope('email');
+        provider.addScope('name');
+        console.log(provider)
+        await signInWithPopup(auth, provider).then((result) => {
+            console.log(result)
+            const user = result.user;
+            const credential = OAuthProvider.credentialFromResult(result);
+            const accessToken = credential.accessToken;
+            const idToken = credential.idToken;
+            console.log("user->", user)
+        }).catch((error) => {
+            console.log(error)
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            const email = error.customData.email;
+            const credential = OAuthProvider.credentialFromError(error);
+        });
+    }
 
 
 
@@ -367,9 +416,12 @@ const Login = React.memo((props) => {
             >
                 <Modal.Header className='d-flex flex-row justify-content-between align-items-center header'>
                     <div>
-                        <h5>{t("Login")}</h5>
+                        {isOTP ? <h5 className='login-heading'>{t("otp_verify")}</h5> :
+
+                            <h5 className='login-heading'>{t("Login")}</h5>
+                        }
                     </div>
-                    <AiOutlineCloseCircle type='button' className='closeBtn' size={30} onClick={() => {
+                    <IoCloseSharp type='button' className='closeBtn' size={30} onClick={() => {
                         setError("");
                         setOTP("");
                         setPhonenum("");
@@ -379,22 +431,24 @@ const Login = React.memo((props) => {
                         props.setShow(false);
                     }} />
                 </Modal.Header>
-                <Modal.Body className='d-flex flex-column gap-3 align-items-center body'>
-                    <img src={setting.setting && setting.setting.web_settings.web_logo} alt='logo'></img>
+                <Modal.Body className='d-flex flex-column gap-3  body'>
+                    {/* <img src={setting.setting && setting.setting.web_settings.web_logo} alt='logo'></img> */}
+                    <div className='my-5'>
+                        {isOTP
+                            ? (
+                                <>
+                                    <h5>{t("enter_verification_code")}</h5>
+                                    <span className='d-flex flex-column text-start align-items-start otp-message'>{t("otp_send_message")} <p className='font-weight-bold py-2 text-secondary'>{phonenum}</p></span>
+                                </>
+                            )
+                            : (
+                                <>
+                                    <h5>{t("Welcome")}</h5>
+                                    <span>{t("login_enter_number")}</span>
+                                </>
+                            )}
+                    </div>
 
-                    {isOTP
-                        ? (
-                            <>
-                                <h5>{t("enter_verification_code")}</h5>
-                                <span>{t("otp_send_message")} <p>{phonenum}</p></span>
-                            </>
-                        )
-                        : (
-                            <>
-                                <h5>{t("Welcome")}</h5>
-                                <span>{t("login_enter_number")}</span>
-                            </>
-                        )}
 
                     {error === ''
                         ? ""
@@ -408,53 +462,69 @@ const Login = React.memo((props) => {
                                         <Loader width='100%' height='auto' />
                                     )
                                     : null}
-                                <OTPInput className='otp-container' value={OTP} onChange={setOTP} autoFocus OTPLength={6} otpType="number" disabled={false} />
+                                <OTPInput className='otp-container' inputStyle="otp-container-style" value={OTP} onChange={setOTP} autoFocus OTPLength={6} otpType="number" disabled={false} />
                                 <span className='timer' >
                                     <button onClick={handleLogin} disabled={disabled}>
                                         {timer === 0 ?
                                             `Resend OTP` : <>Resend OTP in <strong> {formatTime(timer)} </strong> </>}
                                     </button> </span>
                                 <span className='button-container d-flex gap-5'>
-
                                     <button type="submit" className='login-btn' >{t("verify_and_proceed")}</button>
-
-
                                 </span>
                             </form>
                         )
                         : (
-                            <form className='d-flex flex-column gap-3 form' onSubmit={handleLogin}>
-                                {isLoading
-                                    ? (
-                                        <Loader width='100%' height='auto' />
-                                    )
-                                    : null}
+                            <div>
+                                <form className='d-flex flex-column gap-3 form' onSubmit={handleLogin}>
+                                    {isLoading
+                                        ? (
+                                            <Loader width='100%' height='auto' />
+                                        )
+                                        : null}
 
 
-                                <div>
-                                    <PhoneInput
-                                        country={process.env.REACT_APP_COUNTRY_CODE}
-                                        value={phonenum}
-                                        onChange={handleOnChange}
-                                        enableSearch
-                                        disableSearchIcon
-                                        placeholder={t('please_enter_valid_phone_number')}
-                                        disableDropdown={false}
-                                        inputClass='loginInput'
-                                        searchClass='loginSearch'
-                                    />
-                                </div>
+                                    <div>
+                                        <PhoneInput
+                                            country={process.env.REACT_APP_COUNTRY_CODE}
+                                            value={phonenum}
+                                            onChange={handleOnChange}
+                                            enableSearch
+                                            disableSearchIcon
+                                            placeholder={t('please_enter_valid_phone_number')}
+                                            disableDropdown={false}
+                                            inputClass='loginInput'
+                                            searchClass='loginSearch'
+                                        />
+                                    </div>
+                                    {/* <span style={{ alignSelf: "baseline" }}>
+                                        <input type="checkbox" className='mx-2' required checked={checkboxSelected} onChange={() => {
+                                            setcheckboxSelected(!checkboxSelected);
+                                        }} />
 
 
-                                <span style={{ alignSelf: "baseline" }}>
-                                    <input type="checkbox" className='mx-2' required checked={checkboxSelected} onChange={() => {
+                                        {t("agreement_message")} &nbsp;<Link to={"/terms"} onClick={handleTerms}>{t("terms_of_service")}</Link> &nbsp;{t("and")}
+                                        <Link to={"/policy/Privacy_Policy"} onClick={handlePolicy}>&nbsp; {t("privacy_policy")} &nbsp;</Link>
+                                    </span> */}
+                                    <button type='submit'> {t("login_continue")}</button>
+                                </form>
+                                <p className='text-center login-or'>OR</p>
+                                {/* {isIOS || isMacOs ?
+                                    
+                                    
+                                    } */}
+                                <button onClick={handleGoogleAuthentication}><img src={GoogleAuthButton} className='login-google-btn ' /></button>
+                                {/* <button onClick={handleAppleAuthentication}><img src={AppleAuthButton} className='login-google-btn' /></button> */}
+
+
+                                <span style={{ alignSelf: "baseline", marginTop: "20px", fontSize: "12px" }}>
+                                    {/* <input type="checkbox" className='mx-2' required checked={checkboxSelected} onChange={() => {
                                         setcheckboxSelected(!checkboxSelected);
-                                    }} />
-                                    {t("agreement_message")} &nbsp;<Link to={"/terms"} onClick={handleTerms}>{t("terms_of_service")}</Link> &nbsp;{t("and")}
+                                    }} /> */}
+
+                                    {t("agreement_updated_message")} &nbsp;<Link to={"/terms"} onClick={handleTerms}>{t("terms_of_service")}</Link> &nbsp;{t("and")}
                                     <Link to={"/policy/Privacy_Policy"} onClick={handlePolicy}>&nbsp; {t("privacy_policy")} &nbsp;</Link>
                                 </span>
-                                <button type='submit'> {t("login_continue")}</button>
-                            </form>
+                            </div>
                         )}
                 </Modal.Body>
             </Modal>
@@ -465,6 +535,12 @@ const Login = React.memo((props) => {
                 phoneNum={phonenum}
                 setPhoneNum={setPhonenum}
                 countryCode={countryCode.replace("+", "")}
+                userEmail={userEmail}
+                setUserEmail={setUserEmail}
+                userName={userName}
+                setUserName={setUserName}
+                authType={authType}
+                setLoginModal={props.setShow}
             />
         </>
     );

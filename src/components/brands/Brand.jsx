@@ -6,7 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { AiOutlineArrowRight } from 'react-icons/ai';
 import Slider from 'react-slick';
-import { setFilterBrands, setFilterByCountry, setFilterBySeller, setFilterCategory } from '../../model/reducer/productFilterReducer';
+import { setFilterBrands, setFilterByCountry, setFilterBySeller, setFilterCategory, clearAllFilter } from '../../model/reducer/productFilterReducer';
 import "./brand.css";
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
@@ -70,8 +70,14 @@ const Brand = () => {
       }
     ]
   };
-  const placeHolderImage = (e) => {
 
+  const handleFilter = (id) => {
+    dispatch(clearAllFilter())
+    dispatch(setFilterBrands({ data: id }));
+    navigate('/products');
+  }
+
+  const placeHolderImage = (e) => {
     e.target.src = setting.setting?.web_logo;
   };
   return (
@@ -98,8 +104,9 @@ const Brand = () => {
               <Slider {...settings} ref={sliderRef}>
                 {shop.shop?.brands?.map((ctg, index) => (
                   <div className="my-3 content" key={index} onClick={() => {
-                    dispatch(setFilterBrands({ data: ctg.id.toString() }));
-                    navigate('/products');
+                    handleFilter(ctg.id.toString())
+                    // dispatch(setFilterBrands({ data: ctg.id.toString() }));
+                    // navigate('/products');
                   }}>
 
 

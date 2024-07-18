@@ -5,7 +5,7 @@ import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
-import { setFilterBySeller } from '../../model/reducer/productFilterReducer';
+import { clearAllFilter, setFilterBySeller } from '../../model/reducer/productFilterReducer';
 import "./shop-by-seller.css";
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
@@ -74,6 +74,12 @@ const ShopBySellers = () => {
         e.target.src = setting.setting?.web_logo;
     };
 
+    const handleSellerFilter = (id) => {
+        dispatch(clearAllFilter)
+        dispatch(setFilterBySeller({ data: id }));
+        navigate('/products');
+    }
+
     return (
         <>
             {(shop?.shop?.is_seller_section_in_homepage && (shop?.shop?.sellers?.length > 0)) ?
@@ -97,8 +103,9 @@ const ShopBySellers = () => {
                         <Slider {...settings} ref={sliderRef}>
                             {shop.shop?.sellers?.map((seller, index) => (
                                 <div className="my-3 content" key={index} onClick={() => {
-                                    dispatch(setFilterBySeller({ data: seller?.id }));
-                                    navigate('/products');
+                                    handleSellerFilter(seller?.id)
+                                    // dispatch(setFilterBySeller({ data: seller?.id }));
+                                    // navigate('/products');
                                 }}>
                                     <div className='card'>
                                         {/* <img onError={placeHolderImage} className='card-img-top' src={seller.logo_url} alt='country' loading='lazy' /> */}

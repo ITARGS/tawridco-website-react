@@ -1059,7 +1059,6 @@ const Checkout = () => {
                                                                         ?
                                                                         <Loader screen='full' background='none' content={"Your transaction is being processed.Please don't refresh the page."} />
                                                                         : <>
-                                                                            {console.log("setting", setting)}
                                                                             {
                                                                                 (setting.payment_setting.cod_payment_method === "1" && codAllow == '1') ||
                                                                                     setting.payment_setting.razorpay_payment_method === "1" ||

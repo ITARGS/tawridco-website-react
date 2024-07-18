@@ -1,6 +1,15 @@
 .login h5 {
-  font-size: 2.2rem;
+  font-size: 3rem;
   font-weight: bolder;
+}
+
+.login-heading {
+  color: #5C788C;
+}
+
+.login .header {
+  padding: 15px;
+  background-color: #F2F5F7;
 }
 
 .login .header button {
@@ -8,10 +17,30 @@
   font-size: 3rem;
 }
 
+.login .body {
+  padding: 20px;
+}
+
 .login .body img {
   height: 100px;
   margin: 30px;
 }
+
+.login .body button img {
+  margin: 0px;
+  width: 100%;
+  height: 55px;
+}
+
+
+.login .body .otp-message {
+  font-size: 16px;
+}
+
+.login .body .otp-message p {
+  font-weight: bold;
+}
+
 
 .login .body span {
   font-size: 1.5rem;
@@ -21,18 +50,21 @@
   align-items: center;
   justify-content: center;
 }
+
 .login .body span.timer button {
   background-color: transparent;
   color: var(--font-color);
   font-size: 16px;
   font-weight: 900;
 }
+
 .login .body span.timer button:disabled {
   background-color: transparent !important;
   font-size: 16px;
   font-weight: 500;
   color: var(--font-color);
 }
+
 .login .body span p {
   color: var(--secondary-color);
   margin: 0;
@@ -52,29 +84,35 @@
 .login .body .PhoneInput {
   display: flex;
   flex-direction: row;
-  gap: 2rem;
+  /* gap: 2rem; */
   font-size: 2rem;
 }
 
 .login .body .react-tel-input input {
   color: var(--font-color);
   position: relative !important;
-  border-radius: 5px;
+  /* border-radius: 5px; */
   background: #141a1f0d;
   padding-left: 20px;
-  border: 1px solid #141a1f80;
+  border-radius: 2px !important;
+  /* border: 1px solid #141a1f80; */
+  background-color: var(--body-background);
+  border-left: none;
   height: 50px;
   flex-grow: 1;
   font-size: 16px;
   order: 1;
 }
+
 .login .body .react-tel-input .loginInput {
   color: var(--font-color);
-  border: 1px solid var(--font-color);
+  /* border: 1px solid var(--font-color); */
 }
+
 .login .body .react-tel-input .loginSearch .loginSearch-box {
   color: black;
 }
+
 .login .body .react-tel-input input::placeholder {
   text-align: start;
 }
@@ -82,10 +120,12 @@
 .login .body .react-tel-input .selected-flag {
   width: 35px;
 }
+
 .login .body .react-tel-input {
   display: flex;
-  gap: 20px;
+  /* gap: 20px; */
 }
+
 .login .body .react-tel-input .flag-dropdown {
   display: flex;
   position: relative !important;
@@ -95,9 +135,10 @@
   gap: 3px;
   padding: 15px;
   height: 50px;
-  border-radius: 8px;
+  /* border-radius: 8px; */
+  border-right: none;
   background: #141a1f0d;
-  border: 1px solid var(--font-color);
+  /* border: 1px solid var(--font-color); */
   color: var(--primary-color);
   justify-content: flex-start;
 }
@@ -114,13 +155,14 @@
   padding: 0;
 }
 
-.login .body .PhoneInput .PhoneInputCountry .PhoneInputCountryIcon {
-}
+.login .body .PhoneInput .PhoneInputCountry .PhoneInputCountryIcon {}
+
 .login .button-container {
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .login .button-container button {
   margin-top: 30px;
   font-size: 14px;
@@ -133,24 +175,26 @@
   margin-left: 10px;
   background-color: var(--secondary-color);
 }
+
 .login button[type="submit"] {
-  margin-top: 30px;
+  margin-top: 20px;
   font-size: 14px;
 
   font-weight: 400 !important;
   letter-spacing: 1px;
-  padding: 15px;
+  padding: 11px;
   color: var(--second-cards-color);
   text-decoration: none;
-  margin-left: 10px;
   background-color: var(--secondary-color);
   border-radius: 5px;
 }
+
 .login button[type="submit"]:hover {
   background-color: var(--secondary-color);
   color: var(--text-field-color);
   opacity: 1;
 }
+
 .login .body .otp-container {
   margin: 2rem 4%;
   font-size: 2rem;
@@ -163,51 +207,94 @@
   background: rgba(155, 151, 151, 0.205);
 }
 
-.login .body .otp-container > input {
+.login .body .otp-container>input {
   margin-right: 3px;
   background-color: var(--body-background);
   color: var(--font-color);
+  height: 50px !important;
+  border-radius: 5px;
+  width: 50px !important;
 }
+
+
 
 @media screen and (max-width: 75rem) {
   .login .body .form {
     width: 100%;
   }
 }
+
 .userData-Form {
   display: flex;
   flex-direction: column;
   width: 100%;
 }
+
 .userData-Form .inputs-container {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
+
 .userData-Form .inputs-container input {
   padding: 16px;
   width: 100%;
   font-size: 14px;
   background-color: var(--body-background);
 }
+
 @media (min-width: 0px) and (max-width: 420px) {
   .login .body img {
     width: 200px !important;
   }
-  .login .body .otp-container > input[type="tel"] {
+
+  .login .body .otp-container>input[type="tel"] {
     margin-right: 5px !important;
   }
+
   .login .body span {
     flex-wrap: wrap;
   }
+
   .login .body .react-tel-input input {
     width: 100% !important;
   }
 }
 
+.login-or {
+  font-size: 16px !important;
+  font-weight: bold !important;
+  position: relative;
+  margin: 20px 0px;
+}
+
+.login-or::before {
+  position: absolute;
+  content: "";
+  top: 10px;
+  border: 1px solid lightgray;
+  border-style: dashed;
+  width: 50%;
+  height: 2px;
+  left: -18px;
+
+}
+
+.login-or::after {
+  position: absolute;
+  content: "";
+  top: 10px;
+  border: 1px solid lightgray;
+  border-style: dashed;
+  width: 50%;
+  height: 2px;
+  right: -18px;
+}
+
 /* For Dark Theme */
 .login .modal-content {
   background-color: var(--second-cards-color);
+  padding: 0px !important;
 }
 
 .login .modal-header .closeBtn {

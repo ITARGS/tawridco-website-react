@@ -34,7 +34,6 @@ const BrandList = () => {
         </div>);
     }
     const placeHolderImage = (e) => {
-
         e.target.src = setting.setting?.web_logo;
     };
 

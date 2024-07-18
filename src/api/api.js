@@ -11,15 +11,33 @@ const api = {
             appUrl.slice(0, -1) :
             appUrl;
     },
-    login(num, Uid, countrycode, fcm) {
+    register(Uid, name, email, mobile, type, fcm, country_code) {
+        let myHeaders = new Headers();
+        myHeaders.append(access_key_param, access_key);
+        let formdata = new FormData();
+        formdata.append("auth_uid", Uid);
+        formdata.append("name", name);
+        formdata.append("email", email)
+        formdata.append("country_code", country_code)
+        formdata.append("mobile", mobile)
+        formdata.append("type", type)
+        formdata.append("fcm_token", fcm);
+        formdata.append("platform", "web");
+        var requestOptions = {
+            method: 'POST',
+            headers: myHeaders,
+            body: formdata,
+            redirect: 'follow'
+        };
+        return fetch(appUrl + appSubUrl + "/register", requestOptions);
+    },
+    login(Uid, fcm) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
 
         var formdata = new FormData();
-        formdata.append("mobile", num);
         formdata.append("auth_uid", Uid);
         formdata.append("fcm_token", fcm);
-        formdata.append("country_code", countrycode);
         formdata.append("platform", "web");
         var requestOptions = {
             method: 'POST',
