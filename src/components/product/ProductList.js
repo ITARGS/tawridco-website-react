@@ -549,7 +549,7 @@ const ProductList2 = React.memo(() => {
     const placeholderItems = Array.from({ length: 12 }).map((_, index) => index);
 
     function getProductQuantities(products) {
-        return Object.entries(products.reduce((quantities, product) => {
+        return Object.entries(products?.reduce((quantities, product) => {
             const existingQty = quantities[product.product_id] || 0;
             return { ...quantities, [product.product_id]: existingQty + product.qty };
         }, {})).map(([productId, qty]) => ({

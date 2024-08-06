@@ -318,6 +318,7 @@
   "phonepe": "PhonePe",
   "please_select_payment_method": "Please select a payment method.",
   "something_went_wrong_select_address": "Oops, something went wrong! Please select the address again.",
+  "please_select_address": "Please select address",
   "no_internet_connection": "Oops, no internet connection available.",
   "light": "Light",
   "dark": "Dark",
@@ -333,5 +334,9 @@
   "under_maintenance": "Under Maintenance",
   "no_items_found_in_cart": "No Items Found in Cart",
   "estimate_delivery_date": "Estimate Delivery Date",
-  "otp_verify": "OTP Verify"
+  "otp_verify": "OTP Verify",
+  "return_requested": "Return Requested",
+  "return_rejected": "Return Rejected",
+  "continue_with_google": "Continue with google",
+  "cashfree": "Cashfree"
 }

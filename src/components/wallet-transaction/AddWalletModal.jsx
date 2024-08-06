@@ -19,6 +19,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import Loader from '../loader/Loader';
 import { loadStripe } from '@stripe/stripe-js';
 import InjectCheckout from './AddWalletStripeModal';
+import cashfree from '../../utils/ic_cashfree-2.svg';
 
 const AddWalletModal = (props) => {
 
@@ -59,7 +60,6 @@ const AddWalletModal = (props) => {
             script.onerror = () => {
                 resolve(false);
             };
-
             document.body.appendChild(script);
         });
     };
@@ -175,7 +175,7 @@ const AddWalletModal = (props) => {
         }
         try {
             let response, result;
-            if (paymentMethod === "paypal" || paymentMethod === "stripe" || paymentMethod === "razorpay" || paymentMethod === "midtrans" || paymentMethod === "phonepe") {
+            if (paymentMethod === "paypal" || paymentMethod === "stripe" || paymentMethod === "razorpay" || paymentMethod === "midtrans" || paymentMethod === "phonepe" || paymentMethod === "cashfree") {
                 response = await api.initiate_transaction(user?.jwtToken, null, paymentMethod, "wallet", walletAmount);
                 result = await response.json();
             }
@@ -240,6 +240,8 @@ const AddWalletModal = (props) => {
                     // Remove the event listener if the payment window is closed without making payment
                     window.removeEventListener("message", messageEventListener);
                 };
+            } else if (paymentMethod === "cashfree") {
+                await api.addTransaction(user?.jwtToken,"wallet",amount,)
             }
         } catch (err) {
             console.log(err.message);
@@ -308,6 +310,18 @@ const AddWalletModal = (props) => {
                                                 </div>
                                                 <div>
                                                     <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("razorpay")} />
+                                                </div>
+                                            </div>
+                                            :
+                                            null}
+                                        {setting?.payment_setting?.cashfree_payment_method === "1" ?
+                                            <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                                <div className='d-flex align-items-center'>
+                                                    <img className='me-3' src={cashfree} alt='cashfreeSVG' />
+                                                    {t("cashfree")}
+                                                </div>
+                                                <div>
+                                                    <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("cashfree")} />
                                                 </div>
                                             </div>
                                             :

@@ -773,6 +773,10 @@ const api = {
             formData.append("payment_method", "Phonepe");
             formData.append("request_from", "website");
         }
+        else if (payment_method.toLocaleLowerCase() === "cashfree") {
+            formData.append("payment_method", "Cashfree");
+            formData.append("request_from", "website");
+        }
 
         var requestOptions = {
             method: 'POST',

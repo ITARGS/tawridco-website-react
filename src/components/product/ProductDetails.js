@@ -118,9 +118,12 @@ const ProductDetails = () => {
 
 
 
+    // Add setting in depedancy array for clear cache
     useEffect(() => {
-        getProductDatafromApi(slug);
-    }, [slug]);
+        if (slug) {
+            getProductDatafromApi(slug);
+        }
+    }, [slug, setting]);
 
 
     // const fetchRelatedProducts = () => {

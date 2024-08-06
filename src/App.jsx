@@ -107,13 +107,13 @@ const App = () => {
 
   }, []);
 
-  
+
 
   useEffect(() => {
     if (language?.current_language) {
       const translateFile = typeof language.current_language.json_data === "object"
-        ? language.current_language.json_data
-        : jsonFile;
+        ? { ...language.current_language.json_data }
+        : { ...jsonFile };
 
       i18n.addResourceBundle(
         language.current_language.code,
@@ -124,7 +124,24 @@ const App = () => {
       );
       i18n.changeLanguage(language.current_language.code);
     }
-  }, [language, i18n]); // Add i18n to the dependency array
+  }, [language, i18n]);
+
+  // useEffect(() => {
+  //   if (language?.current_language) {
+  //     const translateFile = typeof language.current_language.json_data === "object"
+  //       ? language.current_language.json_data
+  //       : jsonFile;
+  //     i18n.addResourceBundle(
+  //       language.current_language.code,
+  //       'translation',
+  //       translateFile,
+  //       true,
+  //       true
+  //     );
+  //     i18n.changeLanguage(language.current_language.code);
+  //   }
+  // }, [language, i18n]); 
+  // Add i18n to the dependency array
   // let translateFile = typeof (language?.current_language?.json_data) === "object" ? language?.current_language?.json_data : jsonFile;
   // i18next.use(initReactI18next)
   //   .init({

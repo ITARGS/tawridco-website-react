@@ -33,6 +33,7 @@
 }
 
 
+
 .login .body .otp-message {
   font-size: 16px;
 }
@@ -291,6 +292,24 @@
   right: -18px;
 }
 
+
+
+.login-google-btn {
+  display: flex;
+  width: 100%;
+  padding: 10px;
+  justify-content: center;
+  border-radius: 5px;
+  /* background-color: ; */
+  color: var(--font-color);
+}
+
+.google-log-img {
+  height: 30px !important;
+  width: 30px !important;
+  margin: 0px 10px !important;
+}
+
 /* For Dark Theme */
 .login .modal-content {
   background-color: var(--second-cards-color);
@@ -299,4 +318,14 @@
 
 .login .modal-header .closeBtn {
   fill: var(--font-color);
+}
+
+.login-heading {
+  color: var(--bs-heading-color);
+}
+
+.login .header {
+  padding: 15px;
+  background-color: var(--second-cards-color);
+  ;
 }

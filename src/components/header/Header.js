@@ -42,7 +42,6 @@ const Header = () => {
     const favorite = useSelector(state => (state.favourite));
     const setting = useSelector(state => (state.setting));
     const languages = useSelector((state) => (state.language));
-
     const [isSticky, setIsSticky] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [bodyScroll, setBodyScroll] = useState(false);
@@ -226,7 +225,6 @@ const Header = () => {
     };
 
     const handleNavigation = (path, loginRequired = false, errorMessage = '') => {
-        console.log("Hello")
         closeSidebarRef.current.click();
         if (loginRequired && !user.user) {
             toast.error(t(errorMessage));
@@ -716,6 +714,14 @@ const Header = () => {
                                                         }
                                                     }}>
                                                     <IoCartOutline />
+                                                    {/* {cart?.cart?.total > 0 ?
+                                                        <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
+                                                            {console.log("total products", cart?.cart?.total)}
+                                                            {cart?.cart?.total > 0 ? cart?.cart?.total : null}
+                                                            {cart?.cartProducts?.length != 0 ? cart?.cartProducts?.length : null}
+                                                            <span className="visually-hidden">unread messages</span>
+                                                        </span>
+                                                        : null} */}
                                                     {cart?.cartProducts?.length !== 0 ?
                                                         <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
                                                             {cart?.cartProducts?.length != 0 ? cart?.cartProducts?.length : null}
@@ -940,14 +946,8 @@ const Header = () => {
                         </ul>
                     </div>
                 </nav>
-
-
-
-
                 {/* login modal */}
-
                 <Login show={showModal} setShow={setShowModal} />
-
                 {/* location modal */}
                 <Modal
                     className='location'

@@ -6,6 +6,8 @@ import './checkout.css';
 import 'react-calendar/dist/Calendar.css';
 import api from '../../api/api';
 import rozerpay from '../../utils/ic_razorpay.svg';
+import cashfree from '../../utils/ic_cashfree-2.svg';
+// import cashfree from '../../utils/ic_cashfree.svg';
 import paystack from '../../utils/ic_paystack.svg';
 import Stripe from '../../utils/Checkout_stripe.svg';
 import cod from '../../utils/ic_cod.svg';
@@ -199,7 +201,6 @@ const Checkout = () => {
     const [Razorpay] = useRazorpay();
     const handleRozarpayPayment = useCallback(async (order_id, razorpay_transaction_id, amount, name, email, mobile, app_name) => {
         const res = await initializeRazorpay();
-
         if (!res) {
             console.error("RazorPay SDK Load Failed");
             return;
@@ -229,6 +230,7 @@ const Checkout = () => {
                                 dispatch(setCartSubTotal({ data: 0 }));
                             }
                             else {
+                                console.log(result)
                                 toast.error(result.message);
                             }
                         })
@@ -293,6 +295,7 @@ const Checkout = () => {
     };
 
     const handleRazorpayCancel = (order_id) => {
+        console.log("canccel")
         api.deleteOrder(user?.jwtToken, order_id);
         setWalletDeductionAmt(walletDeductionAmt);
         setWalletAmount(user.user.balance);
@@ -329,6 +332,7 @@ const Checkout = () => {
                         }
                         else {
                             toast.error(result.message);
+                            console.log(result)
                         }
                     })
                     .catch(error => console.log(error));
@@ -372,7 +376,8 @@ const Checkout = () => {
             toast.error(t('please_select_date'));
         }
         else if (!address.address) {
-            toast.error(t("something_went_wrong_select_address"));
+            toast.error(t("please_select_address"));
+            // toast.error(t("something_went_wrong_select_address"));
         }
         else if (address.selected_address === null) {
             toast.error("Please Select a Default Delivery Address");
@@ -425,7 +430,6 @@ const Checkout = () => {
                 await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
                     .then(async result => {
-
                         // fetchOrders();
                         if (result.status === 1) {
                             setOrderNote("");
@@ -433,11 +437,10 @@ const Checkout = () => {
                                 .then(resp => resp.json())
                                 .then(res => {
                                     setisLoader(false);
-
                                     if (res.status === 1) {
                                         setloadingPlaceOrder(false);
                                         dispatch(setCartPromo({ data: null }));
-                                        // handleRozarpayPayment(result.data.order_id, res.data.transaction_id, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, user.user.name, user.user.email, user.user.mobile, setting.setting?.app_name, walletDeductionAmt);
+                                        handleRozarpayPayment(result.data.order_id, res.data.transaction_id, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, user.user.name, user.user.email, user.user.mobile, setting.setting?.app_name, walletDeductionAmt);
                                         handleRozarpayPayment(result.data.order_id, res.data.transaction_id, totalPayment, user.user.name, user.user.email, user.user.mobile, setting.setting?.app_name);
                                     }
                                     else {
@@ -459,6 +462,33 @@ const Checkout = () => {
                         }
                     })
                     .catch(error => console.log(error));
+            }
+            else if (paymentMethod === "Cashfree") {
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote).then((res) => res.json()).then(async (result) => {
+                    if (result.status === 1) {
+                        setOrderNote("");
+                        dispatch(setCartPromo({ data: null }));
+                        setloadingPlaceOrder(false);
+                        setOrderID(result.data.order_id);
+                        await api.initiate_transaction(user?.jwtToken, result?.data?.order_id, "Cashfree", "order").then((res) => res.json()).then((res) => {
+                            if (res?.status === 1) {
+                                setisLoader(false);
+                                setloadingPlaceOrder(false);
+                                setpaymentUrl(res.data?.redirectUrl);
+                                dispatch(deductUserBalance({ data: walletDeductionAmt }));
+                                dispatch(setCartPromo({ data: null }));
+                                let subWindow = window.open(res.data?.redirectUrl, '_parent');
+                            } else {
+                                toast.error(res.message);
+                                setloadingPlaceOrder(false);
+                            }
+                        }).catch((err) => {
+                            toast.error(err.message);
+                            setisLoader(false);
+                            setloadingPlaceOrder(false);
+                        })
+                    }
+                })
             }
             else if (paymentMethod === 'Paystack') {
                 await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
@@ -610,7 +640,6 @@ const Checkout = () => {
                             await api.initiate_transaction(user?.jwtToken, result.data.order_id, "Midtrans", "order")
                                 .then(resp => resp.json())
                                 .then(res => {
-                                    console.log(res.data);
                                     setisLoader(false);
                                     if (res.status === 1) {
                                         setloadingPlaceOrder(false);
@@ -644,7 +673,6 @@ const Checkout = () => {
                             await api.initiate_transaction(user?.jwtToken, result.data.order_id, "Phonepe", "order")
                                 .then(resp => resp.json())
                                 .then(res => {
-                                    console.log(res.data);
                                     setisLoader(false);
                                     if (res.status === 1) {
                                         setloadingPlaceOrder(false);
@@ -752,7 +780,6 @@ const Checkout = () => {
                                 <span><Link to="/" className="text-white text-decoration-none">{t("home")} / </Link> </span><span className='active'>{t("checkout")}</span>
                             </div>
                         </div>
-
 
 
                         {!setting.payment_setting === null && !expectedTime === null
@@ -898,6 +925,20 @@ const Checkout = () => {
                                                                     </div>
                                                                     <input type="radio" name="payment-method" id='razorpay' onChange={() => {
                                                                         setpaymentMethod("Razorpay");
+                                                                    }} />
+                                                                </div>
+                                                            </label>
+                                                        ) : null}
+                                                    {setting?.payment_setting?.cashfree_payment_method === "1"
+                                                        ? (
+                                                            <label className="form-check-label cursorPointer" htmlFor='cashfree'>
+                                                                <div className='payment-selector'>
+                                                                    <img src={cashfree} alt='cod' />
+                                                                    <div className="">
+                                                                        <span>{t("cashfree")}</span>
+                                                                    </div>
+                                                                    <input type="radio" name="payment-method" id='cashfree' onChange={() => {
+                                                                        setpaymentMethod("Cashfree");
                                                                     }} />
                                                                 </div>
                                                             </label>

@@ -60,7 +60,6 @@ const OrderDetails = React.memo(() => {
     const placeHolderImage = (e) => {
         e.target.src = setting.setting?.web_logo;
     };
-
     const fetchOrderDetails = async () => {
         api.getOrders(jwtToken, null, null, null, urlParams?.id).then(result => result.json()).then((response) => {
 
@@ -69,7 +68,9 @@ const OrderDetails = React.memo(() => {
             } else {
                 toast.error(response.message);
             }
+
         }).catch(err => {
+            console.log(err)
             const isNoInternet = ValidateNoInternet(err);
             if (isNoInternet) {
                 setIsNetworkError(true);
@@ -82,7 +83,7 @@ const OrderDetails = React.memo(() => {
     useEffect(() => {
         fetchOrderDetails();
         // console.log(orderData, 'orderDaraaa')
-    }, [editRatingId]);
+    }, [editRatingId, showPdtRatingModal]);
 
     const returnRef = useRef(null);
     const cancelRef = useRef(null);
@@ -172,7 +173,7 @@ const OrderDetails = React.memo(() => {
                                                     <thead>
                                                         <th>{t('product')}</th>
                                                         <th>{t('price')}</th>
-                                                        {orderData?.items?.some((item) => (Number(item?.active_status) <= 6)) ? <th>{t('rating')}</th> : null}
+                                                        {orderData?.items?.some((item) => (Number(item?.active_status) == 6)) ? <th>{t('rating')}</th> : null}
                                                     </thead>
                                                     <tbody>
                                                         {/* console.log(item); */}
@@ -235,7 +236,7 @@ const OrderDetails = React.memo(() => {
 
                                                                         </div> */}
                                                                             <div className="actions-container">
-                                                                                {Number(item?.active_status) == 6 && item?.return_status == 1 ?
+                                                                                {Number(item?.active_status) == 6 && item?.return_status == 1 && item?.return_requested === null ?
                                                                                     <span className="return">
                                                                                         <button onClick={() => setShowReturnModal(prevState => {
                                                                                             const newState = [...prevState];
@@ -258,22 +259,36 @@ const OrderDetails = React.memo(() => {
                                                                                     : null
                                                                                 }
                                                                                 {Number(item?.active_status) == 7 ?
-                                                                                    <span className="cancelled">
+                                                                                    <span className="cancel">
                                                                                         <button>{t('cancelled')}</button>
                                                                                     </span>
                                                                                     : null
                                                                                 }
 
                                                                                 {Number(item?.active_status) == 8 ?
-                                                                                    <span className="returned">
+                                                                                    <span className="return">
                                                                                         <button >{t('returned')}</button>
                                                                                     </span>
                                                                                     : null
                                                                                 }
+
+                                                                                {Number(item?.return_requested === 1) ?
+                                                                                    <span className="return">
+                                                                                        <button>{t('return_requested')}</button>
+                                                                                    </span>
+                                                                                    : null
+                                                                                }
+                                                                                {Number(item?.return_requested === 3) ?
+                                                                                    <span className="returned">
+                                                                                        <button >{t('return_rejected')}</button>
+                                                                                    </span>
+                                                                                    : null
+                                                                                }
+
                                                                             </div>
 
                                                                         </td>
-                                                                        {(Number(item?.active_status) <= 6) ?
+                                                                        {(Number(item?.active_status) == 6) ?
                                                                             <td>
                                                                                 <div className='rateProductText' >
                                                                                     {item.item_rating.find((rating) => rating.user.id === user.id) ?

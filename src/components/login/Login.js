@@ -16,12 +16,13 @@ import { setAuthId, setCurrentUser, setFcmToken, setJWTToken } from '../../model
 import { Modal } from 'react-bootstrap';
 import { setSetting } from '../../model/reducer/settingReducer';
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
-import { addtoGuestCart, setCart, setIsGuest } from '../../model/reducer/cartReducer';
+import { addtoGuestCart, setCart, setCartProducts, setIsGuest } from '../../model/reducer/cartReducer';
 import NewUserModal from '../newusermodal/NewUserModal';
 import { IoCloseSharp } from "react-icons/io5";
 import GoogleAuthButton from "../../utils/buttons/googleLogin.svg"
 import AppleAuthButton from "../../utils/buttons/appleLogin.svg"
 import { isMacOs, isIOS } from "react-device-detect"
+import GoogleLogo from "../../utils/google-color-icon.svg"
 
 
 const Login = React.memo((props) => {
@@ -37,7 +38,6 @@ const Login = React.memo((props) => {
     const [userEmail, setUserEmail] = useState("")
     const [userName, setUserName] = useState("")
     const [authType, setAuthType] = useState("")
-
 
     useEffect(() => {
         const initializeFirebaseMessaging = async () => {
@@ -129,16 +129,16 @@ const Login = React.memo((props) => {
 
 
     useEffect(() => {
-        if (firebase && auth && window.recaptchaVerifier && setting.setting.firebase) {
-            if (window?.recaptchaVerifier) {
-                try {
-                    window?.recaptchaVerifier?.clear();
-                } catch (err) {
-                    console.log(err?.message);
-                }
-            }
+        // if (firebase && auth && window.recaptchaVerifier && setting.setting.firebase) {
+        //     if (window?.recaptchaVerifier) {
+        //         try {
+        //             window?.recaptchaVerifier?.clear();
+        //         } catch (err) {
+        //             console.log(err?.message);
+        //         }
+        //     }
 
-        }
+        // }
         const recaptchaContainer = document.getElementById('recaptcha-container');
         firebase && auth && !(window.recaptchaVerifier) && (window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(recaptchaContainer, {
             size: "invisible",
@@ -165,7 +165,7 @@ const Login = React.memo((props) => {
         //     setisLoading(false);
         // }
         // else {
-        if (phonenum?.length < countryCode.length || phonenum.slice(1) === countryCode) {
+        if (phonenum?.length < countryCode.length || phonenum?.slice(1) === countryCode) {
             setError("Please enter phone number!");
             setisLoading(false);
         }
@@ -184,7 +184,7 @@ const Login = React.memo((props) => {
                         setisLoading(false);
                     }).catch((err) => {
                         setPhonenum();
-                        console.log(err.message);
+                        console.log(err);
                         setError(err.message);
                         setisLoading(false);
                     });
@@ -219,6 +219,14 @@ const Login = React.memo((props) => {
             .then(result => {
                 if (result.status === 1) {
                     dispatch(setCart({ data: result }));
+                    const productsData = result?.data?.cart?.map((product) => {
+                        return {
+                            product_id: product?.product_id,
+                            product_variant_id: product?.product_variant_id,
+                            qty: product?.qty
+                        };
+                    });
+                    dispatch(setCartProducts({ data: productsData }));
                 }
                 else {
                     dispatch(setCart({ data: null }));
@@ -249,26 +257,7 @@ const Login = React.memo((props) => {
         });
     };
 
-    // const isUserVerified = async (num, authId) => {
-    //     try {
-    //         const response = await api.checkUserExists(num);
-    //         const result = await response.json();
-    //         if (result.status === 0) {
-    //             setRegisterModalShow(true);
-    //             setIsVerified(false);
-    //             setIsOTP(false);
-    //             setOTP("");
-    //             setisLoading(false);
-    //             setError("");
-    //             setcheckboxSelected(false);
-    //             props.setShow(false);
-    //         } else {
-    //             loginApiCall(num.replace("+", ""), authId, countryCode.replace("+", ""));
-    //         }
-    //     } catch (e) {
-    //         console.log(e?.message);
-    //     }
-    // };
+
 
     const AddtoCartBulk = async (token) => {
         try {
@@ -291,7 +280,7 @@ const Login = React.memo((props) => {
         dispatch(setAuthId({ data: Uid }));
         await api.login(Uid, fcm)
             .then(response => response.json())
-            .then(result => {
+            .then(async (result) => {
                 if (result.status === 1) {
                     getCurrentUser(result.data.access_token);
                     api.getSettings(1, result.data.access_token)
@@ -303,9 +292,7 @@ const Login = React.memo((props) => {
                                 dispatch(setFavouriteProductIds({ data: res?.data?.favorite_product_ids }));
                             }
                         });
-                    fetchCart(result.data.access_token, city?.city?.latitude ? city?.city?.latitude : setting?.setting?.default_city?.latitude,
-                        city?.city?.longitude ? city?.city?.longitude : setting?.setting?.default_city?.longitude
-                    );
+
                     dispatch(setJWTToken({ data: result.data.access_token }));
                     // dispatch(setAuthId({ data: Uid }));
 
@@ -313,9 +300,12 @@ const Login = React.memo((props) => {
                         dispatch(setIsGuest({ data: false }));
                     }
                     if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && result.data?.user?.status == 1) {
-                        AddtoCartBulk(result.data.access_token);
+                        await AddtoCartBulk(result.data.access_token);
                         // dispatch(setIsGuest({ data: false }));
                     }
+                    await fetchCart(result.data.access_token, city?.city?.latitude ? city?.city?.latitude : setting?.setting?.default_city?.latitude,
+                        city?.city?.longitude ? city?.city?.longitude : setting?.setting?.default_city?.longitude
+                    );
                     // setlocalstorageOTP(Uid);
                     setError("");
                     setOTP("");
@@ -512,9 +502,13 @@ const Login = React.memo((props) => {
                                     
                                     
                                     } */}
-                                <button onClick={handleGoogleAuthentication}><img src={GoogleAuthButton} className='login-google-btn ' /></button>
+                                {/* TODO: */}
+                                <div className='google-auth-container'>
+                                    <button className='login-google-btn'><img src={GoogleLogo} className='google-log-img' />{t("continue_with_google")}</button>
+                                </div>
                                 {/* <button onClick={handleAppleAuthentication}><img src={AppleAuthButton} className='login-google-btn' /></button> */}
 
+                                {/* <button onClick={handleGoogleAuthentication}><img src={GoogleAuthButton} className='login-google-btn ' /></button> */}
 
                                 <span style={{ alignSelf: "baseline", marginTop: "20px", fontSize: "12px" }}>
                                     {/* <input type="checkbox" className='mx-2' required checked={checkboxSelected} onChange={() => {

@@ -907,10 +907,9 @@ input::placeholder {
   overflow-wrap: break-word;
   line-height: 50px;
   font-weight: 800;
-  color: #232323;
+  color: var(--font-color);
   padding: 15px;
-  background-color: #fff;
-
+  background: var(--second-cards-color);
   border-radius: 10px;
 }
 

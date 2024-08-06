@@ -33,6 +33,16 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
         const percentage = (starWiseRating * 100) / totalRating;
         return percentage;
     };
+
+    const handleColorChange = () => {
+        const description = document.getElementById("description-content-1");
+        console.log(description)
+        // if (description) {
+        description.classList.add('description-content');
+        // }
+    }
+
+
     useEffect(() => {
         const adjustImageLengthAccWindowSize = () => {
             if (window.innerWidth <= 425) {
@@ -58,6 +68,7 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
 
         window.addEventListener("resize", adjustImageLengthAccWindowSize);
 
+        handleColorChange()
         return () => {
             window.removeEventListener("resize", adjustImageLengthAccWindowSize);
         };
@@ -73,7 +84,7 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
         label: <h3 className={activeKey == "1" ? "productTabActive" : "description-header"}>{t("product_desc_title")}</h3>,
         children:
 
-            <div className='description' dangerouslySetInnerHTML={{ __html: productdata.description }} />
+            <div className='description' ><p dangerouslySetInnerHTML={{ __html: productdata.description }} className='description-content' id='description-content-1'></p></div>
 
     },
     {

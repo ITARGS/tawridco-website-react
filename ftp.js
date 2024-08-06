@@ -4,7 +4,7 @@ var config = {
     // Dev ->
     host: "ftp.thewrteam.in",
     user: "u863526903.devegrocer",
-    password: "Wrteam@123",
+    password: "Wrteam@123456",
     //Live ->
     // host: "193.203.162.252",
     // user: "egrocerweb",

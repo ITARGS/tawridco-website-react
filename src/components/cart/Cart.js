@@ -14,6 +14,7 @@ import { setProductSizes } from "../../model/reducer/productSizesReducer";
 import { addtoGuestCart, clearCartPromo, setCart, setCartProducts, setCartSubTotal } from "../../model/reducer/cartReducer";
 import Promo from "./Promo";
 import { RiCoupon2Fill } from 'react-icons/ri';
+import Login from '../login/Login';
 
 
 
@@ -36,6 +37,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
     const [showPromoOffcanvas, setShowPromoOffcanvas] = useState(false);
     const [cartSidebarData, setCartSidebarData] = useState([]);
     const [guestCartSubTotal, setGuestCartSubTotal] = useState(null);
+    const [showModal, setShowModal] = useState(false);
     // const [cartSubTotal, setCartSubTotal] = useState(0);
     // console.log("Cart SideBar Open State ->", isCartSidebarOpen);
     useEffect(() => {
@@ -527,7 +529,8 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                                                     }}>{t("view_cart")}</button>
                                                     <button type='button' className='checkout' onClick={() => {
                                                         if (cart?.isGuest) {
-                                                            toast.error(t("login_to_access_checkout_page"));
+                                                            setShowModal(true)
+                                                            // toast.error(t("login_to_access_checkout_page"));
                                                             closeCanvas.current.click();
                                                         } else {
                                                             stockValidation();
@@ -542,8 +545,8 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                 </>
             )
             }
+            <Login show={showModal} setShow={setShowModal} />
         </div>
-
     );
 };
 

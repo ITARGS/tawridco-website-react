@@ -8,7 +8,7 @@ import './newmodal.css';
 import { useTranslation } from 'react-i18next';
 import { setCurrentUser, setJWTToken } from "../../model/reducer/authReducer";
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
-import { addtoGuestCart, setCart, setIsGuest } from '../../model/reducer/cartReducer';
+import { addtoGuestCart, setCart, setCartProducts, setIsGuest } from '../../model/reducer/cartReducer';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { setSetting } from '../../model/reducer/settingReducer';
 
@@ -70,39 +70,44 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
     const handleUserRegistration = async (e) => {
         e.preventDefault();
         try {
-            await api.register(auth_id, userName, userEmail, phoneNum, authType, fcm_token, countryCode).then(response => response.json()).then((result) => {
-                console.log("result", result)
-                if (result.status == 1) {
-                    getCurrentUser(result.data.access_token)
-                    api.getSettings(1, result.data.access_token)
-                        .then((req) => req.json())
-                        .then((res) => {
-                            if (res.status == 1) {
-                                dispatch(setSetting({ data: res?.data }));
-                                dispatch(setFavouriteLength({ data: res?.data?.favorite_product_ids?.length }));
-                                dispatch(setFavouriteProductIds({ data: res?.data?.favorite_product_ids }));
-                            }
-                        });
-                    fetchCart(result.data.access_token, city?.city?.latitude ? city?.city?.latitude : setting?.setting?.default_city?.latitude,
-                        city?.city?.longitude ? city?.city?.longitude : setting?.setting?.default_city?.longitude
-                    );
-                    dispatch(setJWTToken({ data: result.data.access_token }));
-                    // dispatch(setAuthId({ data: Uid }));
+            if (phoneNum?.length < countryCode.length || phoneNum == null) {
+                setError("Please enter phone number!");
+                setisLoading(false);
+            } else {
+                await api.register(auth_id, userName, userEmail, phoneNum, authType, fcm_token, countryCode).then(response => response.json()).then(async (result) => {
+                    if (result.status == 1) {
+                        getCurrentUser(result.data.access_token)
+                        api.getSettings(1, result.data.access_token)
+                            .then((req) => req.json())
+                            .then((res) => {
+                                if (res.status == 1) {
+                                    dispatch(setSetting({ data: res?.data }));
+                                    dispatch(setFavouriteLength({ data: res?.data?.favorite_product_ids?.length }));
+                                    dispatch(setFavouriteProductIds({ data: res?.data?.favorite_product_ids }));
+                                }
+                            });
 
-                    if (result.data?.user?.status == 1) {
-                        dispatch(setIsGuest({ data: false }));
+                        dispatch(setJWTToken({ data: result.data.access_token }));
+                        // dispatch(setAuthId({ data: Uid }));
+
+                        if (result.data?.user?.status == 1) {
+                            dispatch(setIsGuest({ data: false }));
+                        }
+                        if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && result.data?.user?.status == 1) {
+                            await AddtoCartBulk(result.data.access_token);
+                            // dispatch(setIsGuest({ data: false }));
+                        }
+                        await fetchCart(result.data.access_token, city?.city?.latitude ? city?.city?.latitude : setting?.setting?.default_city?.latitude,
+                            city?.city?.longitude ? city?.city?.longitude : setting?.setting?.default_city?.longitude
+                        );
                     }
-                    if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && result.data?.user?.status == 1) {
-                        AddtoCartBulk(result.data.access_token);
-                        // dispatch(setIsGuest({ data: false }));
-                    }
-                }
-                setRegisterModalShow(false)
-                toast.success(t("register_successfully"));
-                setLoginModal(false)
-            }).catch((err) => {
-                console.log(err)
-            })
+                    setRegisterModalShow(false)
+                    toast.success(t("register_successfully"));
+                    setLoginModal(false)
+                }).catch((err) => {
+                    console.log(err)
+                })
+            }
         } catch (error) {
             console.log(error)
         }
@@ -114,6 +119,14 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
             .then(result => {
                 if (result.status === 1) {
                     dispatch(setCart({ data: result }));
+                    const productsData = result?.data?.cart?.map((product) => {
+                        return {
+                            product_id: product?.product_id,
+                            product_variant_id: product?.product_variant_id,
+                            qty: product?.qty
+                        };
+                    });
+                    dispatch(setCartProducts({ data: productsData }));
                 }
                 else {
                     dispatch(setCart({ data: null }));
@@ -181,6 +194,9 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
             <Modal.Body
                 className='user_data_modal_body'>
                 <span className='note'>{t("profile_note")}</span>
+                {error === ""
+                    ? ""
+                    : <span className='error-msg'>{error}</span>}
                 <form onSubmit={handleUserRegistration} className='userData-Form'>
                     <div className='inputs-container'>
                         <input type='text' placeholder={t('user_name')} value={userName} onChange={(e) => {
