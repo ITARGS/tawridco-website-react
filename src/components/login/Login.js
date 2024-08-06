@@ -502,9 +502,9 @@ const Login = React.memo((props) => {
                                     
                                     
                                     } */}
-                                {/* TODO: */}
+
                                 <div className='google-auth-container'>
-                                    <button className='login-google-btn'><img src={GoogleLogo} className='google-log-img' />{t("continue_with_google")}</button>
+                                    <button className='login-google-btn' onClick={handleGoogleAuthentication}><img src={GoogleLogo} className='google-log-img' />{t("continue_with_google")}</button>
                                 </div>
                                 {/* <button onClick={handleAppleAuthentication}><img src={AppleAuthButton} className='login-google-btn' /></button> */}
 

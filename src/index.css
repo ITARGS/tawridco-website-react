@@ -215,6 +215,7 @@ input[type="number"] {
 .fssai-details .fssai-license-no span {
   font-size: 16px;
   font-weight: 600;
+  color: var(--font-color);
 }
 
 .no-data-img {

@@ -328,8 +328,8 @@
 
 .order-container .container-body .table-container .item-container .item-variant {
   padding: 8px;
-  background-color: var(--container-bg);
-  color: #000;
+  background-color: var(--body-background);
+  color: var(--font-color);
   font-size: 12px;
   border-radius: 6px;
 }

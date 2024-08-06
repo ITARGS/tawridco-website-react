@@ -241,7 +241,25 @@ const AddWalletModal = (props) => {
                     window.removeEventListener("message", messageEventListener);
                 };
             } else if (paymentMethod === "cashfree") {
-                await api.addTransaction(user?.jwtToken,"wallet",amount,)
+                const paymentWindow = window.open(result?.data?.redirectUrl, "_blank");
+                const messageEventListener = async (event) => {
+                    // console.log(event.data);
+                    if (event.data === "Recharge Done") {
+                        paymentWindow.close();
+                        dispatch(addUserBalance({ data: walletAmount }));
+                        toast.success(t("wallet_recharge_successfull"));
+                        window.removeEventListener("message", messageEventListener);
+                        props.setShowModal(false);
+                        props.fetchTransactions();
+                        // Remove the event listener once the task is completed
+                    }
+                };
+                // Add the event listener
+                window.addEventListener("message", messageEventListener);
+                paymentWindow.onbeforeunload = () => {
+                    // Remove the event listener if the payment window is closed without making payment
+                    window.removeEventListener("message", messageEventListener);
+                };
             }
         } catch (err) {
             console.log(err.message);

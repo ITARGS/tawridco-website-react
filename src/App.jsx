@@ -169,6 +169,8 @@ const App = () => {
     await api.getSettings(user?.user ? 1 : 0, user?.user ? user?.jwtToken : null).then(response => response.json())
       .then(result => {
         if (result.status === 1) {
+          dispatch(setFavouriteLength({ data: result?.data?.favorite_product_ids?.length }));
+          dispatch(setFavouriteProductIds({ data: result?.data?.favorite_product_ids }));
           if (result?.data?.default_city == undefined && city?.city) {
             const updatedSetting = {
               ...setting?.setting,
@@ -182,12 +184,12 @@ const App = () => {
               }
             };
             dispatch(setSetting({ data: updatedSetting }));
-            dispatch(setFavouriteLength({ data: updatedSetting?.setting?.favorite_product_ids?.length }));
-            dispatch(setFavouriteProductIds({ data: updatedSetting?.setting?.favorite_product_ids }));
+            // dispatch(setFavouriteLength({ data: updatedSetting?.setting?.favorite_product_ids?.length }));
+            // dispatch(setFavouriteProductIds({ data: updatedSetting?.setting?.favorite_product_ids }));
           } else {
             dispatch(setSetting({ data: result?.data }));
-            dispatch(setFavouriteLength({ data: result?.data?.favorite_product_ids?.length }));
-            dispatch(setFavouriteProductIds({ data: result?.data?.favorite_product_ids }));
+            // dispatch(setFavouriteLength({ data: result?.data?.favorite_product_ids?.length }));
+            // dispatch(setFavouriteProductIds({ data: result?.data?.favorite_product_ids }));
           }
         }
       })

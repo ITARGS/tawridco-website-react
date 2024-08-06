@@ -354,6 +354,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                     <div className='product-card'>
                                                                         <span className='border border-light rounded-circle p-2 px-3' id='aiEye'>
                                                                             <AiOutlineEye
+                                                                             
                                                                                 onClick={() => {
                                                                                     setselectedProduct(product); setShowModal(true);
                                                                                     setP_id(product.id); setP_V_id(product.variants[0].id); setQnty(product.variants[0].cart_count + 1);
