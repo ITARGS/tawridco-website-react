@@ -610,7 +610,10 @@ input::placeholder {
 }
 
 #productlist .row .filter-row .filter-bar:hover {
-  background: var(--secondary-color-light);
+  /* background: var(--secondary-color-light); */
+  opacity: 1;
+  border-left: 5px solid var(--secondary-color);
+  background: #C8E5D530;
 }
 
 #productlist .row .filter-row .filter-bar.active {
@@ -1390,7 +1393,7 @@ input::placeholder {
 }
 
 .product-details-view .detail-wrapper .bottom-section .input-to-cart button {
-  background: #8b8b8b;
+  background: var(--secondary-color);
   border-radius: 5px;
 }
 
@@ -1734,7 +1737,7 @@ input::placeholder {
   color: var(--font-color);
 }
 
-.veg-indicator {
+.veg-indicater {
   color: var(--font-color);
 }
 

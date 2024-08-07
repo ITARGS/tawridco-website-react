@@ -19,7 +19,7 @@ const ShopByCountries = () => {
     const shop = useSelector(state => state.shop);
     const setting = useSelector(state => state.setting);
 
-    const sliderRef = useRef(null);
+    let sliderRef = useRef(null);
 
     const handlePrevClick = () => {
         sliderRef.current.slickPrev();
@@ -28,18 +28,26 @@ const ShopByCountries = () => {
     const handleNextClick = () => {
         sliderRef.current.slickNext();
     };
+    // const handleNextClick = () => {
+    //     // console.log("Slider ref:", sliderRef.current);
+    //     // console.log("Slider methods:", Object.keys(sliderRef.current));
+    //     if (sliderRef.current && typeof sliderRef.current.slickNext === 'function') {
+    //         sliderRef.current.slickNext();
+    //     } else {
+    //         console.error("slickNext is not a function");
+    //     }
+    // };
     const settings = {
         infinite: false,
         autoplay: true,
-        autoplaySpeed: 3000,
-        pauseOnHover: false,
+        autoplaySpeed: 300,
+        // pauseOnHover: false,
         direction: 'rtl',
         pauseOnDotsHover: false,
-        pauseOnFocus: true,
+        // pauseOnFocus: true,
         slidesToShow: 5,
         slidesPerRow: 1,
         initialSlide: 0,
-
         // Add custom navigation buttons using Font Awesome icons
         responsive: [
             {
@@ -101,7 +109,7 @@ const ShopByCountries = () => {
                         </div>
                     </div>
                     <div className='row justify-content-center home allCountriesContainer'>
-                        <Slider {...settings} ref={sliderRef}>
+                        <Slider {...settings} ref={sliderRef} >
                             {shop.shop?.countries?.map((country, index) => (
                                 <div className="my-3 content" key={index} onClick={() => {
                                     handleCountryFilter(country?.id)

@@ -94,11 +94,11 @@ const PayPalPaymentHandler = () => {
                 <Lottie animationData={animate2} loop={false} className='lottie-tick'></Lottie>
                 <Lottie className='lottie-content' animationData={animate1} loop={true}></Lottie>
                 <div className='text-center'>
-                    {t("order_placed_description")}
+                    <p className='order-success-desc'>{t("order_placed_description")}</p>
                 </div>
                 <button onClick={handleNavigate} className='checkout_btn'>
                     {t("go_to_home")}
-                </button>
+                </button>   
             </div>
                 : null}
         </>

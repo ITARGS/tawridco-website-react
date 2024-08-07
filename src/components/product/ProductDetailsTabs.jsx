@@ -36,7 +36,6 @@ const ProductDetailsTabs = ({ productdata, productRating, totalData, loading, ra
 
     const handleColorChange = () => {
         const description = document.getElementById("description-content-1");
-        console.log(description)
         // if (description) {
         description.classList.add('description-content');
         // }

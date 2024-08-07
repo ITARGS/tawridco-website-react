@@ -86,6 +86,7 @@ const ProductDetails = () => {
     const [qnty, setQnty] = useState(0);
     const [cartLoader, setCartLoader] = useState(false);
     const [isNetworkError, setIsNetworkError] = useState(false);
+    const [similarProducts, setSimilarProducts] = useState([])
 
     const getProductDatafromApi = (slug) => {
         if (slug !== null || slug !== undefined) {
@@ -93,6 +94,9 @@ const ProductDetails = () => {
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
+                        api.getProductbyFilter(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, -1, user?.jwtToken, result?.data?.tag_names).then((res) => res.json()).then((result => {
+                            setSimilarProducts(result?.data)
+                        }))
                         dispatch(setSelectedProduct({ data: result?.data[0]?.id }));
                         setproductdata(result.data);
                         setVariantIndex(result.data.variants[0]?.id);
@@ -715,7 +719,7 @@ const ProductDetails = () => {
                                                         productdata?.indicator == 1 ?
                                                             <div className='d-flex align-items-center mt-3'>
                                                                 <img src={VegIcon} alt='vegIcon' className='me-3' />
-                                                                {t("vegetarian")}
+                                                                <p className='veg-indicater'>{t("vegetarian")}</p>
                                                             </div>
                                                             :
                                                             <div className='d-flex align-items-center mt-3'>
@@ -804,7 +808,7 @@ const ProductDetails = () => {
                             totalImages={totalImages}
                         />
                         {
-                            productdata?.related_products?.length > 0 ? <div className='related-product-wrapper'>
+                            similarProducts?.length > 0 ? <div className='related-product-wrapper'>
                                 <h5>{t("related_product")}</h5>
                                 <div className='related-product-container'>
                                     {productdata?.related_products === null
@@ -839,7 +843,7 @@ const ProductDetails = () => {
                                                 modules={[Navigation, Thumbs, Mousewheel, Autoplay, Pagination]}
                                             // className="mySwiper2"
                                             >
-                                                {productdata?.related_products?.map((related_product, index) => (
+                                                {similarProducts?.map((related_product, index) => (
                                                     <div className="col-md-3 " key={related_product?.id}>
                                                         <SwiperSlide>
                                                             <div className='product-card'>
@@ -957,7 +961,7 @@ const ProductDetails = () => {
                                                                         {related_product.variants[0].cart_count > 0 ? <>
                                                                             <div id={`input-cart-productdetail`} className="input-to-cart">
                                                                                 <button type='button' className="wishlist-button" onClick={() => {
-
+                                                                                    { console.log("related product", related_product.variants[0].cart_count) }
                                                                                     if (related_product.variants[0].cart_count === 1) {
                                                                                         removefromCart(related_product.id, related_product.variants[0].id);
 
@@ -1013,13 +1017,12 @@ const ProductDetails = () => {
                                                                             </div>
                                                                         </> : <>
                                                                             <button type="button" id={`Add-to-cart-section${index}`} className={`w-100 h-100 add-to-cart active ${(!Number(related_product.is_unlimited_stock) && (related_product.variants[0].stock <= 0)) ? "buttonDisabled" : ""} `} onClick={() => {
+                                                                                { console.log("cart", cart.cartProducts) }
                                                                                 if (user?.jwtToken !== undefined) {
-
-                                                                                    if (cart.cart && cart.cart.data.cart.some(element => element.product_id === related_product.id) && cart.cart.data.cart.some(element => element.product_variant_id === related_product.variants[0].id)) {
+                                                                                    if (cart?.cart && cart?.cartProducts?.some(element => element.product_id === related_product.id) && cart?.cartProducts?.some(element => element.product_variant_id === related_product.variants[0].id)) {
                                                                                         toast.info('Product already in Cart');
                                                                                     } else {
                                                                                         if (Number(related_product.variants[0].stock) > 1) {
-
                                                                                             addtoCart(related_product.id, related_product.variants[0].id, 1);
                                                                                         } else {
                                                                                             toast.error(t("out_of_stock_message"));

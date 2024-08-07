@@ -293,6 +293,10 @@ const Location = (props) => {
 
   //handle Confirm current location
   const confirmCurrentLocation = async () => {
+    if (errorMsg) {
+      toast.error(errorMsg)
+      return
+    }
     setisloading(true);
 
     fetchCity(localLocation.city, localLocation.lat, localLocation.lng)
@@ -435,13 +439,14 @@ const Location = (props) => {
                         </div>
 
                         <p className='map-content-p'><b>{t("address")} : </b>{isAddressLoading ? "...." : localLocation.formatted_address}</p>
-                        {errorMsg === "" ? (
-                          <div className='map-content'>
-                            {/* <button whileTap={{ scale: 0.6 }} onClick={handleCurrentLocationClick} disabled={isInputFields} style={isInputFields ? { opacity: "0.5" } : null}>
+                        {console.log("error message", errorMsg)}
+                        {/* {errorMsg === "" ? ( */}
+                        <div className='map-content'>
+                          {/* <button whileTap={{ scale: 0.6 }} onClick={handleCurrentLocationClick} disabled={isInputFields} style={isInputFields ? { opacity: "0.5" } : null}>
                               <BiCurrentLocation className='mx-3' />{t("use_my_current_location")}</button> */}
-                            <button whiletap={{ scale: 0.6 }} type='button' className='btn-confirm-location' onClick={confirmCurrentLocation} disabled={localLocation.formatted_address === ''}>{t("confirm")}</button>
-                          </div>
-                        ) : null}
+                          <button whiletap={{ scale: 0.6 }} type='button' className='btn-confirm-location' onClick={confirmCurrentLocation} disabled={localLocation.formatted_address === ''}>{t("confirm")}</button>
+                        </div>
+                        {/* ) : null} */}
                       </>
                     )}
                   {/* <p className='text-danger' style={{ fontSize: "2rem" }}>{errorMsg}</p> */}

@@ -414,10 +414,11 @@ const ProductList2 = React.memo(() => {
                         }
                     </div> : null}
 
-                {(sizes?.length !== 0) ?
+                {(sizes?.length !== 0 && sizes?.length !== undefined) ?
                     <div className='filter-row'>
                         <h2 className='product-filter-headline d-flex w-100 align-items-center justify-content-between'>
                             <span>{t("Filter By Sizes")}</span>
+
                         </h2>
                         {!sizes
                             ?
@@ -940,7 +941,7 @@ const ProductList2 = React.memo(() => {
                                                                                                         setQnty(product.variants[0].cart_count + 1);
                                                                                                     }} >
                                                                                                         <span className='product_list_dropdown_span'>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} </>}</span>
-                                                                                                        <IoIosArrowDown className='product-variant-dropdown'/>
+                                                                                                        <IoIosArrowDown className='product-variant-dropdown' />
                                                                                                     </div>
                                                                                                 </>
                                                                                                     :
@@ -960,7 +961,7 @@ const ProductList2 = React.memo(() => {
                                                                                                             setQnty(product.variants[0].cart_count + 1);
                                                                                                         }} >
                                                                                                             <span className='product_list_dropdown_span'>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} Rs.<span className="original-price" id={`dropDown-Toggle${index}`}>{product.variants[0].toFixed(setting.setting && setting.setting.decimal_point)}</span></>}</span>
-                                                                                                            <IoIosArrowDown className='product-variant-dropdown'/>
+                                                                                                            <IoIosArrowDown className='product-variant-dropdown' />
                                                                                                         </div>
                                                                                                     </>
                                                                                                         :

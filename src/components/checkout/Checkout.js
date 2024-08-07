@@ -487,6 +487,10 @@ const Checkout = () => {
                             setisLoader(false);
                             setloadingPlaceOrder(false);
                         })
+                    } else {
+                        toast.error(result.message);
+                        setloadingPlaceOrder(false);
+                        setOrderNote("");
                     }
                 })
             }
@@ -760,7 +764,7 @@ const Checkout = () => {
                                     </Modal.Header>
                                     <Modal.Body className='success_body d-flex flex-column justify-content-center align-items-center'>
                                         <div>
-                                            {t("order_placed_description")}
+                                            <p className='order-success-desc'>{t("order_placed_description")}</p>
                                         </div>
                                         <button onClick={handleClose} className='checkout_btn'>
                                             {t("go_to_home")}

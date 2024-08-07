@@ -291,7 +291,7 @@ const api = {
 
         return fetch(appUrl + appSubUrl + "/edit_profile", requestOptions);
     },
-    getProductbyFilter(latitude, longitude, filters, token) {
+    getProductbyFilter(latitude, longitude, filters, token, tag_names) {
         var myHeaders = new Headers();
         //console.log("getProductbyFilter API ->", filters);
         myHeaders.append(access_key_param, access_key);
@@ -300,6 +300,10 @@ const api = {
         // formdata.append("city_id", city_id);
         formdata.append("latitude", latitude);
         formdata.append("longitude", longitude);
+        if (tag_names !== undefined) {
+            formdata.append("tag_names", tag_names)
+        }
+
         //console.log(filters);
         if (filters !== undefined) {
             for (const filter in filters) {

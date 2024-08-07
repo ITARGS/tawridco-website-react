@@ -116,19 +116,14 @@
   flex-direction: column;
   background-color: var(--second-cards-color);
 }
-.checkout-container
-  .checkout-util-container
-  .delivery-time-wrapper
-  .estimateDeliveryDate {
+
+.checkout-container .checkout-util-container .delivery-time-wrapper .estimateDeliveryDate {
   height: 75px;
   margin-left: 25px;
   font-size: 16px;
 }
 
-.checkout-container
-  .order-container
-  .order-instructions-wrapper
-  .order-instruction-body {
+.checkout-container .order-container .order-instructions-wrapper .order-instruction-body {
   width: 100%;
   height: 200px;
   background-color: var(--second-cards-color);
@@ -137,11 +132,8 @@
   padding: 10px;
   border-radius: 0px 0px 8px 8px;
 }
-.checkout-container
-  .order-container
-  .order-instructions-wrapper
-  .order-instruction-body
-  .order-instructions-input {
+
+.checkout-container .order-container .order-instructions-wrapper .order-instruction-body .order-instructions-input {
   resize: none;
   width: 100%;
   padding: 5px;
@@ -150,10 +142,8 @@
   border: 1px solid #ddd;
   border-radius: var(--bd-radius-5);
 }
-.checkout-container
-  .order-container
-  .payment-wrapper
-  .form-check-label:last-child {
+
+.checkout-container .order-container .payment-wrapper .form-check-label:last-child {
   border: 0 !important;
 }
 
@@ -167,10 +157,7 @@
   border: 1px solid #ddd;
 }
 
-.checkout-container
-  .checkout-util-container
-  .time-slot-container
-  div:first-child {
+.checkout-container .checkout-util-container .time-slot-container div:first-child {
   padding: 4px 10px;
   background: var(--secondary-color);
   border-top-right-radius: 8px;
@@ -178,10 +165,7 @@
   text-align: center;
 }
 
-.checkout-container
-  .checkout-util-container
-  .time-slot-container
-  div:last-child {
+.checkout-container .checkout-util-container .time-slot-container div:last-child {
   text-align: center;
   padding: 4px 10px;
   font-size: 16px;
@@ -199,22 +183,14 @@
   color: var(--font-color);
 }
 
-.checkout-container
-  .order-container
-  .payment-wrapper
-  .form-check-label
-  input[type="radio"]:checked {
+.checkout-container .order-container .payment-wrapper .form-check-label input[type="radio"]:checked {
   background-color: var(--secondary-color);
   padding: 5px;
   outline-offset: 3px;
   outline: 1px solid;
 }
 
-.checkout-container
-  .order-container
-  .payment-wrapper
-  .form-check-label
-  input[type="radio"] {
+.checkout-container .order-container .payment-wrapper .form-check-label input[type="radio"] {
   appearance: none;
   width: 10px !important;
   align-self: center !important;
@@ -257,7 +233,7 @@
   color: var(--font-color);
 }
 
-.checkout-container .order-container .order-summary-wrapper .summary > div {
+.checkout-container .order-container .order-summary-wrapper .summary>div {
   padding: 5px;
   margin-top: 0px;
 }
@@ -267,22 +243,11 @@
   border-top: 1px solid #eee;
 }
 
-.checkout-container
-  .order-container
-  .order-summary-wrapper
-  .summary
-  .total
-  .total-amount
-  span {
+.checkout-container .order-container .order-summary-wrapper .summary .total .total-amount span {
   color: var(--secondary-color);
 }
 
-.checkout-container
-  .order-container
-  .order-summary-wrapper
-  .summary
-  .button-container
-  button {
+.checkout-container .order-container .order-summary-wrapper .summary .button-container button {
   background: var(--secondary-color);
   border-radius: 8px;
   width: 100%;
@@ -376,17 +341,21 @@
 .FormRow div div input {
   border: 5px solid black;
 }
+
 .successModalDialog {
   width: 500px !important;
   height: 500px !important;
 }
-.successModalDialog > .modal-content {
+
+.successModalDialog>.modal-content {
   height: 100%;
 }
+
 .success_modal .success_body {
   font-size: 24px;
   border: 0;
   text-align: center;
+  color: var(--font-color);
 }
 
 .success_modal .success_header {
@@ -409,11 +378,13 @@
   font-weight: 700;
   margin-top: 50px;
 }
+
 @media screen and (min-width: 0px) and (max-width: 510px) {
   .successModalDialog {
     width: 100% !important;
   }
 }
+
 .order-container .promo-section {
   margin-bottom: 20px;
 }
@@ -437,12 +408,7 @@
   font-size: 16px;
 }
 
-.order-container
-  .promo-section
-  .promo-wrapper
-  .promo-container
-  .promo-button
-  button {
+.order-container .promo-section .promo-wrapper .promo-container .promo-button button {
   background-color: var(--second-cards-color);
   padding: 8px;
   border-radius: 5px;
@@ -463,21 +429,11 @@
   align-items: center;
 }
 
-.order-container
-  .promo-section
-  .promo-wrapper
-  .promo-container
-  .promo-code
-  .promo-name {
+.order-container .promo-section .promo-wrapper .promo-container .promo-code .promo-name {
   font-weight: 500;
 }
 
-.order-container
-  .promo-section
-  .promo-wrapper
-  .promo-container
-  .promo-code
-  .promo-remove {
+.order-container .promo-section .promo-wrapper .promo-container .promo-code .promo-remove {
   color: red;
   font-size: 14px;
   font-weight: 600;
@@ -486,24 +442,29 @@
 }
 
 @media screen and (min-width: 0px) and (max-width: 320px) {
+
   .checkout-container .checkout-util-container,
   .checkout-container .order-container {
     width: 300px;
   }
 }
+
 @media screen and (min-width: 768px) and (max-width: 1024px) {
   .checkout-container.container {
     align-items: center;
   }
+
   .checkout-container .order-container {
     width: 700px;
   }
 }
+
 @media screen and (min-width: 1025px) and (max-width: 1440px) {
   .checkout-container .order-container {
     padding-right: 20px;
   }
 }
+
 .checkoutCalendar .react-calendar__navigation__label__labelText,
 .checkoutCalendar .react-calendar__navigation__arrow,
 .checkoutCalendar .react-calendar__tile {
@@ -514,4 +475,8 @@
   background-color: var(--second-cards-color);
   border-bottom-left-radius: var(--bd-radius-8);
   border-bottom-right-radius: var(--bd-radius-8);
+}
+
+.order-success-desc {
+  color: var(--font-color)
 }

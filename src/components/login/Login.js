@@ -292,10 +292,8 @@ const Login = React.memo((props) => {
                                 dispatch(setFavouriteProductIds({ data: res?.data?.favorite_product_ids }));
                             }
                         });
-
                     dispatch(setJWTToken({ data: result.data.access_token }));
                     // dispatch(setAuthId({ data: Uid }));
-
                     if (result.data?.user?.status == 1) {
                         dispatch(setIsGuest({ data: false }));
                     }
@@ -340,39 +338,38 @@ const Login = React.memo((props) => {
             const credential = GoogleAuthProvider.credentialFromResult(result);
             const token = credential.accessToken;
             const user = result.user;
-
             await loginApiCall(user, user.uid, fcm, "google")
         }).catch((error) => {
             console.log(error)
         })
     }
 
-    const handleAppleAuthentication = async () => {
-        const provider = new OAuthProvider('apple.com');
-        provider.setCustomParameters({
-            // Localize the Apple authentication screen in French.
-            locale: 'en'
-        });
-        provider.setDefaultLanguage("en")
+    // const handleAppleAuthentication = async () => {
+    //     const provider = new OAuthProvider('apple.com');
+    //     provider.setCustomParameters({
+    //         // Localize the Apple authentication screen in French.
+    //         locale: 'en'
+    //     });
+    //     provider.setDefaultLanguage("en")
 
-        provider.addScope('email');
-        provider.addScope('name');
-        console.log(provider)
-        await signInWithPopup(auth, provider).then((result) => {
-            console.log(result)
-            const user = result.user;
-            const credential = OAuthProvider.credentialFromResult(result);
-            const accessToken = credential.accessToken;
-            const idToken = credential.idToken;
-            console.log("user->", user)
-        }).catch((error) => {
-            console.log(error)
-            const errorCode = error.code;
-            const errorMessage = error.message;
-            const email = error.customData.email;
-            const credential = OAuthProvider.credentialFromError(error);
-        });
-    }
+    //     provider.addScope('email');
+    //     provider.addScope('name');
+    //     console.log(provider)
+    //     await signInWithPopup(auth, provider).then((result) => {
+    //         console.log(result)
+    //         const user = result.user;
+    //         const credential = OAuthProvider.credentialFromResult(result);
+    //         const accessToken = credential.accessToken;
+    //         const idToken = credential.idToken;
+    //         console.log("user->", user)
+    //     }).catch((error) => {
+    //         console.log(error)
+    //         const errorCode = error.code;
+    //         const errorMessage = error.message;
+    //         const email = error.customData.email;
+    //         const credential = OAuthProvider.credentialFromError(error);
+    //     });
+    // }
 
 
 
@@ -407,7 +404,6 @@ const Login = React.memo((props) => {
                 <Modal.Header className='d-flex flex-row justify-content-between align-items-center header'>
                     <div>
                         {isOTP ? <h5 className='login-heading'>{t("otp_verify")}</h5> :
-
                             <h5 className='login-heading'>{t("Login")}</h5>
                         }
                     </div>
