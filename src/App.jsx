@@ -114,13 +114,13 @@ const App = () => {
       const translateFile = typeof language.current_language.json_data === "object"
         ? { ...language.current_language.json_data }
         : { ...jsonFile };
-
+      // console.log("translate file", translateFile.)
       i18n.addResourceBundle(
         language.current_language.code,
         'translation',
         translateFile,
         true,
-        true
+        false
       );
       i18n.changeLanguage(language.current_language.code);
     }

@@ -136,8 +136,8 @@ const Category = () => {
                             </div>
                             {
                                 category?.length > 5 ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                                    <button className='prev-arrow-category' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
-                                    <button className='next-arrow-category' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button>
+                                    <button className='prev-arrow-category' ><FaChevronLeft fill='black' size={20} /></button>
+                                    <button cloassName='next-arrow-category' ><FaChevronRight fill='black' size={20} /></button>
                                 </div> : <></>
                             }
 
@@ -148,8 +148,8 @@ const Category = () => {
                         <div className='row ' id="expandCategory">
                             <Swiper modules={[Navigation, Pagination]}
                                 navigation={{
-                                    prevEl: '.prev-arrow-country',
-                                    nextEl: '.next-arrow-country',
+                                    prevEl: '.prev-arrow-category',
+                                    nextEl: '.next-arrow-category',
                                 }}
 
                                 pagination={{ clickable: true }}

@@ -1,30 +1,30 @@
-// const access_key_param = 'x-access-key';
-// const access_key = "903361";
-// const token_prefix = "Bearer ";
-// const appUrl = process.env.REACT_APP_API_URL;
-// const appSubUrl = process.env.REACT_APP_API_SUBURL;
-import api from "./apiMiddleware";
-import store from "../model/store";
-import * as apiEndPoints from "./apiEndPointCollection"
+const access_key_param = 'x-access-key';
+const access_key = "903361";
+const token_prefix = "Bearer ";
+const appUrl = process.env.REACT_APP_API_URL;
+const appSubUrl = process.env.REACT_APP_API_SUBURL;
+// import api from "./apiMiddleware";
+// import store from "../model/store";
+// import * as apiEndPoints from "./apiEndPointCollection"
 
-const register_user = async ({ Uid, name, email, mobile, type, fcm, country_code }) => {
-    const formData = new FormData();
-    let formdata = new FormData();
-    formdata.append("auth_uid", Uid);
-    formdata.append("name", name);
-    formdata.append("email", email)
-    formdata.append("country_code", country_code)
-    formdata.append("mobile", mobile)
-    formdata.append("type", type)
-    formdata.append("fcm_token", fcm);
-    formdata.append("platform", "web");
+// const register_user = async ({ Uid, name, email, mobile, type, fcm, country_code }) => {
+//     const formData = new FormData();
+//     let formdata = new FormData();
+//     formdata.append("auth_uid", Uid);
+//     formdata.append("name", name);
+//     formdata.append("email", email)
+//     formdata.append("country_code", country_code)
+//     formdata.append("mobile", mobile)
+//     formdata.append("type", type)
+//     formdata.append("fcm_token", fcm);
+//     formdata.append("platform", "web");
 
-    const response = await api.post(apiEndPoints.register, formData)
-    // if (response.status !== 200) {
-    //     throw new Error("Failed to fetch data");
-    // }
-    return response.data
-}
+//     const response = await api.post(apiEndPoints.register, formData)
+//     // if (response.status !== 200) {
+//     //     throw new Error("Failed to fetch data");
+//     // }
+//     return response.data
+// }
 
 
 const api = {
