@@ -81,9 +81,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
             {shop.shop?.is_brand_section_in_homepage ?
                 <div className='category_section'>
                     <div className="container">
-
                         <Brand />
-
                     </div>
                 </div>
                 : <></>}

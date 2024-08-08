@@ -29,6 +29,12 @@ import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+
 
 const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOfferArray }) => {
 
@@ -165,15 +171,15 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
     const CustomPrevButton = (props) => {
         const { slideCount, currentSlide, ...remainingProps } = props;
         return (
-            <button {...remainingProps} type="button" className="slick-prev">
-                <FaChevronLeft fill='black' size={30} className="prev-arrow" />
+            <button {...remainingProps} type="button" className="slick-prev ">
+                <FaChevronLeft fill='black' size={30} className="prev-arrow prev-arrow-country" />
             </button>
         );
     };
     const CustomNextButton = (props) => {
         const { slideCount, currentSlide, ...remainingProps } = props;
         return (
-            <button {...remainingProps} type="button" className="slick-next">
+            <button {...remainingProps} type="button" className="slick-next next-arrow-country">
                 <FaChevronRight fill='black' size={30} className='next-arrow' />
             </button>
         );
@@ -316,8 +322,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                 <Loader width={"100%"} height={"500px"} />
                             </div>
                         </>
-
-
                     )
                     : (
                         <>
@@ -345,16 +349,40 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                     </div>
                                                 </div>
 
-                                                <div className="product_section_content p-0">
-                                                    <Slider {...settings}>
-                                                        {section?.products?.map((product, index) => (
-                                                            <div className="row" key={index}>
-                                                                <div className="col-md-12">
+                                                <div className="product_section_content p-0 position-relative">
+                                                    <CustomPrevButton />
+                                                    <CustomNextButton />
+                                                    <Swiper modules={[Navigation, Pagination]}
+                                                        navigation={{
+                                                            prevEl: '.prev-arrow-country',
+                                                            nextEl: '.next-arrow-country',
+                                                        }}
 
+                                                        pagination={{ clickable: true }}
+                                                        breakpoints={{
+                                                            1200: {
+                                                                slidesPerView: 5,
+                                                                spaceBetween: 20,
+                                                            },
+                                                            1024: {
+                                                                slidesPerView: 4,
+                                                                spaceBetween: 20,
+                                                            },
+                                                            768: {
+                                                                slidesPerView: 3,
+                                                                spaceBetween: 15,
+                                                            },
+                                                            300: {
+                                                                slidesPerView: 2,
+                                                                spaceBetween: 10,
+                                                            },
+                                                        }}>
+                                                        {section?.products?.map((product, index) => (
+                                                            <SwiperSlide className="row" key={index}                                                        >
+                                                                <div className="col-md-12">
                                                                     <div className='product-card'>
                                                                         <span className='border border-light rounded-circle p-2 px-3' id='aiEye'>
                                                                             <AiOutlineEye
-                                                                             
                                                                                 onClick={() => {
                                                                                     setselectedProduct(product); setShowModal(true);
                                                                                     setP_id(product.id); setP_V_id(product.variants[0].id); setQnty(product.variants[0].cart_count + 1);
@@ -537,9 +565,9 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                            </SwiperSlide>
                                                         ))}
-                                                    </Slider>
+                                                    </Swiper>
                                                 </div>
 
 

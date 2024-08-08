@@ -561,6 +561,7 @@ const ProductList2 = React.memo(() => {
 
 
     const handleValidateAddExistingProduct = (productQuantity, product) => {
+        console.log("product quantity from product list page", productQuantity)
         if (Number(product.is_unlimited_stock)) {
             if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product?.total_allowed_quantity)) {
                 addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);

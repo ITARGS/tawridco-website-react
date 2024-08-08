@@ -12,6 +12,11 @@ import { useTranslation } from 'react-i18next';
 import { setCategory, setSelectedCategory } from '../../model/reducer/categoryReducer';
 import { clearAllFilter, setFilterCategory } from '../../model/reducer/productFilterReducer';
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 
 const Category = () => {
@@ -129,21 +134,47 @@ const Category = () => {
                             <div className=' d-md-none'>
                                 <Link className='category_button' to='/category/all'>{t('see_all')}</Link>
                             </div>
-                            <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                                <button className='prev-arrow-category' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
-                                <button className='next-arrow-category' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button>
-                            </div>
+                            {
+                                category?.length > 5 ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
+                                    <button className='prev-arrow-category' onClick={handlePrevClick}><FaChevronLeft fill='black' size={20} /></button>
+                                    <button className='next-arrow-category' onClick={handleNextClick}><FaChevronRight fill='black' size={20} /></button>
+                                </div> : <></>
+                            }
+
                         </div>
                     </div>
                     <div className="caegory_section_content">
 
                         <div className='row ' id="expandCategory">
-                            <Slider {...settings} ref={sliderRef}>
+                            <Swiper modules={[Navigation, Pagination]}
+                                navigation={{
+                                    prevEl: '.prev-arrow-country',
+                                    nextEl: '.next-arrow-country',
+                                }}
 
+                                pagination={{ clickable: true }}
+                                breakpoints={{
+                                    1200: {
+                                        slidesPerView: 5,
+                                        spaceBetween: 20,
+                                    },
+                                    1024: {
+                                        slidesPerView: 4,
+                                        spaceBetween: 20,
+                                    },
+                                    768: {
+                                        slidesPerView: 3,
+                                        spaceBetween: 15,
+                                    },
+                                    300: {
+                                        slidesPerView: 2,
+                                        spaceBetween: 10,
+                                    },
+                                }}>
                                 {
                                     category?.map((ctg, index) => (
                                         <div className="col-md-12" key={index}>
-                                            <div className='category-container '>
+                                            <SwiperSlide className='category-container '>
 
                                                 {ctg.has_child
                                                     ? (
@@ -169,15 +200,18 @@ const Category = () => {
 
                                                     )}
 
-                                            </div>
+                                            </SwiperSlide>
 
                                         </div>
 
                                     ))
                                 }
+                            </Swiper>
 
 
-                            </Slider>
+
+
+
                         </div>
                     </div>
 

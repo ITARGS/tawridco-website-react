@@ -86,7 +86,12 @@ const ProductDetails = () => {
     const [qnty, setQnty] = useState(0);
     const [cartLoader, setCartLoader] = useState(false);
     const [isNetworkError, setIsNetworkError] = useState(false);
+    const [limit, setLimit] = useState(12);
+    const [offset, setOffset] = useState(0);
     const [similarProducts, setSimilarProducts] = useState([])
+    const [similarProductsLength, setSimilarProductsLength] = useState(null)
+
+    const productLimit = 10;
 
     const getProductDatafromApi = (slug) => {
         if (slug !== null || slug !== undefined) {
@@ -94,8 +99,13 @@ const ProductDetails = () => {
                 .then(response => response.json())
                 .then(result => {
                     if (result.status === 1) {
-                        api.getProductbyFilter(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, -1, user?.jwtToken, result?.data?.tag_names).then((res) => res.json()).then((result => {
+                        const filter = {
+                            limit: productLimit,
+                            offset
+                        }
+                        api.getProductbyFilter(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, filter, user?.jwtToken, result?.data?.tag_names).then((res) => res.json()).then((result => {
                             setSimilarProducts(result?.data)
+                            setSimilarProductsLength(result.total)
                         }))
                         dispatch(setSelectedProduct({ data: result?.data[0]?.id }));
                         setproductdata(result.data);
@@ -120,8 +130,6 @@ const ProductDetails = () => {
 
     };
 
-
-
     // Add setting in depedancy array for clear cache
     useEffect(() => {
         if (slug) {
@@ -144,9 +152,19 @@ const ProductDetails = () => {
     //         .catch(error => console.log(error));
     // };
 
+    const fetchMoreRelatedProducts = () => {
+        if (similarProductsLength > similarProducts?.length) {
+            const filter = {
+                limit: productLimit,
+                offset: offset + 10
+            }
+            api.getProductbyFilter(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, filter, user?.jwtToken, productdata?.tag_names).then((res) => res.json()).then((result => {
+                setSimilarProducts((simi_prdct) => [...simi_prdct, ...result?.data])
+            }))
+        }
+    }
 
-    const [limit, setLimit] = useState(12);
-    const [offset, setOffset] = useState(0);
+
     const { productRating, totalData, loading: Loading, error } = useGetProductRatingsById(user?.jwtToken, productdata?.id, limit, offset);
     const { ratingImages, totalImages } = useGetProductRatingImages(user?.jwtToken, productdata?.id, 8, offset);
 
@@ -350,28 +368,50 @@ const ProductDetails = () => {
         }));
     }
 
-    const handleValidateAddExistingProduct = (productQuantity, productdata) => {
-        if (Number(productdata.is_unlimited_stock)) {
-            if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
-                toast.error(t("max_cart_limit_error"));
-            }
-            else {
-                addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
-            }
-        }
-        else {
-            if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(selectedVariant.stock)) {
-                toast.error(t("limited_product_stock_error"));
-            }
-            else if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= Number(setting.setting.max_cart_items_count)) {
-                toast.error(t("max_cart_limit_error"));
-            }
-            else {
-                addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
-            }
-        }
+    // const handleValidateAddExistingProduct = (productQuantity, productdata) => {
+    //     console.log("product quantity", productQuantity)
+    //     if (Number(productdata.is_unlimited_stock)) {
+    //         if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
+    //             toast.error(t("max_cart_limit_error"));
+    //         }
+    //         else {
+    //             addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
+    //         }
+    //     }
+    //     else {
+    //         if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(selectedVariant.stock)) {
+    //             toast.error(t("limited_product_stock_error"));
+    //         }
+    //         else if (cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty >= Number(setting.setting.max_cart_items_count)) {
+    //             toast.error(t("max_cart_limit_error"));
+    //         }
+    //         else {
+    //             addtoCart(productdata.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
+    //         }
+    //     }
 
+    // };
+
+
+    const handleValidateAddExistingProduct = (productQuantity, product) => {
+        if (Number(product.is_unlimited_stock)) {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product?.total_allowed_quantity)) {
+                addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
+            } else {
+                toast.error('Apologies, maximum product quantity limit reached!');
+            }
+        } else {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.variants[0].stock)) {
+                toast.error(t("out_of_stock_message"));
+            }
+            else if (Number(productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty) >= Number(product.total_allowed_quantity)) {
+                toast.error('Apologies, maximum product quantity limit reached');
+            } else {
+                addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
+            }
+        }
     };
+
 
     const handleValidateAddNewProduct = (productQuantity, productdata) => {
         if (user?.jwtToken !== "") {
@@ -382,7 +422,7 @@ const ProductDetails = () => {
                 addtoCart(productdata.id, selectedVariant.id, 1);
             } else {
                 if (selectedVariant.status) {
-                    addtoCart(productdata.id, selectedVariant.id, 1);
+                    addtoCart(productdata.id, productdata.variants[0].id, 1);
                     setP_id(productdata.id);
                     setP_V_id(selectedVariant.id);
                     setQnty(1);
@@ -841,6 +881,12 @@ const ProductDetails = () => {
                                                 navigation={true}
                                                 thumbs={{ swiper: thumbsSwiper }}
                                                 modules={[Navigation, Thumbs, Mousewheel, Autoplay, Pagination]}
+                                                // onActiveIndexChange={(swiper) => {
+                                                //     console.log("active index is", swiper.activeIndex);
+                                                // }}
+                                                onReachEnd={() => {
+                                                    fetchMoreRelatedProducts()
+                                                }}
                                             // className="mySwiper2"
                                             >
                                                 {similarProducts?.map((related_product, index) => (
@@ -894,7 +940,6 @@ const ProductDetails = () => {
                                                                     </div> : null}
                                                                     <h3>{related_product.name}</h3>
                                                                     <div className='price'>
-
                                                                         <span id={`price${index}-section`} className="d-flex align-items-center">
                                                                             <p id='relatedproduct-fa-rupee' className='m-0'>
                                                                                 {setting.setting && setting.setting.currency}
@@ -957,11 +1002,10 @@ const ProductDetails = () => {
                                                                         )}
                                                                     </div>
 
-                                                                    <div className='border-end' style={{ flexGrow: "1" }} >
+                                                                    {/* <div className='border-end' style={{ flexGrow: "1" }} >
                                                                         {related_product.variants[0].cart_count > 0 ? <>
                                                                             <div id={`input-cart-productdetail`} className="input-to-cart">
                                                                                 <button type='button' className="wishlist-button" onClick={() => {
-                                                                                    { console.log("related product", related_product.variants[0].cart_count) }
                                                                                     if (related_product.variants[0].cart_count === 1) {
                                                                                         removefromCart(related_product.id, related_product.variants[0].id);
 
@@ -1035,6 +1079,98 @@ const ProductDetails = () => {
 
                                                                             }} disabled={!Number(related_product.is_unlimited_stock) && related_product.variants[0].stock <= 0}>{t("add_to_cart")}</button>
                                                                         </>}
+
+                                                                    </div> */}
+
+                                                                    <div className='border-end aes' style={{ flexGrow: "1" }} >
+                                                                        {(cart?.isGuest === false && user?.user && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == related_product?.variants?.[0]?.id)?.qty > 0) ||
+                                                                            (cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id == related_product?.variants?.[0]?.id)?.qty > 0)
+                                                                            ?
+                                                                            <>
+                                                                                <div id={`input-cart-productdetail`} className="input-to-cart">
+                                                                                    <button
+                                                                                        type='button'
+                                                                                        className="wishlist-button"
+                                                                                        onClick={() => {
+                                                                                            if (cart?.isGuest) {
+                                                                                                AddToGuestCart(
+                                                                                                    related_product?.id,
+                                                                                                    related_product?.variants?.[0]?.id,
+                                                                                                    cart?.guestCart?.find((prdct) => prdct?.product_variant_id == related_product?.variants?.[0]?.id)?.qty - 1,
+                                                                                                    1
+                                                                                                );
+                                                                                            } else {
+
+                                                                                                if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == related_product?.variants?.[0]?.id)?.qty == 1) {
+                                                                                                    removefromCart(related_product.id, related_product.variants[0].id);
+                                                                                                    selectedVariant.cart_count = 0;
+                                                                                                }
+                                                                                                else {
+                                                                                                    addtoCart(related_product.id, related_product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == related_product.variants[0].id)?.qty - 1);
+                                                                                                    selectedVariant.cart_count = selectedVariant.cart_count - 1;
+                                                                                                }
+                                                                                            }
+                                                                                        }}>
+                                                                                        <BiMinus size={20} fill='#fff' />
+                                                                                    </button>
+                                                                                    {/* <span id={`input-productdetail`} >{quantity}</span> */}
+                                                                                    <div className="quantity-container text-center">
+                                                                                        <input
+                                                                                            type="number"
+                                                                                            min="1"
+                                                                                            max={related_product.variants[0].stock}
+                                                                                            className="quantity-input bg-transparent text-center"
+                                                                                            value={
+                                                                                                cart.isGuest === false ?
+                                                                                                    cart?.cartProducts?.find(prdct => prdct?.product_variant_id == related_product.variants[0].id)?.qty
+                                                                                                    : cart?.guestCart?.find(prdct => prdct?.product_variant_id == related_product.variants[0].id)?.qty
+                                                                                            }
+                                                                                            disabled
+                                                                                        />
+                                                                                    </div>
+
+                                                                                    <button
+                                                                                        type='button'
+                                                                                        className="wishlist-button"
+                                                                                        onClick={() => {
+                                                                                            if (cart?.isGuest) {
+                                                                                                const productQuantity = getProductQuantities(cart?.guestCart);
+                                                                                                handleValidateAddExistingGuestProduct(
+                                                                                                    productQuantity,
+                                                                                                    related_product,
+                                                                                                    cart?.guestCart?.find(prdct => prdct?.product_id == related_product?.id && prdct?.product_variant_id == related_product?.variants?.[0]?.id)?.qty + 1
+                                                                                                );
+                                                                                            } else {
+                                                                                                const productQuantity = getProductQuantities(cart?.cartProducts);
+                                                                                                console.log("cart quantity", productQuantity)
+                                                                                                handleValidateAddExistingProduct(productQuantity, related_product);
+                                                                                            }
+                                                                                        }}>
+                                                                                        <BsPlus size={20} fill='#fff' />
+                                                                                    </button>
+                                                                                </div>
+                                                                            </> :
+                                                                            <>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    id={`Add-to-cart-section${index}`}
+                                                                                    className='w-100 h-100 add-to-cart active'
+                                                                                    onClick={() => {
+                                                                                        if (cart?.isGuest) {
+                                                                                            const productQuantity = getProductQuantities(cart?.guestCart);
+                                                                                            handleAddNewProductGuest(
+                                                                                                productQuantity,
+                                                                                                related_product
+                                                                                            );
+                                                                                        } else {
+                                                                                            const productQuantity = getProductQuantities(cart?.cartProducts);
+                                                                                            handleValidateAddNewProduct(productQuantity, related_product);
+                                                                                        }
+                                                                                    }}
+                                                                                    disabled={!Number(related_product.is_unlimited_stock) && related_product.variants[0].status === 0}>
+                                                                                    {t("add_to_cart")}
+                                                                                </button>
+                                                                            </>}
 
                                                                     </div>
 

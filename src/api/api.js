@@ -1,8 +1,30 @@
-const access_key_param = 'x-access-key';
-const access_key = "903361";
-const token_prefix = "Bearer ";
-const appUrl = process.env.REACT_APP_API_URL;
-const appSubUrl = process.env.REACT_APP_API_SUBURL;
+// const access_key_param = 'x-access-key';
+// const access_key = "903361";
+// const token_prefix = "Bearer ";
+// const appUrl = process.env.REACT_APP_API_URL;
+// const appSubUrl = process.env.REACT_APP_API_SUBURL;
+import api from "./apiMiddleware";
+import store from "../model/store";
+import * as apiEndPoints from "./apiEndPointCollection"
+
+const register_user = async ({ Uid, name, email, mobile, type, fcm, country_code }) => {
+    const formData = new FormData();
+    let formdata = new FormData();
+    formdata.append("auth_uid", Uid);
+    formdata.append("name", name);
+    formdata.append("email", email)
+    formdata.append("country_code", country_code)
+    formdata.append("mobile", mobile)
+    formdata.append("type", type)
+    formdata.append("fcm_token", fcm);
+    formdata.append("platform", "web");
+
+    const response = await api.post(apiEndPoints.register, formData)
+    // if (response.status !== 200) {
+    //     throw new Error("Failed to fetch data");
+    // }
+    return response.data
+}
 
 
 const api = {
@@ -11,6 +33,9 @@ const api = {
             appUrl.slice(0, -1) :
             appUrl;
     },
+
+
+
     register(Uid, name, email, mobile, type, fcm, country_code) {
         let myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
@@ -291,6 +316,8 @@ const api = {
 
         return fetch(appUrl + appSubUrl + "/edit_profile", requestOptions);
     },
+
+    // Phase 1
     getProductbyFilter(latitude, longitude, filters, token, tag_names) {
         var myHeaders = new Headers();
         //console.log("getProductbyFilter API ->", filters);
@@ -300,6 +327,7 @@ const api = {
         // formdata.append("city_id", city_id);
         formdata.append("latitude", latitude);
         formdata.append("longitude", longitude);
+        console.log("keywords", tag_names)
         if (tag_names !== undefined) {
             formdata.append("tag_names", tag_names)
         }
