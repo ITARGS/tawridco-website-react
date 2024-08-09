@@ -50,7 +50,6 @@ export const cartReducer = createSlice({
             state.cartSubTotal = action.payload.data;
         },
         setIsGuest: (state, action) => {
-            console.log(action.payload.data)
             state.isGuest = action.payload.data;
         },
         addtoGuestCart: (state, action) => {

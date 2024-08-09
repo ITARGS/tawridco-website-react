@@ -4,12 +4,15 @@ import store from "../model/store"
 const access_key_param = 'x-access-key';
 const access_key = "903361";
 
+const url = process.env.REACT_APP_API_URL
+const subUrl = process.env.REACT_APP_API_SUBURL
 const api = axios.create({
-    baseURL: process.env.REACT_APP_API_UR
+    baseURL: `${url}${subUrl}/`
 })
 
 const getStoredToken = async () => {
     const state = store.getState()
+    console.log("token", state?.user?.jwtToken)
     return state?.user?.jwtToken
 }
 
@@ -17,11 +20,11 @@ api.interceptors.request.use(
     async (config) => {
         try {
             const authToken = await getStoredToken()
-            if (token) {
-                config.headers.Authorization = authToken
+            if (authToken) {
+                config.headers.Authorization = `Bearer ${authToken}`
             }
             config.headers["Content-Type"] = "multipart/form-data"
-            config.headers['x-access-key'] = access_key
+            config.headers["x-access-key"] = access_key
             return config
         } catch (error) {
             console.error("Error in token retrival", error)

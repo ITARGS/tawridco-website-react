@@ -1,10 +1,11 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { applyMiddleware, configureStore } from "@reduxjs/toolkit";
 import reducers from './reducer/index';
 import {
     persistStore,
     persistReducer
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import { thunk } from "redux-thunk";
 
 const persistConfig = {
     key: 'root',
@@ -19,7 +20,9 @@ const store = configureStore({
     middleware: (getDefaultMiddleware) => getDefaultMiddleware({
         immutableCheck: false, // Disable ImmutableStateInvariantMiddleware
         serializableCheck: false, // Disable SerializableStateInvariantMiddleware
-    })
+        applyMiddleware: thunk
+    }),
+
 });
 
 const Persiststore = persistStore(store);

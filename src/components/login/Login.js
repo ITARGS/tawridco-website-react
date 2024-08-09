@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import './login.css';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import api from '../../api/api';
+import * as newApi from "../../api/apiCollection"
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import Loader from '../loader/Loader';
@@ -13,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import FirebaseData from '../../utils/firebase/FirebaseData';
 import PhoneInput from 'react-phone-input-2';
 import { setAuthId, setCurrentUser, setFcmToken, setJWTToken } from '../../model/reducer/authReducer';
+import { setTokenThunk } from '../../model/thunk/loginThunk';
 import { Modal } from 'react-bootstrap';
 import { setSetting } from '../../model/reducer/settingReducer';
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
@@ -26,6 +28,11 @@ import GoogleLogo from "../../utils/google-color-icon.svg"
 
 
 const Login = React.memo((props) => {
+
+    const isDemoMode = process.env.REACT_APP_DEMO_MODE
+    const countryDialCode = process.env.REACT_APP_COUNTRY_DIAL_CODE
+    const phoneNumber = process.env.REACT_APP_DEMO_LOGIN_NO
+    const demoOTP = process.env.REACT_APP_DEMO_OTP
 
     const { auth, firebase, messaging } = FirebaseData();
     const setting = useSelector(state => (state.setting));
@@ -76,10 +83,9 @@ const Login = React.memo((props) => {
     const closeModalRef = useRef();
     const dispatch = useDispatch();
 
-    const [phonenum, setPhonenum] = useState(process.env.REACT_APP_DEMO_MODE == "true" ?
-        `${process.env.REACT_APP_COUNTRY_DIAL_CODE}${process.env.REACT_APP_DEMO_LOGIN_NO}` : "");
-
-    const [countryCode, setCountryCode] = useState(process.env.REACT_APP_COUNTRY_DIAL_CODE);
+    const [phonenum, setPhonenum] = useState(isDemoMode == "true" ?
+        `${countryDialCode}${phoneNumber}` : "");
+    const [countryCode, setCountryCode] = useState(countryDialCode);
     const [checkboxSelected, setcheckboxSelected] = useState(false);
     const [error, setError] = useState("", setTimeout(() => {
         if (error !== "")
@@ -87,23 +93,18 @@ const Login = React.memo((props) => {
     }, 5000));
     const [isOTP, setIsOTP] = useState(false);
     const [Uid, setUid] = useState("");
-    const [OTP, setOTP] = useState(process.env.REACT_APP_DEMO_MODE == "true" ? process.env.REACT_APP_DEMO_OTP : "");
+    const [OTP, setOTP] = useState(isDemoMode == "true" ? demoOTP : "");
     const [isLoading, setisLoading] = useState(false);
     const [timer, setTimer] = useState(null); // Initial timer value in seconds
     const [disabled, setDisabled] = useState(true);
     const { t } = useTranslation();
 
-
-    // console.log(phonenum, countryCode);
-
     useEffect(() => {
         if (props.show == true) {
-            setPhonenum(process.env.REACT_APP_DEMO_MODE == "true" ?
-                `${process.env.REACT_APP_COUNTRY_DIAL_CODE}${process.env.REACT_APP_DEMO_LOGIN_NO}` : "");
-            setCountryCode(process.env.REACT_APP_DEMO_MODE == "true" ?
-                process.env.REACT_APP_COUNTRY_DIAL_CODE : ""
+            setPhonenum(isDemoMode == "true" ? `${countryDialCode}${phoneNumber}` : "");
+            setCountryCode(isDemoMode == "true" ? countryCode : ""
             );
-            setOTP(process.env.REACT_APP_DEMO_MODE == "true" ? process.env.REACT_APP_DEMO_OTP : "");
+            setOTP(isDemoMode == "true" ? demoOTP : "");
         }
     }, [props.show]);
 
@@ -114,10 +115,10 @@ const Login = React.memo((props) => {
                 setTimer((prevTimer) => prevTimer - 1);
             }, 1000);
         } else if (timer === 0) {
-            setDisabled(false); // Enable the button once the timer reaches 0
+            setDisabled(false);
         }
 
-        return () => clearInterval(interval); // Cleanup the interval on unmount or timer reset
+        return () => clearInterval(interval);
 
     }, [timer]);
 
@@ -129,20 +130,9 @@ const Login = React.memo((props) => {
 
 
     useEffect(() => {
-        // if (firebase && auth && window.recaptchaVerifier && setting.setting.firebase) {
-        //     if (window?.recaptchaVerifier) {
-        //         try {
-        //             window?.recaptchaVerifier?.clear();
-        //         } catch (err) {
-        //             console.log(err?.message);
-        //         }
-        //     }
-
-        // }
         const recaptchaContainer = document.getElementById('recaptcha-container');
         firebase && auth && !(window.recaptchaVerifier) && (window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(recaptchaContainer, {
             size: "invisible",
-            // other options
         }));
         return () => {
             if (window?.recaptchaVerifier && setting.setting.firebase) {
@@ -155,62 +145,39 @@ const Login = React.memo((props) => {
         };
     }, [firebase, auth]);
 
-
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         setDisabled(true);
         setisLoading(true);
         e.preventDefault();
-        // if (!checkboxSelected) {
-        //     setError("Accept Terms and Policies!");
-        //     setisLoading(false);
-        // }
-        // else {
         if (phonenum?.length < countryCode.length || phonenum?.slice(1) === countryCode) {
             setError("Please enter phone number!");
             setisLoading(false);
         }
         else {
-            // setOTP("");
-
-            //OTP Generation
-            // generateRecaptcha();
             let appVerifier = window?.recaptchaVerifier;
             try {
-                signInWithPhoneNumber(auth, phonenum, appVerifier)
-                    .then(confirmationResult => {
-                        window.confirmationResult = confirmationResult;
-                        setTimer(90);
-                        setIsOTP(true);
-                        setisLoading(false);
-                    }).catch((err) => {
-                        setPhonenum();
-                        console.log(err);
-                        setError(err.message);
-                        setisLoading(false);
-                    });
+                const confirmationResult = await signInWithPhoneNumber(auth, phonenum, appVerifier)
+                window.confirmationResult = confirmationResult;
+                setTimer(90)
+                setIsOTP(true)
+                setisLoading(false)
             } catch (error) {
+                setPhonenum();
+                setError(error.message);
                 setisLoading(false);
-                toast.error(error);
             }
         }
-        // else {
-        //     setPhonenum()
-        //     setError("Enter a valid phone number")
-        // }
-        // }
     };
 
 
-    const getCurrentUser = (token) => {
-        api.getUser(token)
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    dispatch(setCurrentUser({ data: result.user }));
-                    // dispatch({ type: ActionTypes.SET_CURRENT_USER, payload: result.user });
-                    toast.success("You're successfully Logged In");
-                }
-            });
+    const getCurrentUser = async () => {
+        try {
+            const response = await newApi.getUser()
+            dispatch(setCurrentUser({ data: response.user }));
+            toast.success("You're successfully Logged In");
+        } catch (error) {
+            console.log("error", error)
+        }
     };
 
     const fetchCart = async (token, latitude, longitude) => {
@@ -256,9 +223,6 @@ const Login = React.memo((props) => {
 
         });
     };
-
-
-
     const AddtoCartBulk = async (token) => {
         try {
             const variantIds = cart?.guestCart?.map((p) => p.product_variant_id);
@@ -266,7 +230,6 @@ const Login = React.memo((props) => {
             const response = await api.bulkAddToCart(token, variantIds.join(","), quantities.join(","));
             const result = await response.json();
             if (result.status == 1) {
-                // toast.success(t("guest_products_added_to_cart"));
                 dispatch(addtoGuestCart({ data: [] }));
             } else {
                 console.log("Add to Bulk Cart Error Occurred");
@@ -276,62 +239,55 @@ const Login = React.memo((props) => {
         }
     };
 
+    const handleFetchSetting = async () => {
+        const setting = await newApi.getSetting()
+        dispatch(setSetting({ data: setting?.data }));
+        dispatch(setFavouriteLength({ data: setting?.data?.favorite_product_ids?.length }));
+        dispatch(setFavouriteProductIds({ data: setting?.data?.favorite_product_ids }));
+    }
+
+
     const loginApiCall = async (user, Uid, fcm, type) => {
-        dispatch(setAuthId({ data: Uid }));
-        await api.login(Uid, fcm)
-            .then(response => response.json())
-            .then(async (result) => {
-                if (result.status === 1) {
-                    getCurrentUser(result.data.access_token);
-                    api.getSettings(1, result.data.access_token)
-                        .then((req) => req.json())
-                        .then((res) => {
-                            if (res.status == 1) {
-                                dispatch(setSetting({ data: res?.data }));
-                                dispatch(setFavouriteLength({ data: res?.data?.favorite_product_ids?.length }));
-                                dispatch(setFavouriteProductIds({ data: res?.data?.favorite_product_ids }));
-                            }
-                        });
-                    dispatch(setJWTToken({ data: result.data.access_token }));
-                    // dispatch(setAuthId({ data: Uid }));
-                    if (result.data?.user?.status == 1) {
-                        dispatch(setIsGuest({ data: false }));
-                    }
-                    if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && result.data?.user?.status == 1) {
-                        await AddtoCartBulk(result.data.access_token);
-                        // dispatch(setIsGuest({ data: false }));
-                    }
-                    await fetchCart(result.data.access_token, city?.city?.latitude ? city?.city?.latitude : setting?.setting?.default_city?.latitude,
-                        city?.city?.longitude ? city?.city?.longitude : setting?.setting?.default_city?.longitude
-                    );
-                    // setlocalstorageOTP(Uid);
-                    setError("");
-                    setOTP("");
-                    setPhonenum("");
-                    setcheckboxSelected(false);
-                    setisLoading(false);
-                    setIsOTP(false);
-                    props.setShow(false);
-                    // closeModalRef.current.click();
+        try {
+            // For forcefully refresh token for remove error
+            await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
+            await firebase.auth().currentUser?.getIdToken(true);
+            // for login user functionality 
+            dispatch(setAuthId({ data: Uid }))
+            const res = await newApi.login({ Uid, fcm })
+            if (res.status === 1) {
+                const tokenSet = await dispatch(setTokenThunk(res?.data?.access_token))
+                await getCurrentUser()
+                if (res?.data?.user?.status == 1) {
+                    dispatch(setIsGuest({ data: false }));
                 }
-                else {
-                    setUserEmail(user?.providerData?.[0]?.email)
-                    setUserName(user?.providerData?.[0]?.displayName)
-                    setPhonenum(user?.providerData?.[0]?.phoneNumber)
-                    setAuthType(type)
-                    setRegisterModalShow(true)
-                    // setOTP("");
-                    // console.log("Message", result?.message);
+                await handleFetchSetting();
+                const latitude = city?.city?.latitude || setting?.setting?.default_city?.latitude
+                const longitude = city?.city?.longitude || setting?.setting?.default_city?.longitude
+                if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && res?.data?.user?.status == 1) {
+                    await AddtoCartBulk(res?.data.access_token);
                 }
+                await fetchCart(res?.data?.access_token, latitude, longitude);
+                setError("");
+                setOTP("");
+                setPhonenum("");
                 setisLoading(false);
-            })
-            .catch(error => console.log("error ", error));
+                setIsOTP(false);
+                props.setShow(false);
+            } else {
+                setUserEmail(user?.providerData?.[0]?.email)
+                setUserName(user?.providerData?.[0]?.displayName)
+                setPhonenum(user?.providerData?.[0]?.phoneNumber)
+                setAuthType(type)
+                setRegisterModalShow(true)
+            }
+            setisLoading(false)
+        } catch (error) {
+            console.error("error", error)
+            setisLoading(false)
+        }
 
-    };
-
-
-
-
+    }
     const handleGoogleAuthentication = async () => {
         const provider = new GoogleAuthProvider();
         signInWithPopup(auth, provider).then(async (result) => {
@@ -343,35 +299,6 @@ const Login = React.memo((props) => {
             console.log(error)
         })
     }
-
-    // const handleAppleAuthentication = async () => {
-    //     const provider = new OAuthProvider('apple.com');
-    //     provider.setCustomParameters({
-    //         // Localize the Apple authentication screen in French.
-    //         locale: 'en'
-    //     });
-    //     provider.setDefaultLanguage("en")
-
-    //     provider.addScope('email');
-    //     provider.addScope('name');
-    //     console.log(provider)
-    //     await signInWithPopup(auth, provider).then((result) => {
-    //         console.log(result)
-    //         const user = result.user;
-    //         const credential = OAuthProvider.credentialFromResult(result);
-    //         const accessToken = credential.accessToken;
-    //         const idToken = credential.idToken;
-    //         console.log("user->", user)
-    //     }).catch((error) => {
-    //         console.log(error)
-    //         const errorCode = error.code;
-    //         const errorMessage = error.message;
-    //         const email = error.customData.email;
-    //         const credential = OAuthProvider.credentialFromError(error);
-    //     });
-    // }
-
-
 
     const handleTerms = () => {
         props.setShow(false);
@@ -494,17 +421,11 @@ const Login = React.memo((props) => {
                                     <button type='submit'> {t("login_continue")}</button>
                                 </form>
                                 <p className='text-center login-or'>OR</p>
-                                {/* {isIOS || isMacOs ?
-                                    
-                                    
-                                    } */}
+
 
                                 <div className='google-auth-container'>
                                     <button className='login-google-btn' onClick={handleGoogleAuthentication}><img src={GoogleLogo} className='google-log-img' />{t("continue_with_google")}</button>
                                 </div>
-                                {/* <button onClick={handleAppleAuthentication}><img src={AppleAuthButton} className='login-google-btn' /></button> */}
-
-                                {/* <button onClick={handleGoogleAuthentication}><img src={GoogleAuthButton} className='login-google-btn ' /></button> */}
 
                                 <span style={{ alignSelf: "baseline", marginTop: "20px", fontSize: "12px" }}>
                                     {/* <input type="checkbox" className='mx-2' required checked={checkboxSelected} onChange={() => {
