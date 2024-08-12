@@ -764,7 +764,7 @@ const ProductDetails = () => {
                                                             :
                                                             <div className='d-flex align-items-center mt-3'>
                                                                 <img src={NonVegIcon} alt='nonVegIcon' className='me-3' />
-                                                                {t("non-vegetarian")}
+                                                                <p className='veg-indicater'>{t("non-vegetarian")}</p>
                                                             </div>
                                                         : null}
                                                     {productdata?.cancelable_status == 1 ?

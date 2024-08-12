@@ -198,7 +198,6 @@
 .product_title_content p {
   font-size: 18px;
   line-height: 32px;
-
   color: var(--font-color);
   letter-spacing: 2px;
   font-weight: 700 !important;
@@ -206,7 +205,7 @@
 }
 
 .product_title_content a {
-  background: var(--secondary-color-light);
+  background: var(--primary-color);
   border: 1px solid var(--secondary-color);
   border-radius: 8px;
 

@@ -42,7 +42,6 @@ const Notification = () => {
         }
       })
       .catch(error => {
-        console.log(error);
         const isNoInternet = ValidateNoInternet(error);
         if (isNoInternet) {
           setIsNetworkError(isNoInternet);
@@ -64,7 +63,6 @@ const Notification = () => {
   };
   const { t } = useTranslation();
   const placeHolderImage = (e) => {
-
     e.target.src = setting.setting?.web_logo;
   };
   return (

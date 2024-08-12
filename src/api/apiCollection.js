@@ -3,7 +3,7 @@ import api from "./apiMiddleware";
 import store from "../model/store";
 import * as apiEndPoints from "./apiEndPointCollection"
 
-export const register_user = async ({ Uid, name, email, mobile, type, fcm, country_code }) => {
+export const registerUser = async ({ Uid, name, email, mobile, type, fcm, country_code }) => {
     const formData = new FormData();
     let formdata = new FormData();
     formdata.append("auth_uid", Uid);
@@ -78,7 +78,6 @@ export const getSection = async ({ city_id, latitiude, longitude }) => {
     return response.data
 }
 export const getUser = async () => {
-    console.log("hello world")
     const response = await api.get(apiEndPoints.getUser)
     return response.data
 }

@@ -34,6 +34,7 @@ const PayPalPaymentHandler = () => {
     // https://devegrocer.thewrteam.in/web-payment-status?status=PAYMENT_SUCCESS&type=order&payment_method=Phonepe
     useEffect(() => {
         let intervalId;
+        console.log("parameter object", queryParamsObj)
         if (queryParamsObj.status == "PAYMENT_SUCCESS" && queryParamsObj.type == "wallet" && queryParamsObj.payment_method == "Phonepe") {
             intervalId = setInterval(() => {
                 window.opener.postMessage("Recharge Done", "*");
@@ -98,7 +99,7 @@ const PayPalPaymentHandler = () => {
                 </div>
                 <button onClick={handleNavigate} className='checkout_btn'>
                     {t("go_to_home")}
-                </button>   
+                </button>
             </div>
                 : null}
         </>

@@ -579,7 +579,6 @@ const Header = () => {
                                             // if (curr_url.pathname !== '/products') {
                                             // }
                                         }
-
                                     }}
 
                                         className='search-form'>
