@@ -243,6 +243,7 @@
   "processed": "Processed",
   "returned": "Returned",
   "please_enter_valid_phone_number": "Please enter valid phone number",
+  "please_enter_phone_number":"Please enter phone number",
   "user_name": "Username",
   "email_address": "Email Address",
   "delete_address": "Delete Address ?",

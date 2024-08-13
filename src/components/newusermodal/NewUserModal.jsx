@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../../api/api';
+import * as newApi from "../../api/apiCollection"
 import { toast } from 'react-toastify';
 import '../login/login.css';
 import './newmodal.css';
@@ -66,6 +67,21 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
     };
 
 
+    // const handleUserRegistration = async (e) => {
+    //     e.preventDefault();
+    //     try {
+    //         if (phoneNum?.length < countryCode?.length || phoneNum == null) {
+    //             setError(t("please_enter_phone_number"))
+    //             setisLoading(false)
+    //         } else {
+    //             const res = await newApi.registerUser({ Uid: auth_id, name: userName, email: userEmail, mobile: phoneNum, type: authType, fcm: fcm_token, country_code: countryCode })
+
+
+    //         }
+    //     } catch (error) {
+    //         console.log("error", error)
+    //     }
+    // }
 
     const handleUserRegistration = async (e) => {
         e.preventDefault();
@@ -152,6 +168,16 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
         }
     };
 
+    // const getCurrentUser = async () => {
+    //     try {
+    //         const response = await newApi.getUser()
+    //         dispatch(setCurrentUser({ data: response.user }));
+    //         toast.success("You're successfully Logged In");
+    //     } catch (error) {
+    //         console.log("error", error)
+    //     }
+    // };
+
     const getCurrentUser = (token) => {
         api.getUser(token)
             .then(response => response.json())
@@ -207,9 +233,9 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                             setError("");
                             setUserEmail(e.target.value);
                         }}
-                            style={authType == "google" ? { color: "var(--sub-text-color)" } : { color: "black" }}
+                            style={authType == "google" ? { color: "var(--sub-text-color)" } : { color: "--font-color" }}
                             required />
-                        <input type='tel' placeholder={t('mobile_number')} disabled={authType == "phone"} value={phoneNum} style={authType == "phone" ? { color: "var(--sub-text-color)" } : { color: "black" }} onChange={(e) => setPhoneNum(e.target.value)} />
+                        <input type='tel' placeholder={t('mobile_number')} disabled={authType == "phone"} value={phoneNum} style={authType == "phone" ? { color: "var(--sub-text-color)" } : { color: "var(--font-color)" }} onChange={(e) => setPhoneNum(e.target.value)} />
                     </div>
                     <button type='submit' disabled={isLoading} >{t("register")} {t("profile")}</button>
                 </form>

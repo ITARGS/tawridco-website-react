@@ -5,15 +5,14 @@ import * as apiEndPoints from "./apiEndPointCollection"
 
 export const registerUser = async ({ Uid, name, email, mobile, type, fcm, country_code }) => {
     const formData = new FormData();
-    let formdata = new FormData();
-    formdata.append("auth_uid", Uid);
-    formdata.append("name", name);
-    formdata.append("email", email)
-    formdata.append("country_code", country_code)
-    formdata.append("mobile", mobile)
-    formdata.append("type", type)
-    formdata.append("fcm_token", fcm);
-    formdata.append("platform", "web");
+    formData.append("auth_uid", Uid);
+    formData.append("name", name);
+    formData.append("email", email)
+    formData.append("country_code", country_code)
+    formData.append("mobile", mobile)
+    formData.append("type", type)
+    formData.append("fcm_token", fcm);
+    formData.append("platform", "web");
     const response = await api.post(apiEndPoints.register, formData)
     return response.data
 }
