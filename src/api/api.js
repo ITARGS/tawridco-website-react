@@ -304,7 +304,7 @@ const api = {
             formdata.append("tag_names", tag_names)
         }
         if (slug !== undefined) {
-            formdata.append("slug", slug)
+            formdata.append("tag_slug", slug)
         }
 
         if (filters !== undefined) {
@@ -501,13 +501,11 @@ const api = {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
-
         var requestOptions = {
             method: 'GET',
             headers: myHeaders,
             redirect: 'follow'
         };
-
         return fetch(appUrl + appSubUrl + "/address", requestOptions);
     },
     addAddress(token, name, mobile, type, address, landmark, area, pincode, city, state, country, alternate_mobile, latitiude, longitude, is_default) {

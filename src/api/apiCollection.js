@@ -90,25 +90,92 @@ export const editProfile = async ({ uname, email, selectedFile = "" }) => {
     const response = await api.post(apiEndPoints.editProfile, formData)
     return response.data
 }
-// export const productByFilter = async ({ latitude, longitude, filters = undefined, tag_names = "", slug = "" }) => {
-//     const formData = new FormData();
-//     formData.append("latitude", latitude);
-//     formData.append("longitude", longitude);
-//     if (tag_names !== "") {
-//         formData.append("tag_names", tag_names)
-//     }
-//     if (slug !== "") {
-//         formData.append("slug", slug)
-//     }
-//     if (filters !== undefined) {
-//         for (const filter in filters) {
-//             if ((filters[filter] !== null && filters[filter] !== undefined && filters[filter] !== "") || filters[filter]?.length > 0) {
-//                 formData.append(filter, filters[filter]);
-//             }
-//             if (filters[filter] === "sizes") {
-//                 formData.append(filter, filters[filter]);
-//             }
-//         }
-//     }
-//     const response = await apiEndPoints.
-// }
+export const productByFilter = async ({ latitude, longitude, filters = undefined, tag_names = "", slug = "" }) => {
+    const formData = new FormData();
+    formData.append("latitude", latitude);
+    formData.append("longitude", longitude);
+    if (tag_names !== "") {
+        formData.append("tag_names", tag_names)
+    }
+    if (slug !== "") {
+        formData.append("slug", slug)
+    }
+    if (filters !== undefined) {
+        for (const filter in filters) {
+            if ((filters[filter] !== null && filters[filter] !== undefined && filters[filter] !== "") || filters[filter]?.length > 0) {
+                formData.append(filter, filters[filter]);
+            }
+            if (filters[filter] === "sizes") {
+                formData.append(filter, filters[filter]);
+            }
+        }
+    }
+    const response = await api.post(apiEndPoints.getProducts, formData)
+    return response.data
+}
+export const productById = async ({ latitude, longitude, id = -1, slug = "" }) => {
+    let formData = new FormData();
+    if (id != -1) {
+        formData.append("id", id)
+    }
+    formData.append("latitude", latitude)
+    formData.append("longitude", longitude)
+    if (slug != "") {
+        formData.append("slug", slug)
+    }
+    const response = await api.post(apiEndPoints.getProductById, formData)
+    return response.data
+}
+export const getCart = async ({ latitude, longitude, checkout = 0 }) => {
+    const params = { latitude: latitude, longitude: longitude, is_checkout: checkout };
+    const response = await api.get(apiEndPoints.getCart, { params })
+    return response.data
+}
+export const getCheckOut = async ({ latitude, longitude, checkout = 1 }) => {
+    var params = { latitude: latitude, longitude: longitude, is_checkout: checkout };
+    const response = await api.get(apiEndPoints.getCart, { params })
+    return response.data;
+}
+export const removeCart = async ({ }) => {
+    const formData = new FormData()
+    formData.append("is_remove_all", 1);
+    const response = await api.post(`${apiEndPoints.getCart}/${apiEndPoints.remove}`, formData)
+    return response.data
+}
+export const addToCart = async ({ product_id, product_variant_id, qty }) => {
+    const formData = new FormData();
+    formData.append("product_id", product_id);
+    formData.append("product_variant_id", product_variant_id);
+    formData.append("qty", qty);
+    const response = await api.post(`${apiEndPoints.getCart}/${apiEndPoints.add}`, formData)
+    return response.data
+}
+export const removeFromCart = async ({ product_id, product_variant_id }) => {
+    const formData = new FormData()
+    formData.append("product_id", product_id);
+    formData.append("product_variant_id", product_variant_id);
+    formData.append("is_remove_all", 0);
+    const response = await api.post(`${apiEndPoints.getCart}/${apiEndPoints.remove}`, formData)
+    return response.data;
+}
+export const getFavorite = async ({ latitude, longitude }) => {
+    const params = { latitude: latitude, longitude: longitude };
+    const response = await api.get(apiEndPoints.getFavorite, { params })
+    return response.data
+}
+export const addToFavorite = async ({ product_id }) => {
+    const formData = new FormData()
+    formData.append("product_id", product_id)
+    const response = await api.post(`${apiEndPoints.getFavorite}/${apiEndPoints.add}`, formData)
+    return response.data
+}
+export const removeFromFavorite = async ({ product_id }) => {
+    const formData = new FormData()
+    formData.append("product_id", product_id);
+    const response = await api.post(`${apiEndPoints.getFavorite}/${apiEndPoints.remove}`, formData)
+    return response.data;
+}
+export const getAddress = async ({ }) => {
+    const response = await api.get(apiEndPoints.getAddress)
+    return response.data
+}
