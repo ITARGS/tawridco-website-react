@@ -8,19 +8,24 @@
   align-items: center !important;
   display: flex !important;
 }
+
 .user_data_modal .modal-dialog .modal-content {
   border-radius: 10px !important;
 }
+
 .modal-header.web_logo {
   border: 0 !important;
   justify-content: space-between !important;
 }
+
 .modal-body.user_data_modal_body {
   text-align: center;
 }
+
 .modal-header img {
   width: 100px;
 }
+
 .modal-body.user_data_modal_body button {
   margin: 20px 0;
   padding: 15px;
@@ -39,4 +44,12 @@
 .modal-body p.user_data_form_error {
   font-size: 14px;
   color: var(--bs-danger);
+}
+
+.active-input {
+  color: var(--font-color)
+}
+
+.inactive-input {
+  color: var(--sub-text-color);
 }

@@ -90,3 +90,25 @@ export const editProfile = async ({ uname, email, selectedFile = "" }) => {
     const response = await api.post(apiEndPoints.editProfile, formData)
     return response.data
 }
+// export const productByFilter = async ({ latitude, longitude, filters = undefined, tag_names = "", slug = "" }) => {
+//     const formData = new FormData();
+//     formData.append("latitude", latitude);
+//     formData.append("longitude", longitude);
+//     if (tag_names !== "") {
+//         formData.append("tag_names", tag_names)
+//     }
+//     if (slug !== "") {
+//         formData.append("slug", slug)
+//     }
+//     if (filters !== undefined) {
+//         for (const filter in filters) {
+//             if ((filters[filter] !== null && filters[filter] !== undefined && filters[filter] !== "") || filters[filter]?.length > 0) {
+//                 formData.append(filter, filters[filter]);
+//             }
+//             if (filters[filter] === "sizes") {
+//                 formData.append(filter, filters[filter]);
+//             }
+//         }
+//     }
+//     const response = await apiEndPoints.
+// }

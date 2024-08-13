@@ -43,6 +43,7 @@ const Transaction = () => {
                 //     setisLoader(false)
                 //     toast.error('No Transaction Found')
                 // }
+                setisLoader(false)
             }).catch(err => {
                 const isNoInternet = ValidateNoInternet(err);
                 if (isNoInternet) {

@@ -12,6 +12,7 @@ import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/
 import { addtoGuestCart, setCart, setCartProducts, setIsGuest } from '../../model/reducer/cartReducer';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { setSetting } from '../../model/reducer/settingReducer';
+import { setTokenThunk } from '../../model/thunk/loginThunk';
 
 
 function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode, userEmail, setUserEmail, userName, setUserName, authType, setLoginModal }) {
@@ -32,102 +33,47 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
 
     const closeModalRef = useRef();
 
-    const handleUpdateUser = (e) => {
-        e.preventDefault();
 
-        setisLoading(true);
-        // if (user?.jwtToken !== "") {
-        api.login(phoneNum.replace(`+${countryCode}`, ""), user?.authId, countryCode)
-            .then((res) => res.json())
-            .then((result) => {
-                const token = result?.data?.access_token;
-                dispatch(setJWTToken({ data: token }));
-                api.edit_profile(userName, userName, selectedFile, token)
-                    .then(response => response.json())
-                    .then(result => {
-                        if (result.status === 1) {
-                            getCurrentUser(token);
-                            if (cart?.isGuest === true && cart?.guestCart?.length !== 0) {
-                                dispatch(setIsGuest({ data: false }));
-                                AddtoCartBulk(user?.jwtToken);
-                            }
-                            // setuseremail();
-                            // setusername();
-                            setRegisterModalShow(false);
-                            // closeModalRef.current.click()
-                        }
-                        else {
-                            setError(result.message);
-                            setisLoading(false);
-                        }
-                    });
-            });
-        // }
-
-    };
-
-
-    // const handleUserRegistration = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         if (phoneNum?.length < countryCode?.length || phoneNum == null) {
-    //             setError(t("please_enter_phone_number"))
-    //             setisLoading(false)
-    //         } else {
-    //             const res = await newApi.registerUser({ Uid: auth_id, name: userName, email: userEmail, mobile: phoneNum, type: authType, fcm: fcm_token, country_code: countryCode })
-
-
-    //         }
-    //     } catch (error) {
-    //         console.log("error", error)
-    //     }
-    // }
+    const handleFetchSetting = async () => {
+        const setting = await newApi.getSetting()
+        dispatch(setSetting({ data: setting?.data }));
+        dispatch(setFavouriteLength({ data: setting?.data?.favorite_product_ids?.length }));
+        dispatch(setFavouriteProductIds({ data: setting?.data?.favorite_product_ids }));
+    }
 
     const handleUserRegistration = async (e) => {
+        let latitude;
+        let longitude;
         e.preventDefault();
         try {
-            if (phoneNum?.length < countryCode.length || phoneNum == null) {
-                setError("Please enter phone number!");
-                setisLoading(false);
+            if (phoneNum?.length < countryCode?.length || phoneNum == null) {
+                setError(t("please_enter_phone_number"))
+                setisLoading(false)
             } else {
-                await api.register(auth_id, userName, userEmail, phoneNum, authType, fcm_token, countryCode).then(response => response.json()).then(async (result) => {
-                    if (result.status == 1) {
-                        getCurrentUser(result.data.access_token)
-                        api.getSettings(1, result.data.access_token)
-                            .then((req) => req.json())
-                            .then((res) => {
-                                if (res.status == 1) {
-                                    dispatch(setSetting({ data: res?.data }));
-                                    dispatch(setFavouriteLength({ data: res?.data?.favorite_product_ids?.length }));
-                                    dispatch(setFavouriteProductIds({ data: res?.data?.favorite_product_ids }));
-                                }
-                            });
-
-                        dispatch(setJWTToken({ data: result.data.access_token }));
-                        // dispatch(setAuthId({ data: Uid }));
-
-                        if (result.data?.user?.status == 1) {
-                            dispatch(setIsGuest({ data: false }));
-                        }
-                        if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && result.data?.user?.status == 1) {
-                            await AddtoCartBulk(result.data.access_token);
-                            // dispatch(setIsGuest({ data: false }));
-                        }
-                        await fetchCart(result.data.access_token, city?.city?.latitude ? city?.city?.latitude : setting?.setting?.default_city?.latitude,
-                            city?.city?.longitude ? city?.city?.longitude : setting?.setting?.default_city?.longitude
-                        );
-                    }
-                    setRegisterModalShow(false)
-                    toast.success(t("register_successfully"));
-                    setLoginModal(false)
-                }).catch((err) => {
-                    console.log(err)
-                })
+                const res = await newApi.registerUser({ Uid: auth_id, name: userName, email: userEmail, mobile: phoneNum, type: authType, fcm: fcm_token, country_code: countryCode })
+                const tokenSet = await dispatch(setTokenThunk(res?.data?.access_token))
+                await getCurrentUser()
+                await handleFetchSetting()
+                latitude = city?.city?.latitude || setting?.setting?.default_city?.latitude
+                longitude = city?.city?.longitude || setting?.setting?.default_city?.longitude
+                if (res.data?.user?.status == 1) {
+                    dispatch(setIsGuest({ data: false }));
+                }
+                if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && res?.data?.user?.status == 1) {
+                    await AddtoCartBulk(res?.data.access_token);
+                }
+                await fetchCart(res?.data?.access_token, latitude, longitude);
+                setRegisterModalShow(false)
+                toast.success(t("register_successfully"));
+                setLoginModal(false)
             }
         } catch (error) {
-            console.log(error)
+            console.log("error", error)
+            setError("error.occured")
         }
     }
+
+
 
     const fetchCart = async (token, latitude, longitude) => {
         await api.getCart(token, latitude, longitude)
@@ -168,35 +114,14 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
         }
     };
 
-    // const getCurrentUser = async () => {
-    //     try {
-    //         const response = await newApi.getUser()
-    //         dispatch(setCurrentUser({ data: response.user }));
-    //         toast.success("You're successfully Logged In");
-    //     } catch (error) {
-    //         console.log("error", error)
-    //     }
-    // };
-
-    const getCurrentUser = (token) => {
-        api.getUser(token)
-            .then(response => response.json())
-            .then(result => {
-                if (!result.user.status) {
-                    setisLoading(false);
-                    dispatch(setCurrentUser({ data: result.user }));
-                } else {
-
-                    if (result.status === 1) {
-                        dispatch(setCurrentUser({ data: result.user }));
-                        if (closeModalRef.current && result.user.status) {
-                            closeModalRef.current.click();
-                        }
-
-                        setisLoading(false);
-                    }
-                }
-            });
+    const getCurrentUser = async () => {
+        try {
+            const response = await newApi.getUser()
+            dispatch(setCurrentUser({ data: response.user }));
+            toast.success("You're successfully Logged In");
+        } catch (error) {
+            console.log("error", error)
+        }
     };
 
     return (
@@ -206,10 +131,7 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
             backdrop="static"
             keyboard={true}
             className='user_data_modal'>
-
-
             <Modal.Header className='web_logo'>
-
                 <img src={setting.setting && setting.setting.web_settings.web_logo} alt="" />
                 <AiOutlineCloseCircle className='cursorPointer' size={20} onClick={() => {
                     setRegisterModalShow(false);
@@ -220,9 +142,7 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
             <Modal.Body
                 className='user_data_modal_body'>
                 <span className='note'>{t("profile_note")}</span>
-                {error === ""
-                    ? ""
-                    : <span className='error-msg'>{error}</span>}
+                {error !== "" && (<span className='error-msg'>{error}</span>)}
                 <form onSubmit={handleUserRegistration} className='userData-Form'>
                     <div className='inputs-container'>
                         <input type='text' placeholder={t('user_name')} value={userName} onChange={(e) => {
@@ -233,13 +153,16 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                             setError("");
                             setUserEmail(e.target.value);
                         }}
-                            style={authType == "google" ? { color: "var(--sub-text-color)" } : { color: "--font-color" }}
-                            required />
-                        <input type='tel' placeholder={t('mobile_number')} disabled={authType == "phone"} value={phoneNum} style={authType == "phone" ? { color: "var(--sub-text-color)" } : { color: "var(--font-color)" }} onChange={(e) => setPhoneNum(e.target.value)} />
+                            required
+                            className={authType == "google" ? "inactive-input" : "active-input"}
+                        />
+                        <input type='tel' placeholder={t('mobile_number')} disabled={authType == "phone"} value={phoneNum} onChange={(e) => setPhoneNum(e.target.value)}
+                            className={authType == "phone" ? "inactive-input" : "active-input"}
+                        />
                     </div>
                     <button type='submit' disabled={isLoading} >{t("register")} {t("profile")}</button>
                 </form>
-                {error ? <p className='user_data_form_error'>{error}</p> : ""}
+                {error && (<p className='user_data_form_error'>{error}</p>)}
             </Modal.Body>
         </Modal>
     );

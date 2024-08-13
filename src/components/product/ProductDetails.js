@@ -103,7 +103,7 @@ const ProductDetails = () => {
                             limit: productLimit,
                             offset
                         }
-                        api.getProductbyFilter(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, filter, user?.jwtToken, result?.data?.tag_names).then((res) => res.json()).then((result => {
+                        api.getProductbyFilter(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, filter, user?.jwtToken, result?.data?.tag_names, slug).then((res) => res.json()).then((result => {
                             setSimilarProducts(result?.data)
                             setSimilarProductsLength(result.total)
                         }))

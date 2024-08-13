@@ -248,6 +248,8 @@ const Login = React.memo((props) => {
 
 
     const loginApiCall = async (user, Uid, fcm, type) => {
+        let latitude;
+        let longitude;
         try {
             // For forcefully refresh token for remove error
             await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
@@ -262,8 +264,8 @@ const Login = React.memo((props) => {
                     dispatch(setIsGuest({ data: false }));
                 }
                 await handleFetchSetting();
-                const latitude = city?.city?.latitude || setting?.setting?.default_city?.latitude
-                const longitude = city?.city?.longitude || setting?.setting?.default_city?.longitude
+                latitude = city?.city?.latitude || setting?.setting?.default_city?.latitude
+                longitude = city?.city?.longitude || setting?.setting?.default_city?.longitude
                 if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && res?.data?.user?.status == 1) {
                     await AddtoCartBulk(res?.data.access_token);
                 }
@@ -309,7 +311,7 @@ const Login = React.memo((props) => {
         // Navigate('/policy/Privacy_Policy');
     };
 
-    const handleOnChange = (value, data, event, formattedValue) => {
+    const handleOnPhoneChange = (value, data, event, formattedValue) => {
         //console.log(value, ' formattedValue');
         if (value?.length > 0) {
             setPhonenum(`+${value}`);
@@ -361,20 +363,13 @@ const Login = React.memo((props) => {
                                 </>
                             )}
                     </div>
-
-
-                    {error === ''
-                        ? ""
-                        : <span className='error-msg'>{error}</span>}
-
+                    {error !== '' && <span className='error-msg'>{error}</span>}
                     {isOTP
                         ? (
                             <form className='d-flex flex-column gap-3 form w-100' onSubmit={verifyOTP}>
-                                {isLoading
-                                    ? (
-                                        <Loader width='100%' height='auto' />
-                                    )
-                                    : null}
+                                {isLoading && (
+                                    <Loader width='100%' height='auto' />
+                                )}
                                 <OTPInput className='otp-container' inputStyle="otp-container-style" value={OTP} onChange={setOTP} autoFocus OTPLength={6} otpType="number" disabled={false} />
                                 <span className='timer' >
                                     <button onClick={handleLogin} disabled={disabled}>
@@ -389,18 +384,14 @@ const Login = React.memo((props) => {
                         : (
                             <div>
                                 <form className='d-flex flex-column gap-3 form' onSubmit={handleLogin}>
-                                    {isLoading
-                                        ? (
-                                            <Loader width='100%' height='auto' />
-                                        )
-                                        : null}
-
-
+                                    {isLoading && (
+                                        <Loader width='100%' height='auto' />
+                                    )}
                                     <div>
                                         <PhoneInput
                                             country={process.env.REACT_APP_COUNTRY_CODE}
                                             value={phonenum}
-                                            onChange={handleOnChange}
+                                            onChange={handleOnPhoneChange}
                                             enableSearch
                                             disableSearchIcon
                                             placeholder={t('please_enter_valid_phone_number')}

@@ -290,8 +290,8 @@ const api = {
         return fetch(appUrl + appSubUrl + "/edit_profile", requestOptions);
     },
 
-    // Phase 1
-    getProductbyFilter(latitude, longitude, filters, token, tag_names) {
+    //Phase 1
+    getProductbyFilter(latitude, longitude, filters, token, tag_names, slug) {
         var myHeaders = new Headers();
         //console.log("getProductbyFilter API ->", filters);
         myHeaders.append(access_key_param, access_key);
@@ -300,12 +300,13 @@ const api = {
         // formdata.append("city_id", city_id);
         formdata.append("latitude", latitude);
         formdata.append("longitude", longitude);
-        console.log("keywords", tag_names)
         if (tag_names !== undefined) {
             formdata.append("tag_names", tag_names)
         }
+        if (slug !== undefined) {
+            formdata.append("slug", slug)
+        }
 
-        //console.log(filters);
         if (filters !== undefined) {
             for (const filter in filters) {
                 if ((filters[filter] !== null && filters[filter] !== undefined && filters[filter] !== "") || filters[filter]?.length > 0) {
