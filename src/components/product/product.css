@@ -205,7 +205,7 @@
 }
 
 .product_title_content a {
-  background: var(--primary-color);
+  background: var(--body-background);
   border: 1px solid var(--secondary-color);
   border-radius: 8px;
 
