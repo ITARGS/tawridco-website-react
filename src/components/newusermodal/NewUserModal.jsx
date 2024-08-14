@@ -15,7 +15,7 @@ import { setSetting } from '../../model/reducer/settingReducer';
 import { setTokenThunk } from '../../model/thunk/loginThunk';
 
 
-function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode, userEmail, setUserEmail, userName, setUserName, authType, setLoginModal }) {
+function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode, userEmail, setUserEmail, userName, setUserName, authType, setLoginModal, setIsOTP }) {
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -62,40 +62,16 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                 if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && res?.data?.user?.status == 1) {
                     await AddtoCartBulk(res?.data.access_token);
                 }
-                await fetchCart(res?.data?.access_token, latitude, longitude);
-                setRegisterModalShow(false)
+                setRegisterModalShow(false);
                 toast.success(t("register_successfully"));
                 setLoginModal(false)
+                setIsOTP(false)
             }
         } catch (error) {
             console.log("error", error)
             setError("error.occured")
         }
     }
-
-
-
-    const fetchCart = async (token, latitude, longitude) => {
-        await api.getCart(token, latitude, longitude)
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    dispatch(setCart({ data: result }));
-                    const productsData = result?.data?.cart?.map((product) => {
-                        return {
-                            product_id: product?.product_id,
-                            product_variant_id: product?.product_variant_id,
-                            qty: product?.qty
-                        };
-                    });
-                    dispatch(setCartProducts({ data: productsData }));
-                }
-                else {
-                    dispatch(setCart({ data: null }));
-                }
-            })
-            .catch(error => console.log(error));
-    };
 
     const AddtoCartBulk = async (token) => {
         try {
@@ -118,7 +94,6 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
         try {
             const response = await newApi.getUser()
             dispatch(setCurrentUser({ data: response.user }));
-            toast.success("You're successfully Logged In");
         } catch (error) {
             console.log("error", error)
         }

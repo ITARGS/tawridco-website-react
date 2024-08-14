@@ -613,7 +613,12 @@ const api = {
         formdata.append("final_total", final_total);
         formdata.append("payment_method", payment_method);
         formdata.append("address_id", address_id);
-        formdata.append("delivery_time", deliveryTime);
+        if (deliveryTime === "NaN-NaN-NaN undefined") {
+            formdata.append("delivery_time", "N/A");
+        } else {
+            formdata.append("delivery_time", deliveryTime);
+        }
+
         if (order_note !== "") {
             formdata.append("order_note", order_note);
         }

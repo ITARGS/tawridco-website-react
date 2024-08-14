@@ -28,6 +28,9 @@ import GoogleLogo from "../../utils/google-color-icon.svg"
 
 
 const Login = React.memo((props) => {
+    const Navigate = useNavigate();
+    const closeModalRef = useRef();
+    const dispatch = useDispatch();
 
     const isDemoMode = process.env.REACT_APP_DEMO_MODE
     const countryDialCode = process.env.REACT_APP_COUNTRY_DIAL_CODE
@@ -41,10 +44,31 @@ const Login = React.memo((props) => {
     const cart = useSelector(state => state.cart);
     const [fcm, setFcm] = useState('');
     const [registerModalShow, setRegisterModalShow] = useState(false);
-    const [isVerified, setIsVerified] = useState(false);
     const [userEmail, setUserEmail] = useState("")
     const [userName, setUserName] = useState("")
     const [authType, setAuthType] = useState("")
+    const [phonenum, setPhonenum] = useState(isDemoMode == "true" ?
+        `${countryDialCode}${phoneNumber}` : "");
+    const [countryCode, setCountryCode] = useState(countryDialCode);
+    const [checkboxSelected, setcheckboxSelected] = useState(false);
+    const [error, setError] = useState("");
+    const [isOTP, setIsOTP] = useState(false);
+    const [Uid, setUid] = useState("");
+    const [OTP, setOTP] = useState(isDemoMode == "true" ? demoOTP : "");
+    const [isLoading, setisLoading] = useState(false);
+    const [timer, setTimer] = useState(null); // Initial timer value in seconds
+    const [disabled, setDisabled] = useState(true);
+    const { t } = useTranslation();
+
+    useEffect(() => {
+        if (error !== "") {
+            const timer = setTimeout(() => {
+                setError("");
+            }, 5000);
+            return () => clearTimeout(timer);
+        }
+    }, [error]);
+
 
     useEffect(() => {
         const initializeFirebaseMessaging = async () => {
@@ -75,29 +99,6 @@ const Login = React.memo((props) => {
             initializeFirebaseMessaging();
         }
     }, [setting]);
-    // console.log(fcm);
-
-
-
-    const Navigate = useNavigate();
-    const closeModalRef = useRef();
-    const dispatch = useDispatch();
-
-    const [phonenum, setPhonenum] = useState(isDemoMode == "true" ?
-        `${countryDialCode}${phoneNumber}` : "");
-    const [countryCode, setCountryCode] = useState(countryDialCode);
-    const [checkboxSelected, setcheckboxSelected] = useState(false);
-    const [error, setError] = useState("", setTimeout(() => {
-        if (error !== "")
-            setError("");
-    }, 5000));
-    const [isOTP, setIsOTP] = useState(false);
-    const [Uid, setUid] = useState("");
-    const [OTP, setOTP] = useState(isDemoMode == "true" ? demoOTP : "");
-    const [isLoading, setisLoading] = useState(false);
-    const [timer, setTimer] = useState(null); // Initial timer value in seconds
-    const [disabled, setDisabled] = useState(true);
-    const { t } = useTranslation();
 
     useEffect(() => {
         if (props.show == true) {
@@ -180,49 +181,50 @@ const Login = React.memo((props) => {
         }
     };
 
-    const fetchCart = async (token, latitude, longitude) => {
-        await api.getCart(token, latitude, longitude)
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    dispatch(setCart({ data: result }));
-                    const productsData = result?.data?.cart?.map((product) => {
-                        return {
-                            product_id: product?.product_id,
-                            product_variant_id: product?.product_variant_id,
-                            qty: product?.qty
-                        };
-                    });
-                    dispatch(setCartProducts({ data: productsData }));
-                }
-                else {
-                    dispatch(setCart({ data: null }));
-                }
-            })
-            .catch(error => console.log(error));
-    };
-    //otp verification
+    const fetchCart = async (latitude, longitude) => {
+        try {
+            const response = await newApi.getCart({ latitude: latitude, longitude: longitude })
+            if (response.status === 1) {
+                dispatch(setCart({ data: response.data }))
+                const productsData = getProductData(response.data)
+                dispatch(setCartProducts({ data: productsData }));
+            } else {
+                dispatch(setCart({ data: null }));
+            }
+        } catch (error) {
+            console.log("error", error)
+        }
+    }
+    const getProductData = (cartData) => {
+        const cartProducts = cartData?.cart?.map((product) => {
+            return {
+                product_id: product?.product_id,
+                product_variant_id: product?.product_variant_id,
+                qty: product?.qty
+            }
+        })
+        return cartProducts;
+    }
+
     const verifyOTP = async (e) => {
-        e.preventDefault();
-        setisLoading(true);
-        let confirmationResult = window.confirmationResult;
-        await confirmationResult.confirm(OTP).then(async (result) => {
-            // User verified successfully.
-            setUid(result.user.uid);
-            dispatch(setAuthId({ data: result.user.uid }));
-            await loginApiCall(result.user, result.user.uid, fcm, "phone")
-            //login call
-            // console.log(phonenum);
+        try {
+            e.preventDefault();
+            setisLoading(true);
+            let confirmationResult = window.confirmationResult;
+            const OTPResult = await confirmationResult.confirm(OTP)
+            setUid(OTPResult.user.id)
+            dispatch(setAuthId({ data: OTPResult.user.id }));
+            await loginApiCall(OTPResult.user, OTPResult.user.uid, fcm, "phone")
             const num = phonenum.replace(`${countryCode}`, "");
-            // isUserVerified(num.replace("+", ""), result.user.uid);
-        }).catch(() => {
+        } catch (error) {
+            console.log("error", error)
             setisLoading(false);
-            // User couldn't sign in (bad verification code?)
             setOTP("");
             setError("Invalid Code");
+        }
 
-        });
-    };
+    }
+
     const AddtoCartBulk = async (token) => {
         try {
             const variantIds = cart?.guestCart?.map((p) => p.product_variant_id);
@@ -269,7 +271,7 @@ const Login = React.memo((props) => {
                 if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && res?.data?.user?.status == 1) {
                     await AddtoCartBulk(res?.data.access_token);
                 }
-                await fetchCart(res?.data?.access_token, latitude, longitude);
+                await fetchCart(latitude, longitude);
                 setError("");
                 setOTP("");
                 setPhonenum("");
@@ -291,15 +293,18 @@ const Login = React.memo((props) => {
 
     }
     const handleGoogleAuthentication = async () => {
-        const provider = new GoogleAuthProvider();
-        signInWithPopup(auth, provider).then(async (result) => {
+        try {
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider)
             const credential = GoogleAuthProvider.credentialFromResult(result);
             const token = credential.accessToken;
             const user = result.user;
             await loginApiCall(user, user.uid, fcm, "google")
-        }).catch((error) => {
-            console.log(error)
-        })
+        } catch (error) {
+            console.log("error", error)
+        }
+
+
     }
 
     const handleTerms = () => {
@@ -443,6 +448,7 @@ const Login = React.memo((props) => {
                 setUserName={setUserName}
                 authType={authType}
                 setLoginModal={props.setShow}
+                setIsOTP={setIsOTP}
             />
         </>
     );

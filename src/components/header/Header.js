@@ -54,10 +54,6 @@ const Header = () => {
     const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
 
-    // to open Location modal 
-    const openModal = () => {
-        handleModal();
-    };
 
     const openCanvasModal = () => {
         handleModal();
@@ -71,7 +67,6 @@ const Header = () => {
         } else {
             document.body.style.overflow = 'auto';
             document.body.style.height = 'auto';
-
         }
     }, [bodyScroll]);
 
@@ -544,7 +539,7 @@ const Header = () => {
 
 
                             <div className='d-flex  w-lg-100 col-md-6 order-2 justify-content-center align-items-center '>
-                                <button whiletap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile' onClick={openModal}>
+                                <button whiletap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile' onClick={handleModal}>
                                     <div className='d-flex flex-row gap-2'>
                                         <div className='icon location p-1 m-auto'>
                                             <GoLocation fill='black' />
@@ -576,6 +571,7 @@ const Header = () => {
                                             // dispatch(setFilterMinMaxPrice({ data: null }));
                                             searchNavTrigger.current.click();
                                             navigate('/products');
+
                                             // if (curr_url.pathname !== '/products') {
                                             // }
                                         }
@@ -782,7 +778,7 @@ const Header = () => {
                     </div>
                 </div>
 
-
+                {/* TODO: */}
                 {/* Mobile bottom Nav */}
                 <nav className='header-mobile-nav' >
                     <div className='mobile-nav-wrapper'>
@@ -808,14 +804,13 @@ const Header = () => {
                                     </div>
                                     <span>{t("search")}</span>
                                 </button>
+
                             </li>
 
                             {curr_url.pathname === '/products' ? (
                                 <li className='menu-item'>
                                     <button type='button' className={`filter ${mobileNavActKey == 3 ? "active" : ""}`} data-bs-toggle="offcanvas" data-bs-target="#filteroffcanvasExample" aria-controls="filteroffcanvasExample" onClick={() => {
-
                                         handleMobileNavActKey(3);
-
                                     }}>
                                         <div>
                                             <FiFilter />

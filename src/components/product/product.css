@@ -206,7 +206,7 @@
 
 .product_title_content a {
   background: var(--body-background);
-  border: 1px solid var(--secondary-color);
+  border: 1px solid var(--secondary-color); 
   border-radius: 8px;
 
   font-size: 16px;
