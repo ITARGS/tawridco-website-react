@@ -246,7 +246,7 @@
 
 @media (min-width: 0px) and (max-width: 420px) {
   .login .body img {
-    width: 200px !important;
+    /* width: 200px !important; */
   }
 
   .login .body .otp-container>input[type="tel"] {

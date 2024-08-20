@@ -291,7 +291,7 @@
   "promo_code_discount": "Promo Code Discount",
   "wallet_balance_used": "Wallet Used",
   "order_paypal_pending_message": "It looks like your PayPal payment is still pending. You'll receive an update from PayPal soon to confirm it.",
-  "wallet_recharge_paypal_pending_message": "It seems your PayPal payment is still pending. Once confirmed, your wallet will be credited with the same amount.",
+  "F": "It seems your PayPal payment is still pending. Once confirmed, your wallet will be credited with the same amount.",
   "all_customer_photos": "All Customer Photos",
   "return_order_item": "Return Order Item",
   "return_reason": "Return reason :",

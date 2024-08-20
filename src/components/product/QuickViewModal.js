@@ -15,7 +15,13 @@ import { Modal } from 'react-bootstrap';
 import { setProductSizes } from '../../model/reducer/productSizesReducer';
 import { addtoGuestCart, setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
-
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/free-mode';
+import 'swiper/css/navigation';
+import 'swiper/css/thumbs';
+import { Navigation, Thumbs, Mousewheel, Autoplay, Pagination } from "swiper/modules";
+import 'swiper/css/pagination';
 
 const QuickViewModal = (props) => {
 
@@ -40,6 +46,7 @@ const QuickViewModal = (props) => {
     const [variant_index, setVariantIndex] = useState(null);
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [quantity, setQuantity] = useState(0);
+    const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
     useEffect(() => {
         if (Object.keys(props.selectedProduct).length > 0 && city.city !== null && Object.keys(product).length === 0 && props.showModal === true) {
@@ -449,15 +456,53 @@ const QuickViewModal = (props) => {
 
                                                 <div className='sub-images-container row'>
                                                     {product.images.length >= 1 ?
-                                                        <Slider  {...settings_subImage}>
-                                                            {product.images.map((image, index) => (
-                                                                <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
-                                                                    <img onError={placeHolderImage} src={image} className='col-12 w-100' alt="product" onClick={() => {
-                                                                        setmainimage(image);
-                                                                    }}></img>
-                                                                </div>
-                                                            ))}
-                                                        </Slider>
+                                                        <Swiper style={{
+                                                            '--swiper-navigation-color': '#fff',
+                                                            '--swiper-pagination-color': '#fff',
+                                                        }}
+                                                            breakpoints={{
+                                                                0: {
+                                                                    slidesPerView: 3,
+                                                                    spaceBetween: 6
+                                                                },
+                                                                500: {
+                                                                    slidesPerView: 5,
+                                                                    spaceBetween: 2
+                                                                },
+                                                                992: {
+                                                                    slidesPerView: 3,
+                                                                    spaceBetween: 5
+                                                                }
+                                                            }}
+                                                            loop={true}
+                                                            navigation={true}
+                                                            thumbs={{ swiper: thumbsSwiper }}
+                                                            modules={[Navigation, Thumbs, Mousewheel, Autoplay, Pagination]}
+                                                            className="mySwiper2">
+
+                                                            {product?.images?.map((image, index) => {
+                                                                return (
+                                                                    <SwiperSlide>
+                                                                        <div key={index} className={`sub-image border ${mainimage == image ? 'active' : ''}`}>
+                                                                            <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
+                                                                                setmainimage(image);
+                                                                            }} />
+                                                                        </div>
+                                                                    </SwiperSlide>
+                                                                )
+
+                                                            })}
+
+                                                        </Swiper>
+                                                        // <Slider  {...settings_subImage}>
+                                                        //     {product.images.map((image, index) => (
+                                                        //         <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
+                                                        //             <img onError={placeHolderImage} src={image} className='col-12 w-100' alt="product" onClick={() => {
+                                                        //                 setmainimage(image);
+                                                        //             }}></img>
+                                                        //         </div>
+                                                        //     ))}
+                                                        // </Slider>
                                                         :
                                                         <>
                                                             {product.images.map((image, index) => (

@@ -164,6 +164,10 @@
   position: relative;
 }
 
+.product-title-content-container {
+  width: 60%;
+}
+
 .product_title_content::before {
   content: "";
   bottom: -3px;
@@ -188,7 +192,7 @@
   font-size: 14px !important;
   margin-top: 10px !important;
   margin-bottom: 0 !important;
-  color: #bbb !important;
+  color: var(--font-color) !important;
 }
 
 .variant_value_a {
@@ -206,7 +210,7 @@
 
 .product_title_content a {
   background: var(--body-background);
-  border: 1px solid var(--secondary-color); 
+  border: 1px solid var(--secondary-color);
   border-radius: 8px;
 
   font-size: 16px;
@@ -278,6 +282,27 @@ a:focus .product-card {
   box-shadow: 0 4px 20px 0 rgb(0 0 0 / 8%);
 }
 
+@media (max-width:426px) {
+  #aiEye {
+    font-size: 15px;
+    background: #ffff;
+    line-height: 34px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 2;
+    width: 25px;
+    height: 25px;
+    text-align: center;
+    padding: 0px !important;
+    border-radius: 100% !important;
+    box-shadow: 0 4px 20px 0 rgb(0 0 0 / 8%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 #aiEye:hover {
   background: var(--secondary-color);
 }
@@ -327,6 +352,14 @@ a:focus .product-card {
   justify-content: end;
   height: 125px;
 }
+
+@media (max-width:770px) {
+  .product-card .product-card-body {
+    height: 150px;
+    justify-content: start;
+  }
+}
+
 
 .product-card .product-card-body h3 {
   font-weight: 600;
@@ -409,6 +442,7 @@ a:focus .product-card {
   justify-content: space-between;
   border: 0;
   align-items: center;
+  color: var(--font-color) !important;
 }
 
 .product-card .product-card-body .dropdown-menu {
@@ -440,11 +474,18 @@ a:focus .product-card {
   color: var(--secondary-color) !important;
   width: 100%;
   font-weight: 700;
-
   font-size: 18px;
   width: 100%;
   float: left;
   letter-spacing: 0.2px;
+}
+
+@media (max-width:770px) {
+  .product-card .product-card-body .price span {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
 }
 
 .product-card .product-card-body .price span p {
@@ -468,6 +509,16 @@ a:focus .product-card {
   background: none;
   font-size: 1.6rem;
   padding: 6px;
+}
+
+@media (max-width:400px) {
+  .favouriteBtn {
+    display: none;
+  }
+
+  .shareBtn {
+    display: none;
+  }
 }
 
 .product-card .product-card-footer .input-to-cart {
@@ -1056,6 +1107,7 @@ input::placeholder {
   background-color: var(--body-background);
   padding: 15px;
   color: var(--font-color);
+  margin: 10px 0px;
 }
 
 .product-details-view .detail-wrapper .bottom-section .returnContainer .returnDetail,

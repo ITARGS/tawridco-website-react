@@ -3,13 +3,14 @@ import './header.css';
 import { BsMoon, BsShopWindow } from 'react-icons/bs';
 import { BiUserCircle } from 'react-icons/bi';
 import { MdSearch, MdGTranslate, MdNotificationsActive } from "react-icons/md";
-import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast } from 'react-icons/io5';
+import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast, IoCloseCircle } from 'react-icons/io5';
 import { IoMdArrowDropdown, IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { GoLocation } from 'react-icons/go';
 import { FiMenu, FiFilter } from 'react-icons/fi';
 import { AiOutlineClose, AiOutlineCloseCircle } from 'react-icons/ai';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Location from '../location/Location';
+
 import { useDispatch, useSelector } from 'react-redux';
 import api from '../../api/api';
 import Login from '../login/Login';
@@ -26,6 +27,8 @@ import { Modal } from 'antd';
 import "../location/location.css";
 import { setCSSMode } from '../../model/reducer/cssmodeReducer';
 import { MdOutlineWbSunny } from "react-icons/md";
+
+import { FaFacebookSquare, FaTwitterSquare, FaInstagramSquare, FaLinkedin } from "react-icons/fa";
 
 const Header = () => {
     const closeSidebarRef = useRef();
@@ -220,12 +223,13 @@ const Header = () => {
     };
 
     const handleNavigation = (path, loginRequired = false, errorMessage = '') => {
-        closeSidebarRef.current.click();
+        console.log("click", path)
         if (loginRequired && !user.user) {
             toast.error(t(errorMessage));
         } else {
             navigate(path);
         }
+        closeSidebarRef.current.click();
     };
 
     const toggleMenu = (e) => {
@@ -241,10 +245,10 @@ const Header = () => {
 
                     <div className="canvas-header">
                         <div className='site-brand'>
-                            <img src={setting.setting && setting.setting.web_settings.web_logo} height="70px" alt="logo"></img>
+                            <img src={setting.setting && setting.setting.web_settings.web_logo} className='off-canvas-logo' alt="logo"></img>
                         </div>
 
-                        <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeSidebarRef} onClick={() => setIsOpen(false)}><AiOutlineCloseCircle fill='black' /></button>
+                        <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeSidebarRef} onClick={() => setIsOpen(false)}><IoCloseCircle fill='white' size={100} /></button>
                     </div>
                     <div className="canvas-main">
                         <div className={isDesktopView ? "site-location " : "site-location d-none"}>
@@ -344,7 +348,7 @@ const Header = () => {
                                         <IoIosArrowDown />
                                     </button>
                                 </li> */}
-                                <li className='menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
+                                {/* <li className='menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
                                     <div className={`menu-header d-flex justify-content-between w-100 ${isOpen ? "borderBottom" : ""} `}>
                                         <button type="button" onClick={() => handleNavigation("/products")}>
                                             {t("shop")}
@@ -358,12 +362,14 @@ const Header = () => {
                                             {isOpen ? <IoIosArrowUp fill='var(--font-color)' /> : <IoIosArrowDown fill='var(--font-color)' />}
                                         </button>
                                     </div>
-                                    {isOpen && (
+                                    {isOpen == true && (
                                         <ul className="sub-menu">
-                                            <li className='menu-item menu-item-type-post_type menu-item-object-page' >
-                                                <button type='button' onClick={() => handleNavigation('/cart', true, 'required_login_message_for_cartRedirect')}>
+                                            <li className='menu-item menu-item-type-post_type menu-item-object-page' onClick={() => handleNavigation('/cart', true, 'required_login_message_for_cartRedirect')}>
+
+                                                <button type='button' >
                                                     {t("cart")}
                                                 </button>
+
                                             </li>
 
                                             <li className='menu-item menu-item-type-post_type menu-item-object-page'>
@@ -383,7 +389,7 @@ const Header = () => {
                                             </li>
                                         </ul>
                                     )}
-                                </li>
+                                </li> */}
 
                                 <li className=' menu-item menu-item-type-post_type menu-item-object-page'>
                                     <button type='button' onClick={() => {
@@ -403,7 +409,7 @@ const Header = () => {
                                         navigate('/faq');
                                     }}>{t('faq')}</button>
                                 </li>
-                                <li className='dropdown-item menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
+                                {/* <li className='dropdown-item menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
                                     <button type='button' onClick={() => {
                                         if (user.user) {
                                             closeSidebarRef.current.click();
@@ -413,16 +419,29 @@ const Header = () => {
                                             toast.error(t('required_login_message_for_notification'));
                                         }
                                     }}>{t("notification")}</button>
-                                </li>
+                                </li> */}
 
                             </ul>
+                            <div>
 
+                                <div className='follow-us-container'>
+                                    <p>{t('follow_us')}</p>
+                                    <div className='follow-icons-container'>
+                                        <span><FaFacebookSquare size={30} fill='gray' /></span>
+                                        <span><FaTwitterSquare size={30} fill='gray' /></span>
+                                        <span><FaInstagramSquare size={30} fill='gray' /></span>
+                                        <span><FaLinkedin size={30} fill='gray' /></span>
 
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* TODO: */}
                             <div className='lang-mode-utils'>
                                 <div className='language-container' >
                                     <MdGTranslate size={24} />
-                                    <Dropdown>
-                                        <Dropdown.Toggle>
+                                    <Dropdown >
+                                        <Dropdown.Toggle variant='Secondary' >
                                             {languages.current_language && languages.current_language.name}
                                         </Dropdown.Toggle>
                                         <Dropdown.Menu>

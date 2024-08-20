@@ -724,7 +724,7 @@ const ProductList2 = React.memo(() => {
                                                 <div className='h-100 productList_content'>
                                                     <div className='row flex-wrap'>
                                                         {placeholderItems.map((index) => (
-                                                            <div key={index} className={`${!filter.grid_view ? 'col-12 list-view ' : 'col-md-6 col-sm-6 col-lg-3 flex-column mt-3'}`}>
+                                                            <div key={index} className={`${!filter.grid_view ? 'col-6 list-view ' : 'col-md-6 col-sm-6 col-lg-3 flex-column mt-3'}`}>
                                                                 <Skeleton height={330} className='mt-3' borderRadius={8} />
                                                             </div>
                                                         ))}
@@ -740,7 +740,7 @@ const ProductList2 = React.memo(() => {
                                                         <div className='h-100 productList_content'>
                                                             <div className="row  flex-wrap">
                                                                 {productresult.map((product, index) => (
-                                                                    <div key={product?.id} className={`${!filter.grid_view ? 'col-12 list-view ' : 'col-md-6 col-sm-6 col-lg-3 col-12'}`}>
+                                                                    <div key={product?.id} className={`${!filter.grid_view ? 'col-6 list-view ' : 'col-md-6 col-sm-6 col-lg-3 col-6'}`}>
                                                                         <div className={`product-card my-3 ${filter.grid_view ? "flex-column " : "my-3"}`}>
                                                                             <span className='border border-light rounded-circle p-2 px-3' id='aiEye' onClick={(e) => {
                                                                                 e.preventDefault();

@@ -83,10 +83,18 @@ body:not(.modal-open) {
   color: var(--sub-text-color);
 }
 
+.react-confirm-alert {
+  width: 100%;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+}
+
 .react-confirm-alert-body h1 {
   font-weight: bolder;
   font-size: 2.455rem;
 }
+
 
 .react-confirm-alert-body {
   font-weight: bold;

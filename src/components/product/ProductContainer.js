@@ -335,7 +335,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                             <div className='product_section row flex-column' value={index0} onChange={(e) => { setOfferContainer(index0); }}>
 
                                                 <div className="d-flex product_title_content justify-content-between align-items-center col-md-12">
-                                                    <div className="">
+                                                    <div className="product-title-content-container">
                                                         <p>{section.title}</p>
                                                         <span className='d-none d-md-block'>{section.short_description}</span>
                                                     </div>
@@ -350,8 +350,8 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                 </div>
 
                                                 <div className="product_section_content p-0 position-relative">
-                                                    <CustomPrevButton />
-                                                    <CustomNextButton />
+                                                    {/* <CustomPrevButton />
+                                                    <CustomNextButton /> */}
                                                     <Swiper modules={[Navigation, Pagination]}
                                                         navigation={{
                                                             prevEl: '.prev-arrow-country',
@@ -453,7 +453,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                             </div>
                                                                         </Link>
                                                                         <div className='d-flex flex-row border-top product-card-footer'>
-                                                                            <div className='border-end'>
+                                                                            <div className='border-end product-like-btn'>
                                                                                 {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == product.id) ? (
                                                                                     <button type="button" className='w-100 h-100 favouriteBtn' onClick={() => {
                                                                                         if (user?.jwtToken !== "") {

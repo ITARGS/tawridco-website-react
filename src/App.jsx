@@ -8,6 +8,9 @@ import { Footer } from "./components/footer/Footer";
 import ProfileDashboard from './components/profile/ProfileDashboard';
 import { useDispatch, useSelector } from 'react-redux';
 import api from './api/api';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+
+
 //react-toast
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from 'react-toastify';
