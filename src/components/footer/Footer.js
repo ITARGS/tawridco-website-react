@@ -169,7 +169,6 @@ export const Footer = () => {
                             <span>{t('follow_us')}:
 
                                 {setting.setting.social_media.map((icon, index) => {
-                                    console.log("icons", icon.icon)
                                     return (
                                         <a key={index} href={icon.link} className='socical-icons'>
                                             <i className={` fab ${icon.icon} fa-lg`} style={{ color: "#fff" }}>

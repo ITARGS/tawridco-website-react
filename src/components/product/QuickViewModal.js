@@ -482,8 +482,8 @@ const QuickViewModal = (props) => {
 
                                                             {product?.images?.map((image, index) => {
                                                                 return (
-                                                                    <SwiperSlide>
-                                                                        <div key={index} className={`sub-image border ${mainimage == image ? 'active' : ''}`}>
+                                                                    <SwiperSlide className='swiper-slide'>
+                                                                        <div key={index} className={`sub-image ${mainimage == image ? 'active' : ''}`}>
                                                                             <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
                                                                                 setmainimage(image);
                                                                             }} />

@@ -13,7 +13,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-const   ShopByCountries = () => {
+const ShopByCountries = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { t } = useTranslation();
@@ -55,7 +55,6 @@ const   ShopByCountries = () => {
                                 prevEl: '.prev-arrow-country',
                                 nextEl: '.next-arrow-country',
                             }}
-
                             pagination={{ clickable: true }}
                             breakpoints={{
                                 1200: {

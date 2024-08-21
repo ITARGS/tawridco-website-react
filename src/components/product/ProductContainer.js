@@ -80,6 +80,8 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
 
 
 
+
+
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
         setP_id(product_id);
@@ -168,74 +170,13 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
             });
     };
 
-    const CustomPrevButton = (props) => {
-        const { slideCount, currentSlide, ...remainingProps } = props;
-        return (
-            <button {...remainingProps} type="button" className="slick-prev ">
-                <FaChevronLeft fill='black' size={30} className="prev-arrow prev-arrow-country" />
-            </button>
-        );
-    };
-    const CustomNextButton = (props) => {
-        const { slideCount, currentSlide, ...remainingProps } = props;
-        return (
-            <button {...remainingProps} type="button" className="slick-next next-arrow-country">
-                <FaChevronRight fill='black' size={30} className='next-arrow' />
-            </button>
-        );
-    };
-    const settings = {
-        infinite: false,
-        slidesToShow: 5,
-        slidesPerRow: 1,
-        initialSlide: 0,
-        // centerMode: true,
-        centerMargin: "10px",
-        margin: "20px", // set the time interval between slides
-        // Add custom navigation buttons using Font Awesome icons
-        prevArrow:
-            // (
-            //     <button type="button" className="slick-prev">
-            //         <FaChevronLeft fill='black' size={30} className="prev-arrow" />
-            //     </button>
-            // )
-            <CustomPrevButton />,
-        nextArrow:
-            // (
-            //     <button type="button" className="slick-next">
-            //         <FaChevronRight fill='black' size={30} className='next-arrow' />
-            //     </button>
-            // )
-            <CustomNextButton />
-        ,
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 4,
-                }
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 3,
-                }
-            },
-            {
-                breakpoint: 425,
-                settings: {
-                    slidesToShow: 1,
-                }
-            }
-        ]
-    };
 
-    const placeHolderImage = (e) => {
 
-        e.target.src = setting.setting?.web_logo;
-    };
 
-    function getProductQuantities(products) {
+
+
+
+    const getProductQuantities = (products) => {
         return Object.entries(products.reduce((quantities, product) => {
             const existingQty = quantities[product.product_id] || 0;
             return { ...quantities, [product.product_id]: existingQty + product.qty };
@@ -244,7 +185,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
             qty
         }));
     }
-
     const handleValidateAddExistingProduct = (productQuantity, product) => {
         if (Number(product.is_unlimited_stock)) {
             if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product.total_allowed_quantity)) {
@@ -340,7 +280,6 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                         <span className='d-none d-md-block'>{section.short_description}</span>
                                                     </div>
                                                     <div>
-                                                        {/* {console.log(section)} */}
                                                         <Link to="/products" onClick={() => {
                                                             dispatch(setFilterSection({ data: section.id }));
                                                             navigate('/products');
@@ -350,12 +289,17 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                 </div>
 
                                                 <div className="product_section_content p-0 position-relative">
-                                                    {/* <CustomPrevButton />
-                                                    <CustomNextButton /> */}
-                                                    <Swiper modules={[Navigation, Pagination]}
+                                                    <button type="button" className={`slick-prev prev-arrow-country section-${index0}`} >
+                                                        <FaChevronLeft fill='black' size={30} className="prev-arrow " />
+                                                    </button>
+                                                    <button type="button" className={`slick-next next-arrow-country section-${index0}`}>
+                                                        <FaChevronRight fill='black' size={30} className='next-arrow' />
+                                                    </button>
+                                                    <Swiper
+                                                        modules={[Navigation, Pagination]}
                                                         navigation={{
-                                                            prevEl: '.prev-arrow-country',
-                                                            nextEl: '.next-arrow-country',
+                                                            prevEl: `.prev-arrow-country.section-${index0}`,
+                                                            nextEl: `.next-arrow-country.section-${index0}`,
                                                         }}
 
                                                         pagination={{ clickable: true }}

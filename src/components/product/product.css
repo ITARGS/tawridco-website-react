@@ -128,6 +128,7 @@
 }
 
 .slick-next {
+  z-index: 10 !important;
   margin-right: 12px !important;
 }
 
@@ -1150,6 +1151,15 @@ input::placeholder {
   margin-top: 36px;
 }
 
+@media (max-width:430px) {
+  .product-details-view .detail-wrapper .bottom-section .share-product-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+
+}
+
 .product-details-view .detail-wrapper .bottom-section .share-product-container span {
   font-size: 14px;
   font-weight: 700;
@@ -1794,4 +1804,8 @@ input::placeholder {
 
 .product-variant-dropdown {
   color: var(--font-color);
+}
+
+.swiper-slide {
+  margin: 10px;
 }

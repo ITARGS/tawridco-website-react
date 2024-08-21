@@ -137,7 +137,7 @@ const Category = () => {
                             {
                                 category?.length > 5 ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
                                     <button className='prev-arrow-category' ><FaChevronLeft fill='black' size={20} /></button>
-                                    <button cloassName='next-arrow-category' ><FaChevronRight fill='black' size={20} /></button>
+                                    <button className='next-arrow-category' ><FaChevronRight fill='black' size={20} /></button>
                                 </div> : <></>
                             }
 
