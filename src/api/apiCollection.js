@@ -131,6 +131,11 @@ export const getCart = async ({ latitude, longitude, checkout = 0 }) => {
     const response = await api.get(apiEndPoints.getCart, { params })
     return response.data
 }
+export const getCartCount = async () => {   
+    const response = await api.get(`${apiEndPoints.getCart}/${apiEndPoints.getCartCount}`)
+    console.log(response)
+    return response.data
+}
 export const getCheckOut = async ({ latitude, longitude, checkout = 1 }) => {
     var params = { latitude: latitude, longitude: longitude, is_checkout: checkout };
     const response = await api.get(apiEndPoints.getCart, { params })

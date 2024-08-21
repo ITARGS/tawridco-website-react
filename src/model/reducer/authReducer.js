@@ -42,7 +42,6 @@ export const authReducer = createSlice({
             state.authId = action.payload.data;
         },
         setJWTToken: (state, action) => {
-            console.log(action.payload.data)
             state.jwtToken = action.payload.data;
         }
     }

@@ -32,9 +32,9 @@ const PayPalPaymentHandler = () => {
     const timeout = useRef();
     // https://devegrocer.thewrteam.in/web-payment-status?order_id=wallet-20240509133121-32&status_code=200&transaction_status=capture
     // https://devegrocer.thewrteam.in/web-payment-status?status=PAYMENT_SUCCESS&type=order&payment_method=Phonepe
+    //https://devegrocer.thewrteam.in/web-payment-status?status=success&type=wallet&payment_method=Cashfree
     useEffect(() => {
         let intervalId;
-        console.log("parameter object", queryParamsObj)
         if (queryParamsObj.status == "PAYMENT_SUCCESS" && queryParamsObj.type == "wallet" && queryParamsObj.payment_method == "Phonepe") {
             intervalId = setInterval(() => {
                 window.opener.postMessage("Recharge Done", "*");
@@ -44,6 +44,10 @@ const PayPalPaymentHandler = () => {
             intervalId = setInterval(() => {
                 window.opener.postMessage("Recharge Done", "*");
             }, 1000);
+        } else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "success" && queryParamsObj.type == "wallet") {
+            toast.success("Recharge Done");
+        } else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "failure" && queryParamsObj.type == "wallet") {
+            toast.success("Recharge Fail");
         }
         else if (queryParamsObj.type === "wallet") {
             toast.success(t("wallet_recharge_paypal_pending_message"));

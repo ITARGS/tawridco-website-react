@@ -313,11 +313,11 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                 spaceBetween: 20,
                                                             },
                                                             768: {
-                                                                slidesPerView: 3,
+                                                                slidesPerView: 3.5,
                                                                 spaceBetween: 15,
                                                             },
                                                             300: {
-                                                                slidesPerView: 2,
+                                                                slidesPerView: 1.5,
                                                                 spaceBetween: 10,
                                                             },
                                                         }}>

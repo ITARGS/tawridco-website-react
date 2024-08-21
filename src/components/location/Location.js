@@ -210,6 +210,7 @@ const Location = (props) => {
         //confirm city from server
         const response = await api.getCity(result.geometry.location.lat(), result.geometry.location.lng()).catch(error => console.log("error: ", error));
         const res = await response.json();
+
         if (res.status === 1) {
           flag = true;
           found = true;
@@ -439,8 +440,7 @@ const Location = (props) => {
                         </div>
 
                         <p className='map-content-p'><b>{t("address")} : </b>{isAddressLoading ? "...." : localLocation.formatted_address}</p>
-                        {console.log("error message", errorMsg)}
-                        {/* {errorMsg === "" ? ( */}
+
                         <div className='map-content'>
                           {/* <button whileTap={{ scale: 0.6 }} onClick={handleCurrentLocationClick} disabled={isInputFields} style={isInputFields ? { opacity: "0.5" } : null}>
                               <BiCurrentLocation className='mx-3' />{t("use_my_current_location")}</button> */}

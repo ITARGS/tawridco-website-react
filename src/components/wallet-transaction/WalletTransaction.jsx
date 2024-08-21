@@ -60,6 +60,15 @@ const WalletTransaction = () => {
 
     }, [offset]);
 
+
+    const convertToAMPM = (transactionDate) => {
+        const dateTimeObj = new Date(transactionDate);
+        const options = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
+        const timeInAMPMFormat = dateTimeObj.toLocaleString('en-US', options);
+        console.log("updated date", timeInAMPMFormat)
+        return timeInAMPMFormat;
+    };
+
     //page change
     const handlePageChange = (pageNum) => {
         setcurrPage(pageNum);
@@ -132,8 +141,15 @@ const WalletTransaction = () => {
 
 
                                                                 </th>
-                                                                <th>{`${new Date(transaction.created_at).getDate()}-${new Date(transaction.created_at).getMonth() + 1}-${new Date(transaction.created_at).getFullYear()}`}</th>
+                                                                <th >{`${new Date(transaction.transaction_date).getDate()}-${new Date(transaction.transaction_date).getMonth() + 1}-${new Date(transaction.transaction_date).getFullYear()}`}
+                                                                    <p>{convertToAMPM(transaction.transaction_date)}</p>
+
+                                                                </th>
+
+
                                                                 <th className='amount'><FaRupeeSign fill='var(--secondary-color)' />{transaction.amount}</th>
+
+
                                                                 <th className={transaction.status == 'credit' ? 'success' : 'failed'}><p>{t(`${transaction.status}`)}</p></th>
                                                             </tr>
                                                         ))

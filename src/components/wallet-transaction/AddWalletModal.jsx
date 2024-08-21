@@ -19,7 +19,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import Loader from '../loader/Loader';
 import { loadStripe } from '@stripe/stripe-js';
 import InjectCheckout from './AddWalletStripeModal';
-import cashfree from '../../utils/ic_cashfree-2.svg';
+import cashfree from '../../utils/ic_cashfree.svg';
 
 const AddWalletModal = (props) => {
 
@@ -37,7 +37,7 @@ const AddWalletModal = (props) => {
     const [loader, setLoader] = useState(false);
 
     const handleAmountChange = (e) => {
-        const amt = parseInt(e.target.value);
+        const amt = parseFloat(e.target.value);
         setWalletAmount(amt);
     };
 
@@ -300,7 +300,9 @@ const AddWalletModal = (props) => {
                                         required
                                         className='moneyAmountPlaceholder w-100 text-start'
                                         placeholder={t("type_amount")}
-                                        onChange={handleAmountChange} />
+                                        step=".01"
+                                        onChange={handleAmountChange}
+                                    />
                                 </div>
                                 <div>
                                     <div className='mb-4'>
@@ -334,7 +336,7 @@ const AddWalletModal = (props) => {
                                             null}
                                         {setting?.payment_setting?.cashfree_payment_method === "1" ?
                                             <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
-                                                <div className='d-flex align-items-center'>
+                                                <div className='d-flex align-items-center cashfree-div'>
                                                     <img className='me-3' src={cashfree} alt='cashfreeSVG' />
                                                     {t("cashfree")}
                                                 </div>

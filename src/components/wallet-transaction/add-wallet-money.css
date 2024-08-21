@@ -1,6 +1,7 @@
 .addMoneyToWalletModal .modalHeading {
   font-size: 16px;
 }
+
 .addMoneyToWalletModal .moneyAmountPlaceholder {
   font-weight: 500;
   font-size: 16px;
@@ -9,6 +10,7 @@
   border-radius: 4px;
   text-align: start !important;
 }
+
 .addMoneyToWalletModal .moneyAmountPlaceholder::placeholder {
   text-align: start !important;
 }
@@ -19,14 +21,22 @@
   gap: 16px;
   border-radius: 4px;
 }
+
 .addMoneyToWalletModal .paymentContainer .MidtransSVG {
   width: 20px;
   height: 20px;
 }
+
 .addMoneyToWalletModal .paymentContainer .PhonePeSVG {
   width: 25px;
   height: 25px;
 }
+
+.addMoneyToWalletModal .paymentContainer .cashfree-div img {
+  width: 40px;
+  height: 40px;
+}
+
 .addMoneyToWalletModal .payButton {
   margin-top: 10px;
   border-radius: 4px;
@@ -34,6 +44,7 @@
   background-color: var(--secondary-color);
   color: var(--bs-white);
 }
+
 .addMoneyToWalletModal .closeModalBtn:hover {
   cursor: pointer;
 }
@@ -45,6 +56,7 @@
   outline: 1px solid black;
   border: 2px solid white;
 }
+
 #paymentRadioBtn:hover {
   cursor: pointer;
 }

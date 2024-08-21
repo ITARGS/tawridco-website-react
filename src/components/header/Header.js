@@ -27,8 +27,9 @@ import { Modal } from 'antd';
 import "../location/location.css";
 import { setCSSMode } from '../../model/reducer/cssmodeReducer';
 import { MdOutlineWbSunny } from "react-icons/md";
-
+import * as newApi from '../../api/apiCollection';
 import { FaFacebookSquare, FaTwitterSquare, FaInstagramSquare, FaLinkedin } from "react-icons/fa";
+import { setCart, setCartProducts } from '../../model/reducer/cartReducer';
 
 const Header = () => {
     const closeSidebarRef = useRef();
@@ -56,12 +57,44 @@ const Header = () => {
     const [search, setsearch] = useState("");
     const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-
+    const [cartCount, setCartCount] = useState(null)
 
     const openCanvasModal = () => {
         handleModal();
         closeSidebarRef.current.click();
     };
+
+    useEffect(() => {
+        const fetchCartData = async () => {
+            // setisLoader(true);
+            try {
+                const response = await api.getCart(user?.jwtToken, city?.city?.latitude, city?.city?.longitude);
+                const result = await response.json();
+                if (result.status == 1) {
+                    console.log("result", result.data.cart)
+                    const productsData = result?.data?.cart?.map((product) => {
+                        return {
+                            product_id: product?.product_id,
+                            product_variant_id: product?.product_variant_id,
+                            qty: product?.qty
+                        };
+                    });
+                    dispatch(setCart({ data: result }));
+                    // dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
+                    dispatch(setCartProducts({ data: productsData }));
+
+                } else if (result.message == "No item(s) found in users cart") {
+                    // setCartSidebarData([]);
+                    dispatch(setCartProducts({ data: [] }));
+                    // dispatch(setCartSubTotal({ data: 0 }));
+                }
+            } catch (err) {
+                console.log(err?.message);
+            }
+            // setisLoader(false);
+        };
+        fetchCartData()
+    }, [])
 
     useEffect(() => {
         if (bodyScroll) {
@@ -134,54 +167,6 @@ const Header = () => {
         };
     }, []);
 
-    // const fetchCart = async (token, latitude, longitude) => {
-    //     await api.getCart(token, latitude, longitude)
-    //         .then(response => response.json())
-    //         .then(result => {
-    //             if (result.status === 1) {
-    //                 dispatch(setCart({ data: result }));
-    //             }
-    //             else {
-    //                 dispatch(setCart({ data: null }));
-    //             }
-    //         })
-    //         .catch(error => console.log(error));
-    // };
-
-    // const fetchFavorite = async (token, latitude, longitude) => {
-    //     await api.getFavorite(token, latitude, longitude)
-    //         .then(response => response.json())
-    //         .then(result => {
-    //             if (result.status === 1) {
-    //                 dispatch(setFavourite({ data: result }));
-    //             }
-    //             else {
-    //                 dispatch(setFavourite({ data: null }));
-    //             }
-    //         })
-    //         .catch(error => console.log(error));
-    // };
-
-    // const fetchNotification = async (token) => {
-    //     await api.getNotification(token)
-    //         .then(response => response.json())
-    //         .then(result => {
-    //             if (result.status === 1) {
-    //                 dispatch(setNotification({ data: result.data }));
-    //                 result.total > 0 ? settotalNotification(result.total) : settotalNotification(null);
-    //             }
-    //         })
-    //         .catch(error => console.log(error));
-    // };
-
-    // useEffect(() => {
-    //     if (city.city !== null && user?.jwtToken !== undefined && user.user == null) {
-    //         fetchCart(user?.jwtToken, city.city.latitude, city.city.longitude);
-    //         // fetchFavorite(user?.jwtToken, city?.city?.latitude, city?.city?.longitude);
-    //         // fetchNotification(user?.jwtToken);
-    //     }
-    // }, [user]);
-
     const fetchPaymentSetting = async () => {
         await api.getPaymentSettings(user?.jwtToken)
             .then(response => response.json())
@@ -222,20 +207,7 @@ const Header = () => {
         dispatch(setCSSMode({ data: theme }));
     };
 
-    const handleNavigation = (path, loginRequired = false, errorMessage = '') => {
-        console.log("click", path)
-        if (loginRequired && !user.user) {
-            toast.error(t(errorMessage));
-        } else {
-            navigate(path);
-        }
-        closeSidebarRef.current.click();
-    };
-
-    const toggleMenu = (e) => {
-        e.preventDefault();
-        setIsOpen(!isOpen);
-    };
+   
 
     return (
         <>
@@ -436,7 +408,6 @@ const Header = () => {
                                 </div>
                             </div>
 
-                            {/* TODO: */}
                             <div className='lang-mode-utils'>
                                 <div className='language-container' >
                                     <MdGTranslate size={24} />
@@ -739,6 +710,7 @@ const Header = () => {
                                                     {cart?.cartProducts?.length !== 0 ?
                                                         <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
                                                             {cart?.cartProducts?.length != 0 ? cart?.cartProducts?.length : null}
+                                                            {/* {cartCount} */}
                                                             <span className="visually-hidden">unread messages</span>
                                                         </span>
                                                         : null}
@@ -797,7 +769,6 @@ const Header = () => {
                     </div>
                 </div>
 
-                {/* TODO: */}
                 {/* Mobile bottom Nav */}
                 <nav className='header-mobile-nav' >
                     <div className='mobile-nav-wrapper'>

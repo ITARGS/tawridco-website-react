@@ -94,6 +94,7 @@ const Checkout = () => {
         api.getCart(user?.jwtToken, city.city.latitude, city.city.longitude, 1)
             .then(response => response.json())
             .then(result => {
+
                 if (result.status === 1) {
                     dispatch(setCartCheckout({ data: result.data }));
                     dispatch(setWallet({ data: 0 }));
@@ -295,7 +296,6 @@ const Checkout = () => {
     };
 
     const handleRazorpayCancel = (order_id) => {
-        console.log("canccel")
         api.deleteOrder(user?.jwtToken, order_id);
         setWalletDeductionAmt(walletDeductionAmt);
         setWalletAmount(user.user.balance);
@@ -806,17 +806,22 @@ const Checkout = () => {
                                                     <div className='delivery-day-wrapper checkout-component'>
                                                         <span className='heading'>{t("prefered_day")}</span>
                                                         <div className='d-flex justify-content-center p-3 calendarContainer'>
-                                                            <Calendar value={expectedDate.toString() === "Invalid Date" ? new Date(current.setDate(current.getDate() + (Number(timeslots?.time_slots_delivery_starts_from) - 1))) : expectedDate} onChange={(e) => {
-                                                                if (new Date(e) >= new Date()) {
-                                                                    setexpectedDate(new Date(e));
-                                                                }
-                                                                else if (new Date(e).getDate() === new Date().getDate() && new Date(e).getMonth() === new Date().getMonth() && new Date(e).getFullYear() === new Date().getFullYear()) {
-                                                                    setexpectedDate(new Date(e));
-                                                                }
-                                                                else {
-                                                                    toast.info('Please Select Valid Delivery Day');
-                                                                }
-                                                            }}
+                                                            {/* TODO: */}
+
+                                                            <Calendar
+
+                                                                value={expectedDate.toString() === "Invalid Date" ? new Date() : expectedDate}
+                                                                onChange={(e) => {
+                                                                    if (new Date(e) >= new Date()) {
+                                                                        setexpectedDate(new Date(e));
+                                                                    }
+                                                                    else if (new Date(e).getDate() === new Date().getDate() && new Date(e).getMonth() === new Date().getMonth() && new Date(e).getFullYear() === new Date().getFullYear()) {
+                                                                        setexpectedDate(new Date(e));
+                                                                    }
+                                                                    else {
+                                                                        toast.info('Please Select Valid Delivery Day');
+                                                                    }
+                                                                }}
                                                                 calendarType={"gregory"}
                                                                 className={"checkoutCalendar"}
                                                                 minDate={new Date(current.setDate(current.getDate() + (Number(timeslots?.time_slots_delivery_starts_from) - 1)))}
