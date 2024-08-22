@@ -124,6 +124,7 @@ const api = {
 
     },
     getShop(latitiude, longitude, token = "") {
+
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);

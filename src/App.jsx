@@ -186,6 +186,7 @@ const App = () => {
                 longitude: city?.city?.longitude
               }
             };
+            console.log("setting", updatedSetting)
             dispatch(setSetting({ data: updatedSetting }));
             // dispatch(setFavouriteLength({ data: updatedSetting?.setting?.favorite_product_ids?.length }));
             // dispatch(setFavouriteProductIds({ data: updatedSetting?.setting?.favorite_product_ids }));
@@ -201,6 +202,7 @@ const App = () => {
 
   useEffect(() => {
     const fetchShop = (latitude, longitude) => {
+
       api.getShop(latitude, longitude, user?.jwtToken)
         .then(response => response.json())
         .then(result => {
@@ -209,6 +211,7 @@ const App = () => {
           }
         });
     };
+
     if (city.city !== null) {
       fetchShop(city.city.latitude, city.city.longitude);
     }

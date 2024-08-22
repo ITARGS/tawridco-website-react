@@ -143,6 +143,14 @@ const OrderDetails = React.memo(() => {
             });
     };
 
+    const convertToAMPM = (transactionDate) => {
+        const dateTimeObj = new Date(transactionDate);
+        const options = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
+        const timeInAMPMFormat = dateTimeObj.toLocaleString('en-US', options);
+        console.log("updated date", timeInAMPMFormat)
+        return timeInAMPMFormat;
+    };
+
     return (
         <>
             {!isNetworkError ?
@@ -472,7 +480,9 @@ const OrderDetails = React.memo(() => {
                                                     {`${t('your_order_has_been')} ${orderStatus} ${t('successfully')}`}
                                                 </div>
                                                 <div className="status-date">
+
                                                     {orderData?.status?.length > 0 && new Date(orderData?.status.reverse()[0].reverse()[0]).toLocaleDateString()}
+                                                    <p>{orderData?.status?.length > 0 && convertToAMPM(new Date(orderData?.status.reverse()[0].reverse()[0]))}</p>
                                                 </div>
                                             </div>
                                             <div className="payment-status">
@@ -482,7 +492,6 @@ const OrderDetails = React.memo(() => {
                                             </div>
                                         </div>
                                     </div>
-                                    {console.log(orderData)}
                                     {orderData?.order_note !== "" ? <div className='order-info-container order-note-container'>
                                         <div className='container-heading'>
                                             <span>

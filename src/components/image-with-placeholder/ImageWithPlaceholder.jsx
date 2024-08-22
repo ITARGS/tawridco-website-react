@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import ImagePlaceholder from "../../utils/image-placeholder/image.png";
 
+
 const ImageWithPlaceholder = ({ src, alt, className, handleOnClick }) => {
     const [imageSrc, setImageSrc] = useState(ImagePlaceholder);
     const [isLoaded, setIsLoaded] = useState(false);

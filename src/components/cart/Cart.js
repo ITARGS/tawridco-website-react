@@ -15,6 +15,7 @@ import { addtoGuestCart, clearCartPromo, setCart, setCartProducts, setCartSubTot
 import Promo from "./Promo";
 import { RiCoupon2Fill } from 'react-icons/ri';
 import Login from '../login/Login';
+import { setPromoCode } from '../../model/reducer/promoReducer';
 
 
 
@@ -87,7 +88,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                 !event.target.closest('.cart-sidebar-container') &&
                 !event.target.closest(".Toastify__toast-container") &&
                 !event.target.closest(".promo-sidebar-container")) {
-                setIsCartSidebarOpen(false);
+                handleCloseCartSidebar(false);
             }
         };
 
@@ -306,11 +307,23 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
             }
         }
     };
+
+
+    const handleCloseCartSidebar = () => {
+        dispatch(setPromoCode({
+            code: null,
+            discount: 0,
+            isPromoCode: false
+        }));
+        setIsCartSidebarOpen(false)
+    }
+
+
     return (
         <div tabIndex="-1" className={`cart-sidebar-container offcanvas offcanvas-end ${isCartSidebarOpen ? "show" : ""}`} id="cartoffcanvasExample" aria-labelledby="cartoffcanvasExampleLabel">
             <div className='cart-sidebar-header'>
                 <h5>{t("your_cart")}</h5>
-                <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeCanvas} onClick={() => setIsCartSidebarOpen(false)}>
+                <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeCanvas} onClick={() => handleCloseCartSidebar()}>
                     <AiOutlineCloseCircle fill='black' />
                 </button>
             </div>
@@ -344,7 +357,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                                             <div key={index} className='cart-card'>
                                                 <div className='left-wrapper'>
                                                     <Link to={`/product/${product.slug}`} onClick={() => {
-                                                        setIsCartSidebarOpen(false);
+                                                        handleCloseCartSidebar();
                                                         closeCanvas.current.click();
                                                     }}>
                                                         <div className='image-container'>

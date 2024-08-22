@@ -29,6 +29,8 @@ const AddWalletModal = (props) => {
     const user = useSelector(state => state.user);
     const dispatch = useDispatch();
 
+    console.log("payment setting", setting?.payment_setting)
+
     const [walletAmount, setWalletAmount] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState("");
     const [stripeTransId, setStripeTransId] = useState(null);

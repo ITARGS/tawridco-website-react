@@ -34,7 +34,7 @@ const ProfileDashboard = (props) => {
 
     const setting = useSelector((state) => state.setting);
     const user = useSelector(state => (state.user));
-
+    console.log("user", user)
     const closeCanvas = useRef(null);
 
     const [profileClick, setprofileClick] = useState(true);

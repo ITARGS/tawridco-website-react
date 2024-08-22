@@ -222,7 +222,6 @@ const Login = React.memo((props) => {
             setOTP("");
             setError("Invalid Code");
         }
-
     }
 
     const AddtoCartBulk = async (token) => {

@@ -131,6 +131,14 @@ const Order = () => {
         });
     };
 
+    const convertToAMPM = (transactionDate) => {
+        const dateTimeObj = new Date(transactionDate);
+        const options = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
+        const timeInAMPMFormat = dateTimeObj.toLocaleString('en-US', options);
+        console.log("updated date", timeInAMPMFormat)
+        return timeInAMPMFormat;
+    };
+
     const closeModalRef = useRef();
     const getOrderStatus = (pid) => {
         for (let i = 0; i < ActiveOrders.length; i++) {
@@ -254,7 +262,9 @@ const Order = () => {
                                                             ))}
                                                             </th>
                                                             <th>
+
                                                                 {order.created_at.substring(0, 10)}
+                                                                <p>{convertToAMPM(order.created_at)}</p>
                                                             </th>
                                                             <th className='total'>
                                                                 <FaRupeeSign fontSize={'1.7rem'} /> {order.final_total}
@@ -317,6 +327,7 @@ const Order = () => {
                                                             </th>
                                                             <th>
                                                                 {order.created_at.substring(0, 10)}
+                                                                <p>{convertToAMPM(order.created_at)}</p>
                                                             </th>
                                                             <th className='total'>
                                                                 <FaRupeeSign fontSize={'1.7rem'} /> {order.final_total}

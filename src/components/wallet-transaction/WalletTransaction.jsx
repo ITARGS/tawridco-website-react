@@ -141,8 +141,9 @@ const WalletTransaction = () => {
 
 
                                                                 </th>
-                                                                <th >{`${new Date(transaction.transaction_date).getDate()}-${new Date(transaction.transaction_date).getMonth() + 1}-${new Date(transaction.transaction_date).getFullYear()}`}
-                                                                    <p>{convertToAMPM(transaction.transaction_date)}</p>
+                                                                <th >
+                                                                    {`${new Date(transaction.created_at).getDate()}-${new Date(transaction.created_at).getMonth() + 1}-${new Date(transaction.created_at).getFullYear()}`}
+                                                                    <p>{convertToAMPM(transaction.created_at)}</p>
 
                                                                 </th>
 

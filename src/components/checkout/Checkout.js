@@ -44,6 +44,7 @@ import { deductUserBalance } from '../../model/reducer/authReducer';
 import { ValidateNoInternet } from '../../utils/NoInternetValidator';
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 import { formatDate } from '../../utils/formatDate';
+import { setPromoCode } from '../../model/reducer/promoReducer';
 
 
 
@@ -56,6 +57,7 @@ const Checkout = () => {
     const address = useSelector((state) => state.address);
     const user = useSelector(state => (state.user));
     const setting = useSelector(state => (state.setting));
+    const promoCode = useSelector(state => state.promoCode);
 
     const [paymentUrl, setpaymentUrl] = useState(null);
     const [codAllow, setCodAllow] = useState(0);
@@ -87,6 +89,8 @@ const Checkout = () => {
     const [orderNote, setOrderNote] = useState("");
 
 
+
+
     const stripePromise = loadStripe(setting?.payment_setting && setting?.payment_setting?.stripe_publishable_key);
 
     // console.log("Payment Methods ->", setting?.payment_setting, expectedTime);
@@ -94,11 +98,19 @@ const Checkout = () => {
         api.getCart(user?.jwtToken, city.city.latitude, city.city.longitude, 1)
             .then(response => response.json())
             .then(result => {
-
                 if (result.status === 1) {
                     dispatch(setCartCheckout({ data: result.data }));
                     dispatch(setWallet({ data: 0 }));
-                    if (cart?.promo_code) {
+
+                    if (promoCode?.isPromoCode === true) {
+                        setTotalPayment(result.data.total_amount - promoCode?.discount);
+                    }
+                    else if (cart?.promo_code) {
+                        dispatch(setPromoCode({
+                            code: cart.promo_code,
+                            discount: cart.promo_code.discount,
+                            isPromoCode: true
+                        }));
                         setTotalPayment(result.data.total_amount - cart?.promo_code?.discount);
                     } else {
                         setTotalPayment(result.data.total_amount);
@@ -126,9 +138,7 @@ const Checkout = () => {
             })
             .catch(error => console.log(error));
         fetchTimeSlot();
-
     }, []);
-
     useEffect(() => {
         if (address?.selected_address?.latitude && address?.selected_address?.longitude)
             api.getCart(user?.jwtToken, address?.selected_address?.latitude, address?.selected_address?.longitude, 1)
@@ -138,8 +148,8 @@ const Checkout = () => {
                         setCodAllow(result?.data?.cod_allowed);
                         dispatch(setCartCheckout({ data: result.data }));
                         dispatch(setWallet({ data: 0 }));
-                        if (cart?.promo_code) {
-                            setTotalPayment(result.data.total_amount - cart?.promo_code?.discount);
+                        if (promoCode?.isPromoCode === true) {
+                            setTotalPayment(result.data.total_amount - promoCode?.discount);
                         }
                         else {
                             setTotalPayment(result.data.total_amount);
@@ -231,7 +241,7 @@ const Checkout = () => {
                                 dispatch(setCartSubTotal({ data: 0 }));
                             }
                             else {
-                                console.log(result)
+
                                 toast.error(result.message);
                             }
                         })
@@ -413,12 +423,18 @@ const Checkout = () => {
                             dispatch(deductUserBalance({ data: walletDeductionAmt }));
                             setIsOrderPlaced(true);
                             setShow(true);
+
                         }
                         else {
                             toast.error(result.message);
                             setloadingPlaceOrder(false);
                             setOrderNote("");
                         }
+                        dispatch(setPromoCode({
+                            code: null,
+                            discount: 0,
+                            isPromoCode: false
+                        }));
                     })
                     .catch(error => {
                         setisLoader(false);
@@ -449,6 +465,11 @@ const Checkout = () => {
                                         setloadingPlaceOrder(false);
                                         setWalletAmount(walletDeductionAmt);
                                     }
+                                    dispatch(setPromoCode({
+                                        code: null,
+                                        discount: 0,
+                                        isPromoCode: false
+                                    }));
                                 })
                                 .catch(error => {
                                     console.error(error);
@@ -482,6 +503,11 @@ const Checkout = () => {
                                 toast.error(res.message);
                                 setloadingPlaceOrder(false);
                             }
+                            dispatch(setPromoCode({
+                                code: null,
+                                discount: 0,
+                                isPromoCode: false
+                            }));
                         }).catch((err) => {
                             toast.error(err.message);
                             setisLoader(false);
@@ -513,6 +539,11 @@ const Checkout = () => {
                             setloadingPlaceOrder(false);
                             setOrderNote("");
                         }
+                        dispatch(setPromoCode({
+                            code: null,
+                            discount: 0,
+                            isPromoCode: false
+                        }));
                     })
                     .catch(error => console.log(error));
 
@@ -549,6 +580,11 @@ const Checkout = () => {
                             setloadingPlaceOrder(false);
                             setOrderNote("");
                         }
+                        dispatch(setPromoCode({
+                            code: null,
+                            discount: 0,
+                            isPromoCode: false
+                        }));
                     })
                     .catch(error => console.log(error));
                 setloadingPlaceOrder(false);
@@ -564,7 +600,7 @@ const Checkout = () => {
                             await api.initiate_transaction(user?.jwtToken, result.data.order_id, "Paypal", "order")
                                 .then(resp => resp.json())
                                 .then(res => {
-                                    console.log(res.data);
+
                                     // console.log(res.data.paypal_redirect_url)
                                     setisLoader(false);
 
@@ -579,6 +615,11 @@ const Checkout = () => {
                                         toast.error(res.message);
                                         setloadingPlaceOrder(false);
                                     }
+                                    dispatch(setPromoCode({
+                                        code: null,
+                                        discount: 0,
+                                        isPromoCode: false
+                                    }));
                                 })
                                 .catch(error => console.error(error));
 
@@ -614,6 +655,11 @@ const Checkout = () => {
                             setloadingPlaceOrder(false);
                             setOrderNote("");
                         }
+                        dispatch(setPromoCode({
+                            code: null,
+                            discount: 0,
+                            isPromoCode: false
+                        }));
                     })
                     .catch(error => {
                         setisLoader(false);
@@ -664,6 +710,11 @@ const Checkout = () => {
                             setisLoader(false);
                             setOrderNote("");
                         }
+                        dispatch(setPromoCode({
+                            code: null,
+                            discount: 0,
+                            isPromoCode: false
+                        }));
                     })
                     .catch(error => console.log(error));
             } else if (paymentMethod == "Phonepe") {
@@ -688,6 +739,11 @@ const Checkout = () => {
                                         toast.error(res.message);
                                         setloadingPlaceOrder(false);
                                     }
+                                    dispatch(setPromoCode({
+                                        code: null,
+                                        discount: 0,
+                                        isPromoCode: false
+                                    }));
                                 })
                                 .catch(error => console.error(error));
                         }
@@ -806,7 +862,7 @@ const Checkout = () => {
                                                     <div className='delivery-day-wrapper checkout-component'>
                                                         <span className='heading'>{t("prefered_day")}</span>
                                                         <div className='d-flex justify-content-center p-3 calendarContainer'>
-                                                            {/* TODO: */}
+
 
                                                             <Calendar
 
@@ -1055,6 +1111,7 @@ const Checkout = () => {
                                                                 <Loader screen='full' />
                                                             )
                                                             : (
+
                                                                 <div className='summary'>
                                                                     <div className='d-flex justify-content-between'>
                                                                         <span>{t("sub_total")}</span>
@@ -1071,12 +1128,12 @@ const Checkout = () => {
                                                                             <span>{setting.setting && setting.setting.currency}  {(cart?.checkout?.delivery_charge?.total_delivery_charge)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
                                                                         </div>
                                                                     </div>
-                                                                    {cart.promo_code && <>
+
+                                                                    {promoCode.code !== null && <>
                                                                         <div className='d-flex justify-content-between'>
                                                                             <span>{t("discount")}</span>
                                                                             <div className='d-flex align-items-center'>
-
-                                                                                <span>- {setting.setting && setting.setting.currency}    {Number(cart?.promo_code?.discount)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
+                                                                                <span>- {setting.setting && setting.setting.currency}    {Number(promoCode.discount)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
                                                                             </div>
                                                                         </div>
                                                                     </>}

@@ -13,6 +13,7 @@ import shopReducer from "./shopReducer";
 import notificationReducer from "./notificationReducer";
 import addressReducer from "./addressReducer";
 import settingReducer from "./settingReducer";
+import promoReducer from "./promoReducer";
 
 const reducers = combineReducers({
     city: locationReducer,
@@ -21,6 +22,7 @@ const reducers = combineReducers({
     language: languageReducer,
     category: categoryReducer,
     user: authReducer,
+    promoCode: promoReducer,
     productFilter: productFilterReducer,
     selectedProduct: selectedProductReducer,
     cart: cartReducer,

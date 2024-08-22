@@ -33,6 +33,7 @@ const PayPalPaymentHandler = () => {
     // https://devegrocer.thewrteam.in/web-payment-status?order_id=wallet-20240509133121-32&status_code=200&transaction_status=capture
     // https://devegrocer.thewrteam.in/web-payment-status?status=PAYMENT_SUCCESS&type=order&payment_method=Phonepe
     //https://devegrocer.thewrteam.in/web-payment-status?status=success&type=wallet&payment_method=Cashfree
+    //https://devegrocer.thewrteam.in/web-payment-status?status=failed&type=order&payment_method=Cashfree
     useEffect(() => {
         let intervalId;
         if (queryParamsObj.status == "PAYMENT_SUCCESS" && queryParamsObj.type == "wallet" && queryParamsObj.payment_method == "Phonepe") {
@@ -46,11 +47,13 @@ const PayPalPaymentHandler = () => {
             }, 1000);
         } else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "success" && queryParamsObj.type == "wallet") {
             toast.success("Recharge Done");
-        } else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "failure" && queryParamsObj.type == "wallet") {
-            toast.success("Recharge Fail");
+        } else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "failed" && queryParamsObj.type == "wallet") {
+            toast.error("Recharge Fail");
         }
         else if (queryParamsObj.type === "wallet") {
             toast.success(t("wallet_recharge_paypal_pending_message"));
+        } else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "failed" && queryParamsObj.type == "order") {
+            toast.error("Order failed")
         }
         else {
             setIsOrderPayment(true);

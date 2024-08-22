@@ -12,7 +12,6 @@ const api = axios.create({
 
 const getStoredToken = async () => {
     const state = store.getState()
-    console.log("token", state?.user?.jwtToken)
     return state?.user?.jwtToken
 }
 

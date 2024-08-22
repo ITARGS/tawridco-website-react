@@ -23,41 +23,9 @@ const Category = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const setting = useSelector(state => (state.setting));
     const { t } = useTranslation();
-
-    const sliderRef = useRef(null);
-
-    const handlePrevClick = () => {
-        sliderRef.current.slickPrev();
-    };
-
-    const handleNextClick = () => {
-        sliderRef.current.slickNext();
-    };
-
-
     const shop = useSelector(state => state.shop);
     const category = shop && shop?.shop?.categories;
-
-    const fetchCategory = (id = 0) => {
-        api.getCategory({
-            id: 0,
-        })
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    dispatch(setCategory({ data: result.data }));
-                }
-            })
-            .catch(error => {
-                console.log("error ", error);
-            }
-            );
-    };
-    useEffect(() => {
-        // fetchCategory()
-    }, []);
 
     const selectCategory = (category) => {
         dispatch(clearAllFilter())
@@ -68,59 +36,10 @@ const Category = () => {
             // navigate(`/category/${category.slug}`, { state: { categoryName: category.name } });
         } else {
             navigate('/products');
-
         }
-
     };
-    const settings = {
-        infinite: false,
-        autoplay: true,
-        autoplaySpeed: 3000,
-        pauseOnHover: false,
-        direction: 'rtl',
-        pauseOnDotsHover: false,
-        pauseOnFocus: true,
-        slidesToShow: 5,
-        slidesPerRow: 1,
-        initialSlide: 0,
 
-        // Add custom navigation buttons using Font Awesome icons
-        responsive: [
-            {
-                breakpoint: 1200,
-                settings: {
-                    slidesToShow: 5,
-                    slidesToScroll: 4
-                }
-            },
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 4,
-                }
-            },
-
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 3,
-                }
-            },
-            {
-                breakpoint: 425,
-                settings: {
-                    slidesToShow: 2,
-
-                }
-            }
-        ]
-    };
-    const placeHolderImage = (e) => {
-
-        e.target.src = setting.setting?.web_logo;
-    };
     return (
-
         <>
             {(category && (category?.length > 0))
                 ?
@@ -175,7 +94,6 @@ const Category = () => {
                                     category?.map((ctg, index) => (
                                         <div className="col-md-12" key={index}>
                                             <SwiperSlide className='category-container '>
-
                                                 {ctg.has_child
                                                     ? (
                                                         <Card onClick={() => selectCategory(ctg)}>
@@ -185,11 +103,8 @@ const Category = () => {
                                                                 <Card.Title className="card-title">{ctg.name}</Card.Title>
                                                             </Card.Body>
                                                         </Card>
-
                                                     )
                                                     : (
-
-
                                                         <Card onClick={() => selectCategory(ctg)}>
                                                             {/* <Card.Img onError={placeHolderImage} variant='top' src={ctg.image_url} alt={ctg.subtitle} className='card-img-top category_image' /> */}
                                                             <ImageWithPlaceholder src={ctg.image_url} alt={ctg.subtitle} className={'card-img-top category_image'} />
@@ -199,23 +114,14 @@ const Category = () => {
                                                         </Card>
 
                                                     )}
-
                                             </SwiperSlide>
 
                                         </div>
-
                                     ))
                                 }
                             </Swiper>
-
-
-
-
-
                         </div>
                     </div>
-
-
                 </>
                 : null}
         </>
