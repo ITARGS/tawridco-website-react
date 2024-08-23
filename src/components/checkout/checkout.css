@@ -480,3 +480,16 @@
 .order-success-desc {
   color: var(--font-color)
 }
+
+.checkout-warning-msg {
+  display: flex;
+  align-items: center;
+  color: var(--font-color);
+}
+
+.checkout-location-btn {
+  cursor: pointer;
+  padding: 5px;
+  background-color: transparent;
+  border-bottom: 1px solid var(--font-color);
+}

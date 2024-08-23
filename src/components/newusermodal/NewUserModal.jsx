@@ -15,7 +15,7 @@ import { setSetting } from '../../model/reducer/settingReducer';
 import { setTokenThunk } from '../../model/thunk/loginThunk';
 
 
-function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode, userEmail, setUserEmail, userName, setUserName, authType, setLoginModal, setIsOTP }) {
+function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode, userEmail, setUserEmail, userName, setUserName, setLoginModal, setIsOTP }) {
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -50,7 +50,8 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                 setError(t("please_enter_phone_number"))
                 setisLoading(false)
             } else {
-                const res = await newApi.registerUser({ Uid: auth_id, name: userName, email: userEmail, mobile: phoneNum, type: authType, fcm: fcm_token, country_code: countryCode })
+                const res = await newApi.registerUser({ Uid: auth_id, name: userName, email: userEmail, mobile: phoneNum, type: "google", fcm: fcm_token, country_code: countryCode })
+                
                 const tokenSet = await dispatch(setTokenThunk(res?.data?.access_token))
                 await getCurrentUser()
                 await handleFetchSetting()
@@ -124,15 +125,15 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                             setError("");
                             setUserName(e.target.value);
                         }} required />
-                        <input type='email' placeholder={t('email_address')} disabled={authType == "google"} value={userEmail} onChange={(e) => {
+                        <input type='email' placeholder={t('email_address')} disabled={user.authType == "google"} value={userEmail} onChange={(e) => {
                             setError("");
                             setUserEmail(e.target.value);
                         }}
                             required
-                            className={authType == "google" ? "inactive-input" : "active-input"}
+                            className={user.authType == "google" ? "inactive-input" : "active-input"}
                         />
-                        <input type='tel' placeholder={t('mobile_number')} disabled={authType == "phone"} value={phoneNum} onChange={(e) => setPhoneNum(e.target.value)}
-                            className={authType == "phone" ? "inactive-input" : "active-input"}
+                        <input type='tel' placeholder={t('mobile_number')} disabled={user.authType == "phone"} value={phoneNum} onChange={(e) => setPhoneNum(e.target.value)}
+                            className={user.authType == "phone" ? "inactive-input" : "active-input"}
                         />
                     </div>
                     <button type='submit' disabled={isLoading} >{t("register")} {t("profile")}</button>

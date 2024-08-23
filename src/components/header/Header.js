@@ -23,7 +23,6 @@ import { BsMoon, BsShopWindow } from 'react-icons/bs';
 import { BiUserCircle } from 'react-icons/bi';
 import { MdSearch, MdGTranslate, MdNotificationsActive, MdOutlineWbSunny } from "react-icons/md";
 import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast, IoCloseCircle } from 'react-icons/io5';
-import { FaFacebookSquare, FaTwitterSquare, FaInstagramSquare, FaLinkedin } from "react-icons/fa";
 import { IoMdArrowDropdown, IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { GoLocation } from 'react-icons/go';
 import { FiMenu, FiFilter } from 'react-icons/fi';
@@ -81,20 +80,15 @@ const Header = () => {
                             qty: product?.qty
                         };
                     });
-                    dispatch(setCart({ data: result }));
                     dispatch(setCartProducts({ data: productsData }));
-
                 } else if (result.message == "No item(s) found in users cart") {
                     dispatch(setCartProducts({ data: [] }));
-
                 }
             } catch (err) {
                 console.log(err?.message);
             }
         };
-        if (user?.jwtToken) {
-            fetchCartData()
-        }
+        fetchCartData()
     }, [])
 
     useEffect(() => {
@@ -221,7 +215,6 @@ const Header = () => {
                         <div className='site-brand'>
                             <img src={setting.setting && setting.setting.web_settings.web_logo} className='off-canvas-logo' alt="logo"></img>
                         </div>
-
                         <button type="button" className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" ref={closeSidebarRef} onClick={() => setIsOpen(false)}><IoCloseCircle fill='white' size={100} /></button>
                     </div>
                     <div className="canvas-main">
@@ -759,6 +752,7 @@ const Header = () => {
                                                     <div className='d-flex flex-column user-info my-auto'>
                                                         <span className='number'> {t("welcome")}</span>
                                                         <span className='name'>
+
                                                             {user.user && user.user.name.split(' ')[0].length > 20
                                                                 ? user.user.name.split(' ')[0].substring(0, 20) + "..."
                                                                 : user.user.name.split(' ')[0]}

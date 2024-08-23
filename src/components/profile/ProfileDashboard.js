@@ -34,8 +34,8 @@ const ProfileDashboard = (props) => {
 
     const setting = useSelector((state) => state.setting);
     const user = useSelector(state => (state.user));
-    console.log("user", user)
     const closeCanvas = useRef(null);
+
 
     const [profileClick, setprofileClick] = useState(true);
     const [orderClick, setorderClick] = useState(false);
@@ -49,6 +49,7 @@ const ProfileDashboard = (props) => {
     const [isupdating, setisupdating] = useState(false);
     const [isChanged, setIsChanged] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState(user.user && user.user.mobile)
 
     // Store original values
     const [originalUsername, setOriginalUsername] = useState(user.user.name);
@@ -138,7 +139,8 @@ const ProfileDashboard = (props) => {
             if (selectedFile.type === 'image/png' || selectedFile.type === 'image/jpg' || selectedFile.type === 'image/jpeg') {
                 setisupdating(true);
                 if (user?.jwtToken !== "") {
-                    await api.edit_profile(username, useremail, selectedFile, user?.jwtToken)
+                    await api.edit_profile(username, useremail,
+                        "", selectedFile, user?.jwtToken)
                         .then(response => response.json())
                         .then(result => {
                             if (result.status === 1) {
@@ -153,6 +155,7 @@ const ProfileDashboard = (props) => {
                         }).catch((error) => {
                             toast.error(error);
                         });
+
                 }
             } else {
                 toast.error("File Type Not Allowed");
@@ -160,7 +163,8 @@ const ProfileDashboard = (props) => {
         } else {
             setisupdating(true);
             if (user?.jwtToken !== "") {
-                await api.edit_profile(username, useremail, selectedFile, user?.jwtToken)
+
+                await api.edit_profile(username, useremail, phoneNumber, selectedFile, user?.jwtToken)
                     .then(response => response.json())
                     .then(result => {
                         if (result.status === 1) {
@@ -175,6 +179,10 @@ const ProfileDashboard = (props) => {
                     }).catch((error) => {
                         toast.error(error);
                     });
+            } else {
+                navigate("/")
+                toast.error("Something went wrong")
+
             }
         }
         // setuseremail("")
@@ -574,6 +582,7 @@ const ProfileDashboard = (props) => {
                                                                             onChange={(e) => {
                                                                                 setusername(e.target.value);
                                                                             }}
+                                                                            disabled={user.authType == "google"}
                                                                             required
                                                                         />
                                                                         <input
@@ -583,14 +592,18 @@ const ProfileDashboard = (props) => {
                                                                             onChange={(e) => {
                                                                                 setuseremail(e.target.value);
                                                                             }}
+                                                                            disabled={user.authType == "google"}
                                                                             required
                                                                         />
                                                                         <input
                                                                             type='tel'
                                                                             placeholder='mobile number'
-                                                                            value={user.user.mobile}
-                                                                            readOnly
-                                                                            style={{ color: "var(--sub-text-color)" }} />
+                                                                            value={phoneNumber}
+                                                                            required
+                                                                            className={user.authType == "phone" ? "inactive-input" : "active-input"}
+                                                                            disabled={user.authType == "phone"}
+                                                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                                                        />
                                                                         {/* accept={'image/*'} */}
                                                                         <input
                                                                             type="file"

@@ -12,14 +12,16 @@ export const registerUser = async ({ Uid, name, email, mobile, type, fcm, countr
     formData.append("mobile", mobile)
     formData.append("type", type)
     formData.append("fcm_token", fcm);
+    formData.append("fcm_token", fcm);
     formData.append("platform", "web");
     const response = await api.post(apiEndPoints.register, formData)
     return response.data
 }
-export const login = async ({ Uid, fcm }) => {
+export const login = async ({ Uid, fcm, type }) => {
     const formData = new FormData();
     formData.append("auth_uid", Uid);
     formData.append("fcm_token", fcm);
+    formData.append("type", type);
     formData.append("platform", "web");
     const response = await api.post(apiEndPoints.login, formData)
     return response.data
@@ -131,7 +133,7 @@ export const getCart = async ({ latitude, longitude, checkout = 0 }) => {
     const response = await api.get(apiEndPoints.getCart, { params })
     return response.data
 }
-export const getCartCount = async () => {   
+export const getCartCount = async () => {
     const response = await api.get(`${apiEndPoints.getCart}/${apiEndPoints.getCartCount}`)
     console.log(response)
     return response.data

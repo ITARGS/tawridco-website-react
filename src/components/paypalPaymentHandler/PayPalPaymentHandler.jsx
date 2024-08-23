@@ -55,6 +55,9 @@ const PayPalPaymentHandler = () => {
         } else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "failed" && queryParamsObj.type == "order") {
             toast.error("Order failed")
         }
+        else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "" && queryParamsObj.type == "order") {
+            toast.error("Order cancelled")
+        }
         else {
             setIsOrderPayment(true);
             try {

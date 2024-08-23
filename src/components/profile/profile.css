@@ -311,3 +311,11 @@ input[type="file"] {
   margin-bottom: 24px;
   font-size: 12px;
 }
+
+.active-input {
+  color: var(--font-color)
+}
+
+.inactive-input {
+  color: var(--sub-text-color);
+}

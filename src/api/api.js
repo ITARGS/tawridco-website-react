@@ -269,14 +269,19 @@ const api = {
 
         return fetch(appUrl + appSubUrl + "/user_details", requestOptions);
     },
-    edit_profile(uname, email, selectedFile = "", token) {
+    edit_profile(uname, email, phonenumber, selectedFile = "", token) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
-
         var formdata = new FormData();
+
         formdata.append("name", uname);
+
         formdata.append("email", email);
+
+
+        formdata.append("mobile", phonenumber);
+
         if (selectedFile !== null) {
             formdata.append("profile", selectedFile);
         }

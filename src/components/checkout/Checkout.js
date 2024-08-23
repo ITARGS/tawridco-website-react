@@ -19,6 +19,7 @@ import { toast } from 'react-toastify';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Modal from 'react-bootstrap/Modal';
+// import { Modal } from 'antd';
 
 //lottie animation JSONs
 import Lottie from 'lottie-react';
@@ -45,7 +46,8 @@ import { ValidateNoInternet } from '../../utils/NoInternetValidator';
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 import { formatDate } from '../../utils/formatDate';
 import { setPromoCode } from '../../model/reducer/promoReducer';
-
+import { IoIosWarning } from "react-icons/io";
+import Location from '../location/Location';
 
 
 const Checkout = () => {
@@ -87,14 +89,33 @@ const Checkout = () => {
     const paypalStatus = useRef(false);
     const [isNetworkError, setIsNetworkError] = useState(false);
     const [orderNote, setOrderNote] = useState("");
-
-
+    const [cartError, setCartError] = useState("")
+    const [isLocationPresent, setisLocationPresent] = useState(false);
+    const [locModal, setLocModal] = useState(false);
+    const [bodyScroll, setBodyScroll] = useState(false)
 
 
     const stripePromise = loadStripe(setting?.payment_setting && setting?.payment_setting?.stripe_publishable_key);
 
     // console.log("Payment Methods ->", setting?.payment_setting, expectedTime);
     useEffect(() => {
+        fetchCart();
+
+        api.getCartSeller(user?.jwtToken, city.city.latitude, city.city.longitude, 1)
+            .then(res => res.json())
+            .then(result => {
+                setCodAllow(result?.data?.cod_allowed);
+                // setpaymentMethod("COD");
+            })
+            .catch(error => console.log(error));
+        fetchTimeSlot();
+    }, []);
+
+    useEffect(() => {
+        fetchCart();
+    }, [locModal])
+
+    const fetchCart = async () => {
         api.getCart(user?.jwtToken, city.city.latitude, city.city.longitude, 1)
             .then(response => response.json())
             .then(result => {
@@ -116,29 +137,21 @@ const Checkout = () => {
                         setTotalPayment(result.data.total_amount);
                     }
                     setWalletAmount(user?.user?.balance);
+                    setCartError("")
                 } else if (result.status === 0) {
-                    dispatch(setCartCheckout({ data: null }));
-                    toast.error(t("no_items_found_in_cart"));
-                    navigate("/");
+                    setCartError(result?.message)
+
                 }
             })
             .catch(error => {
-                console.log(error);
+
                 const isNoInternet = ValidateNoInternet(error);
                 if (isNoInternet) {
                     setIsNetworkError(isNoInternet);
                 };
             });
+    }
 
-        api.getCartSeller(user?.jwtToken, city.city.latitude, city.city.longitude, 1)
-            .then(res => res.json())
-            .then(result => {
-                setCodAllow(result?.data?.cod_allowed);
-                // setpaymentMethod("COD");
-            })
-            .catch(error => console.log(error));
-        fetchTimeSlot();
-    }, []);
     useEffect(() => {
         if (address?.selected_address?.latitude && address?.selected_address?.longitude)
             api.getCart(user?.jwtToken, address?.selected_address?.latitude, address?.selected_address?.longitude, 1)
@@ -209,6 +222,10 @@ const Checkout = () => {
     }, [expectedDate]);
 
 
+    const handleModal = () => {
+        setLocModal(true);
+        setBodyScroll(true);
+    };
     const [Razorpay] = useRazorpay();
     const handleRozarpayPayment = useCallback(async (order_id, razorpay_transaction_id, amount, name, email, mobile, app_name) => {
         const res = await initializeRazorpay();
@@ -1165,7 +1182,10 @@ const Checkout = () => {
                                                                     {loadingPlaceOrder
                                                                         ?
                                                                         <Loader screen='full' background='none' content={"Your transaction is being processed.Please don't refresh the page."} />
-                                                                        : <>
+                                                                        : cartError !== "" ? <div>
+                                                                            <p className='checkout-warning-msg'><IoIosWarning size={20} />{cartError}</p>
+
+                                                                        </div> : <>
                                                                             {
                                                                                 (setting.payment_setting.cod_payment_method === "1" && codAllow == '1') ||
                                                                                     setting.payment_setting.razorpay_payment_method === "1" ||
@@ -1205,6 +1225,16 @@ const Checkout = () => {
                         <Promo show={showPromoOffcanvas} setShow={setShowPromoOffcanvas} />
 
                     </section>
+                    {/* <Modal
+                        className='location'
+                        id="locationModal"
+                        centered
+                        open={locModal}
+                        transitionName=''
+                    >
+                        <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
+                            showModal={locModal} setLocModal={setLocModal} bodyScroll={setBodyScroll} />
+                    </Modal> */}
                     <Modal id="stripeModal" size='lg' centered show={stripeModalShow}>
                         <Modal.Header onClick={() => setStripeModalShow(false)
 

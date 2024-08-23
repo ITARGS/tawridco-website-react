@@ -7,7 +7,8 @@ const initialState = {
     user: null,
     fcm_token: null,
     authId: "",
-    jwtToken: ""
+    jwtToken: "",
+    authType: ""
 };
 
 export const authReducer = createSlice({
@@ -17,6 +18,10 @@ export const authReducer = createSlice({
         setCurrentUser: (state, action) => {
             state.status = "fulfill";
             state.user = action.payload.data;
+        },
+        setAuthType: (state, action) => {
+            state.status = "fulfill";
+            state.authType = action.payload.data;
         },
         logoutAuth: (state, action) => {
             state.status = "loading";
@@ -47,5 +52,5 @@ export const authReducer = createSlice({
     }
 });
 
-export const { setCurrentUser, logoutAuth, deductUserBalance, addUserBalance, setFcmToken, setAuthId, setJWTToken } = authReducer.actions;
+export const { setCurrentUser, logoutAuth, deductUserBalance, addUserBalance, setFcmToken, setAuthId, setJWTToken, setAuthType } = authReducer.actions;
 export default authReducer.reducer;

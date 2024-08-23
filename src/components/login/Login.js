@@ -13,7 +13,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import FirebaseData from '../../utils/firebase/FirebaseData';
 import PhoneInput from 'react-phone-input-2';
-import { setAuthId, setCurrentUser, setFcmToken, setJWTToken } from '../../model/reducer/authReducer';
+import { setAuthId, setCurrentUser, setFcmToken, setJWTToken, setAuthType } from '../../model/reducer/authReducer';
 import { setTokenThunk } from '../../model/thunk/loginThunk';
 import { Modal } from 'react-bootstrap';
 import { setSetting } from '../../model/reducer/settingReducer';
@@ -46,7 +46,7 @@ const Login = React.memo((props) => {
     const [registerModalShow, setRegisterModalShow] = useState(false);
     const [userEmail, setUserEmail] = useState("")
     const [userName, setUserName] = useState("")
-    const [authType, setAuthType] = useState("")
+
     const [phonenum, setPhonenum] = useState(isDemoMode == "true" ?
         `${countryDialCode}${phoneNumber}` : "");
     const [countryCode, setCountryCode] = useState(countryDialCode);
@@ -214,7 +214,7 @@ const Login = React.memo((props) => {
             const OTPResult = await confirmationResult.confirm(OTP)
             setUid(OTPResult.user.id)
             dispatch(setAuthId({ data: OTPResult.user.id }));
-            await loginApiCall(OTPResult.user, OTPResult.user.uid, fcm, "phone")
+            const loginResponse = await loginApiCall(OTPResult.user, OTPResult.user.uid, fcm, "phone")
             const num = phonenum.replace(`${countryCode}`, "");
         } catch (error) {
             console.log("error", error)
@@ -249,6 +249,7 @@ const Login = React.memo((props) => {
 
 
     const loginApiCall = async (user, Uid, fcm, type) => {
+        console.log("user, Uid, fcm, type", user, Uid, fcm, type)
         let latitude;
         let longitude;
         try {
@@ -256,11 +257,12 @@ const Login = React.memo((props) => {
             await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
             await firebase.auth().currentUser?.getIdToken(true);
             // for login user functionality 
-            dispatch(setAuthId({ data: Uid }))
-            const res = await newApi.login({ Uid, fcm })
+            dispatch(setAuthId({ data: Uid, type }))
+            const res = await newApi.login({ Uid, fcm, type })
             if (res.status === 1) {
                 const tokenSet = await dispatch(setTokenThunk(res?.data?.access_token))
                 await getCurrentUser()
+                dispatch(setAuthType({ data: res?.data?.user?.type }))
                 if (res?.data?.user?.status == 1) {
                     dispatch(setIsGuest({ data: false }));
                 }
@@ -281,7 +283,6 @@ const Login = React.memo((props) => {
                 setUserEmail(user?.providerData?.[0]?.email)
                 setUserName(user?.providerData?.[0]?.displayName)
                 setPhonenum(user?.providerData?.[0]?.phoneNumber)
-                setAuthType(type)
                 setRegisterModalShow(true)
             }
             setisLoading(false)
@@ -298,6 +299,7 @@ const Login = React.memo((props) => {
             const credential = GoogleAuthProvider.credentialFromResult(result);
             const token = credential.accessToken;
             const user = result.user;
+
             await loginApiCall(user, user.uid, fcm, "google")
         } catch (error) {
             console.log("error", error)
@@ -445,7 +447,6 @@ const Login = React.memo((props) => {
                 setUserEmail={setUserEmail}
                 userName={userName}
                 setUserName={setUserName}
-                authType={authType}
                 setLoginModal={props.setShow}
                 setIsOTP={setIsOTP}
             />
