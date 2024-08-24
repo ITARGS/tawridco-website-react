@@ -15,7 +15,7 @@ import { setSetting } from '../../model/reducer/settingReducer';
 import { setTokenThunk } from '../../model/thunk/loginThunk';
 
 
-function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode, userEmail, setUserEmail, userName, setUserName, setLoginModal, setIsOTP }) {
+function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode, userEmail, setUserEmail, userName, setUserName, setLoginModal, setIsOTP, userAuthType }) {
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -50,8 +50,8 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                 setError(t("please_enter_phone_number"))
                 setisLoading(false)
             } else {
-                const res = await newApi.registerUser({ Uid: auth_id, name: userName, email: userEmail, mobile: phoneNum, type: "google", fcm: fcm_token, country_code: countryCode })
-                
+                const res = await newApi.registerUser({ Uid: auth_id, name: userName, email: userEmail, mobile: phoneNum, type: userAuthType, fcm: fcm_token, country_code: countryCode })
+
                 const tokenSet = await dispatch(setTokenThunk(res?.data?.access_token))
                 await getCurrentUser()
                 await handleFetchSetting()
@@ -124,7 +124,10 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                         <input type='text' placeholder={t('user_name')} value={userName} onChange={(e) => {
                             setError("");
                             setUserName(e.target.value);
-                        }} required />
+                        }} required
+                            className={user.authType == "google" ? "inactive-input" : "active-input"}
+                            disabled={user.authType == "google"}
+                        />
                         <input type='email' placeholder={t('email_address')} disabled={user.authType == "google"} value={userEmail} onChange={(e) => {
                             setError("");
                             setUserEmail(e.target.value);

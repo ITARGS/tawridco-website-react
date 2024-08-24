@@ -45,9 +45,7 @@ const Slider = () => {
 
     const setting = useSelector(state => state.setting);
     const shop = useSelector(state => state.shop);
-
     const placeHolderImage = (e) => {
-
         e.target.src = setting.setting?.web_logo;
     };
     return (

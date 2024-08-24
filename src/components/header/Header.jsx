@@ -25,8 +25,9 @@ import { MdSearch, MdGTranslate, MdNotificationsActive, MdOutlineWbSunny } from 
 import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast, IoCloseCircle } from 'react-icons/io5';
 import { IoMdArrowDropdown, IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { GoLocation } from 'react-icons/go';
-import { FiMenu, FiFilter } from 'react-icons/fi';
+import { FiMenu, FiFilter, FiUser } from 'react-icons/fi';
 import { AiOutlineClose, AiOutlineCloseCircle } from 'react-icons/ai';
+import { FaFacebookSquare, FaInstagramSquare, FaTwitterSquare, FaLinkedin } from "react-icons/fa";
 
 // components imports
 import Location from '../location/Location';
@@ -122,6 +123,12 @@ const Header = () => {
                     const latitude = parseFloat(setting.setting.default_city?.latitude)
                     const longitude = parseFloat(setting.setting.default_city?.longitude)
                     const response = await newApi.getCity({ latitude: latitude, longitude: longitude })
+                    console.log("Result", response)
+                    if (response.status === 1) {
+                        dispatch(setCity({ data: response.data }));
+                    } else {
+                        setLocModal(true);
+                    }
                     dispatch(setCity({ data: response.data }));
                 }
                 else if (setting?.setting && setting.setting?.default_city == null && city?.city == null) {
@@ -254,109 +261,7 @@ const Header = () => {
                                     }}>{t("home")}</button>
                                 </li>
 
-                                {/* <li className='dropdown mega-menu menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children' >
-                                    <button type="button" onClick={() => {
-                                        closeSidebarRef.current.click();
-                                        navigate("/products");
-                                    }} >
-                                        {t("shop")}
-                                    </button>
-                                    <ul className="sub-menu dropdown-menu" aria-labelledby="ShopDropDown">
-                                        <li className='dropdown-item menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
-                                            <button type='button' onClick={() => {
-                                                if (user.user) {
-                                                    closeSidebarRef.current.click();
-                                                    navigate('/cart');
-                                                } else {
-                                                    closeSidebarRef.current.click();
-                                                    toast.error(t('required_login_message_for_cartRedirect'));
-                                                }
-                                            }}>{t("cart")}</button>
-                                        </li>
 
-                                        <li className='dropdown-item menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
-                                            <button type='button' onClick={() => {
-                                                if (user.user) {
-                                                    closeSidebarRef.current.click();
-                                                    navigate('/checkout');
-                                                } else {
-                                                    closeSidebarRef.current.click();
-                                                    toast.error(t('required_login_message_for_checkout'));
-                                                }
-                                            }}>{t("checkout")}</button>
-                                        </li>
-
-                                        <li className='dropdown-item menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
-                                            <button type='button' onClick={() => {
-                                                if (user.user) {
-                                                    closeSidebarRef.current.click();
-                                                    navigate('/profile');
-                                                } else {
-                                                    closeSidebarRef.current.click();
-
-                                                    toast.error(t('required_login_message_for_profile'));
-                                                }
-                                            }}>{t("myAccount")}</button>
-                                        </li>
-
-                                        <li className='dropdown-item menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
-                                            <button type='button' onClick={() => {
-                                                if (user.user) {
-                                                    closeSidebarRef.current.click();
-                                                    navigate('/wishlist');
-                                                } else {
-                                                    closeSidebarRef.current.click();
-                                                    toast.error(t('required_login_message_for_wishlist'));
-                                                }
-                                            }}>{t("wishList")}</button>
-                                        </li>
-                                    </ul>
-                                    <button className='menu-dropdown' id="ShopDropDown" type='button' data-bs-toggle="dropdown" aria-expanded="false">
-                                        <IoIosArrowDown />
-                                    </button>
-                                </li> */}
-                                {/* <li className='menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
-                                    <div className={`menu-header d-flex justify-content-between w-100 ${isOpen ? "borderBottom" : ""} `}>
-                                        <button type="button" onClick={() => handleNavigation("/products")}>
-                                            {t("shop")}
-                                        </button>
-                                        <button
-                                            className='menu-dropdown'
-                                            type='button'
-                                            onClick={toggleMenu}
-                                            aria-expanded={isOpen}
-                                        >
-                                            {isOpen ? <IoIosArrowUp fill='var(--font-color)' /> : <IoIosArrowDown fill='var(--font-color)' />}
-                                        </button>
-                                    </div>
-                                    {isOpen == true && (
-                                        <ul className="sub-menu">
-                                            <li className='menu-item menu-item-type-post_type menu-item-object-page' onClick={() => handleNavigation('/cart', true, 'required_login_message_for_cartRedirect')}>
-
-                                                <button type='button' >
-                                                    {t("cart")}
-                                                </button>
-
-                                            </li>
-
-                                            <li className='menu-item menu-item-type-post_type menu-item-object-page'>
-                                                <button type='button' onClick={() => handleNavigation('/checkout', true, 'required_login_message_for_checkout')}>
-                                                    {t("checkout")}
-                                                </button>
-                                            </li>
-                                            <li className='menu-item menu-item-type-post_type menu-item-object-page'>
-                                                <button type='button' onClick={() => handleNavigation('/profile', true, 'required_login_message_for_profile')}>
-                                                    {t("myAccount")}
-                                                </button>
-                                            </li>
-                                            <li className='menu-item menu-item-type-post_type menu-item-object-page'>
-                                                <button type='button' onClick={() => handleNavigation('/wishlist', true, 'required_login_message_for_wishlist')}>
-                                                    {t("wishList")}
-                                                </button>
-                                            </li>
-                                        </ul>
-                                    )}
-                                </li> */}
 
                                 <li className=' menu-item menu-item-type-post_type menu-item-object-page'>
                                     <button type='button' onClick={() => {
@@ -451,24 +356,19 @@ const Header = () => {
                 <div className={`header-top  hide-mobile border-bottom ${(cssmode.cssmode === "dark") ? "dark-header-top" : ''}`}>
                     <div className="container">
                         <div className={`row justify-content-between`}>
-                            <div className='col-md-6 d-flex justify-content-start align-items-center'>
-                                <Link to='/about' className={`borderPad  border-end ${(cssmode.cssmode === "dark") ? "dark-header-1" : ''}`} > {t('about_us')}</Link>
+                            <div className='col-md-6 d-flex justify-content-start align-items-center social-icons-cotainer'>
+                                <span>{t("follow_us")}</span>
+                                <FaFacebookSquare className='social-icons border-end' size={34} />
+                                <FaInstagramSquare className='social-icons border-end' size={34} />
+                                <FaTwitterSquare className='social-icons border-end' size={34} />
+                                <FaLinkedin className='social-icons ' size={34} />
+                                {/* <Link to='/about' className={`borderPad  border-end ${(cssmode.cssmode === "dark") ? "dark-header-1" : ''}`} > {t('about_us')}</Link>
                                 <Link to='/contact' className={`borderPad border-end `} > {t('contact_us')}</Link>
-                                <Link to='/faq' className={`borderPad border-end `} >{t('faq')}</Link>
+                                <Link to='/faq' className={`borderPad border-end `} >{t('faq')}</Link> */}
                             </div>
                             <div className='col-md-6 d-flex justify-content-end'>
-                                {/* 2nd Phase feature */}
-                                {/* <div className='d-flex px-2 border-start'>
-                                    <div>
-                                        <IoContrast className='fs-3' />
-                                    </div>
-                                    <select className='p-2'>
-                                        <option value="light">Light</option>
-                                        <option value="dark">Dark</option>
-                                    </select>
-                                </div> */}
 
-                                <div className='d-flex align-items-center px-2 border-start border-end'>
+                                <div className='d-flex align-items-center px-2 '>
                                     <Dropdown className='themeDropdown'>
                                         <Dropdown.Toggle>
                                             <IoContrast size={20} className='me-2' />
@@ -508,7 +408,7 @@ const Header = () => {
                     <div className="container">
                         <div className='d-flex row-reverse justify-content-lg-between justify-content-center'>
 
-                            <div className='d-flex w-auto align-items-center justify-content-start col-md-2 order-1 column-left '>
+                            <div className='d-flex w-auto align-items-center justify-content-start col-md-2  column-left '>
 
                                 <div className='header-buttons hide-desktop' >
 
@@ -517,19 +417,51 @@ const Header = () => {
                                             <FiMenu />
                                         </div>
                                     </button>
-
-
                                 </div>
 
 
                                 <Link to='/' className='site-brand'>
                                     <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='desktop-logo hide-mobile' />
-                                    <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='mobile-logo hide-desktop' />
+                                    {/* <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='mobile-logo hide-desktop' /> */}
                                 </Link>
+
+
+
                             </div>
 
 
-                            <div className='d-flex  w-lg-100 col-md-6 order-2 justify-content-center align-items-center '>
+                            <div className='header-nav-list'>
+                                <ul>
+                                    <li> <a>Home</a></li>
+                                    <li><a>About us</a></li>
+                                    <li><a>FAQ's</a></li>
+                                    <li> <a>Contanct Us</a></li>
+                                </ul>
+                            </div>
+                            {/* TODO: */}
+                            <div className='header-btn-containers'>
+                                <div className='me-2'>
+                                    <span className='cart-btn'>
+                                        <IoCartOutline size={24} />
+                                        <p>1</p>
+                                    </span>
+                                    <span className='cart-value'>
+                                        <span>Your Cart</span>
+                                        <h4>$1200.00</h4>
+                                    </span>
+                                </div>
+                                <div>
+                                    <span className='cart-btn'>
+                                        <FiUser size={24} />
+
+                                    </span>
+                                    <span className='cart-value'>
+                                        <h4>Account</h4>
+                                    </span>
+                                </div>
+
+                            </div>
+                            {/* <div className='d-flex  w-lg-100 col-md-6 order-2 justify-content-center align-items-center '>
                                 <button whiletap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile' onClick={handleModal}>
                                     <div className='d-flex flex-row gap-2'>
                                         <div className='icon location p-1 m-auto'>
@@ -591,10 +523,10 @@ const Header = () => {
                                 </div>
 
 
-                            </div>
+                            </div> */}
 
 
-                            <div className='d-flex col-md-3 w-auto order-3  justify-content-end align-items-center'>
+                            {/* <div className='d-flex col-md-3 w-auto order-3  justify-content-end align-items-center'>
                                 <button type='button' whiletap={{ scale: 0.6 }} className='icon position-relative hide-mobile mx-sm-4' onClick={() => {
                                     if (user?.jwtToken === "") {
                                         toast.error(t("required_login_message_for_notification"));
@@ -659,9 +591,7 @@ const Header = () => {
                                                         if (cart?.isGuest) {
                                                             setIsCartSidebarOpen(true);
                                                         }
-                                                        // if (user?.jwtToken === "") {
-                                                        //     toast.error(t("required_login_message_for_cartRedirect"));
-                                                        // }
+
                                                         else if (city.city === null) {
                                                             toast.error("Please Select you delivery location first!");
                                                         }
@@ -686,9 +616,7 @@ const Header = () => {
                                                 <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4  position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
                                                     onClick={() => {
 
-                                                        // if (user?.jwtToken === "") {
-                                                        //     toast.error(t("required_login_message_for_cartRedirect"));
-                                                        // }
+
                                                         if (cart?.isGuest) {
                                                             setIsCartSidebarOpen(true);
                                                         }
@@ -699,18 +627,11 @@ const Header = () => {
                                                         }
                                                     }}>
                                                     <IoCartOutline />
-                                                    {/* {cart?.cart?.total > 0 ?
-                                                        <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
-                                                            {console.log("total products", cart?.cart?.total)}
-                                                            {cart?.cart?.total > 0 ? cart?.cart?.total : null}
-                                                            {cart?.cartProducts?.length != 0 ? cart?.cartProducts?.length : null}
-                                                            <span className="visually-hidden">unread messages</span>
-                                                        </span>
-                                                        : null} */}
+
                                                     {cart?.cartProducts?.length !== 0 ?
                                                         <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
                                                             {cart?.cartProducts?.length != 0 ? cart?.cartProducts?.length : null}
-                                                            {/* {cartCount} */}
+
                                                             <span className="visually-hidden">unread messages</span>
                                                         </span>
                                                         : null}
@@ -752,7 +673,6 @@ const Header = () => {
                                                     <div className='d-flex flex-column user-info my-auto'>
                                                         <span className='number'> {t("welcome")}</span>
                                                         <span className='name'>
-
                                                             {user.user && user.user.name.split(' ')[0].length > 20
                                                                 ? user.user.name.split(' ')[0].substring(0, 20) + "..."
                                                                 : user.user.name.split(' ')[0]}
@@ -764,11 +684,11 @@ const Header = () => {
                                         </>
                                     )}
 
-                            </div>
+                            </div> */}
 
-                        </div>
-                    </div>
-                </div>
+                        </div >
+                    </div >
+                </div >
 
                 {/* Mobile bottom Nav */}
                 <nav className='header-mobile-nav' >
@@ -930,9 +850,9 @@ const Header = () => {
 
                         </ul>
                     </div>
-                </nav>
+                </nav >
                 {/* login modal */}
-                <Login show={showModal} setShow={setShowModal} />
+                < Login show={showModal} setShow={setShowModal} />
                 {/* location modal */}
                 <Modal
                     className='location'
@@ -943,16 +863,16 @@ const Header = () => {
                 >
                     <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
                         showModal={locModal} setLocModal={setLocModal} bodyScroll={setBodyScroll} />
-                </Modal>
+                </Modal >
 
 
 
 
 
                 {/* Cart Sidebar */}
-                <Cart isCartSidebarOpen={isCartSidebarOpen} setIsCartSidebarOpen={setIsCartSidebarOpen} />
+                < Cart isCartSidebarOpen={isCartSidebarOpen} setIsCartSidebarOpen={setIsCartSidebarOpen} />
 
-            </header>
+            </header >
 
         </>
     );

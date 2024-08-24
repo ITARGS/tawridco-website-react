@@ -46,6 +46,7 @@ const Login = React.memo((props) => {
     const [registerModalShow, setRegisterModalShow] = useState(false);
     const [userEmail, setUserEmail] = useState("")
     const [userName, setUserName] = useState("")
+    const [userAuthType, setUserAuthType] = useState("")
 
     const [phonenum, setPhonenum] = useState(isDemoMode == "true" ?
         `${countryDialCode}${phoneNumber}` : "");
@@ -103,8 +104,7 @@ const Login = React.memo((props) => {
     useEffect(() => {
         if (props.show == true) {
             setPhonenum(isDemoMode == "true" ? `${countryDialCode}${phoneNumber}` : "");
-            setCountryCode(isDemoMode == "true" ? countryCode : ""
-            );
+            // setCountryCode(isDemoMode == "true" ? countryCode : "");
             setOTP(isDemoMode == "true" ? demoOTP : "");
         }
     }, [props.show]);
@@ -174,6 +174,7 @@ const Login = React.memo((props) => {
     const getCurrentUser = async () => {
         try {
             const response = await newApi.getUser()
+
             dispatch(setCurrentUser({ data: response.user }));
             toast.success("You're successfully Logged In");
         } catch (error) {
@@ -249,7 +250,6 @@ const Login = React.memo((props) => {
 
 
     const loginApiCall = async (user, Uid, fcm, type) => {
-        console.log("user, Uid, fcm, type", user, Uid, fcm, type)
         let latitude;
         let longitude;
         try {
@@ -259,6 +259,7 @@ const Login = React.memo((props) => {
             // for login user functionality 
             dispatch(setAuthId({ data: Uid, type }))
             const res = await newApi.login({ Uid, fcm, type })
+
             if (res.status === 1) {
                 const tokenSet = await dispatch(setTokenThunk(res?.data?.access_token))
                 await getCurrentUser()
@@ -280,6 +281,7 @@ const Login = React.memo((props) => {
                 setIsOTP(false);
                 props.setShow(false);
             } else {
+                setUserAuthType(type)
                 setUserEmail(user?.providerData?.[0]?.email)
                 setUserName(user?.providerData?.[0]?.displayName)
                 setPhonenum(user?.providerData?.[0]?.phoneNumber)
@@ -395,7 +397,7 @@ const Login = React.memo((props) => {
                                     )}
                                     <div>
                                         <PhoneInput
-                                            country={process.env.REACT_APP_COUNTRY_CODE}
+                                            // country={process.env.REACT_APP_COUNTRY_CODE}
                                             value={phonenum}
                                             onChange={handleOnPhoneChange}
                                             enableSearch
@@ -449,6 +451,7 @@ const Login = React.memo((props) => {
                 setUserName={setUserName}
                 setLoginModal={props.setShow}
                 setIsOTP={setIsOTP}
+                userAuthType={userAuthType}
             />
         </>
     );

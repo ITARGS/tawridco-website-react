@@ -12,7 +12,7 @@
 
 .themeDropdown>button {
   font-size: 12px !important;
-  color: var(--font-color);
+  color: #fff;
   border: none;
   padding: 8px 10px;
   background-color: transparent;
@@ -25,26 +25,26 @@
 
 .themeDropdown>button:hover {
   border-color: unset !important;
-  color: unset !important;
+  color: #fff;
   background-color: unset !important;
 }
 
 .themeDropdown>.btn.show {
   border-color: unset !important;
-  color: unset !important;
+  color: #fff !important;
   background-color: unset !important;
 }
 
 .themeDropdown>button::after {
-  color: var(--font-color);
+  color: #fff;
 }
 
 .themeDropdown .dropdown-item:active {
-  background-color: var(--secondary-color);
+  background-color: #fff;
 }
 
 .header-main .icon.location>svg {
-  fill: var(--font-color);
+  fill: #fff;
 }
 
 .header-main .themeBtn {
@@ -64,7 +64,7 @@
 .site-header .header-top {
   font-size: 14px;
   position: relative;
-  background-color: var(--second-cards-color);
+  background-color: var(--secondary-color);
   /* border-bottom: 1px solid var(--font-color); */
   /* -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
@@ -178,8 +178,8 @@
 
 .site-header .header-main .site-brand .desktop-logo,
 .site-header .header-main .site-brand .mobile-logo {
-  width: 100%;
-  height: 70px;
+  width: 170px;
+  height: 45px;
   object-fit: contain;
 }
 
@@ -893,7 +893,7 @@
 
 .language-container .dropdown-toggle {
   font-size: 12px !important;
-  color: var(--font-color);
+  color: #fff;
   border: none;
   padding: 8px 10px;
   background-color: transparent;
@@ -903,8 +903,8 @@
 .language-container .dropdown-toggle.show,
 .language-container .dropdown-toggle:focus,
 .language-container .dropdown-toggle:active {
-  background-color: var(--second-cards-color) !important;
-  color: var(--font-color) !important;
+  background-color: unset !important;
+  color: #fff !important;
 }
 
 .language-container .dropdown-menu {
@@ -913,15 +913,15 @@
 }
 
 .language-container .dropdown-item:active {
-  background-color: var(--secondary-color);
+  background-color: var(--font-color);
 }
 
 .language-container .dropdown>button::after {
-  color: var(--font-color);
+  color: #fff;
 }
 
 #ShopDropDown>svg {
-  fill: var(--font-color);
+  fill: #fff;
 }
 
 .menu-item-has-children {
@@ -994,4 +994,78 @@
   color: var(--font-color);
   font-size: 24px !important;
   text-decoration: none;
+}
+
+/* Version 2.0.4 updated css */
+
+.site-header .header-top .container>div .social-icons-cotainer span {
+  color: #fff;
+  margin-right: 10px;
+  font-size: 16px;
+}
+
+.site-header .header-top .container>div .social-icons-cotainer .social-icons {
+  margin: 5px;
+  color: #fff;
+  padding-right: 10px;
+}
+
+.site-header .header-main .container>div .header-nav-list>ul {
+  display: flex;
+  list-style: none;
+}
+
+.site-header .header-main .container>div .header-nav-list>ul>li {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.site-header .header-main .container>div .header-btn-containers {
+  display: flex;
+}
+
+.site-header .header-main .container>div .header-btn-containers div {
+  display: flex;
+  align-items: center;
+
+}
+
+.site-header .header-main .container>div .header-btn-containers .cart-btn {
+  border-radius: 100%;
+  padding: 10px;
+  background-color: #c8e5d530;
+  position: relative;
+
+}
+
+.site-header .header-main .container>div .header-btn-containers p {
+  position: absolute;
+  top: -7px;
+  right: 0px;
+  color: var(--body-background);
+  background-color: var(--font-color);
+  padding: 1px 5px;
+  border-radius: 100%;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.site-header .header-main .container>div .header-btn-containers .cart-value {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+}
+
+.site-header .header-main .container>div .header-btn-containers .cart-value span {
+  font-size: 14px;
+}
+
+.site-header .header-main .container>div .header-btn-containers .cart-value h4 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.site-header .header-main .container>div .header-btn-containers .cart-btn svg {
+  color: var(--secondary-color);
 }
