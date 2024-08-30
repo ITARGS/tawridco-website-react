@@ -530,7 +530,7 @@ const ProductDetails = () => {
                                                                     spaceBetween: 5
                                                                 }
                                                             }}
-                                                            loop={true}
+
                                                             navigation={true}
                                                             thumbs={{ swiper: thumbsSwiper }}
                                                             modules={[Navigation, Thumbs, Mousewheel, Autoplay, Pagination]}

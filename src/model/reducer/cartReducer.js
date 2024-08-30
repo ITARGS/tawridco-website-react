@@ -13,6 +13,7 @@ const initialState = {
     cartSubTotal: 0,
     guestCart: [],
     isGuest: true,
+    guestCartTotal: 0
 };
 
 export const cartReducer = createSlice({
@@ -55,7 +56,10 @@ export const cartReducer = createSlice({
         addtoGuestCart: (state, action) => {
             state.guestCart = action.payload.data;
         },
-
+        addGuestCartTotal: (state, action) => {
+            state.guestCartTotal += action.payload.data
+        },
+      
     }
 });
 
@@ -70,5 +74,7 @@ export const {
     setCartSubTotal,
     setIsGuest,
     addtoGuestCart,
+    setTotalCartValue,
+    addGuestCartTotal,
 } = cartReducer.actions;
 export default cartReducer.reducer;

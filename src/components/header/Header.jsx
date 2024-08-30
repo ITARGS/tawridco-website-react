@@ -16,18 +16,18 @@ import { setPaymentSetting } from '../../model/reducer/settingReducer';
 import { setLanguage, setLanguageList } from "../../model/reducer/languageReducer";
 import { setFilterSearch } from "../../model/reducer/productFilterReducer";
 import { setCSSMode } from '../../model/reducer/cssmodeReducer';
-import { setCart, setCartProducts } from '../../model/reducer/cartReducer';
+import { setCart, setCartProducts, setCartSubTotal, setTotalCartValue } from '../../model/reducer/cartReducer';
 
 // icons import
 import { BsMoon, BsShopWindow } from 'react-icons/bs';
 import { BiUserCircle } from 'react-icons/bi';
-import { MdSearch, MdGTranslate, MdNotificationsActive, MdOutlineWbSunny } from "react-icons/md";
-import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast, IoCloseCircle } from 'react-icons/io5';
+import { MdSearch, MdGTranslate, MdNotificationsActive, MdOutlineWbSunny, MdOutlinePhoneInTalk } from "react-icons/md";
+import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast, IoCloseCircle, IoLocationOutline } from 'react-icons/io5';
 import { IoMdArrowDropdown, IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { GoLocation } from 'react-icons/go';
 import { FiMenu, FiFilter, FiUser } from 'react-icons/fi';
 import { AiOutlineClose, AiOutlineCloseCircle } from 'react-icons/ai';
-import { FaFacebookSquare, FaInstagramSquare, FaTwitterSquare, FaLinkedin } from "react-icons/fa";
+import { FaFacebookSquare, FaInstagramSquare, FaTwitterSquare, FaLinkedin, FaSearch, FaPhoneVolume } from "react-icons/fa";
 
 // components imports
 import Location from '../location/Location';
@@ -63,6 +63,7 @@ const Header = () => {
     const [search, setsearch] = useState("");
     const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState("")
 
     const openCanvasModal = () => {
         handleModal();
@@ -74,6 +75,7 @@ const Header = () => {
             try {
                 const result = await newApi.getCart({ latitude: city?.city?.latitude, longitude: city?.city?.longitude })
                 if (result.status == 1) {
+
                     const productsData = result?.data?.cart?.map((product) => {
                         return {
                             product_id: product?.product_id,
@@ -81,6 +83,7 @@ const Header = () => {
                             qty: product?.qty
                         };
                     });
+                    dispatch(setCartSubTotal({ data: result?.data?.sub_total }))
                     dispatch(setCartProducts({ data: productsData }));
                 } else if (result.message == "No item(s) found in users cart") {
                     dispatch(setCartProducts({ data: [] }));
@@ -123,7 +126,6 @@ const Header = () => {
                     const latitude = parseFloat(setting.setting.default_city?.latitude)
                     const longitude = parseFloat(setting.setting.default_city?.longitude)
                     const response = await newApi.getCity({ latitude: latitude, longitude: longitude })
-                    console.log("Result", response)
                     if (response.status === 1) {
                         dispatch(setCity({ data: response.data }));
                     } else {
@@ -358,10 +360,10 @@ const Header = () => {
                         <div className={`row justify-content-between`}>
                             <div className='col-md-6 d-flex justify-content-start align-items-center social-icons-cotainer'>
                                 <span>{t("follow_us")}</span>
-                                <FaFacebookSquare className='social-icons border-end' size={34} />
-                                <FaInstagramSquare className='social-icons border-end' size={34} />
-                                <FaTwitterSquare className='social-icons border-end' size={34} />
-                                <FaLinkedin className='social-icons ' size={34} />
+                                <FaFacebookSquare className='social-icons border-end' size={30} />
+                                <FaInstagramSquare className='social-icons border-end' size={30} />
+                                <FaTwitterSquare className='social-icons border-end' size={30} />
+                                <FaLinkedin className='social-icons ' size={30} />
                                 {/* <Link to='/about' className={`borderPad  border-end ${(cssmode.cssmode === "dark") ? "dark-header-1" : ''}`} > {t('about_us')}</Link>
                                 <Link to='/contact' className={`borderPad border-end `} > {t('contact_us')}</Link>
                                 <Link to='/faq' className={`borderPad border-end `} >{t('faq')}</Link> */}
@@ -403,7 +405,7 @@ const Header = () => {
                 </div>
 
 
-                {/* bottom header */}
+                {/* center header */}
                 <div className={isSticky ? "sticky header-main  w-100" : "header-main  w-100"} >
                     <div className="container">
                         <div className='d-flex row-reverse justify-content-lg-between justify-content-center'>
@@ -432,33 +434,73 @@ const Header = () => {
 
                             <div className='header-nav-list'>
                                 <ul>
-                                    <li> <a>Home</a></li>
-                                    <li><a>About us</a></li>
-                                    <li><a>FAQ's</a></li>
-                                    <li> <a>Contanct Us</a></li>
+                                    <li
+                                        className={curr_url.pathname == "/" ? "active-link" : ""}
+                                        onClick={() => navigate('/')}
+                                    > <a>Home</a></li>
+                                    <li
+                                        className={curr_url.pathname == "/about" ? "active-link" : ""}
+                                        onClick={() => navigate('/about')}
+                                    ><a>About us</a></li>
+                                    <li
+                                        className={curr_url.pathname == "/faq" ? "active-link" : ""}
+                                        onClick={() => navigate('/faq')}
+                                    ><a>FAQ's</a></li>
+                                    <li
+                                        className={curr_url.pathname == "/contact" ? "active-link" : ""}
+                                        onClick={() => navigate('/contact')}
+                                    > <a>Contanct Us</a></li>
                                 </ul>
                             </div>
-                            {/* TODO: */}
+
                             <div className='header-btn-containers'>
-                                <div className='me-2'>
-                                    <span className='cart-btn'>
+                                {/* {user?.jwtToken == "" ? :} */}
+                                <div className='me-5' onClick={() => setIsCartSidebarOpen(true)} role='button' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample">
+                                    <span className='cart-btn' >
                                         <IoCartOutline size={24} />
-                                        <p>1</p>
+                                        {
+                                            cart.isGuest == true ? <p className={cart?.guestCart
+                                                ?.length != 0 ? "d-flex" : "d-none"}> {cart?.guestCart
+                                                    ?.length != 0 ? cart?.guestCart
+                                                    ?.length : null}</p> :
+                                                <p className={cart?.cartProducts?.length != 0 ? "d-flex" : "d-none"}> {cart?.cartProducts?.length != 0 ? cart?.cartProducts?.length : null}</p>
+                                        }
+
                                     </span>
                                     <span className='cart-value'>
                                         <span>Your Cart</span>
-                                        <h4>$1200.00</h4>
+                                        <h4>{setting.setting && setting.setting.currency}{
+                                            cart.isGuest == true ? cart?.guestCartTotal && cart?.guestCartTotal.toFixed(2) :
+                                                cart?.cartSubTotal && cart?.cartSubTotal.toFixed(2)}</h4>
                                     </span>
                                 </div>
-                                <div>
+                                {user?.jwtToken == "" ? <div role='button' onClick={() => setShowModal(true)}>
                                     <span className='cart-btn'>
                                         <FiUser size={24} />
 
                                     </span>
-                                    <span className='cart-value'>
-                                        <h4>Account</h4>
+                                    <div className=''>
+                                        <h4>{t("login")}</h4>
+                                    </div>
+                                </div> : <div >
+
+                                    <span className='cart-btn'>
+                                        <FiUser size={24} />
+
                                     </span>
-                                </div>
+                                    <div className='profile-section'>
+                                        <Dropdown>
+                                            <Dropdown.Toggle>
+                                                Profile
+                                            </Dropdown.Toggle>
+                                            <Dropdown.Menu>
+                                                <Dropdown.Item>Profile </Dropdown.Item>
+                                                <Dropdown.Item>Address</Dropdown.Item>
+                                            </Dropdown.Menu>
+                                        </Dropdown>
+                                    </div>
+                                </div>}
+
 
                             </div>
                             {/* <div className='d-flex  w-lg-100 col-md-6 order-2 justify-content-center align-items-center '>
@@ -687,8 +729,51 @@ const Header = () => {
                             </div> */}
 
                         </div >
+                        {/* Bottom header */}
+                        <div className='d-flex row-reverse justify-content-lg-between justify-content-center bottom-header'>
+
+                            <div className='d-flex w-auto align-items-center justify-content-start col-md-2  column-left location'
+                                onClick={() => setLocModal(true)}
+                                role='button'
+                            >
+                                <span className='location-btn'>
+                                    <IoLocationOutline size={24} />
+                                </span>
+                                <span className='location-value'>
+                                    <span>{t("deliver_to")}</span>
+                                    <h4>{city.status === 'fulfill'
+                                        ? city.city.formatted_address
+                                        : (
+                                            t("select_location")
+                                        )}</h4>
+                                </span>
+                            </div>
+                            <div className='d-flex w-auto align-items-center justify-content-start col-md-2  column-left search'>
+
+                                <Dropdown>
+                                    <Dropdown.Toggle>
+                                        All categories
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu>
+                                        <Dropdown.Item>Fruits</Dropdown.Item>
+                                        <Dropdown.Item>Vegetables</Dropdown.Item>
+                                        <Dropdown.Item>Dairy</Dropdown.Item>
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                                <input type='text' placeholder='I am looking for...' />
+                                <button className='search-btn'><FaSearch size={20} />Search</button>
+                            </div>
+                            <div className='contact'>
+                                <button >
+                                    <MdOutlinePhoneInTalk size={25} />
+                                    +91 9876543210
+                                </button>
+                            </div>
+                        </div>
                     </div >
                 </div >
+
+
 
                 {/* Mobile bottom Nav */}
                 <nav className='header-mobile-nav' >

@@ -11,7 +11,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setProductSizes } from "../../model/reducer/productSizesReducer";
-import { addtoGuestCart, clearCartPromo, setCart, setCartProducts, setCartSubTotal } from "../../model/reducer/cartReducer";
+import { addGuestCartTotal, addtoGuestCart, clearCartPromo, setCart, setCartProducts, setCartSubTotal } from "../../model/reducer/cartReducer";
 import Promo from "./Promo";
 import { RiCoupon2Fill } from 'react-icons/ri';
 import Login from '../login/Login';
@@ -245,7 +245,12 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
         }));
     }
 
-    const AddToGuestCart = (productId, productVariantId, Qty, isExisting) => {
+    const AddToGuestCart = (product, productId, productVariantId, Qty, isExisting) => {
+        if (product?.discounted_price !== 0) {
+            dispatch(addGuestCartTotal({ data: product.discounted_price }))
+        } else {
+            dispatch(addGuestCartTotal({ data: product.price }))
+        }
         if (isExisting) {
             const updatedProducts = cart?.guestCart?.map((product) => {
                 if (product?.product_id == productId && product?.product_variant_id == productVariantId) {
@@ -278,7 +283,9 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
         setGuestCartSubTotal(subTotal);
     };
 
-    const RemoveFromGuestCart = (productVariantId) => {
+    const RemoveFromGuestCart = (product, productVariantId) => {
+
+
         const updatedProducts = cart?.guestCart?.filter((p) => p.product_variant_id != productVariantId);
         const updatedSideBarProducts = cartSidebarData.filter((p) => p.product_variant_id != productVariantId);
         computeSubTotal(updatedSideBarProducts);
@@ -292,7 +299,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                 toast.error(t("max_cart_limit_error"));
             }
             else {
-                AddToGuestCart(product?.product_id, product?.product_variant_id, quantity, 1);
+                AddToGuestCart(product, product?.product_id, product?.product_variant_id, quantity, 1);
             }
         }
         else {
@@ -303,7 +310,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                 toast.error(t("limited_product_stock_error"));
             }
             else {
-                AddToGuestCart(product?.product_id, product?.product_variant_id, quantity, 1);
+                AddToGuestCart(product, product?.product_id, product?.product_variant_id, quantity, 1);
             }
         }
     };
@@ -376,6 +383,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                                                             <button type='button' onClick={() => {
                                                                 if (cart?.isGuest && product.qty > 1) {
                                                                     AddToGuestCart(
+                                                                        product,
                                                                         product?.product_id,
                                                                         product?.product_variant_id,
                                                                         Number(product?.qty) - 1,
@@ -465,7 +473,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                                                         className='remove-product'
                                                         onClick={() => {
                                                             if (cart?.isGuest) {
-                                                                RemoveFromGuestCart(product.product_variant_id);
+                                                                RemoveFromGuestCart(product, product.product_variant_id);
                                                             } else {
                                                                 removefromCart(product.product_id, product.product_variant_id);
                                                                 dispatch(clearCartPromo());

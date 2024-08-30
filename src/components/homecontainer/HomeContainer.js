@@ -8,6 +8,7 @@ import ShopByCountries from '../shop-by-countries/ShopByCountries';
 import ShopBySellers from '../shop-by-seller/ShopBySellers';
 import { useNavigate } from 'react-router-dom';
 import { setFilterCategory } from '../../model/reducer/productFilterReducer';
+import ProductCard from '../product/ProductCard';
 
 const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryOfferArray }) => {
     const shop = useSelector((state) => state.shop);

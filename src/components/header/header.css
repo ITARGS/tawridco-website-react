@@ -123,7 +123,7 @@
   position: relative;
   padding: 8px 16px;
   display: flex;
-  height: 100px;
+  height: 140px;
   align-items: center;
 }
 
@@ -226,6 +226,7 @@
   order: 1;
 }
 
+/* TODO: */
 .site-location .current-location {
   font-size: 14px;
   order: 3;
@@ -1019,6 +1020,11 @@
   padding: 10px 20px;
   font-size: 16px;
   font-weight: 500;
+  cursor: pointer;
+}
+
+.site-header .header-main .container>div .header-nav-list>ul .active-link {
+  color: var(--secondary-color);
 }
 
 .site-header .header-main .container>div .header-btn-containers {
@@ -1066,6 +1072,158 @@
   font-weight: 700;
 }
 
+.site-header .header-main .container>div .header-btn-containers h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-left: 5px;
+}
+
+
 .site-header .header-main .container>div .header-btn-containers .cart-btn svg {
   color: var(--secondary-color);
+}
+
+.site-header .header-main .container>div .header-btn-containers .profile-section .dropdown-toggle {
+  background-color: unset !important;
+  color: var(--font-color) !important;
+  border: none;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.site-header .header-main .container>div .header-btn-containers .profile-section .dropdown-toggle::after {
+  color: var(--font-color);
+}
+
+.site-header .header-main .container>div .header-btn-containers .profile-section .dropdown-toggle:hover,
+.site-header .header-main .container>div .header-btn-containers .profile-section .dropdown-toggle.show,
+.site-header .header-main .container>div .header-btn-containers .profile-section .dropdown-toggle:focus,
+.site-header .header-main .container>div .header-btn-containers .profile-section .dropdown-toggle:active {
+  background-color: unset !important;
+}
+
+.site-header .header-main .container>div .header-btn-containers .profile-section .dropdown-menu {
+  display: flex;
+  flex-direction: column;
+}
+
+.site-header .header-main .container>div .header-btn-containers .profile-section .dropdown-menu .dropdown-item {
+  padding: 5px 10px;
+  font-size: 16px;
+}
+
+.site-header .header-main .container .bottom-header {
+  margin: 10px 0px;
+}
+
+.site-header .header-main .container .bottom-header .location {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.site-header .header-main .container .bottom-header .location .location-btn {
+  background-color: #c8e5d530;
+  border-radius: 100%;
+  color: var(--secondary-color);
+  padding: 10px;
+}
+
+.site-header .header-main .container .bottom-header .location .location-value {
+  margin-left: 10px;
+}
+
+.site-header .header-main .container .bottom-header .location .location-value span {
+  font-size: 14px;
+}
+
+.site-header .header-main .container .bottom-header .location .location-value h4 {
+  width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.site-header .header-main .container .bottom-header .search {
+  box-shadow: 0px 0px 3px gray;
+  height: 50px;
+  width: 582px !important;
+  border-radius: 5px;
+
+}
+
+.site-header .header-main .container .bottom-header .search .dropdown-toggle {
+  background-color: #F2F5F7 !important;
+  color: var(--font-color);
+  border: none;
+  width: fit-content;
+  height: 50px;
+  font-size: 16px;
+  box-shadow: 0px 0px 3px gray;
+  padding: 8px 16px;
+}
+
+.site-header .header-main .container .bottom-header .search .dropdown-toggle::after {
+  color: var(--font-color);
+}
+
+.site-header .header-main .container .bottom-header .search .dropdown-menu {
+
+  width: 100%;
+  border-radius: 5px;
+}
+
+.site-header .header-main .container .bottom-header .search .dropdown-menu .dropdown-item {
+  padding: 10px;
+  font-size: 16px;
+}
+
+
+.site-header .header-main .container .bottom-header .search input {
+  font-size: 16px;
+  padding: 12px;
+  height: 100%;
+  width: 100%;
+  text-align: left;
+}
+
+.site-header .header-main .container .bottom-header .search input::placeholder {
+
+  text-align: left !important;
+
+}
+
+.site-header .header-main .container .bottom-header .search .search-btn {
+  box-shadow: 0px 0px 3px gray;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  padding: 20px;
+  background-color: #29363F;
+  color: #fff;
+  font-weight: 400;
+  border-radius: 5px;
+}
+
+.site-header .header-main .container .bottom-header .search .search-btn svg {
+  margin: 0px 10px;
+}
+
+.site-header .header-main .container .bottom-header .contact button {
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 20px;
+  background-color: var(--secondary-color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+}
+
+.site-header .header-main .container .bottom-header .contact button svg {
+  margin: 0px 10px;
 }

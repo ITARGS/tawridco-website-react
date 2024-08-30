@@ -60,7 +60,7 @@ const Slider = () => {
                             <div className="slider__images">
                                 <Swiper
 
-                                    loop={true}
+
                                     autoplay={{
                                         delay: 3000,
                                         disableOnInteraction: false,

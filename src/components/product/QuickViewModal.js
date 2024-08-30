@@ -25,7 +25,6 @@ import 'swiper/css/pagination';
 
 const QuickViewModal = (props) => {
 
-
     const dispatch = useDispatch();
 
     const setting = useSelector(state => state.setting);
@@ -50,14 +49,13 @@ const QuickViewModal = (props) => {
 
     useEffect(() => {
         if (Object.keys(props.selectedProduct).length > 0 && city.city !== null && Object.keys(product).length === 0 && props.showModal === true) {
-            // getCategoryDetails();
-            // getBrandDetails();
+
             fetchProduct(props.selectedProduct.id);
         }
         else if (props.showModal === true) {
             fetchProductVariant(props.selectedProduct.id);
         }
-    }, [props.selectedProduct, city]);
+    }, [props.showModal]);
 
 
 
@@ -258,58 +256,7 @@ const QuickViewModal = (props) => {
         );
     };
 
-    const settings_subImage = {
-        infinite: false,
-        slidesToShow: 3,
-        initialSlide: 0,
-        // centerMargin: "10px",
-        //         margin: "20px",
-        rows: 1,
-        prevArrow: (
-            // <button
-            //     type="button"
-            //     className="slick-prev"
-            //     onClick={(e) => {
-            //         setmainimage(e.target.value);
-            //     }}
-            // >
-            //     <FaChevronLeft fill='black' size={30} className="prev-arrow" />
-            // </button>
-            <CustomPrevButton />
-        ),
-        nextArrow: (
-            // <button
-            //     type="button"
-            //     className="slick-next"
-            //     onClick={(e) => {
-            //         setmainimage(e.target.value);
-            //     }}
-            // >
-            //     <FaChevronRight fill='black' size={30} className="next-arrow" />
-            // </button>
-            <CustomNextButton />
-        ),
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 4,
-                    slidesToScroll: 1,
-                    infinite: true,
-                },
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 1,
-                },
-            },
-        ],
-    };
-
     const handleVariantChange = (variant, index) => {
-        // console.log(variant, index);
         props.setP_id(product.id);
         props.setP_V_id(variant.id);
         setSelectedVariant(variant);
@@ -425,7 +372,7 @@ const QuickViewModal = (props) => {
                 <Modal.Body className='modal-body'>
                     <div className="d-flex flex-row justify-content-end header">
                         <button type="button" aria-label="Close" onClick={() => {
-                            props.setselectedProduct({});
+                            // props.setselectedProduct({});
                             // setproductcategory({});
                             // setproductbrand({});
                             setproduct({});
@@ -437,10 +384,14 @@ const QuickViewModal = (props) => {
                     </div>
 
                     {
+
                         Object.keys(product).length === 0 || productSizes === null
 
                             ? (
-                                < Loader />
+                                <>
+
+                                    < Loader />
+                                </>
 
                             )
                             : (
@@ -474,7 +425,7 @@ const QuickViewModal = (props) => {
                                                                     spaceBetween: 5
                                                                 }
                                                             }}
-                                                            loop={true}
+
                                                             navigation={true}
                                                             thumbs={{ swiper: thumbsSwiper }}
                                                             modules={[Navigation, Thumbs, Mousewheel, Autoplay, Pagination]}

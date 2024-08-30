@@ -34,6 +34,7 @@ import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import ProductCard from './ProductCard';
 
 
 const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOfferArray }) => {
@@ -289,41 +290,45 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                 </div>
 
                                                 <div className="product_section_content p-0 position-relative">
-                                                    <button type="button" className={`slick-prev prev-arrow-country section-${index0}`} >
-                                                        <FaChevronLeft fill='black' size={30} className="prev-arrow " />
-                                                    </button>
-                                                    <button type="button" className={`slick-next next-arrow-country section-${index0}`}>
-                                                        <FaChevronRight fill='black' size={30} className='next-arrow' />
-                                                    </button>
+                                                    {section?.products?.length > 4 ? <div>
+                                                        <button type="button" className={`slick-prev prev-arrow-country section-${index0}`} >
+                                                            <FaChevronLeft fill='black' size={30} className="prev-arrow " />
+                                                        </button>
+                                                        <button type="button" className={`slick-next next-arrow-country section-${index0}`}>
+                                                            <FaChevronRight fill='black' size={30} className='next-arrow' />
+                                                        </button>
+                                                    </div> : <></>}
+
+
                                                     <Swiper
                                                         modules={[Navigation, Pagination]}
                                                         navigation={{
                                                             prevEl: `.prev-arrow-country.section-${index0}`,
                                                             nextEl: `.next-arrow-country.section-${index0}`,
                                                         }}
-
+                                                        spaceBetween={10}
                                                         pagination={{ clickable: true }}
                                                         breakpoints={{
                                                             1200: {
-                                                                slidesPerView: 5,
-                                                                spaceBetween: 20,
+                                                                slidesPerView: 4,
                                                             },
                                                             1024: {
                                                                 slidesPerView: 4,
-                                                                spaceBetween: 20,
                                                             },
                                                             768: {
                                                                 slidesPerView: 3.5,
-                                                                spaceBetween: 15,
                                                             },
                                                             300: {
                                                                 slidesPerView: 1.5,
-                                                                spaceBetween: 10,
                                                             },
                                                         }}>
                                                         {section?.products?.map((product, index) => (
-                                                            <SwiperSlide className="row" key={index}                                                        >
-                                                                <div className="col-md-12">
+                                                            <SwiperSlide className="row" key={index}>
+
+                                                                <ProductCard product={product} />
+
+
+                                                                {/* <div className="col-md-12">
                                                                     <div className='product-card'>
                                                                         <span className='border border-light rounded-circle p-2 px-3' id='aiEye'>
                                                                             <AiOutlineEye
@@ -338,7 +343,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                         }} className='text-decoration-none text-reset'>
 
                                                                             <div className='image-container' >
-                                                                                {/* <img onLoadStart={(e) => { e.target.src = setting.setting?.web_logo; }} onError={placeHolderImage} src={product.image_url} alt={product.slug} className={`card-img-top`} loading='lazy' /> */}
+                                                                               
                                                                                 <ImageWithPlaceholder src={product.image_url} alt={product.slug} className={`card-img-top`} />
                                                                                 {!Number(product.is_unlimited_stock) && parseInt(product.variants[0].status) === 0 &&
                                                                                     <div className="out_of_stockOverlay">
@@ -346,7 +351,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                     </div>
                                                                                 }
                                                                             </div>
-                                                                            {/* {console.log(product)} */}
+                                                                            
                                                                             <div className="card-body product-card-body p-3" >
                                                                                 {product?.rating_count > 0 ?
                                                                                     <div className='ratings d-flex align-items-center'>
@@ -376,7 +381,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                 </div>
                                                                                 <div className='product_varients_drop'>
                                                                                     <input type="hidden" name={`select-product${index}${index0}-variant-id`} id={`select-product${index}${index0}-variant-id`} value={selectedVariant.pid === product.id ? selectedVariant.id : product.variants[0].id} />
-                                                                                    {/* {console.log(product, product.variants)} */}
+                                                                                    
                                                                                     {product.variants.length > 1 ? <>
                                                                                         <div className='variant_selection' onClick={() => { setselectedProduct(product); setShowModal(true); setP_id(product.id); setP_V_id(product.variants[0].id); setQnty(product.variants[0].cart_count + 1); }} >
                                                                                             <span>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} </>}</span>
@@ -386,7 +391,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                         :
                                                                                         <>
 
-                                                                                            {/* {document.getElementById()} */}
+                                                                                            
                                                                                             <span className={`variant_value select-arrow ${product.variants[0].stock > 0 ? '' : ''}`}>{product.variants[0].measurement + " " + product.variants[0].stock_unit_name}
                                                                                             </span>
                                                                                         </>}
@@ -434,7 +439,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                                 }
                                                                                                 else {
                                                                                                     addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty - 1);
-                                                                                                    // addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product?.variants[0]?.id)?.qty - 1);
+                                                                                                   
                                                                                                 }
                                                                                             }
 
@@ -445,14 +450,14 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                                                 min="1"
                                                                                                 max={product.variants[0].stock}
                                                                                                 className="quantity-input bg-transparent text-center"
-                                                                                                // value={product.variants[0].cart_count} 
+                                                                                                
                                                                                                 value={cart?.isGuest === false ? cart?.cartProducts?.find(prdct => prdct?.product_id == product?.id)?.qty : cart?.guestCart?.find(prdct => prdct?.product_id == product?.id)?.qty}
                                                                                                 disabled
                                                                                             />
                                                                                         </div>
                                                                                         <button type='button' className="wishlist-button" onClick={() => {
                                                                                             if (cart?.isGuest) {
-                                                                                                // AddToGuestCart(product?.id, product?.variants?.[0]?.id, cart?.guestCart?.find(prdct => prdct.product_id == product.id && prdct.product_variant_id == product.variants[0]?.id)?.qty + 1, 1);
+                                                                                               
 
                                                                                                 const productQuantity = getProductQuantities(cart?.guestCart);
                                                                                                 handleValidateAddExistingGuestProduct(
@@ -508,7 +513,7 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                </div>
+                                                                </div> */}
                                                             </SwiperSlide>
                                                         ))}
                                                     </Swiper>

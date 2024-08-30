@@ -12,6 +12,7 @@
   /* color: var(--primary-color); */
 }
 
+
 *::selection {
   background: var(--secondary-color);
   color: #fff;
@@ -154,7 +155,7 @@ body:not(.modal-open) {
 
 @media only screen and (min-width: 1300px) {
   .container {
-    max-width: 1610px !important;
+    /* max-width: 1610px !important; */
   }
 }
 

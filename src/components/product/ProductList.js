@@ -22,7 +22,7 @@ import { setSelectedProduct } from '../../model/reducer/selectedProduct';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Popup from "../same-seller-popup/Popup";
-import { addtoGuestCart, setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
+import { addGuestCartTotal, addtoGuestCart, setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
 import { LuStar } from 'react-icons/lu';
 import "./product.css";
@@ -476,7 +476,10 @@ const ProductList2 = React.memo(() => {
                         dispatch(setCart({ data: result }));
                         dispatch(setCartProducts({ data: updatedProducts }));
                         dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
+
                     }
+
+
                 }
                 else if (result?.data?.one_seller_error_code == 1) {
                     dispatch(setSellerFlag({ data: 1 }));
@@ -561,7 +564,6 @@ const ProductList2 = React.memo(() => {
 
 
     const handleValidateAddExistingProduct = (productQuantity, product) => {
-        console.log("product quantity from product list page", productQuantity)
         if (Number(product.is_unlimited_stock)) {
             if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product?.total_allowed_quantity)) {
                 addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
@@ -602,12 +604,13 @@ const ProductList2 = React.memo(() => {
 
     const handleAddNewProductGuest = (productQuantity, product) => {
         if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) < Number(product.total_allowed_quantity)) {
-            AddToGuestCart(product.id, product.variants[0].id, 1, 0);
+            AddToGuestCart(product, product.id, product.variants[0].id, 1, 0, "add");
         } else {
             toast.error(t("out_of_stock_message"));
         }
     };
-    const AddToGuestCart = (productId, productVariantId, Qty, isExisting) => {
+    const AddToGuestCart = (product, productId, productVariantId, Qty, isExisting, flag) => {
+        computeSubTotal(cart.guestCart)
         if (isExisting) {
             const updatedProducts = Qty !== 0 ? cart?.guestCart?.map((product) => {
                 if (product?.product_id == productId && product?.product_variant_id == productVariantId) {
@@ -617,19 +620,29 @@ const ProductList2 = React.memo(() => {
                 }
             }) : cart?.guestCart?.filter(product => product?.product_id != productId && product?.productVariantId != productVariantId);
             dispatch(addtoGuestCart({ data: updatedProducts }));
+
         } else {
             const productData = { product_id: productId, product_variant_id: productVariantId, qty: Qty };
             dispatch(addtoGuestCart({ data: [...cart?.guestCart, productData] }));
         }
     };
 
+
+    const computeSubTotal = (products) => {
+        const subTotal = products.reduce((prev, curr) => {
+            prev += (curr.discounted_price !== 0 ? curr.discounted_price * curr.qty : curr.price * curr.qty);
+            return prev;
+        }, 0);
+        dispatch(addGuestCartTotal({ data: subTotal }));
+    };
     const handleValidateAddExistingGuestProduct = (productQuantity, product, quantity) => {
+
         if (Number(product.is_unlimited_stock)) {
             if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.total_allowed_quantity)) {
                 toast.error('Apologies, maximum product quantity limit reached');
             }
             else {
-                AddToGuestCart(product?.id, product?.variants?.[0]?.id, quantity, 1);
+                AddToGuestCart(product, product?.id, product?.variants?.[0]?.id, quantity, 1, "add");
             }
         }
         else {
@@ -640,7 +653,7 @@ const ProductList2 = React.memo(() => {
                 toast.error('Apologies, maximum cart quantity limit reached');
             }
             else {
-                AddToGuestCart(product?.id, product?.variants?.[0]?.id, quantity, 1);
+                AddToGuestCart(product, product?.id, product?.variants?.[0]?.id, quantity, 1, "add");
             }
         }
     };
@@ -803,6 +816,7 @@ const ProductList2 = React.memo(() => {
 
                                                                                             <div className='border-end aes' style={{ flexGrow: "1" }}>
                                                                                                 {product.variants[0].cart_count > 0 ? <>
+                                                                                                    {/* TODO: */}
                                                                                                     <div id={`input-cart-productdetail`} className="input-to-cart">
                                                                                                         <button type='button' className="wishlist-button" onClick={(e) => {
                                                                                                             e.preventDefault();
@@ -1014,16 +1028,19 @@ const ProductList2 = React.memo(() => {
                                                                                             ?
                                                                                             <>
                                                                                                 <div id={`input-cart-productdetail`} className="input-to-cart">
+                                                                                                    {/* TODO: */}
                                                                                                     <button
                                                                                                         type='button'
                                                                                                         className="wishlist-button"
                                                                                                         onClick={() => {
                                                                                                             if (cart?.isGuest) {
                                                                                                                 AddToGuestCart(
+                                                                                                                    product,
                                                                                                                     product?.id,
                                                                                                                     product?.variants?.[0]?.id,
                                                                                                                     cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty - 1,
-                                                                                                                    1
+                                                                                                                    1,
+                                                                                                                    "remove"
                                                                                                                 );
                                                                                                             } else {
 
