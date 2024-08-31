@@ -1028,7 +1028,7 @@ const ProductList2 = React.memo(() => {
                                                                                             ?
                                                                                             <>
                                                                                                 <div id={`input-cart-productdetail`} className="input-to-cart">
-                                                                                                    {/* TODO: */}
+
                                                                                                     <button
                                                                                                         type='button'
                                                                                                         className="wishlist-button"
@@ -1071,7 +1071,7 @@ const ProductList2 = React.memo(() => {
                                                                                                             disabled
                                                                                                         />
                                                                                                     </div>
-
+                                                                                                    {/* TODO: */}
                                                                                                     <button
                                                                                                         type='button'
                                                                                                         className="wishlist-button"

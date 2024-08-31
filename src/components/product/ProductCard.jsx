@@ -12,10 +12,12 @@ import { StarFilled, StarOutlined } from '@ant-design/icons';
 import { IoMdArrowDropdown } from "react-icons/io";
 // Reducer imports
 import { addGuestCartTotal, addtoGuestCart, setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
+import { useTranslation } from 'react-i18next';
 
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch()
+    const { t } = useTranslation();
     // reducer imports
     const setting = useSelector(state => (state.setting));
     const cart = useSelector(state => (state.cart))
@@ -32,7 +34,7 @@ const ProductCard = ({ product }) => {
         try {
             const response = await newApi.addToCart({ product_id: productId, product_variant_id: productVId, qty: qty })
             if (response.status === 1) {
-                
+
             }
         } catch (error) {
             console.log("error", error)
@@ -40,13 +42,54 @@ const ProductCard = ({ product }) => {
     }
 
 
-    const validateAddExistedProduct = () => { }
+    function getProductQuantities(products) {
+
+        return Object.entries(products?.reduce((quantities, product) => {
+            const existingQty = quantities[product.product_id] || 0;
+            return { ...quantities, [product.product_id]: existingQty + product.qty };
+        }, {})).map(([productId, qty]) => ({
+            product_id: parseInt(productId),
+            qty
+        }));
+    }
 
     const calculateDiscount = (discountPrice, actualPrice) => {
         const difference = actualPrice - discountPrice;
         const actualDiscountPrice = (difference / actualPrice)
         return actualDiscountPrice * 100;
     }
+
+    const handleAddToCard = async (product) => {
+
+        if (cart?.isGuest) {
+            toast.error("Hello ")
+        } else {
+            console.log("cart?.cartProducts", cart?.cartProducts)
+            const productQuantity = getProductQuantities(cart?.cartProducts)
+            console.log("product qty", productQuantity)
+            handleValidateAddExistingProduct(productQuantity, product);
+
+        }
+    }
+
+    const handleValidateAddExistingProduct = (productQuantity, product) => {
+        if (Number(product.is_unlimited_stock)) {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product?.total_allowed_quantity)) {
+                addToCart(product.id, selectedVariant?.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant?.id)?.qty + 1);
+            } else {
+                toast.error('Apologies, maximum product quantity limit reached!');
+            }
+        } else {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.variants[0].stock)) {
+                toast.error(t("out_of_stock_message"));
+            }
+            else if (Number(productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty) >= Number(product.total_allowed_quantity)) {
+                toast.error('Apologies, maximum product quantity limit reached');
+            } else {
+                addToCart(product.id, selectedVariant?.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant?.id)?.qty + 1);
+            }
+        }
+    };
 
     return (
         <div >
@@ -82,7 +125,7 @@ const ProductCard = ({ product }) => {
                                             </span>
                                         )}
                                     />
-                                    <p>{`(${product?.average_rating})`}</p>
+                                    <p>{`(${product?.average_rating.toFixed(2)})`}</p>
                                 </div>
                                 : null}
 
@@ -110,9 +153,9 @@ const ProductCard = ({ product }) => {
                             <input value={cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty} disabled min='1' type='number' max={selectedVariant?.stock} />
 
 
-                            <button onClick={() => addToCart(product?.id, selectedVariant?.id, selectedVariant?.cart_count + 1)}><FaPlus /></button>
+                            <button onClick={() => handleAddToCard(product)}><FaPlus /></button>
                         </div>
-                        : <button className='product-cart-btn' onClick={() => { addToCart(product?.id, selectedVariant?.id, 1) }}><FaShoppingBasket className='mx-2' size={20} />Add</button>}
+                        : <button className='product-cart-btn' onClick={() => handleAddToCard(product)} ><FaShoppingBasket className='mx-2' size={20} />Add</button>}
 
                 </div>
             </div >
