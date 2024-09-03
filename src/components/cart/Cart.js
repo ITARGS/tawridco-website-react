@@ -11,7 +11,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Loader from '../loader/Loader';
 import { useTranslation } from 'react-i18next';
 import { setProductSizes } from "../../model/reducer/productSizesReducer";
-import { addGuestCartTotal, addtoGuestCart, clearCartPromo, setCart, setCartProducts, setCartSubTotal } from "../../model/reducer/cartReducer";
+import { addtoGuestCart, clearCartPromo, setCart, setCartProducts, setCartSubTotal, setGuestCartTotal } from "../../model/reducer/cartReducer";
 import Promo from "./Promo";
 import { RiCoupon2Fill } from 'react-icons/ri';
 import Login from '../login/Login';
@@ -139,6 +139,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
             if (result.status == 1) {
                 setCartSidebarData(result.data.cart);
                 setGuestCartSubTotal(result.data.sub_total);
+                // dispatch(addGuestCartTotal({ data: result.data.sub_total }));
             }
         } catch (e) {
             console.log(e?.message);
@@ -246,11 +247,6 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
     }
 
     const AddToGuestCart = (product, productId, productVariantId, Qty, isExisting) => {
-        if (product?.discounted_price !== 0) {
-            dispatch(addGuestCartTotal({ data: product.discounted_price }))
-        } else {
-            dispatch(addGuestCartTotal({ data: product.price }))
-        }
         if (isExisting) {
             const updatedProducts = cart?.guestCart?.map((product) => {
                 if (product?.product_id == productId && product?.product_variant_id == productVariantId) {
@@ -266,7 +262,9 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                     return product;
                 }
             });
+
             computeSubTotal(updatedCartProducts);
+
             setCartSidebarData(updatedCartProducts);
             dispatch(addtoGuestCart({ data: updatedProducts }));
         } else {
@@ -280,12 +278,11 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
             prev += (curr.discounted_price !== 0 ? curr.discounted_price * curr.qty : curr.price * curr.qty);
             return prev;
         }, 0);
-        setGuestCartSubTotal(subTotal);
+        // setGuestCartSubTotal(subTotal);
+        dispatch(setGuestCartTotal({ data: subTotal }))
     };
 
     const RemoveFromGuestCart = (product, productVariantId) => {
-
-
         const updatedProducts = cart?.guestCart?.filter((p) => p.product_variant_id != productVariantId);
         const updatedSideBarProducts = cartSidebarData.filter((p) => p.product_variant_id != productVariantId);
         computeSubTotal(updatedSideBarProducts);

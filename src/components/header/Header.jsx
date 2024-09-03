@@ -7,8 +7,11 @@ import * as newApi from '../../api/apiCollection';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
 import { Dropdown } from 'react-bootstrap';
-import { Modal } from 'antd';
+import { Menu, Modal } from 'antd';
 import "../location/location.css";
+import { DownOutlined, SmileOutlined } from '@ant-design/icons';
+
+import { Dropdown as AntdDropdown, Space } from 'antd';
 
 // reducres import
 import { setCity } from "../../model/reducer/locationReducer";
@@ -33,6 +36,7 @@ import { FaFacebookSquare, FaInstagramSquare, FaTwitterSquare, FaLinkedin, FaSea
 import Location from '../location/Location';
 import Login from '../login/Login';
 import Cart from '../cart/Cart';
+import { label } from 'yet-another-react-lightbox';
 
 
 
@@ -70,6 +74,57 @@ const Header = () => {
         closeSidebarRef.current.click();
     };
 
+
+    const items = [
+        {
+            key: '1',
+            label: (
+                <span onClick={() => navigate("/profile")} className="custom-dropdown-item">
+                    Profile
+                </span>
+            ),
+        },
+        {
+            key: '2',
+            label: (
+                <span onClick={() => navigate("/profile/orders")} className="custom-dropdown-item">
+                    All Orders
+                </span>
+            )
+        },
+        {
+            key: '3',
+            label: (
+                <span className="custom-dropdown-item" onClick={() => navigate("/profile/address")}>
+                    Manage Address
+                </span>
+            )
+        },
+        {
+            key: '4',
+            label: (
+                <span className="custom-dropdown-item" onClick={() => navigate("/profile/transactions")}>
+                    Transaction history
+                </span>
+            )
+        },
+        {
+            key: '5',
+            label: (
+                <span onClick={() => navigate("/profile/wallet-transaction")} className="custom-dropdown-item">
+                    Wallet history
+                </span>
+            )
+        },
+        {
+            key: '6',
+            label: (
+                <span>
+                    Logout
+                </span>
+            )
+        },
+    ];
     useEffect(() => {
         const fetchCartData = async () => {
             try {
@@ -94,7 +149,7 @@ const Header = () => {
         };
         fetchCartData()
     }, [])
-
+    // cart?.cartSubTotal, cart?.guestCartTotal
     useEffect(() => {
         if (bodyScroll) {
             document.body.style.overflow = 'auto';
@@ -283,37 +338,10 @@ const Header = () => {
                                         navigate('/faq');
                                     }}>{t('faq')}</button>
                                 </li>
-                                {/* <li className='dropdown-item menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children'>
-                                    <button type='button' onClick={() => {
-                                        if (user.user) {
-                                            closeSidebarRef.current.click();
-                                            navigate('/notification');
-                                        } else {
-                                            closeSidebarRef.current.click();
-                                            toast.error(t('required_login_message_for_notification'));
-                                        }
-                                    }}>{t("notification")}</button>
-                                </li> */}
+
 
                             </ul>
-                            {/* {setting.setting.social_media.length > 0 ? <div>
 
-                                <div className='follow-us-container'>
-                                    <p>{t('follow_us')}</p>
-                                    <div className='follow-icons-container'>
-                                        {setting.setting.social_media.slice(0, Math.min(4, setting.setting.social_media.length)).map((icon, index) => {
-                                            return (
-                                                <a key={index} href={icon.link} className='socical-icons'>
-                                                    <i className={` fab ${icon.icon} fa-lg header-icons`} >
-                                                    </i>
-                                                </a>
-                                            );
-                                        })}
-
-
-                                    </div>
-                                </div>
-                            </div> : null} */}
 
 
                             <div className='lang-mode-utils'>
@@ -470,263 +498,51 @@ const Header = () => {
                                     <span className='cart-value'>
                                         <span>Your Cart</span>
                                         <h4>{setting.setting && setting.setting.currency}{
-                                            cart.isGuest == true ? cart?.guestCartTotal && cart?.guestCartTotal.toFixed(2) :
-                                                cart?.cartSubTotal && cart?.cartSubTotal.toFixed(2)}</h4>
+                                            cart.isGuest == true ? cart?.guestCartTotal && cart?.guestCartTotal?.toFixed(2) :
+                                                cart?.cartSubTotal?.toFixed(2)
+                                        }</h4>
                                     </span>
                                 </div>
-                                {user?.jwtToken == "" ? <div role='button' onClick={() => setShowModal(true)}>
-                                    <span className='cart-btn'>
-                                        <FiUser size={24} />
+                                <div>
+                                    {user?.jwtToken == "" ? <div role='button' onClick={() => setShowModal(true)}>
+                                        <span className='cart-btn'>
+                                            <FiUser size={24} />
 
-                                    </span>
-                                    <div className=''>
-                                        <h4>{t("login")}</h4>
-                                    </div>
-                                </div> : <div >
+                                        </span>
+                                        <div className=''>
+                                            <h4>{t("login")}</h4>
+                                        </div>
+                                    </div> :
+                                        <div>
 
-                                    <span className='cart-btn'>
-                                        <FiUser size={24} />
+                                            <span className='cart-btn'>
+                                                <FiUser size={24} />
 
-                                    </span>
-                                    <div className='profile-section'>
-                                        <Dropdown>
-                                            <Dropdown.Toggle>
-                                                Profile
-                                            </Dropdown.Toggle>
-                                            <Dropdown.Menu>
-                                                <Dropdown.Item>Profile </Dropdown.Item>
-                                                <Dropdown.Item>Address</Dropdown.Item>
-                                            </Dropdown.Menu>
-                                        </Dropdown>
-                                    </div>
-                                </div>}
+                                            </span>
+
+                                            <div className='profile-section'>
+
+                                                <AntdDropdown
+                                                    menu={{
+                                                        items,
+                                                    }}
+                                                >
+                                                    <a onClick={(e) => e.preventDefault()}>
+                                                        <Space>
+                                                            Profile
+                                                            <DownOutlined />
+                                                        </Space>
+                                                    </a>
+                                                </AntdDropdown>
+
+                                            </div>
+                                        </div>}
+                                </div>
+
 
 
                             </div>
-                            {/* <div className='d-flex  w-lg-100 col-md-6 order-2 justify-content-center align-items-center '>
-                                <button whiletap={{ scale: 0.6 }} type='buton' className='header-location site-location hide-mobile' onClick={handleModal}>
-                                    <div className='d-flex flex-row gap-2'>
-                                        <div className='icon location p-1 m-auto'>
-                                            <GoLocation fill='black' />
-                                        </div>
 
-                                        <div className='d-flex flex-column flex-grow-1 align-items-start ' >
-                                            <span className='location-description'>{t('deliver_to')} <IoMdArrowDropdown /></span>
-                                            <span className='current-location'>
-                                                <>
-                                                    {city.status === 'fulfill'
-                                                        ? city.city.formatted_address
-                                                        : (
-                                                            t("select_location")
-                                                        )}
-                                                </>
-                                            </span>
-                                        </div>
-
-                                    </div>
-                                </button>
-
-                                <div className={`header-search rounded-3 ${mobileNavActKey == 2 ? "active" : ""}`}>
-                                    <form onSubmit={(e) => {
-                                        e.preventDefault();
-                                        if (search !== "") {
-                                            dispatch(setFilterSearch({ data: search }));
-                                            // dispatch(setFilterCategory({ data: null }));
-                                            // dispatch(setFilterBrands({ data: [] }));
-                                            // dispatch(setFilterMinMaxPrice({ data: null }));
-                                            searchNavTrigger.current.click();
-                                            navigate('/products');
-
-                                            // if (curr_url.pathname !== '/products') {
-                                            // }
-                                        }
-                                    }}
-                                        className='search-form'>
-                                        <input type="search"
-                                            id="search-box"
-                                            value={search}
-                                            placeholder={t('enter_text_to_search_products')}
-                                            className=''
-                                            onChange={(e) => {
-                                                setsearch(e.target.value);
-                                            }}
-                                        />
-                                        {search != "" ? <AiOutlineClose size={15} className='cursorPointer' style={{
-                                            position: "absolute",
-                                            right: "65px"
-                                        }} onClick={() => {
-                                            setsearch("");
-                                            dispatch(setFilterSearch({ data: null }));
-                                        }} /> : null}
-                                        <button type='submit'>
-                                            <MdSearch fill='white' />
-                                        </button>
-                                    </form>
-                                </div>
-
-
-                            </div> */}
-
-
-                            {/* <div className='d-flex col-md-3 w-auto order-3  justify-content-end align-items-center'>
-                                <button type='button' whiletap={{ scale: 0.6 }} className='icon position-relative hide-mobile mx-sm-4' onClick={() => {
-                                    if (user?.jwtToken === "") {
-                                        toast.error(t("required_login_message_for_notification"));
-                                    }
-                                    else {
-                                        navigate('/notification');
-                                    }
-                                }}>
-                                    {totalNotification === null ? <IoNotificationsOutline />
-                                        : <MdNotificationsActive fill="var(--secondary-color)" />}
-
-                                </button>
-
-                                {city.city === null || user?.jwtToken === ""
-                                    ? <button whiletap={{ scale: 0.6 }} className='icon mx-sm-4 position-relative hide-mobile-screen'
-                                        onClick={() => {
-                                            if (user?.jwtToken === "") {
-                                                toast.error(t("required_login_message_for_cartRedirect"));
-                                            }
-                                            else if (city.city === null) {
-                                                toast.error("Please Select you delivery location first!");
-                                            }
-                                        }}>
-                                        <IoHeartOutline className='' />
-                                    </button>
-                                    : <button whiletap={{ scale: 0.6 }} className='icon mx-4 position-relative hide-mobile-screen'
-                                        onClick={() => {
-                                            if (user?.jwtToken === "") {
-                                                toast.error(t("required_login_message_for_cartRedirect"));
-                                            }
-                                            else if (city.city === null) {
-                                                toast.error("Please Select you delivery location first!");
-                                            } else {
-                                                navigate("/wishlist");
-                                            }
-                                        }}>
-                                        <IoHeartOutline className='' />
-                                        {(favorite.favouritelength !== 0) ?
-                                            <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5 ">
-                                                {favorite.favouritelength}
-                                                <span className="visually-hidden">unread messages</span>
-                                            </span>
-                                            : null}
-
-                                    </button>
-                                }
-
-
-
-                                {
-                                    curr_url.pathname === "/checkout" ?
-                                        null :
-                                        city.city === null || user?.jwtToken === ""
-                                            ?
-                                            <>
-                                                <button type='button' className={isDesktopView ? "d-none" : "d-block mt-2"} onClick={openCanvasModal}>
-                                                    <GoLocation size={25} style={{ backgroundColor: `var(--second-cards-color)` }} />
-                                                </button>
-                                                <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4  position-relative'
-                                                    data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
-                                                    onClick={() => {
-                                                        if (cart?.isGuest) {
-                                                            setIsCartSidebarOpen(true);
-                                                        }
-
-                                                        else if (city.city === null) {
-                                                            toast.error("Please Select you delivery location first!");
-                                                        }
-                                                    }}>
-                                                    <IoCartOutline />
-                                                    {cart?.isGuest === true && cart?.guestCart?.length !== 0 ?
-                                                        <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
-                                                            {cart?.guestCart?.length !== 0 ? cart?.guestCart?.length : null}
-                                                            <span className="visually-hidden">unread messages</span>
-                                                        </span>
-                                                        : null}
-                                                </button>
-                                                {cssmode?.cssmode === "light" ?
-                                                    <button className='themeBtn' onClick={() => handleThemeChange("dark")}><BsMoon size={25} className={isDesktopView ? "d-none " : "d-block mt-2 "} /></button>
-                                                    :
-                                                    <button className='themeBtn' onClick={() => handleThemeChange("light")}><MdOutlineWbSunny size={25} className={isDesktopView ? "d-none " : "d-block mt-2 "} /></button>}
-                                            </>
-                                            : <>
-                                                <button type='button' className={isDesktopView ? "d-none" : "d-block mt-2"} onClick={openCanvasModal}>
-                                                    <GoLocation size={25} style={{ backgroundColor: `var(--second-cards-color)` }} />
-                                                </button>
-                                                <button type='button' whiletap={{ scale: 0.6 }} className='icon mx-4  position-relative' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample"
-                                                    onClick={() => {
-
-
-                                                        if (cart?.isGuest) {
-                                                            setIsCartSidebarOpen(true);
-                                                        }
-                                                        else if (city.city === null) {
-                                                            toast.error("Please Select you delivery location first!");
-                                                        } else {
-                                                            setIsCartSidebarOpen(true);
-                                                        }
-                                                    }}>
-                                                    <IoCartOutline />
-
-                                                    {cart?.cartProducts?.length !== 0 ?
-                                                        <span className="position-absolute start-100 translate-middle badge rounded-pill fs-5">
-                                                            {cart?.cartProducts?.length != 0 ? cart?.cartProducts?.length : null}
-
-                                                            <span className="visually-hidden">unread messages</span>
-                                                        </span>
-                                                        : null}
-
-                                                </button>
-                                                {cssmode?.cssmode === "light" ?
-                                                    <button className='themeBtn' onClick={() => handleThemeChange("dark")}><BsMoon size={25} className={isDesktopView ? "d-none " : "d-block mt-2 "} /></button>
-                                                    :
-                                                    <button className='themeBtn' onClick={() => handleThemeChange("light")}><MdOutlineWbSunny size={25} className={isDesktopView ? "d-none " : "d-block mt-2 "} /></button>}
-
-                                            </>
-                                }
-
-                                {user.status === 'loading'
-                                    ? (
-                                        <>
-                                            {cssmode?.cssmode === "light" ?
-                                                <button className='themeBtn tabletScreen icon position-relative hide-mobile-screen mx-3' onClick={() => handleThemeChange("dark")}><BsMoon size={25} /></button>
-                                                :
-                                                <button className='themeBtn tabletScreen icon position-relative hide-mobile-screen mx-3' onClick={() => handleThemeChange("light")}><MdOutlineWbSunny size={25} /></button>}
-                                            <div className='hide-mobile-screen px-3'>
-                                                <div whiletap={{ scale: 0.6 }} className='d-flex flex-row user-profile gap-1' onClick={() => setShowModal(true)}>
-                                                    <div className='d-flex align-items-center user-info my-auto'>
-                                                        <span className='btn-success'><IoPersonOutline className='user_icon' /></span>
-                                                        <span className='pe-3'>{t("login")}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </>
-                                    )
-                                    : (
-                                        <>
-                                            {cssmode?.cssmode === "light" ?
-                                                <button className='themeBtn tabletScreen icon position-relative hide-mobile-screen mx-3' onClick={() => handleThemeChange("dark")}><BsMoon size={25} /></button>
-                                                :
-                                                <button className='themeBtn tabletScreen icon position-relative hide-mobile-screen mx-3' onClick={() => handleThemeChange("light")}><MdOutlineWbSunny size={25} /></button>}
-                                            <div className='hide-mobile-screen ms-5'>
-                                                <Link to='/profile' className='d-flex align-items-center flex-row user-profile gap-1' >
-                                                    <div className='d-flex flex-column user-info my-auto'>
-                                                        <span className='number'> {t("welcome")}</span>
-                                                        <span className='name'>
-                                                            {user.user && user.user.name.split(' ')[0].length > 20
-                                                                ? user.user.name.split(' ')[0].substring(0, 20) + "..."
-                                                                : user.user.name.split(' ')[0]}
-                                                        </span>
-                                                    </div>
-                                                    <img onError={placeHolderImage} src={user.user && user.user.profile} alt="user"></img>
-                                                </Link>
-                                            </div>
-                                        </>
-                                    )}
-
-                            </div> */}
 
                         </div >
                         {/* Bottom header */}
@@ -750,6 +566,7 @@ const Header = () => {
                             </div>
                             <div className='d-flex w-auto align-items-center justify-content-start col-md-2  column-left search'>
 
+
                                 <Dropdown>
                                     <Dropdown.Toggle>
                                         All categories
@@ -764,10 +581,7 @@ const Header = () => {
                                 <button className='search-btn'><FaSearch size={20} />Search</button>
                             </div>
                             <div className='contact'>
-                                <button >
-                                    <MdOutlinePhoneInTalk size={25} />
-                                    +91 9876543210
-                                </button>
+                                <a href={`tel:${setting.setting !== null ? setting.setting.support_number : "number"}`}>{setting.setting !== null ? setting.setting.support_number : "number"}</a>
                             </div>
                         </div>
                     </div >

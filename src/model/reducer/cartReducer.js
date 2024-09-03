@@ -56,10 +56,15 @@ export const cartReducer = createSlice({
         addtoGuestCart: (state, action) => {
             state.guestCart = action.payload.data;
         },
+        setGuestCartTotal: (state, action) => {
+            state.guestCartTotal = action.payload.data
+        },
         addGuestCartTotal: (state, action) => {
             state.guestCartTotal += action.payload.data
         },
-      
+        subGuestCartTotal: (state, action) => {
+            state.guestCartTotal -= action.payload.data
+        }
     }
 });
 
@@ -75,6 +80,8 @@ export const {
     setIsGuest,
     addtoGuestCart,
     setTotalCartValue,
+    setGuestCartTotal,
     addGuestCartTotal,
+    subGuestCartTotal
 } = cartReducer.actions;
 export default cartReducer.reducer;

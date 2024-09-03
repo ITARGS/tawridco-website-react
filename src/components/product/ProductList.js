@@ -1,14 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { AiOutlineEye, AiOutlineCloseCircle } from 'react-icons/ai';
-import { BsHeart, BsShare, BsPlus, BsHeartFill } from "react-icons/bs";
-import { BiMinus, BiLink } from 'react-icons/bi';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../../api/api';
 import Pagination from 'react-js-pagination';
 import { toast } from 'react-toastify';
-import { setSelectedProductId } from '../../utils/manageLocalStorage';
-import { FacebookIcon, FacebookShareButton, TelegramIcon, TelegramShareButton, WhatsappIcon, WhatsappShareButton } from 'react-share';
 import Loader from '../loader/Loader';
 import No_Orders from '../../utils/zero-state-screens/No_Orders.svg';
 import QuickViewModal from './QuickViewModal';
@@ -22,13 +18,11 @@ import { setSelectedProduct } from '../../model/reducer/selectedProduct';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Popup from "../same-seller-popup/Popup";
-import { addGuestCartTotal, addtoGuestCart, setCart, setCartProducts, setCartSubTotal, setSellerFlag } from '../../model/reducer/cartReducer';
-import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
-import { LuStar } from 'react-icons/lu';
-import "./product.css";
+// import "./product.css";q
 import CategoryComponent from './Categories';
 import { MdSignalWifiConnectedNoInternet0 } from "react-icons/md";
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
+import ProductCard from './ProductCard';
 
 const ProductList2 = React.memo(() => {
     const total_products_per_page = 12;
@@ -41,11 +35,9 @@ const ProductList2 = React.memo(() => {
     const category = useSelector(state => state.category?.category);
     const city = useSelector(state => state.city);
     const filter = useSelector(state => state.productFilter);
-    const favorite = useSelector(state => (state.favourite));
     const setting = useSelector(state => (state.setting));
-    const cart = useSelector(state => (state.cart));
     const user = useSelector(state => (state.user));
-    const share_parent_url = `${setting.setting && setting.setting.web_settings.website_url}/product/`;
+
 
     const [productresult, setproductresult] = useState([]);
     const [brands, setbrands] = useState(null);
@@ -54,7 +46,6 @@ const ProductList2 = React.memo(() => {
     const [totalProducts, settotalProducts] = useState(0);
     const [currPage, setcurrPage] = useState(1);
     const [isLoader, setisLoader] = useState(false);
-    const [selectedVariant, setSelectedVariant] = useState({});
     const [minPrice, setMinPrice] = useState(null);
     const [maxPrice, setMaxPrice] = useState(null);
     const [values, setValues] = useState([]);
@@ -196,46 +187,14 @@ const ProductList2 = React.memo(() => {
 
     }, [filter.search, filter.category_id, filter.brand_ids, filter.sort_filter, filter?.search_sizes, filter?.price_filter, offset]);
 
-    // useEffect(() => {
-    //     FilterProductByPrice({
-    //         min_price: filter.price_filter?.min_price,
-    //         max_price: filter.price_filter?.max_price,
-    //         category_id: filter?.category_id,
-    //         brand_ids: filter?.brand_ids?.toString(),
-    //         sort: filter?.sort_filter,
-    //         search: filter?.search,
-    //         sizes: filter?.search_sizes?.filter(obj => obj.checked).map(obj => obj["size"]).join(","),
-    //         limit: total_products_per_page,
-    //         offset: offset,
-    //         unit_ids: filter?.search_sizes?.filter(obj => obj.checked).map(obj => obj["unit_id"]).join(","),
-    //         seller_slug: filter?.seller_slug,
-    //         country_id: filter?.country_id,
-    //         section_id: filter?.section_id
-    //     });
-    // }, [filter?.price_filter, offset]);
+
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
 
 
-    // const FilterProductByPrice = async (filter) => {
-    //     // setisLoader(true);
-    //     await api.getProductbyFilter(city?.city?.latitude, city?.city?.longitude, filter, user?.jwtToken)
-    //         .then(response => response.json())
-    //         .then(result => {
-    //             if (result.status === 1) {
-    //                 setproductresult(result.data);
-    //                 settotalProducts(result.total);
-    //             }
-    //             else {
-    //                 setproductresult([]);
-    //                 settotalProducts(0);
-    //             }
-    //             // setisLoader(false);
-    //         })
-    //         .catch(error => console.log("error ", error));
-    // };
+
 
 
 
@@ -450,99 +409,10 @@ const ProductList2 = React.memo(() => {
             </>
         );
     };
-    // 
-    const addtoCart = async (product_id, product_variant_id, qty) => {
-        setP_id(product_id);
-        setP_V_id(product_variant_id);
-        setQnty(qty);
-        await api.addToCart(user?.jwtToken, product_id, product_variant_id, qty)
-            .then(response => response.json())
-            .then(async (result) => {
-                if (result.status === 1) {
-                    // toast.success(result.message);
-                    if (cart?.cartProducts?.find((product) => ((product?.product_id == product_id) && (product?.product_variant_id == product_variant_id)))?.qty == undefined) {
-                        dispatch(setCart({ data: result }));
-                        dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
-                        const updatedCartCount = [...cart?.cartProducts, { product_id: product_id, product_variant_id: product_variant_id, qty: qty }];
-                        dispatch(setCartProducts({ data: updatedCartCount }));
-                    } else {
-                        const updatedProducts = cart?.cartProducts?.map(product => {
-                            if (((product.product_id == product_id) && (product?.product_variant_id == product_variant_id))) {
-                                return { ...product, qty: qty };
-                            } else {
-                                return product;
-                            }
-                        });
-                        dispatch(setCart({ data: result }));
-                        dispatch(setCartProducts({ data: updatedProducts }));
-                        dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
-
-                    }
 
 
-                }
-                else if (result?.data?.one_seller_error_code == 1) {
-                    dispatch(setSellerFlag({ data: 1 }));
-                    // console.log(result.message);
-                    // toast.error(t(`${result.message}`));
-                } else {
-                    toast.error(result.message);
-                }
-                // setisLoader(false);
-            });
-    };
 
-    //remove from Cart
-    const removefromCart = async (product_id, product_variant_id) => {
-        await api.removeFromCart(user?.jwtToken, product_id, product_variant_id)
-            .then(response => response.json())
-            .then(async (result) => {
-                if (result.status === 1) {
-                    // toast.success(result.message);
-                    const updatedProducts = cart?.cartProducts?.filter(product => ((product?.product_id != product_id) && (product?.product_variant_id != product_variant_id)));
-                    dispatch(setCartProducts({ data: updatedProducts }));
-                }
-                else {
-                    toast.error(result.message);
-                }
-            });
-    };
 
-    //Add to favorite
-    const addToFavorite = async (product_id) => {
-        await api.addToFavotite(user?.jwtToken, product_id)
-            .then(response => response.json())
-            .then(async (result) => {
-                if (result.status === 1) {
-                    // toast.success(result.message);
-                    const updatedFavouriteProducts = [...favorite.favouriteProductIds, product_id];
-                    dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
-                    const updatedFavouriteLength = favorite?.favouritelength + 1;
-                    dispatch(setFavouriteLength({ data: updatedFavouriteLength }));
-                }
-                else {
-                    // setisLoader(false);
-                    toast.error(result.message);
-                }
-            });
-    };
-
-    const removefromFavorite = async (product_id) => {
-        await api.removeFromFavorite(user?.jwtToken, product_id)
-            .then(response => response.json())
-            .then(async (result) => {
-                if (result.status === 1) {
-                    // toast.success(result.message);
-                    const updatedFavouriteProducts = favorite?.favouriteProductIds.filter(id => id != product_id);
-                    dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
-                    const updatedFavouriteLength = favorite?.favouritelength - 1;
-                    dispatch(setFavouriteLength({ data: updatedFavouriteLength }));
-                }
-                else {
-                    toast.error(result.message);
-                }
-            });
-    };
 
     //page change
     const handlePageChange = (pageNum) => {
@@ -552,111 +422,7 @@ const ProductList2 = React.memo(() => {
 
     const placeholderItems = Array.from({ length: 12 }).map((_, index) => index);
 
-    function getProductQuantities(products) {
-        return Object.entries(products?.reduce((quantities, product) => {
-            const existingQty = quantities[product.product_id] || 0;
-            return { ...quantities, [product.product_id]: existingQty + product.qty };
-        }, {})).map(([productId, qty]) => ({
-            product_id: parseInt(productId),
-            qty
-        }));
-    }
 
-
-    const handleValidateAddExistingProduct = (productQuantity, product) => {
-        if (Number(product.is_unlimited_stock)) {
-            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product?.total_allowed_quantity)) {
-                addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
-            } else {
-                toast.error('Apologies, maximum product quantity limit reached!');
-            }
-        } else {
-            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.variants[0].stock)) {
-                toast.error(t("out_of_stock_message"));
-            }
-            else if (Number(productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty) >= Number(product.total_allowed_quantity)) {
-                toast.error('Apologies, maximum product quantity limit reached');
-            } else {
-                addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
-            }
-        }
-    };
-
-    const handleValidateAddNewProduct = (productQuantity, product) => {
-        if (user?.jwtToken !== "") {
-            if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) >= Number(product?.total_allowed_quantity)) {
-                toast.error('Oops, Limited Stock Available');
-            }
-            else if (Number(product.is_unlimited_stock)) {
-                addtoCart(product.id, product?.variants?.[0].id, 1);
-            } else {
-                if (product?.variants?.[0]?.status) {
-                    addtoCart(product.id, product?.variants?.[0].id, 1);
-                } else {
-                    toast.error('Oops, Limited Stock Available');
-                }
-            }
-        }
-        else {
-            toast.error(t("required_login_message_for_cartRedirect"));
-        }
-    };
-
-    const handleAddNewProductGuest = (productQuantity, product) => {
-        if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) < Number(product.total_allowed_quantity)) {
-            AddToGuestCart(product, product.id, product.variants[0].id, 1, 0, "add");
-        } else {
-            toast.error(t("out_of_stock_message"));
-        }
-    };
-    const AddToGuestCart = (product, productId, productVariantId, Qty, isExisting, flag) => {
-        computeSubTotal(cart.guestCart)
-        if (isExisting) {
-            const updatedProducts = Qty !== 0 ? cart?.guestCart?.map((product) => {
-                if (product?.product_id == productId && product?.product_variant_id == productVariantId) {
-                    return { ...product, qty: Qty };
-                } else {
-                    return product;
-                }
-            }) : cart?.guestCart?.filter(product => product?.product_id != productId && product?.productVariantId != productVariantId);
-            dispatch(addtoGuestCart({ data: updatedProducts }));
-
-        } else {
-            const productData = { product_id: productId, product_variant_id: productVariantId, qty: Qty };
-            dispatch(addtoGuestCart({ data: [...cart?.guestCart, productData] }));
-        }
-    };
-
-
-    const computeSubTotal = (products) => {
-        const subTotal = products.reduce((prev, curr) => {
-            prev += (curr.discounted_price !== 0 ? curr.discounted_price * curr.qty : curr.price * curr.qty);
-            return prev;
-        }, 0);
-        dispatch(addGuestCartTotal({ data: subTotal }));
-    };
-    const handleValidateAddExistingGuestProduct = (productQuantity, product, quantity) => {
-
-        if (Number(product.is_unlimited_stock)) {
-            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.total_allowed_quantity)) {
-                toast.error('Apologies, maximum product quantity limit reached');
-            }
-            else {
-                AddToGuestCart(product, product?.id, product?.variants?.[0]?.id, quantity, 1, "add");
-            }
-        }
-        else {
-            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.variants?.[0]?.stock)) {
-                toast.error('Oops, Limited Stock Available');
-            }
-            else if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product?.total_allowed_quantity)) {
-                toast.error('Apologies, maximum cart quantity limit reached');
-            }
-            else {
-                AddToGuestCart(product, product?.id, product?.variants?.[0]?.id, quantity, 1, "add");
-            }
-        }
-    };
 
     return (
         <>
@@ -737,7 +503,7 @@ const ProductList2 = React.memo(() => {
                                                 <div className='h-100 productList_content'>
                                                     <div className='row flex-wrap'>
                                                         {placeholderItems.map((index) => (
-                                                            <div key={index} className={`${!filter.grid_view ? 'col-6 list-view ' : 'col-md-6 col-sm-6 col-lg-3 flex-column mt-3'}`}>
+                                                            <div key={index} className={`${!filter.grid_view ? 'col-6 list-view ' : 'col-md-6 col-sm-6 col-lg-4 flex-column mt-3'}`}>
                                                                 <Skeleton height={330} className='mt-3' borderRadius={8} />
                                                             </div>
                                                         ))}
@@ -753,387 +519,8 @@ const ProductList2 = React.memo(() => {
                                                         <div className='h-100 productList_content'>
                                                             <div className="row  flex-wrap">
                                                                 {productresult.map((product, index) => (
-                                                                    <div key={product?.id} className={`${!filter.grid_view ? 'col-6 list-view ' : 'col-md-6 col-sm-6 col-lg-3 col-6'}`}>
-                                                                        <div className={`product-card my-3 ${filter.grid_view ? "flex-column " : "my-3"}`}>
-                                                                            <span className='border border-light rounded-circle p-2 px-3' id='aiEye' onClick={(e) => {
-                                                                                e.preventDefault();
-                                                                                setShowModal(true);
-                                                                                setselectedProduct(product);
-                                                                                setP_id(product.id);
-                                                                                setP_V_id(product.variants[0].id);
-                                                                                setQnty(product.variants[0].cart_count + 1);
-                                                                            }}>
-                                                                                <AiOutlineEye
-
-                                                                                />
-                                                                            </span>
-                                                                            <Link to={`/product/${product.slug}`} className='text-decoration-none text-reset'>
-                                                                                <div className={`image-container  ${!filter.grid_view ? 'border-end col-3 ' : 'col-12'}`} >
-                                                                                    {/* <img onError={placeHolderImage} src={product.image_url} alt={product.slug} className='card-img-top' onClick={(e) => {
-                                                                                        e.preventDefault();
-                                                                                        dispatch(setSelectedProduct({ data: product.id }));
-                                                                                        setSelectedProductId(product.id);
-                                                                                        navigate(`/product/${product.slug}`);
-                                                                                    }} /> */}
-                                                                                    <ImageWithPlaceholder src={product.image_url} alt={product.slug} className={"card-img-top"} handleOnClick={(e) => {
-                                                                                        e.preventDefault();
-                                                                                        dispatch(setSelectedProduct({ data: product.id }));
-                                                                                        setSelectedProductId(product.id);
-                                                                                        navigate(`/product/${product.slug}`);
-                                                                                    }} />
-                                                                                    {!Number(product.is_unlimited_stock) && product.variants[0].status === 0 &&
-                                                                                        <div className="out_of_stockOverlay">
-                                                                                            <p className="out_of_stockText">{t("out_of_stock")}</p>
-                                                                                        </div>
-                                                                                    }
-                                                                                    {filter.grid_view ? '' : <>
-                                                                                        <div className='d-flex flex-row border-top product-card-footer'>
-                                                                                            <div className='border-end '>
-                                                                                                {
-
-                                                                                                    favorite.favorite && favorite.favorite.data.some(element => element.id === product.id) ? (
-                                                                                                        <button type="button" className='wishlist-product' onClick={() => {
-                                                                                                            if (user?.jwtToken !== "") {
-                                                                                                                removefromFavorite(product.id);
-                                                                                                            } else {
-                                                                                                                toast.error(t('required_login_message_for_cart'));
-                                                                                                            }
-                                                                                                        }}
-                                                                                                        >
-                                                                                                            <BsHeartFill size={16} fill='green' />
-                                                                                                        </button>
-                                                                                                    ) : (
-                                                                                                        <button key={product.id} type="button" className='wishlist-product' onClick={() => {
-                                                                                                            if (user?.jwtToken !== "") {
-                                                                                                                addToFavorite(product.id);
-                                                                                                            } else {
-                                                                                                                toast.error(t("required_login_message_for_cart"));
-                                                                                                            }
-                                                                                                        }}>
-                                                                                                            <BsHeart size={16} /></button>
-                                                                                                    )}
-                                                                                            </div>
-
-                                                                                            <div className='border-end aes' style={{ flexGrow: "1" }}>
-                                                                                                {product.variants[0].cart_count > 0 ? <>
-                                                                                                    {/* TODO: */}
-                                                                                                    <div id={`input-cart-productdetail`} className="input-to-cart">
-                                                                                                        <button type='button' className="wishlist-button" onClick={(e) => {
-                                                                                                            e.preventDefault();
-                                                                                                            if (product.variants[0].cart_count === 1) {
-                                                                                                                removefromCart(product.id, product.variants[0].id);
-                                                                                                                selectedVariant.cart_count = 0;
-                                                                                                            }
-                                                                                                            else {
-                                                                                                                addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count - 1);
-                                                                                                                selectedVariant.cart_count = selectedVariant.cart_count - 1;
-                                                                                                            }
-
-                                                                                                        }}><BiMinus size={20} fill='#fff' />
-                                                                                                        </button>
-
-                                                                                                        <div className="quantity-container text-center">
-                                                                                                            <input
-                                                                                                                type="number"
-                                                                                                                min="1"
-                                                                                                                max={product.variants[0].stock}
-                                                                                                                className="quantity-input bg-transparent text-center"
-                                                                                                                value={product.variants[0].cart_count}
-                                                                                                                disabled
-                                                                                                            />
-                                                                                                        </div>
-                                                                                                        <button type='button' className="wishlist-button" onClick={(e) => {
-                                                                                                            e.preventDefault();
-                                                                                                            if (Number(product.is_unlimited_stock)) {
-                                                                                                                if (selectedVariant.cart_count < Number(setting.setting.max_cart_items_count)) {
-                                                                                                                    addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
-
-
-                                                                                                                } else {
-                                                                                                                    toast.error('Apologies, maximum product quantity limit reached!');
-                                                                                                                }
-                                                                                                            } else {
-
-                                                                                                                if (product.variants[0].cart_count >= Number(product.variants[0].stock)) {
-                                                                                                                    toast.error(t("out_of_stock_message"));
-                                                                                                                }
-                                                                                                                else if (product.variants[0].cart_count >= Number(product.total_allowed_quantity)) {
-                                                                                                                    toast.error('Apologies, maximum product quantity limit reached');
-                                                                                                                } else {
-
-                                                                                                                    addtoCart(product.id, product.variants[0].id, product.variants[0].cart_count + 1);
-                                                                                                                    selectedVariant.cart_count = selectedVariant.cart_count + 1;
-
-                                                                                                                }
-                                                                                                            }
-
-                                                                                                        }}><BsPlus size={20} fill='#fff' /> </button>
-                                                                                                    </div>
-                                                                                                </> : <>
-
-                                                                                                    <button type="button" id={`Add-to-cart-section${index}`} className='w-100 h-100 add-to-cart active' onClick={(e) => {
-                                                                                                        if (user?.jwtToken !== "") {
-
-                                                                                                            e.preventDefault();
-
-                                                                                                            if (product.variants[0].status) {
-                                                                                                                addtoCart(product.id, product.variants[0].id, 1);
-                                                                                                            } else {
-                                                                                                                toast.error('oops, limited stock available');
-                                                                                                            }
-                                                                                                        }
-
-                                                                                                        else {
-                                                                                                            toast.error(t("required_login_message_for_cartRedirect"));
-                                                                                                        }
-
-                                                                                                    }} disabled={!Number(product.is_unlimited_stock) && product.variants[0].status === 0}>{t("add_to_cart")}</button>
-                                                                                                </>}
-
-                                                                                            </div>
-
-                                                                                            <div className='dropup share'>
-                                                                                                <button type="button" className='w-100 h-100 shareBtn' data-bs-toggle="dropdown" aria-expanded="false"><BsShare size={16} /></button>
-
-                                                                                                <ul className='dropdown-menu'>
-                                                                                                    <li><WhatsappShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${product.slug}`}><WhatsappIcon size={32} round={true} /> <span>WhatsApp</span></WhatsappShareButton></li>
-                                                                                                    <li><TelegramShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${product.slug}`}><TelegramIcon size={32} round={true} /> <span>Telegram</span></TelegramShareButton></li>
-                                                                                                    <li><FacebookShareButton url={`${setting.setting && setting.setting.web_settings.website_url}product/${product.slug}`}><FacebookIcon size={32} round={true} /> <span>Facebook</span></FacebookShareButton></li>
-                                                                                                    <li>
-                                                                                                        <button type='button' onClick={() => {
-                                                                                                            navigator.clipboard.writeText(`${setting.setting && setting.setting.web_settings.website_url}product/${product.slug}`);
-                                                                                                            toast.success("Copied Succesfully!!");
-                                                                                                        }} className='react-share__ShareButton'> <BiLink /> <span>Copy Link</span></button>
-                                                                                                    </li>
-                                                                                                </ul>
-                                                                                            </div>
-                                                                                        </div></>}
-                                                                                </div>
-
-
-                                                                                <div className="h-0 card-body product-card-body p-3 ">
-                                                                                    {product?.rating_count ? <div className='ratings d-flex align-items-center'>
-                                                                                        <LuStar className='me-2' style={{ fill: "#fead0e", stroke: "#fead0e" }} />
-                                                                                        <div className='border-end border-2 pe-2 me-2 avgRating'>
-                                                                                            {product?.average_rating?.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                                        </div>
-                                                                                        <div>
-                                                                                            {product?.rating_count}
-                                                                                        </div>
-                                                                                    </div> : null}
-                                                                                    <h3 onClick={(e) => {
-                                                                                        e.preventDefault();
-                                                                                        dispatch(setSelectedProduct({ data: product.id }));
-                                                                                        setSelectedProductId(product.id);
-                                                                                        navigate(`/product/${product?.slug}`);
-                                                                                    }} >{product.name}
-                                                                                    </h3>
-                                                                                    <div className='price'>
-                                                                                        {filter.grid_view ? <div>
-                                                                                            <span id={`price${index}-section`} className="d-flex align-items-center">
-                                                                                                <p id={`fa-rupee${index}`}>
-                                                                                                    {setting.setting && setting.setting.currency}
-                                                                                                    {product.variants[0].discounted_price === 0 ?
-                                                                                                        product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) :
-                                                                                                        product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                                                </p>
-                                                                                                {(product?.variants[0]?.price && (product?.variants[0]?.discounted_price != 0)) && (product?.variants[0]?.price !== product?.variants[0]?.discounted_price) ?
-                                                                                                    <span id={`price${index}-section`} className="d-flex align-items-center" >
-                                                                                                        <p id='relatedproduct-fa-rupee' className='fw-normal text-decoration-line-through m-0' style={{ color: "var(--sub-text-color)", fontSize: "14px" }}>{setting.setting && setting.setting.currency}
-                                                                                                            {product?.variants[0]?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                                                        </p>
-                                                                                                    </span>
-                                                                                                    : null}
-                                                                                            </span>
-                                                                                            <div className='product_varients_drop'>
-                                                                                                <input type="hidden" name={`default-variant-id`} id={`productlist${index}-variant-id`} />
-
-                                                                                                {product.variants.length > 1 ? <>
-                                                                                                    <div className='variant_selection' onClick={(e) => {
-                                                                                                        e.preventDefault(); setselectedProduct(product); setShowModal(true);
-                                                                                                        setP_id(product.id);
-                                                                                                        setP_V_id(product.variants[0].id);
-                                                                                                        setQnty(product.variants[0].cart_count + 1);
-                                                                                                    }} >
-                                                                                                        <span className='product_list_dropdown_span'>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} </>}</span>
-                                                                                                        <IoIosArrowDown className='product-variant-dropdown' />
-                                                                                                    </div>
-                                                                                                </>
-                                                                                                    :
-
-                                                                                                    <>
-                                                                                                        <p id={`default-product${index}-variant`} value={product.variants[0].id} className='variant_value select-arrow'>{product.variants[0].measurement + " " + product.variants[0].stock_unit_name}
-                                                                                                        </p>
-                                                                                                    </>}
-                                                                                            </div>
-                                                                                        </div>
-                                                                                            : <>
-                                                                                                <div className='product_varients_drop d-flex align-items-center'>
-                                                                                                    {product.variants.length > 1 ? <>
-                                                                                                        <div className='variant_selection' onClick={(e) => {
-                                                                                                            e.preventDefault(); setselectedProduct(product); setShowModal(true); setP_id(product.id);
-                                                                                                            setP_V_id(product.variants[0].id);
-                                                                                                            setQnty(product.variants[0].cart_count + 1);
-                                                                                                        }} >
-                                                                                                            <span className='product_list_dropdown_span'>{<>{product.variants[0].measurement} {product.variants[0].stock_unit_name} Rs.<span className="original-price" id={`dropDown-Toggle${index}`}>{product.variants[0].toFixed(setting.setting && setting.setting.decimal_point)}</span></>}</span>
-                                                                                                            <IoIosArrowDown className='product-variant-dropdown' />
-                                                                                                        </div>
-                                                                                                    </>
-                                                                                                        :
-
-                                                                                                        <>
-                                                                                                            <p id={`default-product${index}-variant`} value={product.variants[0].id} className='variant_value select-arrow'>{product.variants[0].measurement + " " + product.variants[0].stock_unit_name}
-                                                                                                            </p>
-                                                                                                        </>}
-                                                                                                    <span id={`price${index}-section`} className="d-flex align-items-center"><p id='fa-rupee'>{setting.setting && setting.setting.currency}</p> {product.variants[0].discounted_price === 0 ? product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : product.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point)}</span>
-                                                                                                </div>
-                                                                                                <p className="product_list_description" >
-
-                                                                                                </p>
-                                                                                            </>}
-                                                                                    </div>
-
-                                                                                </div>
-                                                                            </Link>
-
-                                                                            {filter.grid_view ? <>
-                                                                                <div className='d-flex flex-row border-top product-card-footer'>
-                                                                                    <div className='border-end '>
-                                                                                        {favorite.favorite && favorite?.favouriteProductIds?.some(id => id == product.id) ? (
-                                                                                            <button type="button" className='wishlist-product favouriteBtn' onClick={() => {
-                                                                                                if (user?.jwtToken !== "") {
-                                                                                                    removefromFavorite(product.id);
-                                                                                                } else {
-                                                                                                    toast.error(t('required_login_message_for_cart'));
-                                                                                                }
-                                                                                            }}
-                                                                                            >
-                                                                                                <BsHeartFill size={16} fill='green' />
-                                                                                            </button>
-                                                                                        ) : (
-                                                                                            <button key={product.id} type="button" className='wishlist-product favouriteBtn' onClick={() => {
-                                                                                                if (user?.jwtToken !== "") {
-                                                                                                    addToFavorite(product.id);
-                                                                                                } else {
-                                                                                                    toast.error(t("required_login_message_for_cart"));
-                                                                                                }
-                                                                                            }}>
-                                                                                                <BsHeart size={16} /></button>
-                                                                                        )}
-                                                                                    </div>
-
-                                                                                    <div className='border-end aes' style={{ flexGrow: "1" }} >
-                                                                                        {(cart?.isGuest === false && user?.user && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 0) ||
-                                                                                            (cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 0)
-                                                                                            ?
-                                                                                            <>
-                                                                                                <div id={`input-cart-productdetail`} className="input-to-cart">
-
-                                                                                                    <button
-                                                                                                        type='button'
-                                                                                                        className="wishlist-button"
-                                                                                                        onClick={() => {
-                                                                                                            if (cart?.isGuest) {
-                                                                                                                AddToGuestCart(
-                                                                                                                    product,
-                                                                                                                    product?.id,
-                                                                                                                    product?.variants?.[0]?.id,
-                                                                                                                    cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty - 1,
-                                                                                                                    1,
-                                                                                                                    "remove"
-                                                                                                                );
-                                                                                                            } else {
-
-                                                                                                                if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty == 1) {
-                                                                                                                    removefromCart(product.id, product.variants[0].id);
-                                                                                                                    selectedVariant.cart_count = 0;
-                                                                                                                }
-                                                                                                                else {
-                                                                                                                    addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty - 1);
-                                                                                                                    selectedVariant.cart_count = selectedVariant.cart_count - 1;
-                                                                                                                }
-                                                                                                            }
-                                                                                                        }}>
-                                                                                                        <BiMinus size={20} fill='#fff' />
-                                                                                                    </button>
-                                                                                                    {/* <span id={`input-productdetail`} >{quantity}</span> */}
-                                                                                                    <div className="quantity-container text-center">
-                                                                                                        <input
-                                                                                                            type="number"
-                                                                                                            min="1"
-                                                                                                            max={product.variants[0].stock}
-                                                                                                            className="quantity-input bg-transparent text-center"
-                                                                                                            value={
-                                                                                                                cart.isGuest === false ?
-                                                                                                                    cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty
-                                                                                                                    : cart?.guestCart?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty
-                                                                                                            }
-                                                                                                            disabled
-                                                                                                        />
-                                                                                                    </div>
-                                                                                                    {/* TODO: */}
-                                                                                                    <button
-                                                                                                        type='button'
-                                                                                                        className="wishlist-button"
-                                                                                                        onClick={() => {
-                                                                                                            if (cart?.isGuest) {
-                                                                                                                const productQuantity = getProductQuantities(cart?.guestCart);
-                                                                                                                handleValidateAddExistingGuestProduct(
-                                                                                                                    productQuantity,
-                                                                                                                    product,
-                                                                                                                    cart?.guestCart?.find(prdct => prdct?.product_id == product?.id && prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty + 1
-                                                                                                                );
-                                                                                                            } else {
-                                                                                                                const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                                                                handleValidateAddExistingProduct(productQuantity, product);
-                                                                                                            }
-                                                                                                        }}>
-                                                                                                        <BsPlus size={20} fill='#fff' />
-                                                                                                    </button>
-                                                                                                </div>
-                                                                                            </> :
-                                                                                            <>
-                                                                                                <button
-                                                                                                    type="button"
-                                                                                                    id={`Add-to-cart-section${index}`}
-                                                                                                    className='w-100 h-100 add-to-cart active'
-                                                                                                    onClick={() => {
-                                                                                                        if (cart?.isGuest) {
-                                                                                                            const productQuantity = getProductQuantities(cart?.guestCart);
-                                                                                                            handleAddNewProductGuest(
-                                                                                                                productQuantity,
-                                                                                                                product
-                                                                                                            );
-                                                                                                        } else {
-                                                                                                            const productQuantity = getProductQuantities(cart?.cartProducts);
-                                                                                                            handleValidateAddNewProduct(productQuantity, product);
-                                                                                                        }
-                                                                                                    }}
-                                                                                                    disabled={!Number(product.is_unlimited_stock) && product.variants[0].status === 0}>
-                                                                                                    {t("add_to_cart")}
-                                                                                                </button>
-                                                                                            </>}
-
-                                                                                    </div>
-
-                                                                                    <div className='dropup share'>
-                                                                                        <button type="button" className='w-100 h-100 shareBtn' data-bs-toggle="dropdown" aria-expanded="false"><BsShare size={16} /></button>
-
-                                                                                        <ul className='dropdown-menu'>
-                                                                                            <li className='dropDownLi'><WhatsappShareButton url={`${share_parent_url}/${product.slug}`}><WhatsappIcon size={32} round={true} /> <span>WhatsApp</span></WhatsappShareButton></li>
-                                                                                            <li className='dropDownLi'><TelegramShareButton url={`${share_parent_url}/${product.slug}`}><TelegramIcon size={32} round={true} /> <span>Telegram</span></TelegramShareButton></li>
-                                                                                            <li className='dropDownLi'><FacebookShareButton url={`${share_parent_url}/${product.slug}`}><FacebookIcon size={32} round={true} /> <span>Facebook</span></FacebookShareButton></li>
-                                                                                            <li>
-                                                                                                <button type='button' onClick={() => {
-                                                                                                    navigator.clipboard.writeText(`${share_parent_url}/${product.slug}`);
-                                                                                                    toast.success("Copied Succesfully!!");
-                                                                                                }} className='react-share__ShareButton'> <BiLink /> {t("tap_to_copy")}</button>
-                                                                                            </li>
-                                                                                        </ul>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </> : <></>}
-                                                                        </div>
+                                                                    <div key={product?.id} className={`${!filter.grid_view ? 'col-6 list-view ' : 'col-md-6 col-sm-6 col-lg-4 col-6 my-2'}`}>
+                                                                        <ProductCard product={product} />
                                                                     </div>
                                                                 ))}
 
@@ -1153,13 +540,6 @@ const ProductList2 = React.memo(() => {
                                                                     /> : null
                                                                 }
                                                             </div>
-                                                            <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal}
-                                                                setP_id={setP_id}
-                                                                setP_V_id={setP_V_id}
-                                                            />
-                                                            <Popup product_id={p_id} product_variant_id={p_v_id} quantity={qnty} setisLoader={setisLoader} toast={toast} city={city} />
-
-
                                                         </div>
 
 
