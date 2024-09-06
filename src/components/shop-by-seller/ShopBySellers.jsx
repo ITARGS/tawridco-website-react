@@ -92,9 +92,9 @@ const ShopBySellers = () => {
                                     <div className="my-3 content" onClick={() => handleSellerFilter(seller?.id)}>
                                         <div className='card'>
                                             <ImageWithPlaceholder className='card-img-top' src={seller.logo_url} alt='country' />
-                                            <div className='card-body' style={{ cursor: "pointer" }}>
-                                                <p>{seller.store_name} </p>
-                                            </div>
+                                            {/* <div className='card-body' style={{ cursor: "pointer" }}> */}
+                                            <p>{seller.store_name} </p>
+                                            {/* </div> */}
                                         </div>
                                     </div>
                                 </SwiperSlide>
@@ -107,3 +107,10 @@ const ShopBySellers = () => {
 };
 
 export default ShopBySellers;
+
+{/* <div className='card'>
+                                            <ImageWithPlaceholder className='card-img-top' src={seller.logo_url} alt='country' />
+                                            <div className='card-body' style={{ cursor: "pointer" }}>
+                                                <p>{seller.store_name} </p>
+                                            </div>
+                                        </div> */}

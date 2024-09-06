@@ -2,9 +2,10 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import HomeContainer from './homecontainer/HomeContainer';
 import Loader from './loader/Loader';
-import ProductContainer from './product/ProductContainer';
+import ProductContainer from './product/ProductContainerSwiper';
 import { AiOutlineClose } from 'react-icons/ai';
 import { Modal } from 'react-bootstrap';
+
 
 const MainContainer = () => {
 

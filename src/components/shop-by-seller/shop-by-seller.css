@@ -4,6 +4,7 @@
   padding: 15px;
   border-radius: 5px;
 }
+
 #all-sellers .seller_section_header p {
   font-size: 18px;
   line-height: 32px;
@@ -12,6 +13,7 @@
   font-weight: 700 !important;
   margin: 0;
 }
+
 #all-sellers .seller_section_header a {
   font-size: 14px;
   font-weight: 400 !important;
@@ -49,6 +51,7 @@
   border-radius: 100%;
   transition: all 300ms linear;
 }
+
 #all-sellers .seller_section_header .next-arrow-seller {
   position: relative;
   display: inline-block;
@@ -67,22 +70,26 @@
   transition: all 300ms linear;
 }
 
-#all-sellers .seller_section_header .prev-arrow-seller > svg {
+#all-sellers .seller_section_header .prev-arrow-seller>svg {
   fill: var(--font-color) !important;
 }
-#all-sellers .seller_section_header .next-arrow-seller > svg {
+
+#all-sellers .seller_section_header .next-arrow-seller>svg {
   fill: var(--font-color) !important;
 }
 
 [dir="rtl"] #all-sellers .seller_section_header .see_sellers_arrow {
   transform: rotate(180deg);
 }
+
 [dir="rtl"] #all-sellers .seller_section_header .next-arrow-seller {
   order: 0;
 }
+
 [dir="rtl"] #all-sellers .seller_section_header .prev-arrow-seller {
   order: 1;
 }
+
 .allSellersContainer .cover {
   height: 200px;
 }
@@ -118,22 +125,45 @@
 
 .allSellersContainer .content .card {
   border-radius: 8px;
-
   cursor: pointer;
 }
+
 .allSellersContainer.home .content .card {
   border-radius: 8px;
-
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   margin: 5px;
+  height: 112px;
+  transition: color .5s ease-in-out, box-shadow .5s ease-in-out;
+}
+
+.allSellersContainer.home .content .card:hover {
+  color: #fff !important;
+  box-shadow: inset 250px 0 0 0 var(--secondary-color);
 }
 
 .allSellersContainer .content .card img {
-  width: 100%;
+  width: 80px;
+  height: 80px;
   /* height: 26rem; */
-  border-radius: 8px 8px 0px 0px;
-  aspect-ratio: 1 / 1;
+  /* border-radius: 8px 8px 0px 0px; */
+  aspect-ratio: 80 / 80;
   object-fit: cover;
+  margin: 16px;
+  border-radius: 4px;
 }
+
+.allSellersContainer .content .card p {
+  font-size: 16px;
+  font-weight: 700;
+  overflow: hidden;
+  text-wrap: nowrap;
+  text-overflow: ellipsis;
+
+}
+
+
 
 .allSellersContainer .content .card .card-body {
   border-bottom-left-radius: 30px;
@@ -166,11 +196,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
 .allSellersContainer .slick-track {
   margin-left: unset !important;
   margin-right: unset !important;
 }
 
-.allSellersContainer .sellerListingPagination > a {
+.allSellersContainer .sellerListingPagination>a {
   color: var(--font-color);
 }

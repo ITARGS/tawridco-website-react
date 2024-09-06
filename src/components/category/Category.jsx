@@ -2,11 +2,11 @@ import React, { useRef, useEffect } from 'react';
 import './category.css';
 import api from '../../api/api';
 import { AiOutlineArrowRight } from 'react-icons/ai';
+import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from 'react-redux';
 import { ActionTypes } from '../../model/action-type';
 import { Link, useNavigate } from 'react-router-dom';
 import { Card } from 'react-bootstrap';
-import Slider from 'react-slick';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { setCategory, setSelectedCategory } from '../../model/reducer/categoryReducer';
@@ -48,17 +48,22 @@ const Category = () => {
                         <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
                             <div className="title d-md-flex align-items-center ">
                                 <p>{t('shop_by')} {t('categories')}</p>
-                                <Link className='d-none d-md-block' to='/category/all'>{t('see_all')} {t('categories')}<AiOutlineArrowRight size={15} className='see_category_arrow' /> </Link>
+                                {/* <Link className='d-none d-md-block' to='/category/all'>{t('see_all')} {t('categories')}<AiOutlineArrowRight size={15} className='see_category_arrow' /> </Link> */}
                             </div>
                             <div className=' d-md-none'>
-                                <Link className='category_button' to='/category/all'>{t('see_all')}</Link>
+                                {/* <Link className='category_button' to='/category/all'>{t('see_all')}</Link> */}
                             </div>
-                            {
-                                category?.length > 5 ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                                    <button className='prev-arrow-category' ><FaChevronLeft fill='black' size={20} /></button>
-                                    <button className='next-arrow-category' ><FaChevronRight fill='black' size={20} /></button>
-                                </div> : <></>
-                            }
+                            <div className='d-flex align-items-center'>
+                                <Link className='category_button' to='/category/all'>{t('see_all')}</Link>
+                                {
+
+                                    category?.length > 5 ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
+                                        <button className='prev-arrow-category' ><IoMdArrowBack fill='black' size={20} /></button>
+                                        <button className='next-arrow-category' ><IoMdArrowForward fill='black' size={20} /></button>
+                                    </div> : <></>
+                                }
+                            </div>
+
 
                         </div>
                     </div>
@@ -74,7 +79,7 @@ const Category = () => {
                                 pagination={{ clickable: true }}
                                 breakpoints={{
                                     1200: {
-                                        slidesPerView: 5,
+                                        slidesPerView: 6,
                                         spaceBetween: 20,
                                     },
                                     1024: {
@@ -93,7 +98,7 @@ const Category = () => {
                                 {
                                     category?.map((ctg, index) => (
                                         <div className="col-md-12" key={index}>
-                                            <SwiperSlide className='category-container '>
+                                            <SwiperSlide className='category-container'>
                                                 {ctg.has_child
                                                     ? (
                                                         <Card onClick={() => selectCategory(ctg)}>

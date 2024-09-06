@@ -13,7 +13,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import QuickViewModal from './QuickViewModal';
 import { FacebookIcon, FacebookShareButton, TelegramIcon, TelegramShareButton, WhatsappIcon, WhatsappShareButton } from 'react-share';
-import { IoIosArrowDown } from 'react-icons/io';
+import { IoIosArrowDown, IoMdArrowBack, IoMdArrowForward } from 'react-icons/io';
 import { useTranslation } from 'react-i18next';
 
 import { addtoGuestCart, setCart, setCartProducts, setCartSubTotal, setSellerFlag } from "../../model/reducer/cartReducer";
@@ -101,28 +101,36 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                             <div className='product_section row flex-column' value={index0} onChange={(e) => { setOfferContainer(index0); }}>
 
                                                 <div className="d-flex product_title_content justify-content-between align-items-center col-md-12">
-                                                    <div className="product-title-content-container">
-                                                        <p>{section.title}</p>
-                                                        <span className='d-none d-md-block'>{section.short_description}</span>
+                                                    <div>
+                                                        <div className="product-title-content-container">
+                                                            <p>{section.title}</p>
+                                                            <span className='d-none d-md-block'>{section.short_description}</span>
+                                                        </div>
+                                                        {/* <div>
+                                                            <Link to="/products" onClick={() => {
+                                                                dispatch(setFilterSection({ data: section.id }));
+                                                                navigate('/products');
+
+                                                            }}>{t('see_all')}</Link>
+                                                        </div> */}
                                                     </div>
                                                     <div>
-                                                        <Link to="/products" onClick={() => {
-                                                            dispatch(setFilterSection({ data: section.id }));
-                                                            navigate('/products');
-
-                                                        }}>{t('see_all')}</Link>
+                                                        <button className={`prev-arrow-category prev-arrow-country section-${index0}`} ><IoMdArrowBack fill='black' size={20} /></button>
+                                                        <button className={`next-arrow-category next-arrow-country section-${index0}`} ><IoMdArrowForward fill='black' size={20} /></button>
                                                     </div>
+
                                                 </div>
 
-                                                <div className="product_section_content p-0 position-relative">
-                                                    {section?.products?.length > 4 ? <div>
+                                                <div className="product_section_content ">
+                                                    {/* {section?.products?.length > 4 ? <div>
                                                         <button type="button" className={`slick-prev prev-arrow-country section-${index0}`} >
                                                             <FaChevronLeft fill='black' size={30} className="prev-arrow " />
                                                         </button>
                                                         <button type="button" className={`slick-next next-arrow-country section-${index0}`}>
                                                             <FaChevronRight fill='black' size={30} className='next-arrow' />
                                                         </button>
-                                                    </div> : <></>}
+
+                                                    </div> : <></>} */}
 
 
                                                     <Swiper

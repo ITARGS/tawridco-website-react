@@ -26,6 +26,18 @@ export const login = async ({ Uid, fcm, type }) => {
     const response = await api.post(apiEndPoints.login, formData)
     return response.data
 }
+export const sendSms = async ({ mobile }) => {
+    const formData = new FormData();
+    formData.append("phone", mobile);
+    const response = await api.post(apiEndPoints.sendSms, formData);
+    return response.data;
+}
+export const verifyOTP = async ({ mobile, otp }) => {
+    const formData = new FormData();
+    formData.append("phone", mobile)
+    formData.append("opt", otp)
+    const response = await api.post(apiEndPoints.verifyContact, formData);
+}
 export const logout = async () => {
     const response = await api.post(apiEndPoints.logout)
     return response.data

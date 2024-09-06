@@ -40,7 +40,7 @@ button {
 
 .main-app {
   color: var(--primary-color);
-  background: var(--body-background);
+  /* background: var(--body-background); */
   padding: 1px 0 1px 0px;
   /* min-height: 100vh; */
 }

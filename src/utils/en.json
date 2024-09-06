@@ -27,6 +27,8 @@
   "login": "Login",
   "order": "Order",
   "price": "Price",
+  "seller": "Seller",
+  "priceRange": "Price Range",
   "saved": "Saved",
   "share": "Share",
   "total": "Total",
@@ -340,5 +342,9 @@
   "return_requested": "Return Requested",
   "return_rejected": "Return Rejected",
   "continue_with_google": "Continue with google",
-  "cashfree": "Cashfree"
+  "cashfree": "Cashfree",
+  "something_went_wrong": "Something went wrong",
+  "custom_send_sms_error_message": "It seems there is some error in sms gateway.Please try again later!",
+  "productVariants":"Product Variants",
+  "outOfOut of StockStock":"Out of Stock"
 }

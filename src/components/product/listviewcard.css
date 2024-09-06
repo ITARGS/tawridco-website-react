@@ -1,30 +1,30 @@
-.horizontal-product-grid {
-
+.list-view-product-grid {
     background-color: var(--second-cards-color);
     width: 100%;
-    height: 220px;
+    /* height: 220px; */
     border-radius: 4px;
     padding: 12px;
     border: 1px solid #D8E0E6;
     position: relative;
     overflow: hidden;
+    margin-bottom: 24px;
 }
 
-.horizontal-product-grid div {
+.list-view-product-grid div {
     display: flex;
-    /* align-items: center; */
+    align-items: center;
 
 }
 
-.horizontal-product-grid .product-image {
+.list-view-product-grid .product-image {
     overflow: hidden;
 }
 
-.horizontal-product-grid .product-image a.image {
+.list-view-product-grid .product-image a.image {
     display: block;
 }
 
-.horizontal-product-grid .product-image img {
+.list-view-product-grid .product-image img {
     height: 100% !important;
     width: 100% !important;
     margin: auto;
@@ -33,17 +33,17 @@
 
 }
 
-.horizontal-product-grid:hover .product-image img {
+.list-view-product-grid:hover .product-image img {
     opacity: 0.8;
 }
 
 
 
-/* .horizontal-product-grid .product-image:hover img {
+/* .list-view-product-grid .product-image:hover img {
     transform: scale(1.15);
 } */
 
-.horizontal-product-grid .product-discount-label {
+.list-view-product-grid .product-discount-label {
     color: #fff;
     text-align: center;
     background: #DB3D26;
@@ -59,55 +59,62 @@
     z-index: 10;
 }
 
-.horizontal-product-grid .product-links {
+.list-view-product-grid .product-image .image-container {
+    position: relative;
+}
+
+.list-view-product-grid .product-links {
     padding: 0;
     margin: 0;
     list-style: none;
     opacity: 0;
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 10px;
+    right: 10px;
+    /* Adjusted to be closer to the image */
     z-index: 1;
     transition: all .2s ease-in-out 0.2s;
     text-align: center;
 }
 
-.horizontal-product-grid:hover .product-links {
+.list-view-product-grid:hover .product-links {
     opacity: 1;
-
 }
 
-.horizontal-product-grid .product-links li {
+/* Rest of your CSS remains unchanged */
+
+
+.list-view-product-grid .product-links li {
     margin: 0 0 6px;
     display: block;
     transform: translateX(30px);
     transition: all 0.5s ease-out 0s;
 }
 
-.horizontal-product-grid .product-links li:nth-child(2) {
+.list-view-product-grid .product-links li:nth-child(2) {
     transform: translateX(50px);
 }
 
-.horizontal-product-grid .product-links li:nth-child(3) {
+.list-view-product-grid .product-links li:nth-child(3) {
     transform: translateX(70px);
 }
 
-.horizontal-product-grid .product-links li:last-child {
+.list-view-product-grid .product-links li:last-child {
     transform: translateX(90px);
 }
 
-.horizontal-product-grid .product-links li:last-child {
+.list-view-product-grid .product-links li:last-child {
     margin: 0;
 }
 
-.horizontal-product-grid:hover .product-links li {
+.list-view-product-grid:hover .product-links li {
     transform: translateX(0);
 }
 
-.horizontal-product-grid .product-links li a {
+.list-view-product-grid .product-links li a {
     color: #2a3640;
     background: #fff;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 30px;
     width: 30px;
     height: 30px;
@@ -119,13 +126,13 @@
     /* padding: 10px; */
 }
 
-.horizontal-product-grid .product-links li a:hover {
+.list-view-product-grid .product-links li a:hover {
     color: #fff;
     background: var(--secondary-color);
 }
 
-.horizontal-product-grid .product-links li a:before,
-.horizontal-product-grid .product-links li a:after {
+.list-view-product-grid .product-links li a:before,
+.list-view-product-grid .product-links li a:after {
     content: attr(data-tip);
     color: #fff;
     background: var(--secondary-color);
@@ -141,7 +148,7 @@
     top: 50%;
 }
 
-.horizontal-product-grid .product-links li a:after {
+.list-view-product-grid .product-links li a:after {
     content: '';
     height: 15px;
     width: 15px;
@@ -152,49 +159,52 @@
     z-index: -1;
 }
 
-.horizontal-product-grid .product-links li a:hover:before,
-.horizontal-product-grid .product-links li a:hover:after {
+.list-view-product-grid .product-links li a:hover:before,
+.list-view-product-grid .product-links li a:hover:after {
     display: block;
 }
 
-.horizontal-product-grid .horizontal-product-content {
+.list-view-product-grid .horizontal-product-content {
 
     display: flex;
-    flex-direction: column;
+    /* flex-direction: column; */
     /* margin-left: 10px; */
-    justify-content: space-between;
+    /* justify-content: space-between; */
+    padding-left: 12px;
 }
 
-.horizontal-product-grid .horizontal-product-content .horizontal-product-head {
+.list-view-product-grid .horizontal-product-content .horizontal-product-head {
     display: flex;
     flex-direction: column;
+    height: 100px;
     justify-content: space-between;
+    align-items: start;
 }
 
-.horizontal-product-grid .horizontal-product-content .horizontal-product-head p {
+.list-view-product-grid .horizontal-product-content .horizontal-product-head p {
     font-size: 14px;
     font-weight: 400;
 }
 
-.horizontal-product-grid .horizontal-product-content .horizontal-product-head .horizontal-product-price {
+.list-view-product-grid .horizontal-product-content .horizontal-product-head .horizontal-product-price {
     font-size: 16px;
     font-weight: 700;
     margin-top: 30px;
     color: var(--font-color);
 }
 
-.horizontal-product-grid .horizontal-product-content .horizontal-product-head .horizontal-product-title {
+.list-view-product-grid .horizontal-product-content .horizontal-product-head .horizontal-product-title {
     display: flex;
     flex-direction: column;
 }
 
-.horizontal-product-grid .horizontal-product-content .horizontal-product-head .horizontal-product-title .rating-container {
+.list-view-product-grid .horizontal-product-content .horizontal-product-head .horizontal-product-title .rating-container {
     display: flex;
     align-items: center;
     color: var(--font-color);
 }
 
-.horizontal-product-grid .horizontal-product-content .horizontal-product-head .horizontal-product-title .rating-container p {
+.list-view-product-grid .horizontal-product-content .horizontal-product-head .horizontal-product-title .rating-container p {
 
     font-size: 14px;
     color: gray;
@@ -202,12 +212,18 @@
 
 }
 
-.horizontal-product-grid .horizontal-product-content .horizontal-product-buttons {
+
+
+
+
+.list-view-product-grid .horizontal-product-buttons {
     display: flex;
     flex-direction: column;
+    /* border-left: 2px solid red; */
+    height: 100%;
 }
 
-.horizontal-product-grid .horizontal-product-content .horizontal-product-buttons .qty-button {
+.list-view-product-grid .horizontal-product-buttons .qty-button {
     display: flex;
     gap: 6px;
     border-radius: 4px;
@@ -216,10 +232,12 @@
     font-size: 16px;
     background-color: var(--body-background);
     color: var(--font-color);
+    justify-content: space-between;
+    width: 100%;
 
 }
 
-.horizontal-product-grid .horizontal-product-content .horizontal-product-buttons .price-button {
+.list-view-product-grid .horizontal-product-buttons .price-button {
     margin-top: 12px;
     background-color: #55AE7B12;
     color: var(--secondary-color);
@@ -230,14 +248,15 @@
     align-items: center;
     justify-content: center;
     font-size: 16px;
+    width: 100%;
 }
 
-.horizontal-product-grid .horizontal-product-content .horizontal-product-buttons .price-button:hover {
+.list-view-product-grid .horizontal-product-buttons .price-button:hover {
     background-color: var(--secondary-color);
     color: #fff;
 }
 
-.horizontal-product-grid .title {
+.list-view-product-grid .title {
     color: #2a3640;
     font-size: 14px;
     font-weight: 600;
@@ -247,24 +266,18 @@
     line-height: 1.2;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.horizontal-product-grid .title a {
-    color: inherit;
-    text-decoration: none;
-}
-
-.horizontal-product-grid .title a {
     color: var(--font-color);
     transition: all 0.3s ease 0s;
 }
 
-.horizontal-product-grid .title a:hover {
 
+
+.list-view-product-grid .title:hover {
+    cursor: pointer;
     color: var(--secondary-color)
 }
 
-.horizontal-product-grid .rating {
+.list-view-product-grid .rating {
     color: var(--font-color);
     font-size: 12px;
 
@@ -274,17 +287,17 @@
 
 }
 
-.horizontal-product-grid .rating p {
+.list-view-product-grid .rating p {
     font-size: 14px;
     color: gray;
     margin: 2px 8px;
 }
 
-.horizontal-product-grid .rating .disable {
+.list-view-product-grid .rating .disable {
     color: #a3a3a3;
 }
 
-.horizontal-product-grid .price {
+.list-view-product-grid .price {
     color: var(--font-color);
     font-size: 16px;
     font-weight: 600;
@@ -293,7 +306,7 @@
 
 }
 
-.horizontal-product-grid .price span {
+.list-view-product-grid .price span {
     color: #868c93;
     font-size: 14px;
     font-weight: 400;
@@ -311,17 +324,17 @@
     gap: 12px;
 }
 
-.product-qty-btn {
-    padding: 12px;
+.horizontal-cart-count-btn {
+    /* padding: 12px; */
     font-size: 16px;
-    margin: 5px 0px;
+    margin-top: 12px;
     display: flex;
-    width: 49%;
     border-radius: 4px;
-    background-color: #F2F5F7;
+    background-color: var(--body-background);
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
 }
 
 .product-btn .dropdown-toggle {
@@ -340,7 +353,7 @@
 }
 
 .product-cart-btn {
-    padding: 12px;
+    padding: 4px;
     font-size: 16px;
     margin: 5px 0px;
     width: 49%;
@@ -359,7 +372,7 @@
 }
 
 @media screen and (max-width: 990px) {
-    .horizontal-product-grid {
+    .list-view-product-grid {
         margin-bottom: 30px;
     }
 }
@@ -375,29 +388,17 @@
 }
 
 
-.cart-count-btn {
-    display: flex;
-    justify-content: space-between;
-    width: 49%;
-    border-radius: 4px;
-    height: 100%;
-    /* padding: 8px; */
-    font-size: 16px;
-    height: 84%;
-    margin: 5px 0px;
-    border: 1px solid #F2F5F7;
-    align-items: center;
-}
 
 
 
-.cart-count-btn input {
+
+.horizontal-cart-count-btn input {
     text-align: center;
-    background: #fff;
+    background: transparent;
     width: 100%;
 }
 
-.cart-count-btn button {
+.horizontal-cart-count-btn button {
     /* height: 119%; */
     padding: 7px 10px;
     border-radius: 4px;

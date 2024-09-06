@@ -1,37 +1,34 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
-import "./productcard.css";
+import "./listviewcard.css"
 import { Rate } from 'antd';
-import QuickViewModal from './QuickViewModal';
-import * as newApi from "../../api/apiCollection"
-import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-// icons imports
-import { FaMinus, FaPlus, FaShoppingBasket } from 'react-icons/fa';
 import { StarFilled, StarOutlined } from '@ant-design/icons';
-import { IoMdArrowDropdown } from "react-icons/io";
-// Reducer imports
-import { addGuestCartTotal, addtoGuestCart, setCart, setCartProducts, setCartSubTotal, subGuestCartTotal } from '../../model/reducer/cartReducer';
+import { FaMinus, FaPlus, FaShoppingBasket } from 'react-icons/fa';
+import { useDispatch, useSelector } from 'react-redux';
+import { IoMdArrowDropdown } from 'react-icons/io';
+import QuickViewModal from './QuickViewModal';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import ProductVariantModal from './ProductVariantModal';
-import Image from "../../utils/Product-Images-test.jpg"
+import * as newApi from "../../api/apiCollection"
+import { toast } from 'react-toastify';
+import { addGuestCartTotal, addtoGuestCart, setCart, setCartProducts, setCartSubTotal, subGuestCartTotal } from '../../model/reducer/cartReducer';
 
-const ProductCard = ({ product }) => {
+const ListViewCard = ({ product }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch()
     const { t } = useTranslation();
-    // reducer imports
     const setting = useSelector(state => (state.setting));
     const cart = useSelector(state => (state.cart))
     const user = useSelector(state => (state.user))
 
-    // state variables
     const [p_id, setP_id] = useState(0);
     const [p_v_id, setP_V_id] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const [selectedProduct, setselectedProduct] = useState({});
     const [selectedVariant, setSelectedVariant] = useState(product?.variants[0])
-    const [showVariantModal, setShowVariantModal] = useState(false)
+
+    useEffect(() => {
+        setSelectedVariant(product?.variants[0])
+    }, [])
 
     const addToCart = async (productId, productVId, qty) => {
         try {
@@ -86,15 +83,10 @@ const ProductCard = ({ product }) => {
         }));
     }
 
-    const calculateDiscount = (discountPrice, actualPrice) => {
-        const difference = actualPrice - discountPrice;
-        const actualDiscountPrice = (difference / actualPrice)
-        return actualDiscountPrice * 100;
-    }
-
     const addToFavorite = async (prdctId) => {
         try {
             const res = await newApi.addToFavorite({ product_id: prdctId });
+
             if (res.status == 1) {
                 toast.success(res.message)
             } else {
@@ -104,8 +96,6 @@ const ProductCard = ({ product }) => {
             console.log(error)
         }
     }
-
-
     const handleValidateAddNewProduct = (productQuantity, product) => {
         const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
 
@@ -216,74 +206,82 @@ const ProductCard = ({ product }) => {
         }
     };
 
-    const handleVariantModal = (product) => {
-        if (product?.variants?.length > 1) {
-            setShowVariantModal(true)
-        }
+
+    const calculateDiscount = (discountPrice, actualPrice) => {
+        const difference = actualPrice - discountPrice;
+        const actualDiscountPrice = (difference / actualPrice)
+        return actualDiscountPrice * 100;
     }
 
-    return (
-        <div >
-            <div className="product-grid" >
-                <div >
-                    <div className="product-image">
-                        <a onClick={() => navigate(`/product/${product.slug}`)} className="image">
-                            <img src={product?.image_url} />
-                        </a>
-                        {selectedVariant?.discounted_price !== 0 ? <span className="product-discount-label">{calculateDiscount(selectedVariant?.discounted_price, selectedVariant?.price).toFixed(0)}% OFF</span> : <></>}
 
+
+    return (
+        <div className='list-view-product-grid'>
+            <div className='row'>
+                <div className="product-image col-3" >
+                    <div className='image-container'>
+                        <a className="image">
+                            <img src={product.image_url} />
+                        </a>
                         <ul className="product-links">
                             <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist"><i className="fas fa-heart fa-1x"></i></a></li>
                             <li onClick={() => {
-                                setselectedProduct(product)
-                                setShowModal(true)
-                            }}><a data-tip="Quick View" ><i className="fa fa-eye fa-1x  "></i></a></li>
+                            }}><a data-tip="Quick View"
+                                onClick={() => {
+                                    setselectedProduct(product)
+                                    setShowModal(true)
+                                }}
+                            ><i className="fa fa-eye fa-1x"></i></a></li>
                         </ul>
                     </div>
-                    <div className="product-content" onClick={() => navigate(`/product/${product.slug}`)}>
-                        <div >
-                            <h3 className="title"><a > {product?.name} </a></h3>
-                            {product?.average_rating > 0 ?
-                                <div className="rating">
-                                    <Rate
-                                        disabled
-                                        defaultValue={2.6}
-                                        allowHalf={true}
-                                        style={{ fontSize: 15 }}
-                                        characterRender={(node, { index }) => (
-                                            <span className={index + 1 <= product?.average_rating ? "filledStar" : "emptyStar"}>
-                                                {index + 1 <= product?.average_rating ? <StarFilled /> : <StarOutlined />}
-                                            </span>
-                                        )}
-                                    />
-                                    <p>{`(${product?.average_rating.toFixed(2)})`}</p>
-                                </div>
-                                : null}
+
+                    {selectedVariant?.discounted_price !== 0 ? <span className="product-discount-label">{calculateDiscount(selectedVariant?.discounted_price, selectedVariant?.price).toFixed(0)}% OFF</span> : <></>}
+
+
+
+                </div>
+                <div className="horizontal-product-content col-7">
+                    <div className='horizontal-product-head'>
+                        <div className='horizontal-product-title'>
+                            <h3 className="title"> {product?.name} </h3>
+                            {product?.average_rating > 0 ? <div className='rating-container'>
+                                <Rate
+                                    disabled
+                                    defaultValue={product?.average_rating}
+                                    allowHalf={true}
+                                    style={{ fontSize: 15 }}
+                                    characterRender={(node, { index }) => (
+                                        <span className={index + 1 <= product?.average_rating ? "filledStar" : "emptyStar"}>
+                                            {index + 1 <= product?.average_rating ? <StarFilled /> : <StarOutlined />}
+                                        </span>
+                                    )}
+                                />
+                                <p>({product?.average_rating.toFixed(2)})</p>
+                            </div> : null}
 
                         </div>
 
-                        <div className="price">{setting.setting.currency}{selectedVariant?.
-                            discounted_price !== 0 ? selectedVariant?.
-                            discounted_price : selectedVariant?.
-                            price}<span>{selectedVariant?.
-                                discounted_price !== 0 && <>
-                                    {setting.setting.currency}
-                                    {selectedVariant?.
-                                        price}
-                                </>}</span>
-                        </div>
+                        <div className='horizontal-product-price'>{
+                            <div className="price">{setting.setting.currency}{selectedVariant?.
+                                discounted_price !== 0 ? selectedVariant?.
+                                discounted_price : selectedVariant?.
+                                price}<span>{selectedVariant?.
+                                    discounted_price !== 0 && <>
+                                        {setting.setting.currency}
+                                        {selectedVariant?.
+                                            price}
+                                    </>}</span>
+                            </div>}</div>
+
+
+
                     </div>
                 </div>
 
-                <div className='product-btn'>
-                    <button className='product-qty-btn' onClick={() => handleVariantModal(product)}>
-                        {`${selectedVariant?.measurement} ${selectedVariant?.stock_unit_name}`} {product?.variants?.length > 1 ? <IoMdArrowDropdown /> : null}
-                    </button>
-
+                <div className='horizontal-product-buttons col-2'>
+                    <button className='qty-button'>{`${selectedVariant?.measurement} ${selectedVariant?.stock_unit_name}`}<span>{product?.variants?.length > 1 ? <IoMdArrowDropdown /> : null}</span></button>
                     {cart?.isGuest === false && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id)?.qty > 0 ||
-                        cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === selectedVariant?.id)?.qty > 0
-                        ?
-                        <div className='cart-count-btn'><button
+                        cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === selectedVariant?.id)?.qty > 0 ? <div className='horizontal-cart-count-btn '><button
                             onClick={() => {
                                 if (cart?.isGuest) {
                                     AddToGuestCart(
@@ -304,27 +302,27 @@ const ProductCard = ({ product }) => {
                             }}
                         ><FaMinus /></button>
 
-                            <input value={
-                                cart.isGuest === false ?
-                                    cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
-                                    : cart?.guestCart?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
-                            } disabled min='1' type='number' max={selectedVariant?.stock} />
+                        <input value={
+                            cart.isGuest === false ?
+                                cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
+                                : cart?.guestCart?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
+                        } disabled min='1' type='number' max={selectedVariant?.stock} />
 
-                            <button onClick={() => {
-                                if (cart?.isGuest) {
-                                    const productQuantity = getProductQuantities(cart?.guestCart)
-                                    handleValidateAddExistingGuestProduct(
-                                        productQuantity,
-                                        product,
-                                        cart?.guestCart?.find(prdct => prdct?.product_id == product?.id && prdct?.product_variant_id == selectedVariant?.id)?.qty + 1
-                                    )
-                                } else {
-                                    const quantity = getProductQuantities(cart?.cartProducts)
-                                    handleValidateAddExistingProduct(quantity, product)
-                                }
-                            }}><FaPlus /></button>
-                        </div>
-                        : <button className='product-cart-btn' onClick={() => {
+                        <button onClick={() => {
+                            if (cart?.isGuest) {
+                                const productQuantity = getProductQuantities(cart?.guestCart)
+                                handleValidateAddExistingGuestProduct(
+                                    productQuantity,
+                                    product,
+                                    cart?.guestCart?.find(prdct => prdct?.product_id == product?.id && prdct?.product_variant_id == selectedVariant?.id)?.qty + 1
+                                )
+                            } else {
+                                const quantity = getProductQuantities(cart?.cartProducts)
+                                handleValidateAddExistingProduct(quantity, product)
+                            }
+                        }}><FaPlus /></button>
+                    </div> : <button className='price-button'
+                        onClick={() => {
                             if (cart?.isGuest) {
                                 const quantity = getProductQuantities(cart?.cartProducts)
                                 handleAddNewProductGuest(quantity, product)
@@ -332,19 +330,19 @@ const ProductCard = ({ product }) => {
                                 const quantity = getProductQuantities(cart?.cartProducts)
                                 handleValidateAddNewProduct(quantity, product)
                             }
-
-                        }} ><FaShoppingBasket className='mx-2' size={20} />Add</button>}
+                        }}
+                    ><FaShoppingBasket className='mx-2' size={20} />Add</button>}
 
                 </div>
-            </div >
 
+
+            </div>
             <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} showModal={showModal} setShowModal={setShowModal}
                 setP_id={setP_id}
                 setP_V_id={setP_V_id}
             />
-            <ProductVariantModal showVariantModal={showVariantModal} setShowVariantModal={setShowVariantModal} product={product} />
         </div >
     )
 }
 
-export default ProductCard
+export default ListViewCard

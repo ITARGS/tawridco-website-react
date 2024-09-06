@@ -13,11 +13,11 @@
   --gutter: 8px;
 
   --body-background: #F2F3F9;
-  --primary-color:#141A1F;
-  --secondary-color:#51BD88;
-  --sub-text-color:#8B8B8B;
-  --second-cards-color:#FFFFFF;
-  --text-field-color:#F8F8F8;
+  --primary-color: #141A1F;
+  --secondary-color: #51BD88;
+  --sub-text-color: #8B8B8B;
+  --second-cards-color: #FFFFFF;
+  --text-field-color: #F8F8F8;
 }
 
 * {
@@ -29,7 +29,7 @@
   border: none;
   text-decoration: none;
   transition: all .2s linear;
-  color:var(--primary-color);
+  color: var(--primary-color);
 }
 
 *::selection {
@@ -45,11 +45,11 @@ html {
   scroll-behavior: smooth;
 }
 
-button{
+button {
   cursor: pointer;
 }
 
-.main-app{
+.main-app {
   color: var(--primary-color);
   background: var(--body-background);
 }
@@ -69,5 +69,3 @@ button{
     font-size: 35%;
   }
 }
-
-

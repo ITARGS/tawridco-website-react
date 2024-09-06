@@ -233,7 +233,6 @@ const App = () => {
   });
 
 
-
   const RootCss = `
   :root {
     --body-background: #f7f7f7;

@@ -1,135 +1,194 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 import { useDispatch } from 'react-redux';
 import { setFilterCategory } from '../../model/reducer/productFilterReducer';
 import api from '../../api/api';
 import Skeleton from 'react-loading-skeleton';
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
-
+import { Tree } from 'antd';
+import { PlusOutlined, MinusOutlined } from '@ant-design/icons';
 
 const CategoryComponent = ({ data, selectedCategories,
     setSelectedCategories }) => {
     const dispatch = useDispatch();
     const [expandedCategories, setExpandedCategories] = useState([]);
-    // const [selectedCategories, setSelectedCategories] = useState([]);
+
     const [subcategories, setSubcategories] = useState({});
+    const [treeData, setTreeData] = useState([])
+    const [expandedKeys, setExpandedKeys] = useState([])
     const [isLoader, setIsLoader] = useState(false);
+
+    useEffect(() => {
+        const cat = transformCategoryData(data)
+        setTreeData(cat)
+    }, [])
+
+    const transformCategoryData = (categories) => {
+        return categories.map(category => ({
+            title: category.name,
+            key: category.id,
+            children: category.cat_active_childs.length > 0
+                ? transformCategoryData(category.cat_active_childs)
+                : []
+        }));
+    };
+
+    const onExpand = (expandedKeysValue) => {
+        setExpandedKeys(expandedKeysValue);
+    };
+
+    const handleExpandCollapse = (node) => {
+        const newExpandedKeys = expandedKeys.includes(node.key)
+            ? expandedKeys.filter(key => key !== node.key)
+            : [...expandedKeys, node.key];
+        setExpandedKeys(newExpandedKeys);
+    };
+
+    const renderTitle = (node) => {
+        const isExpanded = expandedKeys.includes(node.key);
+        const hasChildren = node.children && node.children.length > 0;
+
+        return (
+            <div className='d-flex category-node align-items-center'>
+                <div>{node.title}{' '}</div>
+                {hasChildren && (
+                    isExpanded
+                        ? <MinusOutlined className='ml-5' onClick={() => handleExpandCollapse(node)} />
+                        : <PlusOutlined className='ml-5' onClick={() => handleExpandCollapse(node)} />
+                )}
+            </div>
+        );
+    };
+
+    const renderTreeNodes = (data) =>
+        data.map((item) => ({
+            ...item,
+            title: renderTitle(item), // Pass custom title for each node
+            children: item.children.length > 0 ? renderTreeNodes(item.children) : [],
+        }));
+
+    const onCheck = (catIds) => {
+        setSelectedCategories(catIds)
+        dispatch(setFilterCategory({ data: catIds.join(",") }));
+    }
+    // const fetchSubcategories = (categoryId) => {
+    //     // API call to fetch subcategories for the given category id
+    //     setIsLoader(true);
+    //     api.getCategory(categoryId)
+    //         .then(response => response.json())
+    //         .then(result => {
+    //             if (result.status === 1) {
+    //                 setSubcategories(prevState => ({
+    //                     ...prevState,
+    //                     [categoryId]: result.data
+    //                 }));
+    //             }
+    //             setIsLoader(false);
+    //         })
+    //         .catch(error => {
+    //             setIsLoader(false);
+    //             console.log("error ", error);
+    //         });
+    // };
     // const toggleCategory = (categoryId) => {
     //     if (expandedCategories.includes(categoryId)) {
     //         setExpandedCategories(expandedCategories.filter(id => id !== categoryId));
     //     } else {
     //         setExpandedCategories([...expandedCategories, categoryId]);
+    //         if (!subcategories[categoryId] && categoryHasChild(categoryId)) {
+    //             setSubcategories(prevState => ({
+    //                 ...prevState,
+    //                 [categoryId]: { loading: true }
+    //             }));
+    //             fetchSubcategories(categoryId);
+    //         }
     //     }
     // };
-    const fetchSubcategories = (categoryId) => {
-        // API call to fetch subcategories for the given category id
-        setIsLoader(true);
-        api.getCategory(categoryId)
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    setSubcategories(prevState => ({
-                        ...prevState,
-                        [categoryId]: result.data
-                    }));
-                }
-                setIsLoader(false);
-            })
-            .catch(error => {
-                setIsLoader(false);
-                console.log("error ", error);
-            });
-    };
-    const toggleCategory = (categoryId) => {
-        if (expandedCategories.includes(categoryId)) {
-            setExpandedCategories(expandedCategories.filter(id => id !== categoryId));
-        } else {
-            setExpandedCategories([...expandedCategories, categoryId]);
-            if (!subcategories[categoryId] && categoryHasChild(categoryId)) {
-                setSubcategories(prevState => ({
-                    ...prevState,
-                    [categoryId]: { loading: true }
-                }));
-                fetchSubcategories(categoryId);
-            }
-        }
-    };
+    // const categoryHasChild = (categoryId) => {
+    //     // Implement logic to check if the category has child categories
+    //     // You can retrieve this information from your data structure or API response
+    //     const category = data.find(category => category.id === categoryId);
+    //     return category && category.has_child;
+    // };
+    // const handleSelectedCategories = (ctgId) => {
+    //     if (selectedCategories.includes(ctgId)) {
+    //         const updatedCategories = selectedCategories?.filter((id) => id != ctgId);
+    //         setSelectedCategories(updatedCategories);
+    //         dispatch(setFilterCategory({ data: updatedCategories.join(",") }));
+    //     } else {
+    //         const updatedCategories = selectedCategories?.filter((cat) => {
+    //             if (cat != "") {
+    //                 return cat;
+    //             }
+    //         });
+    //         updatedCategories.push(ctgId);
 
-    const categoryHasChild = (categoryId) => {
-        // Implement logic to check if the category has child categories
-        // You can retrieve this information from your data structure or API response
-        const category = data.find(category => category.id === categoryId);
-        return category && category.has_child;
-    };
-
-    const handleSelectedCategories = (ctgId) => {
-        if (selectedCategories.includes(ctgId)) {
-            const updatedCategories = selectedCategories?.filter((id) => id != ctgId);
-            setSelectedCategories(updatedCategories);
-            dispatch(setFilterCategory({ data: updatedCategories.join(",") }));
-        } else {
-            const updatedCategories = selectedCategories?.filter((cat) => {
-                if (cat != "") {
-                    return cat;
-                }
-            });
-            updatedCategories.push(ctgId);
-            setSelectedCategories(updatedCategories);
-            dispatch(setFilterCategory({ data: updatedCategories.join(",") }));
-        }
-    };
-
-    const renderSubcategories = (subcategories) => {
-        return subcategories?.map(subcategory => (
-            <div key={subcategory.id} className='d-flex flex-column ms-3'>
-                <div className={`d-flex justify-content-between align-items-center filter-bar border-bottom  p-2 ${selectedCategories?.includes(subcategory?.id) ? "active" : ""}`}>
-                    <div className='d-flex gap-3 align-items-baseline'
-                        onClick={() => {
-                            // Handle selection of the category
-                            handleSelectedCategories(subcategory.id);
-                        }}>
-                        <div className='image-container'>
-                            {/* <img src={subcategory.image_url} alt="category" /> */}
-                            <ImageWithPlaceholder src={subcategory.image_url} alt="subCategoryImage" />
-                        </div>
-                        <p>{subcategory.name}</p>
-                    </div>
-                    {subcategory.has_child && (
-                        <div>
-                            {subcategory.has_active_child ? (
-                                <>
-                                    {expandedCategories.includes(subcategory.id) ?
-                                        <IoIosArrowUp
-                                            size={20}
-                                            onClick={() => toggleCategory(subcategory.id)}
-                                        /> :
-                                        <IoIosArrowDown
-                                            size={20}
-                                            onClick={() => toggleCategory(subcategory.id)}
-                                        />
-                                    }
-                                </>
-                            ) : null}
-                        </div>
-                    )}
-                </div>
-                {expandedCategories.includes(subcategory.id) && subcategory.has_active_child && (
-                    <div className="subcategories">
-                        {subcategory.loading ? (
-                            <Skeleton className='w-100' height={35} />
-                        ) : (
-                            renderSubcategories(subcategory.cat_active_childs)
-                        )}
-                    </div>
-                )}
-            </div>
-        ));
-    };
+    //         setSelectedCategories(updatedCategories);
+    //         dispatch(setFilterCategory({ data: updatedCategories.join(",") }));
+    //     }
+    // };
+    // const renderSubcategories = (subcategories) => {
+    //     return subcategories?.map(subcategory => (
+    //         <div key={subcategory.id} className='d-flex flex-column ms-3'>
+    //             <div className={`d-flex justify-content-between align-items-center filter-bar border-bottom  p-2 ${selectedCategories?.includes(subcategory?.id) ? "active" : ""}`}>
+    //                 <div className='d-flex gap-3 align-items-baseline'
+    //                     onClick={() => {
+    //                         // Handle selection of the category
+    //                         handleSelectedCategories(subcategory.id);
+    //                     }}>
+    //                     <div className='image-container'>
+    //                         {/* <img src={subcategory.image_url} alt="category" /> */}
+    //                         <ImageWithPlaceholder src={subcategory.image_url} alt="subCategoryImage" />
+    //                     </div>
+    //                     <p>{subcategory.name}</p>
+    //                 </div>
+    //                 {subcategory.has_child && (
+    //                     <div>
+    //                         {subcategory.has_active_child ? (
+    //                             <>
+    //                                 {expandedCategories.includes(subcategory.id) ?
+    //                                     <IoIosArrowUp
+    //                                         size={20}
+    //                                         onClick={() => toggleCategory(subcategory.id)}
+    //                                     /> :
+    //                                     <IoIosArrowDown
+    //                                         size={20}
+    //                                         onClick={() => toggleCategory(subcategory.id)}
+    //                                     />
+    //                                 }
+    //                             </>
+    //                         ) : null}
+    //                     </div>
+    //                 )}
+    //             </div>
+    //             {expandedCategories.includes(subcategory.id) && subcategory.has_active_child && (
+    //                 <div className="subcategories">
+    //                     {subcategory.loading ? (
+    //                         <Skeleton className='w-100' height={35} />
+    //                     ) : (
+    //                         renderSubcategories(subcategory.cat_active_childs)
+    //                     )}
+    //                 </div>
+    //             )}
+    //         </div>
+    //     ));
+    // };
 
 
     return (
         <>
-            {data?.map(category => (
+            <Tree
+                checkable
+                treeData={renderTreeNodes(treeData)}
+                expandedKeys={expandedKeys}
+                onExpand={onExpand}
+                defaultExpandAll={false}
+                onCheck={onCheck}
+                checkedKeys={selectedCategories}
+                showLine={false}
+                switcherIcon={null}
+            />
+            {/* {data?.map(category => (
                 <div key={category?.id} className='p-0'>
                     <div key={category?.id}
                         className={`d-flex justify-content-between align-items-center filter-bar p-2 border-bottom ${expandedCategories.includes(category.id) ? 'expanded' : ''}
@@ -139,7 +198,7 @@ const CategoryComponent = ({ data, selectedCategories,
                             handleSelectedCategories(category.id);
                         }}>
                             <div className='image-container'>
-                                {/* <img src={category.image_url} alt="category" /> */}
+
                                 <ImageWithPlaceholder src={category.image_url} alt="categoryImage" />
                             </div>
                             <p>{category.name}</p>
@@ -169,7 +228,7 @@ const CategoryComponent = ({ data, selectedCategories,
                         </div>
                     )}
                 </div>
-            ))}
+            ))} */}
         </>
     );
 };

@@ -4,6 +4,7 @@
   padding: 15px;
   border-radius: 5px;
 }
+
 #all-brands .brand_section_header p {
   font-size: 18px;
   line-height: 32px;
@@ -12,6 +13,7 @@
   font-weight: 700 !important;
   margin: 0;
 }
+
 #all-brands .brand_section_header a {
   font-size: 14px;
   font-weight: 400 !important;
@@ -20,6 +22,7 @@
   text-decoration: none;
   margin-left: 10px;
 }
+
 #all-brands .brand_section_header .brand_button {
   border-radius: 8px;
   font-size: 14px;
@@ -31,12 +34,14 @@
   color: var(--text-field-color) !important;
 }
 
-#all-brands .brand_section_header .prev-arrow-brand > svg {
+#all-brands .brand_section_header .prev-arrow-brand>svg {
   fill: var(--font-color) !important;
 }
-#all-brands .brand_section_header .next-arrow-brand > svg {
+
+#all-brands .brand_section_header .next-arrow-brand>svg {
   fill: var(--font-color) !important;
 }
+
 #all-brands .brand_section_header .prev-arrow-brand {
   position: relative;
   display: inline-block;
@@ -54,6 +59,7 @@
   border-radius: 100%;
   transition: all 300ms linear;
 }
+
 #all-brands .brand_section_header .next-arrow-brand {
   position: relative;
   display: inline-block;
@@ -71,22 +77,28 @@
   border-radius: 100%;
   transition: all 300ms linear;
 }
+
 [dir="rtl"] #all-brands .brand_section_header .see_brands_arrow {
   transform: rotate(180deg);
 }
+
 [dir="rtl"] #all-brands .brand_section_header .next-arrow-brand {
   order: 0;
 }
+
 [dir="rtl"] #all-brands .brand_section_header .prev-arrow-brand {
   order: 1;
 }
+
 .allBrandsSlider .cover {
   height: 200px;
 }
+
 .allBrandsSlider .slick-track {
   margin-left: unset !important;
   margin-right: unset !important;
 }
+
 .allBrandsSlider .cover img {
   height: 100%;
   width: 100%;
@@ -117,12 +129,13 @@
 }
 
 .allBrandsSlider .content .card {
-  border-radius: 8px;
-
+  /* border-radius: 8px; */
+  border: none;
   cursor: pointer;
 }
+
 .allBrandsSlider.home .content .card {
-  border-radius: 8px;
+  /* border-radius: 8px; */
 
   margin: 5px;
 }
@@ -131,7 +144,7 @@
   width: 100%;
   /* height: 26rem; */
   border-radius: 8px 8px 0px 0px;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 120 / 120;
   object-fit: cover;
 }
 
@@ -143,8 +156,8 @@
 .allBrandsSlider .content .card:hover {
   outline: var(--secondary-color);
   transform: none !important;
-  box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--secondary-color);
+  /* box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05); */
+  /* border: 1px solid var(--secondary-color); */
   color: var(--secondary-color) !important;
 }
 
@@ -167,6 +180,6 @@
   text-overflow: ellipsis;
 }
 
-.brandListingPagination > a {
+.brandListingPagination>a {
   color: var(--font-color) !important;
 }

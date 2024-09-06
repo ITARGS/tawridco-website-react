@@ -26,7 +26,7 @@
     /* height: auto; */
     /* transition: all 0.3s ease-out 0s; */
     object-fit: cover;
-    aspect-ratio: 237/241;
+    aspect-ratio: 261/241;
 }
 
 .product-grid:hover .product-image img {
@@ -101,7 +101,7 @@
 .product-grid .product-links li a {
     color: #2a3640;
     background: #fff;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 30px;
     width: 30px;
     height: 30px;
@@ -155,7 +155,7 @@
 }
 
 .product-grid .product-content {
-    height: 135px;
+    height: 100px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -213,7 +213,7 @@
 .product-grid .price {
     color: var(--font-color);
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 700;
     /* margin-top: 10px; */
     /* padding: 12px 12px 0px 12px; */
 
@@ -238,8 +238,8 @@
 }
 
 .product-qty-btn {
-    padding: 12px;
-    font-size: 16px;
+    padding: 4px;
+    font-size: 14px;
     margin: 5px 0px;
     display: flex;
     width: 49%;
@@ -248,6 +248,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 4px;
 }
 
 .product-btn .dropdown-toggle {
@@ -326,10 +327,15 @@
 
 .cart-count-btn button {
     /* height: 119%; */
-    padding: 7px 10px;
+    /* padding: 7px 10px; */
     border-radius: 4px;
     background-color: var(--secondary-color);
     color: #fff;
     font-weight: 700;
-    font-size: 18px;
+    font-size: 14px;
+    height: 38px;
+    width: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

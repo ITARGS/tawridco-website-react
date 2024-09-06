@@ -56,7 +56,7 @@ const Slider = () => {
                         <Loader width='100%' height='500px' screen='full' />
                     )
                     : (
-                        <div className="slider__flex ">
+                        <div className="slider__flex container ">
                             <div className="slider__images">
                                 <Swiper
 
@@ -66,6 +66,7 @@ const Slider = () => {
                                         disableOnInteraction: false,
                                     }}
                                     centeredSlides={false}
+
                                     // thumbs={{ swiper: imagesNavSlider && !imagesNavSlider.destroyed ? imagesNavSlider : null }}
                                     direction="horizontal"
                                     slidesPerView={1}
@@ -74,10 +75,12 @@ const Slider = () => {
 
                                     breakpoints={{
                                         0: {
-                                            direction: "horizontal"
+                                            direction: "horizontal",
+
                                         },
                                         768: {
-                                            direction: "horizontal"
+                                            direction: "horizontal",
+
                                         }
                                     }}
                                     className="swiper-container2"

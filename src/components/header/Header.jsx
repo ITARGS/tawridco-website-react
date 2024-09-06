@@ -31,6 +31,8 @@ import { GoLocation } from 'react-icons/go';
 import { FiMenu, FiFilter, FiUser } from 'react-icons/fi';
 import { AiOutlineClose, AiOutlineCloseCircle } from 'react-icons/ai';
 import { FaFacebookSquare, FaInstagramSquare, FaTwitterSquare, FaLinkedin, FaSearch, FaPhoneVolume } from "react-icons/fa";
+import { BsCart2, BsThreeDotsVertical } from "react-icons/bs";
+import { CiUser } from "react-icons/ci";
 
 // components imports
 import Location from '../location/Location';
@@ -49,6 +51,7 @@ const Header = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    const shop = useSelector(state => state.shop);
     const city = useSelector(state => (state.city));
     const cssmode = useSelector(state => (state.cssmode));
     const user = useSelector(state => (state.user));
@@ -56,6 +59,9 @@ const Header = () => {
     const favorite = useSelector(state => (state.favourite));
     const setting = useSelector(state => (state.setting));
     const languages = useSelector((state) => (state.language));
+    const category = shop && shop?.shop?.categories;
+
+
     const [isSticky, setIsSticky] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [bodyScroll, setBodyScroll] = useState(false);
@@ -125,6 +131,7 @@ const Header = () => {
             )
         },
     ];
+
     useEffect(() => {
         const fetchCartData = async () => {
             try {
@@ -267,7 +274,9 @@ const Header = () => {
         dispatch(setCSSMode({ data: theme }));
     };
 
-
+    const handleCatChange = (catName) => {
+        setSelectedCategory(catName)
+    }
 
     return (
         <>
@@ -317,9 +326,6 @@ const Header = () => {
                                         navigate('/');
                                     }}>{t("home")}</button>
                                 </li>
-
-
-
                                 <li className=' menu-item menu-item-type-post_type menu-item-object-page'>
                                     <button type='button' onClick={() => {
                                         closeSidebarRef.current.click();
@@ -383,7 +389,7 @@ const Header = () => {
 
 
                 {/* top header */}
-                <div className={`header-top  hide-mobile border-bottom ${(cssmode.cssmode === "dark") ? "dark-header-top" : ''}`}>
+                <div className={`header-top d-none d-md-block border-bottom ${(cssmode.cssmode === "dark") ? "dark-header-top" : ''}`}>
                     <div className="container">
                         <div className={`row justify-content-between`}>
                             <div className='col-md-6 d-flex justify-content-start align-items-center social-icons-cotainer'>
@@ -436,13 +442,13 @@ const Header = () => {
                 {/* center header */}
                 <div className={isSticky ? "sticky header-main  w-100" : "header-main  w-100"} >
                     <div className="container">
-                        <div className='d-flex row-reverse justify-content-lg-between justify-content-center'>
+                        <div className='d-flex row-reverse justify-content-between align-items-center top-header'>
 
-                            <div className='d-flex w-auto align-items-center justify-content-start col-md-2  column-left '>
+                            <div className='d-flex w-auto align-items-center justify-content-start column-left '>
 
                                 <div className='header-buttons hide-desktop' >
 
-                                    <button className='header-canvas button-item' type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebaroffcanvasExample" aria-controls="sidebaroffcanvasExample">
+                                    <button className='header-canvas button-item ' type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebaroffcanvasExample" aria-controls="sidebaroffcanvasExample">
                                         <div className='button-menu'>
                                             <FiMenu />
                                         </div>
@@ -450,17 +456,24 @@ const Header = () => {
                                 </div>
 
 
-                                <Link to='/' className='site-brand'>
-                                    <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='desktop-logo hide-mobile' />
+                                <Link to='/' className='site-brand hide-mobile'>
+                                    <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='desktop-logo ' />
                                     {/* <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='mobile-logo hide-desktop' /> */}
                                 </Link>
 
 
 
+
+
                             </div>
 
-
-                            <div className='header-nav-list'>
+                            <div className='hide-desktop'>
+                                <Link to='/' className='site-brand'>
+                                    <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='desktop-logo ' />
+                                    {/* <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='mobile-logo hide-desktop' /> */}
+                                </Link>
+                            </div>
+                            <div className='header-nav-list d-none d-xl-block'>
                                 <ul>
                                     <li
                                         className={curr_url.pathname == "/" ? "active-link" : ""}
@@ -542,13 +555,30 @@ const Header = () => {
 
 
                             </div>
+                            <div className='hide-desktop header-icons'>
+                                <span className='cart-btn' >
+                                    <BsCart2 />
+                                    {/* {
+                                        cart.isGuest == true ? <p className={cart?.guestCart
+                                            ?.length != 0 ? "d-flex" : "d-none"}> {cart?.guestCart
+                                                ?.length != 0 ? cart?.guestCart
+                                                ?.length : null}</p> :
+                                            <p className={cart?.cartProducts?.length != 0 ? "d-flex" : "d-none"}> {cart?.cartProducts?.length != 0 ? cart?.cartProducts?.length : null}</p>
+                                    } */}
 
+                                </span>
+                                    <span className='user-profile-btn'>
+                                    <CiUser />
+                                    </span>
+                                
+                                <BsThreeDotsVertical />
+                            </div>
 
                         </div >
                         {/* Bottom header */}
-                        <div className='d-flex row-reverse justify-content-lg-between justify-content-center bottom-header'>
+                        <div className='d-flex row-reverse justify-content-lg-between justify-content-start bottom-header '>
 
-                            <div className='d-flex w-auto align-items-center justify-content-start col-md-2  column-left location'
+                            <div className='d-flex w-auto align-items-center justify-content-start col-md-1  column-left location'
                                 onClick={() => setLocModal(true)}
                                 role='button'
                             >
@@ -564,23 +594,34 @@ const Header = () => {
                                         )}</h4>
                                 </span>
                             </div>
-                            <div className='d-flex w-auto align-items-center justify-content-start col-md-2  column-left search'>
-
-
+                            <div className='d-flex align-items-center justify-content-start col-lg-6 col-md-8 col-sm-8  column-left search'>
                                 <Dropdown>
                                     <Dropdown.Toggle>
-                                        All categories
+                                        {selectedCategory ? selectedCategory : `All categories`}
                                     </Dropdown.Toggle>
-                                    <Dropdown.Menu>
-                                        <Dropdown.Item>Fruits</Dropdown.Item>
-                                        <Dropdown.Item>Vegetables</Dropdown.Item>
-                                        <Dropdown.Item>Dairy</Dropdown.Item>
+                                    <Dropdown.Menu >
+                                        <Dropdown.Item
+                                            onClick={() => handleCatChange("All categories")}>All categories</Dropdown.Item>
+                                        {category?.length > 0 &&
+                                            category?.map((cat) => {
+
+                                                return (
+                                                    <Dropdown.Item
+                                                        key={cat.id}
+                                                        onClick={() => handleCatChange(cat.name)}
+                                                    >{cat.name}</Dropdown.Item>
+                                                )
+                                            })
+                                        }
+
+                                        {/* <Dropdown.Item>Vegetables</Dropdown.Item>
+                                        <Dropdown.Item>Dairy</Dropdown.Item> */}
                                     </Dropdown.Menu>
                                 </Dropdown>
                                 <input type='text' placeholder='I am looking for...' />
                                 <button className='search-btn'><FaSearch size={20} />Search</button>
                             </div>
-                            <div className='contact'>
+                            <div className='contact d-none d-xl-block'>
                                 <a href={`tel:${setting.setting !== null ? setting.setting.support_number : "number"}`}>{setting.setting !== null ? setting.setting.support_number : "number"}</a>
                             </div>
                         </div>

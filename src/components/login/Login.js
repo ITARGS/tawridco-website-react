@@ -155,18 +155,41 @@ const Login = React.memo((props) => {
             setisLoading(false);
         }
         else {
-            let appVerifier = window?.recaptchaVerifier;
-            try {
-                const confirmationResult = await signInWithPhoneNumber(auth, phonenum, appVerifier)
-                window.confirmationResult = confirmationResult;
-                setTimer(90)
-                setIsOTP(true)
-                setisLoading(false)
-            } catch (error) {
-                setPhonenum();
-                setError(error.message);
-                setisLoading(false);
+            if (setting?.setting?.firebase_authentication == 1) {
+                let appVerifier = window?.recaptchaVerifier;
+                try {
+                    const confirmationResult = await signInWithPhoneNumber(auth, phonenum, appVerifier)
+                    window.confirmationResult = confirmationResult;
+                    setTimer(90)
+                    setIsOTP(true)
+                    setisLoading(false)
+                } catch (error) {
+                    setPhonenum();
+                    setError(error.message);
+                    setisLoading(false);
+                }
+            } else if (setting?.setting?.custom_sms_gateway_otp_based == 1) {
+                try {
+                    const res = await newApi.sendSms({ mobile: phonenum })
+                    if (res?.status == 1) {
+                        setTimer(90)
+                        setIsOTP(true)
+                        setisLoading(false)
+
+                    } else {
+                        setError(t("custom_send_sms_error_message"));
+                        setisLoading(false)
+                    }
+
+                } catch (error) {
+                    setPhonenum();
+                    setError(t("custom_send_sms_error_message"));
+                    setisLoading(false)
+                }
+            } else {
+                toast.error(t("Something went wrong"))
             }
+
         }
     };
 
@@ -208,22 +231,47 @@ const Login = React.memo((props) => {
     }
 
     const verifyOTP = async (e) => {
-        try {
-            e.preventDefault();
-            setisLoading(true);
-            let confirmationResult = window.confirmationResult;
-            const OTPResult = await confirmationResult.confirm(OTP)
-            setUid(OTPResult.user.id)
-            dispatch(setAuthId({ data: OTPResult.user.id }));
-            const loginResponse = await loginApiCall(OTPResult.user, OTPResult.user.uid, fcm, "phone")
-            const num = phonenum.replace(`${countryCode}`, "");
-        } catch (error) {
-            console.log("error", error)
-            setisLoading(false);
-            setOTP("");
-            setError("Invalid Code");
+        e.preventDefault();
+        if (setting?.setting?.firebase_authentication == 1) {
+            try {
+                setisLoading(true);
+                let confirmationResult = window.confirmationResult;
+                const OTPResult = await confirmationResult.confirm(OTP)
+                setUid(OTPResult.user.id)
+                dispatch(setAuthId({ data: OTPResult.user.id }));
+                const loginResponse = await loginApiCall(OTPResult.user, OTPResult.user.uid, fcm, "phone")
+                const num = phonenum.replace(`${countryCode}`, "");
+            } catch (error) {
+
+                setisLoading(false);
+                setOTP("");
+                setError("Invalid Code");
+            }
+        } else if (setting?.setting?.custom_sms_gateway_otp_based == 1) {
+            try {
+                setisLoading(true);
+                const res = await newApi.verifyOTP({ mobile: phonenum, otp: OTP })
+                if (res.status == 1) {
+                    // setUid(OTPResult.user.id)
+                    // dispatch(setAuthId({ data: OTPResult.user.id }));
+                    // const loginResponse = await loginApiCall(OTPResult.user, OTPResult.user.uid, fcm, "phone")
+                    // const num = phonenum.replace(`${countryCode}`, "");
+                } else {
+                    setisLoading(false);
+                    setOTP("");
+                    setError("Invalid Code");
+                }
+            } catch (error) {
+                setisLoading(false);
+                setOTP("");
+                setError("Invalid Code");
+            }
         }
+
     }
+
+
+
 
     const AddtoCartBulk = async (token) => {
         try {
@@ -306,8 +354,6 @@ const Login = React.memo((props) => {
         } catch (error) {
             console.log("error", error)
         }
-
-
     }
 
     const handleTerms = () => {
@@ -391,7 +437,8 @@ const Login = React.memo((props) => {
                         )
                         : (
                             <div>
-                                <form className='d-flex flex-column gap-3 form' onSubmit={handleLogin}>
+
+                                {setting?.setting?.phone_login == 1 ? <form className='d-flex flex-column gap-3 form' onSubmit={handleLogin}>
                                     {isLoading && (
                                         <Loader width='100%' height='auto' />
                                     )}
@@ -406,6 +453,7 @@ const Login = React.memo((props) => {
                                             disableDropdown={false}
                                             inputClass='loginInput'
                                             searchClass='loginSearch'
+                                            countryCodeEditable={false}
                                         />
                                     </div>
                                     {/* <span style={{ alignSelf: "baseline" }}>
@@ -418,13 +466,14 @@ const Login = React.memo((props) => {
                                         <Link to={"/policy/Privacy_Policy"} onClick={handlePolicy}>&nbsp; {t("privacy_policy")} &nbsp;</Link>
                                     </span> */}
                                     <button type='submit'> {t("login_continue")}</button>
-                                </form>
-                                <p className='text-center login-or'>OR</p>
+                                </form> : <></>}
+                                {setting?.setting?.phone_login == 1 && setting?.setting?.google_login == 1 ? <p className='text-center login-or'>OR</p> : <></>}
+                                {/* <p className='text-center login-or'>OR</p> */}
 
-
-                                <div className='google-auth-container'>
+                                {setting?.setting?.google_login == 1 ? <div className='google-auth-container'>
                                     <button className='login-google-btn' onClick={handleGoogleAuthentication}><img src={GoogleLogo} className='google-log-img' />{t("continue_with_google")}</button>
-                                </div>
+                                </div> : <></>}
+
 
                                 <span style={{ alignSelf: "baseline", marginTop: "20px", fontSize: "12px" }}>
                                     {/* <input type="checkbox" className='mx-2' required checked={checkboxSelected} onChange={() => {

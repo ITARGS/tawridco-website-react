@@ -79,6 +79,7 @@ export const productFilterReducer = createSlice({
             state.seller_id = "";
             state.category_id = "";
             state.section_id = null;
+            state.price_filter = null
         }
 
     }
