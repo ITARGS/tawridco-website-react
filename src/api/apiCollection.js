@@ -3,9 +3,9 @@ import api from "./apiMiddleware";
 import store from "../model/store";
 import * as apiEndPoints from "./apiEndPointCollection"
 
-export const registerUser = async ({ Uid, name, email, mobile, type, fcm, country_code }) => {
+export const registerUser = async ({ name, email, mobile, type, fcm, country_code }) => {
     const formData = new FormData();
-    formData.append("auth_uid", Uid);
+    // formData.append("auth_uid", Uid);
     formData.append("name", name);
     formData.append("email", email)
     formData.append("country_code", country_code)
@@ -17,9 +17,9 @@ export const registerUser = async ({ Uid, name, email, mobile, type, fcm, countr
     const response = await api.post(apiEndPoints.register, formData)
     return response.data
 }
-export const login = async ({ Uid, fcm, type }) => {
+export const login = async ({ id, fcm, type }) => {
     const formData = new FormData();
-    formData.append("auth_uid", Uid);
+    formData.append("id", id);
     formData.append("fcm_token", fcm);
     formData.append("type", type);
     formData.append("platform", "web");
@@ -32,11 +32,13 @@ export const sendSms = async ({ mobile }) => {
     const response = await api.post(apiEndPoints.sendSms, formData);
     return response.data;
 }
-export const verifyOTP = async ({ mobile, otp }) => {
+export const verifyOTP = async ({ mobile, otp, country_code }) => {
     const formData = new FormData();
     formData.append("phone", mobile)
-    formData.append("opt", otp)
+    formData.append("otp", otp)
+    formData.append("country_code", country_code)
     const response = await api.post(apiEndPoints.verifyContact, formData);
+    return response.data
 }
 export const logout = async () => {
     const response = await api.post(apiEndPoints.logout)

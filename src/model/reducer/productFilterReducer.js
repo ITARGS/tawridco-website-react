@@ -13,7 +13,8 @@ const initialState = {
     section_products: null,
     search_sizes: [],
     seller_id: "",
-    country_id: ""
+    country_id: "",
+    search_product: []
 };
 
 export const productFilterReducer = createSlice({
@@ -73,13 +74,18 @@ export const productFilterReducer = createSlice({
             // state.category_id = "";
             // state.section_id = null;
         },
+        setProductBySearch: (state, action) => {
+            state.search_product = action.payload.data
+        },
         clearAllFilter: (state, action) => {
             state.country_id = "";
             state.brand_ids = [];
             state.seller_id = "";
             state.category_id = "";
             state.section_id = null;
+            state.search = null;
             state.price_filter = null
+            state.search_product = []
         }
 
     }
@@ -97,7 +103,8 @@ export const {
     setFilterProductSizes,
     setFilterByCountry,
     setFilterBySeller,
-    clearAllFilter
+    clearAllFilter,
+    setProductBySearch
 } = productFilterReducer.actions;
 
 export default productFilterReducer.reducer;

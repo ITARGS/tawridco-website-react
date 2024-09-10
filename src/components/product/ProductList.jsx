@@ -248,7 +248,7 @@ const ProductList2 = React.memo(() => {
                                     setMinPrice(null);
                                     setMaxPrice(null);
                                     dispatch(clearAllFilter())
-
+                                    
                                 }}
                             > Clear All</p>
                         </div>

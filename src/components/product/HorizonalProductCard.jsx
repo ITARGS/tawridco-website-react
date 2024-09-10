@@ -85,13 +85,17 @@ const HorizonalProduct = ({ product }) => {
 
     const addToFavorite = async (prdctId) => {
         try {
-            const res = await newApi.addToFavorite({ product_id: prdctId });
-
-            if (res.status == 1) {
-                toast.success(res.message)
+            if (user?.jwttoken) {
+                const res = await newApi.addToFavorite({ product_id: prdctId });
+                if (res.status == 1) {
+                    toast.success(res.message)
+                } else {
+                    toast.error(res.message)
+                }
             } else {
-                toast.error(res.message)
+                toast.error(t("required_login_message_for_wishlist"))
             }
+
         } catch (error) {
             console.log(error)
         }
@@ -134,43 +138,63 @@ const HorizonalProduct = ({ product }) => {
         }
     };
 
+    
+
     const handleAddNewProductGuest = (productQuantity, product) => {
         const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
         if (Number(productQty || 0) < Number(product.total_allowed_quantity)) {
-            AddToGuestCart(product, product.id, selectedVariant?.id, 1, 0);
+            AddToGuestCart(product, product.id, selectedVariant?.id, 1, 0, "add");
         } else {
             toast.error(t("out_of_stock_message"));
         }
     };
-    const AddToGuestCart = (product, productId, productVariantId, Qty, isExisting) => {
+    const AddToGuestCart = (product, productId, productVariantId, Qty, isExisting, flag) => {
+       
         const finalPrice = selectedVariant?.discounted_price !== 0 ? selectedVariant?.discounted_price : selectedVariant?.price
         if (isExisting) {
             let updatedProducts;
             if (Qty !== 0) {
+                if (flag == "add") {
+                    dispatch(addGuestCartTotal({ data: finalPrice }));
+                } else if (flag == "remove") {
+                    dispatch(subGuestCartTotal({ data: finalPrice }));
+                }
                 updatedProducts = cart?.guestCart?.map((product) => {
 
                     if (product?.product_id == productId && product?.product_variant_id == productVariantId) {
                         return { ...product, qty: Qty };
                     } else {
+                        // dispatch(addGuestCartTotal({ data: finalPrice }));
                         return product;
                     }
 
                 });
             } else {
+                if (flag == "add") {
+                    dispatch(addGuestCartTotal({ data: finalPrice }));
+                } else if (flag == "remove") {
+                    dispatch(subGuestCartTotal({ data: finalPrice }));
+                }
                 updatedProducts = cart?.guestCart?.filter(product =>
                     product?.product_id != productId && product?.product_variant_id != productVariantId
                 );
-                dispatch(subGuestCartTotal({ data: finalPrice }));
+                // dispatch(subGuestCartTotal({ data: finalPrice }));
             }
 
             dispatch(addtoGuestCart({ data: updatedProducts }));
 
         } else {
-            dispatch(addGuestCartTotal({ data: finalPrice }))
-            const productData = { product_id: productId, product_variant_id: productVariantId, qty: Qty };
+            if (flag == "add") {
+                dispatch(addGuestCartTotal({ data: finalPrice }));
+            } else if (flag == "remove") {
+                dispatch(subGuestCartTotal({ data: finalPrice }));
+            }
+            // dispatch(addGuestCartTotal({ data: finalPrice }))
+            const productData = { product_id: productId, product_variant_id: productVariantId, qty: Qty, productPrice: finalPrice };
             dispatch(addtoGuestCart({ data: [...cart?.guestCart, productData] }));
         }
     };
+
 
     const computeSubTotal = (products) => {
         const subTotal = products.reduce((prev, curr) => {
@@ -190,7 +214,7 @@ const HorizonalProduct = ({ product }) => {
                 toast.error('Apologies, maximum product quantity limit reached');
             }
             else {
-                AddToGuestCart(product, product?.id, selectedVariant?.id, quantity, 1);
+                AddToGuestCart(product, product?.id, selectedVariant?.id, quantity, 1, "add");
             }
         }
         else {
@@ -201,7 +225,7 @@ const HorizonalProduct = ({ product }) => {
                 toast.error('Apologies, maximum cart quantity limit reached');
             }
             else {
-                AddToGuestCart(product, product?.id, selectedVariant?.id, quantity, 1);
+                AddToGuestCart(product, product?.id, selectedVariant?.id, quantity, 1, "add");
             }
         }
     };
@@ -288,7 +312,7 @@ const HorizonalProduct = ({ product }) => {
                                             selectedVariant?.id,
                                             cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty - 1,
                                             1,
-
+                                            "remove"
                                         );
                                     } else {
                                         if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id).qty == 1) {

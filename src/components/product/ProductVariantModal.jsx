@@ -51,7 +51,7 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
         try {
             const response = await newApi.removeFromCart({ product_id: productId, product_variant_id: variantId })
             if (response?.status === 1) {
-                const updatedProducts = cart?.cartProducts?.filter(product => ((product?.product_id != productId) && (product?.product_variant_id != variantId)));
+                const updatedProducts = cart?.cartProducts?.filter(product => ((product?.product_id != productId) || (product?.product_variant_id != variantId)));
                 dispatch(setCartSubTotal({ data: response?.sub_total }));
                 dispatch(setCartProducts({ data: updatedProducts }));
             } else {
@@ -71,9 +71,9 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
         }));
     }
     const handleValidateAddNewProduct = (productQuantity, product, variant) => {
-        const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
 
-        if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) >= Number(product?.total_allowed_quantity)) {
+        const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
+        if ((productQty) >= Number(product?.total_allowed_quantity)) {
             toast.error('Oops, Limited Stock Available');
         }
         else if (Number(product.is_unlimited_stock)) {
@@ -82,6 +82,7 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
             if (variant?.status) {
                 addToCart(product.id, variant?.id, 1);
             } else {
+
                 toast.error('Oops, Limited Stock Available');
             }
         }
@@ -109,16 +110,21 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
     const handleAddNewProductGuest = (productQuantity, product, variant) => {
         const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
         if (Number(productQty || 0) < Number(product.total_allowed_quantity)) {
-            AddToGuestCart(product, product.id, variant?.id, 1, 0);
+            AddToGuestCart(product, product.id, variant?.id, 1, 0, variant, "add");
         } else {
             toast.error(t("out_of_stock_message"));
         }
     };
-    const AddToGuestCart = (product, productId, productVariantId, Qty, isExisting, variant) => {
+    const AddToGuestCart = (product, productId, productVariantId, Qty, isExisting, variant, flag) => {
         const finalPrice = variant?.discounted_price !== 0 ? variant?.discounted_price : variant?.price
         if (isExisting) {
             let updatedProducts;
             if (Qty !== 0) {
+                if (flag == "add") {
+                    dispatch(addGuestCartTotal({ data: finalPrice }));
+                } else if (flag == "remove") {
+                    dispatch(subGuestCartTotal({ data: finalPrice }));
+                }
                 updatedProducts = cart?.guestCart?.map((product) => {
 
                     if (product?.product_id == productId && product?.product_variant_id == productVariantId) {
@@ -129,16 +135,26 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
 
                 });
             } else {
+                if (flag == "add") {
+                    dispatch(addGuestCartTotal({ data: finalPrice }));
+                } else if (flag == "remove") {
+                    dispatch(subGuestCartTotal({ data: finalPrice }));
+                }
                 updatedProducts = cart?.guestCart?.filter(product =>
-                    product?.product_id != productId && product?.product_variant_id != productVariantId
+                    product?.product_id != productId || product?.product_variant_id != productVariantId
                 );
-                dispatch(subGuestCartTotal({ data: finalPrice }));
+                // dispatch(subGuestCartTotal({ data: finalPrice }));
             }
 
             dispatch(addtoGuestCart({ data: updatedProducts }));
 
         } else {
-            dispatch(addGuestCartTotal({ data: finalPrice }))
+            if (flag == "add") {
+                dispatch(addGuestCartTotal({ data: finalPrice }));
+            } else if (flag == "remove") {
+                dispatch(subGuestCartTotal({ data: finalPrice }));
+            }
+            // dispatch(addGuestCartTotal({ data: finalPrice }))
             const productData = { product_id: productId, product_variant_id: productVariantId, qty: Qty };
             dispatch(addtoGuestCart({ data: [...cart?.guestCart, productData] }));
         }
@@ -151,7 +167,7 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
                 toast.error('Apologies, maximum product quantity limit reached');
             }
             else {
-                AddToGuestCart(product, product?.id, variant?.id, quantity, 1);
+                AddToGuestCart(product, product?.id, variant?.id, quantity, 1, variant, "add");
             }
         }
         else {
@@ -162,7 +178,8 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
                 toast.error('Apologies, maximum cart quantity limit reached');
             }
             else {
-                AddToGuestCart(product, product?.id, variant?.id, quantity, 1);
+                console.log("variant id 2", variant?.id)
+                AddToGuestCart(product, product?.id, variant?.id, quantity, 1, variant, "add");
             }
         }
     };
@@ -184,12 +201,13 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
                                 <div className='row d-flex align-items-center variant-row'>
                                     <div className='col-7'>{`${variant?.measurement} ${variant?.stock_unit_name}`}</div>
                                     {variant?.is_unlimited_stock === 0 && variant?.stock == 0 ? <></> :
-                                        <div className='col-2 mr-4 variant-price'>{setting?.setting?.currency}{variant?.price}</div>
+                                        <div className='col-2 mr-4 variant-price'>{setting?.setting?.currency}{variant?.discounted_price == 0 ? variant?.price : variant?.discounted_price}</div>
                                     }
                                     {variant?.is_unlimited_stock === 0 && variant?.stock == 0 ? <span className='col-5 mr-4 variant-out-of-stock'>{t("outOfStock")} </span> :
                                         <div className='col-3'>
+
                                             {cart?.isGuest === false && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == variant?.id)?.qty > 0 ||
-                                                cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === variant?.id)?.qty > 0 ? <div className='cart-count-btn'><button
+                                                cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === variant?.id)?.qty > 0 ? <div className='cart-variant-count-btn'><button
                                                     onClick={() => {
                                                         if (cart?.isGuest) {
                                                             AddToGuestCart(
@@ -198,7 +216,8 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
                                                                 variant?.id,
                                                                 cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty - 1,
                                                                 1,
-
+                                                                variant,
+                                                                "remove"
                                                             );
                                                         } else {
                                                             if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == variant?.id).qty == 1) {
@@ -208,6 +227,7 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
                                                             }
                                                         }
                                                     }}
+                                                    className='qty-change-btn'
                                                 ><FaMinus /></button>
 
                                                 <input value={
@@ -227,16 +247,16 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
                                                         )
                                                     } else {
                                                         const quantity = getProductQuantities(cart?.cartProducts)
-                                                        handleValidateAddExistingProduct(quantity, product)
+                                                        handleValidateAddExistingProduct(quantity, product, variant)
                                                     }
-                                                }}><FaPlus /></button>
+                                                }} className='qty-change-btn'><FaPlus /></button>
                                             </div> : <button className='product-cart-btn' onClick={() => {
                                                 if (cart?.isGuest) {
                                                     const quantity = getProductQuantities(cart?.cartProducts)
-                                                    handleAddNewProductGuest(quantity, product)
+                                                    handleAddNewProductGuest(quantity, product, variant)
                                                 } else {
                                                     const quantity = getProductQuantities(cart?.cartProducts)
-                                                    handleValidateAddNewProduct(quantity, product)
+                                                    handleValidateAddNewProduct(quantity, product, variant)
                                                 }
 
                                             }} ><FaShoppingBasket className='mx-2' size={20} />Add</button>}

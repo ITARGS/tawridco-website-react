@@ -26,6 +26,7 @@
   "email": "Email",
   "login": "Login",
   "order": "Order",
+  "orders": "Orders",
   "price": "Price",
   "seller": "Seller",
   "priceRange": "Price Range",
@@ -52,11 +53,14 @@
   "update": "Update",
   "Invoice": "Invoice",
   "address": "Address",
+  "myAddress": "My Address",
+  "walletBalance": "Wallet Balance",
   "applied": "Applied",
   "company": "Company",
   "confirm": "Confirm",
   "product": "Product",
   "profile": "My Profile",
+  "editProfile": "Edit Profile",
   "see_all": "View All",
   "shop_by": "Shop by",
   "welcome": "Welcome!",
@@ -345,6 +349,7 @@
   "cashfree": "Cashfree",
   "something_went_wrong": "Something went wrong",
   "custom_send_sms_error_message": "It seems there is some error in sms gateway.Please try again later!",
-  "productVariants":"Product Variants",
-  "outOfOut of StockStock":"Out of Stock"
+  "productVariants": "Product Variants",
+  "OutOfStock": "Out of Stock",
+  "myTransaction": "My Transactions"
 }

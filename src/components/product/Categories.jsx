@@ -19,12 +19,15 @@ const CategoryComponent = ({ data, selectedCategories,
     const [isLoader, setIsLoader] = useState(false);
 
     useEffect(() => {
-        const cat = transformCategoryData(data)
-        setTreeData(cat)
-    }, [])
+        if (data?.length > 0) {
+            const cat = transformCategoryData(data);
+            setTreeData(cat);
+        }
+    }, [data]);
+
 
     const transformCategoryData = (categories) => {
-        return categories.map(category => ({
+        return categories?.map(category => ({
             title: category.name,
             key: category.id,
             children: category.cat_active_childs.length > 0
@@ -61,7 +64,7 @@ const CategoryComponent = ({ data, selectedCategories,
     };
 
     const renderTreeNodes = (data) =>
-        data.map((item) => ({
+        data?.map((item) => ({
             ...item,
             title: renderTitle(item), // Pass custom title for each node
             children: item.children.length > 0 ? renderTreeNodes(item.children) : [],

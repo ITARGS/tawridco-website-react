@@ -50,7 +50,7 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                 setError(t("please_enter_phone_number"))
                 setisLoading(false)
             } else {
-                const res = await newApi.registerUser({ Uid: auth_id, name: userName, email: userEmail, mobile: phoneNum, type: userAuthType, fcm: fcm_token, country_code: countryCode })
+                const res = await newApi.registerUser({ id: userEmail, name: userName, email: userEmail, mobile: phoneNum, type: userAuthType, fcm: fcm_token, country_code: countryCode })
 
                 const tokenSet = await dispatch(setTokenThunk(res?.data?.access_token))
                 await getCurrentUser()

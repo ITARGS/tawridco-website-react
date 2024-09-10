@@ -59,3 +59,43 @@
 .modal-body .product-variants button {
     width: 100%;
 }
+
+.cart-variant-count-btn {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    border-radius: 4px;
+    height: 100%;
+    /* padding: 8px; */
+    font-size: 16px;
+    height: 84%;
+    margin: 5px 0px;
+    border: 1px solid var(--body-background-color);
+    align-items: center;
+}
+
+.cart-variant-count-btn input {
+    text-align: center;
+    background: #fff;
+    width: 100%;
+    background: transparent;
+}
+
+.cart-variant-count-btn button {
+    /* height: 119%; */
+    /* padding: 7px 10px; */
+    border-radius: 4px;
+    background-color: var(--secondary-color);
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    height: 38px;
+    width: 44px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.qty-change-btn {
+    width: 60% !important;
+}

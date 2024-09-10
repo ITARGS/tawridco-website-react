@@ -245,10 +245,21 @@ const ProfileDashboard = (props) => {
 
                         await api.deleteAccount(user?.jwtToken, user?.authId).then(response => response.json())
                             .then(result => {
-                                if (result.status === 1) {
+                                if (result.status === 1 && setting?.setting?.firebase_authentication == 1) {
                                     let user = firebase.auth().currentUser;
                                     user.delete().then((response) => {
                                     });
+                                    dispatch(setFilterBrands({ data: [] }));
+                                    dispatch(setFilterCategory({ data: null }));
+                                    dispatch(setFilterSearch({ data: null }));
+                                    dispatch(setFilterSection({ data: null }));
+                                    dispatch(setCartProducts({ data: [] }));
+                                    dispatch(setCartSubTotal({ data: 0 }));
+                                    dispatch(logoutAuth({ data: null }));
+                                    dispatch(setIsGuest({ data: true }));
+                                    toast.info("You're Account is Succesfully Deleted!!");
+                                    navigate('/');
+                                } else if (result.status === 1 && setting?.setting?.custom_sms_gateway_otp_based == 1) {
                                     dispatch(setFilterBrands({ data: [] }));
                                     dispatch(setFilterCategory({ data: null }));
                                     dispatch(setFilterSearch({ data: null }));

@@ -48,8 +48,10 @@ const Login = React.memo((props) => {
     const [userName, setUserName] = useState("")
     const [userAuthType, setUserAuthType] = useState("")
 
-    const [phonenum, setPhonenum] = useState(isDemoMode == "true" ?
-        `${countryDialCode}${phoneNumber}` : "");
+    const [phonenum, setPhonenum] = useState(
+        isDemoMode === "true" ? `${countryDialCode} ${phoneNumber.trim()}` : ""
+    );
+
     const [countryCode, setCountryCode] = useState(countryDialCode);
     const [checkboxSelected, setcheckboxSelected] = useState(false);
     const [error, setError] = useState("");
@@ -69,6 +71,7 @@ const Login = React.memo((props) => {
             return () => clearTimeout(timer);
         }
     }, [error]);
+
 
 
     useEffect(() => {
@@ -103,7 +106,7 @@ const Login = React.memo((props) => {
 
     useEffect(() => {
         if (props.show == true) {
-            setPhonenum(isDemoMode == "true" ? `${countryDialCode}${phoneNumber}` : "");
+            setPhonenum(isDemoMode == "true" ? `${countryDialCode} ${phoneNumber}` : "");
             // setCountryCode(isDemoMode == "true" ? countryCode : "");
             setOTP(isDemoMode == "true" ? demoOTP : "");
         }
@@ -145,7 +148,6 @@ const Login = React.memo((props) => {
             }
         };
     }, [firebase, auth]);
-
     const handleLogin = async (e) => {
         setDisabled(true);
         setisLoading(true);
@@ -155,10 +157,11 @@ const Login = React.memo((props) => {
             setisLoading(false);
         }
         else {
+            const phoneNumberWithoutSpaces = `${phonenum}`.replace(/\s+/g, "");
             if (setting?.setting?.firebase_authentication == 1) {
                 let appVerifier = window?.recaptchaVerifier;
                 try {
-                    const confirmationResult = await signInWithPhoneNumber(auth, phonenum, appVerifier)
+                    const confirmationResult = await signInWithPhoneNumber(auth, phoneNumberWithoutSpaces, appVerifier)
                     window.confirmationResult = confirmationResult;
                     setTimer(90)
                     setIsOTP(true)
@@ -170,12 +173,11 @@ const Login = React.memo((props) => {
                 }
             } else if (setting?.setting?.custom_sms_gateway_otp_based == 1) {
                 try {
-                    const res = await newApi.sendSms({ mobile: phonenum })
+                    const res = await newApi.sendSms({ mobile: phoneNumberWithoutSpaces })
                     if (res?.status == 1) {
                         setTimer(90)
                         setIsOTP(true)
                         setisLoading(false)
-
                     } else {
                         setError(t("custom_send_sms_error_message"));
                         setisLoading(false)
@@ -197,7 +199,6 @@ const Login = React.memo((props) => {
     const getCurrentUser = async () => {
         try {
             const response = await newApi.getUser()
-
             dispatch(setCurrentUser({ data: response.user }));
             toast.success("You're successfully Logged In");
         } catch (error) {
@@ -229,9 +230,11 @@ const Login = React.memo((props) => {
         })
         return cartProducts;
     }
-
     const verifyOTP = async (e) => {
+        let latitude;
+        let longitude;
         e.preventDefault();
+
         if (setting?.setting?.firebase_authentication == 1) {
             try {
                 setisLoading(true);
@@ -239,8 +242,8 @@ const Login = React.memo((props) => {
                 const OTPResult = await confirmationResult.confirm(OTP)
                 setUid(OTPResult.user.id)
                 dispatch(setAuthId({ data: OTPResult.user.id }));
-                const loginResponse = await loginApiCall(OTPResult.user, OTPResult.user.uid, fcm, "phone")
-                const num = phonenum.replace(`${countryCode}`, "");
+                const loginResponse = await loginApiCall(OTPResult.user, phonenum, fcm, "phone")
+
             } catch (error) {
 
                 setisLoading(false);
@@ -248,18 +251,41 @@ const Login = React.memo((props) => {
                 setError("Invalid Code");
             }
         } else if (setting?.setting?.custom_sms_gateway_otp_based == 1) {
+            const mobileNo = phonenum?.split(" ")?.[1]
+
             try {
                 setisLoading(true);
-                const res = await newApi.verifyOTP({ mobile: phonenum, otp: OTP })
-                if (res.status == 1) {
-                    // setUid(OTPResult.user.id)
-                    // dispatch(setAuthId({ data: OTPResult.user.id }));
-                    // const loginResponse = await loginApiCall(OTPResult.user, OTPResult.user.uid, fcm, "phone")
-                    // const num = phonenum.replace(`${countryCode}`, "");
+                const res = await newApi.verifyOTP({ mobile: mobileNo, otp: OTP, country_code: `+${countryCode}` })
+                if (res.status === 1 && res?.message == "OTP is valid, but no user found with this phone number.") {
+                    setRegisterModalShow(true)
+                    setPhonenum(mobileNo)
+                    setUserAuthType("phone")
+                    dispatch(setAuthType({ data: "phone" }))
+                } else if (res.status === 1) {
+                    const tokenSet = await dispatch(setTokenThunk(res?.data?.access_token))
+                    await getCurrentUser()
+                    dispatch(setAuthType({ data: "phone" }))
+                    if (res?.data?.user?.status == 1) {
+                        dispatch(setIsGuest({ data: false }));
+                    }
+                    await handleFetchSetting();
+                    latitude = city?.city?.latitude || setting?.setting?.default_city?.latitude
+                    longitude = city?.city?.longitude || setting?.setting?.default_city?.longitude
+                    if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && res?.data?.user?.status == 1) {
+                        await AddtoCartBulk(res?.data.access_token);
+                    }
+                    await fetchCart(latitude, longitude);
+                    setError("");
+                    setOTP("");
+                    setPhonenum("");
+                    setisLoading(false);
+                    setIsOTP(false);
+                    props.setShow(false);
                 } else {
                     setisLoading(false);
                     setOTP("");
                     setError("Invalid Code");
+
                 }
             } catch (error) {
                 setisLoading(false);
@@ -297,21 +323,22 @@ const Login = React.memo((props) => {
     }
 
 
-    const loginApiCall = async (user, Uid, fcm, type) => {
+    const loginApiCall = async (user, id, fcm, type) => {
         let latitude;
         let longitude;
         try {
+            const mobileNumber = phonenum?.split(" ")[1]
             // For forcefully refresh token for remove error
             await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.NONE);
             await firebase.auth().currentUser?.getIdToken(true);
             // for login user functionality 
             dispatch(setAuthId({ data: Uid, type }))
-            const res = await newApi.login({ Uid, fcm, type })
+            const res = await newApi.login({ id: id, fcm, type })
 
             if (res.status === 1) {
                 const tokenSet = await dispatch(setTokenThunk(res?.data?.access_token))
                 await getCurrentUser()
-                dispatch(setAuthType({ data: res?.data?.user?.type }))
+                dispatch(setAuthType({ data: type }))
                 if (res?.data?.user?.status == 1) {
                     dispatch(setIsGuest({ data: false }));
                 }
@@ -350,7 +377,7 @@ const Login = React.memo((props) => {
             const token = credential.accessToken;
             const user = result.user;
 
-            await loginApiCall(user, user.uid, fcm, "google")
+            await loginApiCall(user, user?.providerData?.[0]?.email, fcm, "google")
         } catch (error) {
             console.log("error", error)
         }
@@ -366,9 +393,9 @@ const Login = React.memo((props) => {
     };
 
     const handleOnPhoneChange = (value, data, event, formattedValue) => {
-        //console.log(value, ' formattedValue');
         if (value?.length > 0) {
-            setPhonenum(`+${value}`);
+            const formattedPhone = `+${data?.dialCode} ${value.slice(data.dialCode.length)}`;
+            setPhonenum(formattedPhone);
         } else {
             setPhonenum("");
         }
@@ -445,7 +472,7 @@ const Login = React.memo((props) => {
                                     <div>
                                         <PhoneInput
                                             // country={process.env.REACT_APP_COUNTRY_CODE}
-                                            value={phonenum}
+                                            value={`${countryCode} ${phoneNumber}`}
                                             onChange={handleOnPhoneChange}
                                             enableSearch
                                             disableSearchIcon

@@ -17,22 +17,26 @@ import { Dropdown as AntdDropdown, Space } from 'antd';
 import { setCity } from "../../model/reducer/locationReducer";
 import { setPaymentSetting } from '../../model/reducer/settingReducer';
 import { setLanguage, setLanguageList } from "../../model/reducer/languageReducer";
-import { setFilterSearch } from "../../model/reducer/productFilterReducer";
+import { setFilterSearch, setFilterCategory, setProductBySearch } from "../../model/reducer/productFilterReducer";
 import { setCSSMode } from '../../model/reducer/cssmodeReducer';
 import { setCart, setCartProducts, setCartSubTotal, setTotalCartValue } from '../../model/reducer/cartReducer';
+
 
 // icons import
 import { BsMoon, BsShopWindow } from 'react-icons/bs';
 import { BiUserCircle } from 'react-icons/bi';
-import { MdSearch, MdGTranslate, MdNotificationsActive, MdOutlineWbSunny, MdOutlinePhoneInTalk } from "react-icons/md";
-import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast, IoCloseCircle, IoLocationOutline } from 'react-icons/io5';
+import { MdSearch, MdGTranslate, MdNotificationsActive, MdOutlineWbSunny, MdOutlinePhoneInTalk, MdPhoneInTalk } from "react-icons/md";
+import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast, IoCloseCircle, IoLocationOutline, IoWalletOutline } from 'react-icons/io5';
 import { IoMdArrowDropdown, IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { GoLocation } from 'react-icons/go';
 import { FiMenu, FiFilter, FiUser } from 'react-icons/fi';
 import { AiOutlineClose, AiOutlineCloseCircle } from 'react-icons/ai';
-import { FaFacebookSquare, FaInstagramSquare, FaTwitterSquare, FaLinkedin, FaSearch, FaPhoneVolume } from "react-icons/fa";
+import { FaFacebookSquare, FaInstagramSquare, FaTwitterSquare, FaLinkedin, FaSearch, FaPhoneVolume, FaRegUserCircle, FaShoppingCart } from "react-icons/fa";
 import { BsCart2, BsThreeDotsVertical } from "react-icons/bs";
 import { CiUser } from "react-icons/ci";
+import { FaMapLocationDot } from "react-icons/fa6";
+import { GrTransaction } from "react-icons/gr";
+import { RiLogoutCircleRLine } from 'react-icons/ri';
 
 // components imports
 import Location from '../location/Location';
@@ -60,6 +64,7 @@ const Header = () => {
     const setting = useSelector(state => (state.setting));
     const languages = useSelector((state) => (state.language));
     const category = shop && shop?.shop?.categories;
+    const filter = useSelector(state => state.productFilter);
 
 
     const [isSticky, setIsSticky] = useState(false);
@@ -70,10 +75,12 @@ const Header = () => {
     const [isLocationPresent, setisLocationPresent] = useState(false);
     const [totalNotification, settotalNotification] = useState(null);
     const [isDesktopView, setIsDesktopView] = useState(window.innerWidth > 768);
-    const [search, setsearch] = useState("");
     const [isCartSidebarOpen, setIsCartSidebarOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState("")
+    const [selectedCategoryId, setSelectedCategoryId] = useState("")
+    const [query, setQuery] = useState("")
+    const [typingTimeout, setTypingTimeout] = useState(null);
 
     const openCanvasModal = () => {
         handleModal();
@@ -86,7 +93,8 @@ const Header = () => {
             key: '1',
             label: (
                 <span onClick={() => navigate("/profile")} className="custom-dropdown-item">
-                    Profile
+                    <FaRegUserCircle size={20} />
+                    {t("editProfile")}
                 </span>
             ),
         },
@@ -94,7 +102,8 @@ const Header = () => {
             key: '2',
             label: (
                 <span onClick={() => navigate("/profile/orders")} className="custom-dropdown-item">
-                    All Orders
+                    <IoCartOutline size={20} />
+                    {t("orders")}
                 </span>
             )
         },
@@ -102,31 +111,35 @@ const Header = () => {
             key: '3',
             label: (
                 <span className="custom-dropdown-item" onClick={() => navigate("/profile/address")}>
-                    Manage Address
+                    <IoLocationOutline size={20} />
+                    {t("myAddress")}
                 </span>
             )
         },
         {
             key: '4',
             label: (
-                <span className="custom-dropdown-item" onClick={() => navigate("/profile/transactions")}>
-                    Transaction history
+                <span className="custom-dropdown-item" onClick={() => navigate("/profile/wallet-transaction")}>
+                    <IoWalletOutline size={20} />
+                    {t("walletBalance")}
                 </span>
             )
         },
         {
             key: '5',
             label: (
-                <span onClick={() => navigate("/profile/wallet-transaction")} className="custom-dropdown-item">
-                    Wallet history
+                <span onClick={() => navigate("/profile/transactions")} className="custom-dropdown-item">
+                    <GrTransaction size={20} />
+                    {t("myTransaction")}
                 </span>
             )
         },
         {
             key: '6',
             label: (
-                <span>
-                    Logout
+                <span className="custom-dropdown-item">
+                    <RiLogoutCircleRLine size={20} />
+                    {t("logout")}
                 </span>
             )
         },
@@ -175,7 +188,7 @@ const Header = () => {
 
     useEffect(() => {
         if (curr_url.pathname != "/products") {
-            setsearch("");
+
             dispatch(setFilterSearch({ data: null }));
         }
     }, [curr_url]);
@@ -274,9 +287,52 @@ const Header = () => {
         dispatch(setCSSMode({ data: theme }));
     };
 
-    const handleCatChange = (catName) => {
-        setSelectedCategory(catName)
+    const handleCatChange = (category) => {
+        setSelectedCategory(category?.name)
+        setSelectedCategoryId(category?.id)
     }
+
+
+
+    const handleSearch = async (query) => {
+        // const filter = {}
+        // filter.search = query
+        // filter.category_ids = selectedCategoryId
+
+        try {
+            const response = await newApi.productByFilter({ latitude: city?.city?.latitude, longitude: city?.city?.longitude, filters: filter })
+
+            dispatch(setProductBySearch({ data: response?.data }))
+        } catch (error) {
+            console.log("error", error)
+        }
+    }
+
+    const handleQueryChange = (e) => {
+        const value = e.target.value;
+        if (value.trim() === "") {
+            dispatch(setFilterSearch({ data: "" }))
+            // dispatch(setFilterCategory({ data: value }))
+            clearTimeout(typingTimeout)
+            return
+        }
+        setQuery(value);
+        dispatch(setFilterSearch({ data: e.target.value }))
+        dispatch(setFilterCategory({ data: selectedCategoryId }))
+
+        // Clear the previous timeout
+        if (typingTimeout) {
+            clearTimeout(typingTimeout);
+        }
+
+        // Set a new timeout for 5 seconds
+        const timeout = setTimeout(() => {
+            handleSearch(e.target.value);
+        }, 2000);
+
+        // Store the timeout ID
+        setTypingTimeout(timeout);
+    };
 
     return (
         <>
@@ -567,10 +623,10 @@ const Header = () => {
                                     } */}
 
                                 </span>
-                                    <span className='user-profile-btn'>
+                                <span className='user-profile-btn'>
                                     <CiUser />
-                                    </span>
-                                
+                                </span>
+
                                 <BsThreeDotsVertical />
                             </div>
 
@@ -594,35 +650,53 @@ const Header = () => {
                                         )}</h4>
                                 </span>
                             </div>
-                            <div className='d-flex align-items-center justify-content-start col-lg-6 col-md-8 col-sm-8  column-left search'>
-                                <Dropdown>
-                                    <Dropdown.Toggle>
-                                        {selectedCategory ? selectedCategory : `All categories`}
-                                    </Dropdown.Toggle>
-                                    <Dropdown.Menu >
-                                        <Dropdown.Item
-                                            onClick={() => handleCatChange("All categories")}>All categories</Dropdown.Item>
-                                        {category?.length > 0 &&
-                                            category?.map((cat) => {
+                            <div className='col-lg-6 col-md-8 col-sm-8  column-left d-flex flex-column position-relative '>
+                                <div className='d-flex align-items-center justify-content-start col-12 column-left search'>
+                                    <Dropdown>
+                                        <Dropdown.Toggle>
+                                            {selectedCategory ? selectedCategory : `All categories`}
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu >
+                                            <Dropdown.Item
+                                                onClick={() => handleCatChange("All categories")}>All categories</Dropdown.Item>
+                                            {category?.length > 0 &&
+                                                category?.map((cat) => {
 
-                                                return (
-                                                    <Dropdown.Item
-                                                        key={cat.id}
-                                                        onClick={() => handleCatChange(cat.name)}
-                                                    >{cat.name}</Dropdown.Item>
-                                                )
-                                            })
-                                        }
+                                                    return (
+                                                        <Dropdown.Item
+                                                            key={cat.id}
+                                                            onClick={() => handleCatChange(cat)}
+                                                        >{cat.name}</Dropdown.Item>
+                                                    )
+                                                })
+                                            }
+                                        </Dropdown.Menu>
+                                    </Dropdown>
 
-                                        {/* <Dropdown.Item>Vegetables</Dropdown.Item>
-                                        <Dropdown.Item>Dairy</Dropdown.Item> */}
-                                    </Dropdown.Menu>
-                                </Dropdown>
-                                <input type='text' placeholder='I am looking for...' />
-                                <button className='search-btn'><FaSearch size={20} />Search</button>
+
+                                    <input type='text' placeholder='I am looking for...' value={filter?.search} onChange={handleQueryChange} />
+                                    <button className='search-btn' onClick={() => {
+                                        dispatch(setProductBySearch({ data: "" }))
+                                        navigate("/products")
+                                    }}><FaSearch size={20} />Search</button>
+                                </div>
+                                {filter?.search_product?.length > 0 ? <div className='col-lg-6 col-md-8 col-sm-8  column-left d-flex flex-column search-result '>
+
+                                    {filter?.search_product?.map((prdct) => {
+                                        return (
+                                            <Link to={`/product/${prdct?.slug}`} onClick={() => {
+                                                setQuery("")
+                                                dispatch(setProductBySearch({ data: "" }))
+
+                                            }}> {prdct?.name}</Link>
+                                        )
+                                    })}
+                                </div> : null}
+
                             </div>
+
                             <div className='contact d-none d-xl-block'>
-                                <a href={`tel:${setting.setting !== null ? setting.setting.support_number : "number"}`}>{setting.setting !== null ? setting.setting.support_number : "number"}</a>
+                                <a href={`tel:${setting.setting !== null ? setting.setting.support_number : "number"}`}> <MdPhoneInTalk size={22} />  {setting.setting !== null ? setting.setting.support_number : "number"}</a>
                             </div>
                         </div>
                     </div >
