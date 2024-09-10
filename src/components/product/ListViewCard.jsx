@@ -260,7 +260,7 @@ const ListViewCard = ({ product }) => {
 
 
                 </div>
-                <div className="horizontal-product-content col-7">
+                <div className="horizontal-product-content col-7 col-md-6 col-xs-5">
                     <div className='horizontal-product-head'>
                         <div className='horizontal-product-title'>
                             <h3 className="title"> {product?.name} </h3>
@@ -298,7 +298,7 @@ const ListViewCard = ({ product }) => {
                     </div>
                 </div>
 
-                <div className='horizontal-product-buttons col-2'>
+                <div className='horizontal-product-buttons col-2 col-md-3 col-xs-4'>
                     <button className='qty-button'>{`${selectedVariant?.measurement} ${selectedVariant?.stock_unit_name}`}<span>{product?.variants?.length > 1 ? <IoMdArrowDropdown /> : null}</span></button>
                     {cart?.isGuest === false && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id)?.qty > 0 ||
                         cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === selectedVariant?.id)?.qty > 0 ? <div className='horizontal-cart-count-btn '><button

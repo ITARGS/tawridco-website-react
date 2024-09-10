@@ -333,7 +333,7 @@ const Header = () => {
         // Store the timeout ID
         setTypingTimeout(timeout);
     };
-
+    console.log("setting", setting.setting.web_settings?.placeholder_image)
     return (
         <>
             {/* sidebar */}
@@ -627,7 +627,7 @@ const Header = () => {
                                     <CiUser />
                                 </span>
 
-                                <BsThreeDotsVertical />
+                                {/* <BsThreeDotsVertical />  */}
                             </div>
 
                         </div >
