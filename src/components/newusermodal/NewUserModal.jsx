@@ -100,12 +100,16 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
         }
     };
 
+
+
     return (
         <Modal
             // show={user.user && user.user.status == 2}
             show={registerModalShow}
             backdrop="static"
             keyboard={true}
+            size='md'
+            centered
             className='user_data_modal'>
             <Modal.Header className='web_logo'>
                 <img src={setting.setting && setting.setting.web_settings.web_logo} alt="" />
@@ -125,18 +129,18 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                             setError("");
                             setUserName(e.target.value);
                         }} required
-                            className={user.authType == "google" ? "inactive-input" : "active-input"}
-                            disabled={user.authType == "google"}
+                            className={userAuthType == "google" ? "inactive-input" : "active-input"}
+                            disabled={userAuthType == "google"}
                         />
-                        <input type='email' placeholder={t('email_address')} disabled={user.authType == "google"} value={userEmail} onChange={(e) => {
+                        <input type='email' placeholder={t('email_address')} disabled={userAuthType == "google"} value={userEmail} onChange={(e) => {
                             setError("");
                             setUserEmail(e.target.value);
                         }}
                             required
-                            className={user.authType == "google" ? "inactive-input" : "active-input"}
+                            className={userAuthType == "google" ? "inactive-input" : "active-input"}
                         />
-                        <input type='tel' placeholder={t('mobile_number')} disabled={user.authType == "phone"} value={phoneNum} onChange={(e) => setPhoneNum(e.target.value)}
-                            className={user.authType == "phone" ? "inactive-input" : "active-input"}
+                        <input type='tel' placeholder={t('mobile_number')} disabled={userAuthType == "phone"} value={phoneNum} onChange={(e) => setPhoneNum(e.target.value)}
+                            className={userAuthType == "phone" ? "inactive-input" : "active-input"}
                         />
                     </div>
                     <button type='submit' disabled={isLoading} >{t("register")} {t("profile")}</button>

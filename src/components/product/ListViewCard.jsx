@@ -11,6 +11,8 @@ import { useTranslation } from 'react-i18next';
 import * as newApi from "../../api/apiCollection"
 import { toast } from 'react-toastify';
 import { addGuestCartTotal, addtoGuestCart, setCart, setCartProducts, setCartSubTotal, subGuestCartTotal } from '../../model/reducer/cartReducer';
+import ProductVariantModal from './ProductVariantModal';
+import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
 const ListViewCard = ({ product }) => {
     const navigate = useNavigate();
@@ -25,7 +27,7 @@ const ListViewCard = ({ product }) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedProduct, setselectedProduct] = useState({});
     const [selectedVariant, setSelectedVariant] = useState(product?.variants[0])
-
+    const [showVariantModal, setShowVariantModal] = useState(false)
     useEffect(() => {
         setSelectedVariant(product?.variants[0])
     }, [])
@@ -200,6 +202,11 @@ const ListViewCard = ({ product }) => {
         dispatch(addGuestCartTotal(subTotal));
     };
 
+    const handleVariantModal = (product) => {
+        if (product?.variants?.length > 1) {
+            setShowVariantModal(true)
+        }
+    }
 
 
     const handleValidateAddExistingGuestProduct = (productQuantity, product, quantity) => {
@@ -238,10 +245,10 @@ const ListViewCard = ({ product }) => {
     return (
         <div className='list-view-product-grid'>
             <div className='row'>
-                <div className="product-image col-3" >
+                <div className="product-image col-6 col-md-3 col-lg-3" >
                     <div className='image-container'>
                         <a className="image">
-                            <img src={product.image_url} />
+                            <ImageWithPlaceholder src={product.image_url} alt={product?.slug} />
                         </a>
                         <ul className="product-links">
                             <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist"><i className="fas fa-heart fa-1x"></i></a></li>
@@ -260,7 +267,7 @@ const ListViewCard = ({ product }) => {
 
 
                 </div>
-                <div className="horizontal-product-content col-7 col-md-6 col-xs-5">
+                <div className="horizontal-product-content col-6 col-md-6 col-lg-7">
                     <div className='horizontal-product-head'>
                         <div className='horizontal-product-title'>
                             <h3 className="title"> {product?.name} </h3>
@@ -298,8 +305,9 @@ const ListViewCard = ({ product }) => {
                     </div>
                 </div>
 
-                <div className='horizontal-product-buttons col-2 col-md-3 col-xs-4'>
-                    <button className='qty-button'>{`${selectedVariant?.measurement} ${selectedVariant?.stock_unit_name}`}<span>{product?.variants?.length > 1 ? <IoMdArrowDropdown /> : null}</span></button>
+                <div className='horizontal-product-buttons col-6 order-4 col-md-3 col-lg-2'>
+                    <button className='qty-button' onClick={() => handleVariantModal(product)}>{`${selectedVariant?.measurement} ${selectedVariant?.stock_unit_name}`}<span>{product?.variants?.length > 1 ? <IoMdArrowDropdown /> : null}</span></button>
+
                     {cart?.isGuest === false && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id)?.qty > 0 ||
                         cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === selectedVariant?.id)?.qty > 0 ? <div className='horizontal-cart-count-btn '><button
                             onClick={() => {
@@ -361,6 +369,7 @@ const ListViewCard = ({ product }) => {
                 setP_id={setP_id}
                 setP_V_id={setP_V_id}
             />
+            <ProductVariantModal showVariantModal={showVariantModal} setShowVariantModal={setShowVariantModal} product={product} />
         </div >
     )
 }

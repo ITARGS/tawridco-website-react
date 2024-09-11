@@ -123,9 +123,9 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                 </div>
                 : <></>}
 
-            <ProductContainer />
-            <HorizontalProductContainer />
-            <ProductSwiperWithImage />
+            {/* <ProductContainer /> */}
+            {/* <HorizontalProductContainer /> */}
+            {/* <ProductSwiperWithImage /> */}
         </section>
 
     );

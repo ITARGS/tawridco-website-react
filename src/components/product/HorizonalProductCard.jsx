@@ -11,7 +11,8 @@ import { useTranslation } from 'react-i18next';
 import * as newApi from "../../api/apiCollection"
 import { toast } from 'react-toastify';
 import { addGuestCartTotal, addtoGuestCart, setCart, setCartProducts, setCartSubTotal, subGuestCartTotal } from '../../model/reducer/cartReducer';
-
+import ProductVariantModal from './ProductVariantModal';
+import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 const HorizonalProduct = ({ product }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch()
@@ -25,6 +26,8 @@ const HorizonalProduct = ({ product }) => {
     const [showModal, setShowModal] = useState(false);
     const [selectedProduct, setselectedProduct] = useState({});
     const [selectedVariant, setSelectedVariant] = useState(product?.variants[0])
+    const [showVariantModal, setShowVariantModal] = useState(false)
+
 
     useEffect(() => {
         setSelectedVariant(product?.variants[0])
@@ -138,7 +141,7 @@ const HorizonalProduct = ({ product }) => {
         }
     };
 
-    
+
 
     const handleAddNewProductGuest = (productQuantity, product) => {
         const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
@@ -149,7 +152,7 @@ const HorizonalProduct = ({ product }) => {
         }
     };
     const AddToGuestCart = (product, productId, productVariantId, Qty, isExisting, flag) => {
-       
+
         const finalPrice = selectedVariant?.discounted_price !== 0 ? selectedVariant?.discounted_price : selectedVariant?.price
         if (isExisting) {
             let updatedProducts;
@@ -237,6 +240,11 @@ const HorizonalProduct = ({ product }) => {
         return actualDiscountPrice * 100;
     }
 
+    const handleVariantModal = (product) => {
+        if (product?.variants?.length > 1) {
+            setShowVariantModal(true)
+        }
+    }
 
 
     return (
@@ -245,7 +253,7 @@ const HorizonalProduct = ({ product }) => {
                 <div className="product-image col-6" >
                     <div className='image-container'>
                         <a className="image">
-                            <img src={product.image_url} />
+                            <ImageWithPlaceholder src={product.image_url} alt={product?.slug} />
                         </a>
                         <ul className="product-links">
                             <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist"><i className="fas fa-heart fa-1x"></i></a></li>
@@ -301,7 +309,7 @@ const HorizonalProduct = ({ product }) => {
                     </div>
 
                     <div className='horizontal-product-buttons'>
-                        <button className='qty-button'>{`${selectedVariant?.measurement} ${selectedVariant?.stock_unit_name}`}<span>{product?.variants?.length > 1 ? <IoMdArrowDropdown /> : null}</span></button>
+                        <button className='qty-button' onClick={() => handleVariantModal(product)}>{`${selectedVariant?.measurement} ${selectedVariant?.stock_unit_name}`}<span>{product?.variants?.length > 1 ? <IoMdArrowDropdown /> : null}</span></button>
                         {cart?.isGuest === false && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id)?.qty > 0 ||
                             cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === selectedVariant?.id)?.qty > 0 ? <div className='horizontal-cart-count-btn '><button
                                 onClick={() => {
@@ -364,6 +372,7 @@ const HorizonalProduct = ({ product }) => {
                 setP_id={setP_id}
                 setP_V_id={setP_V_id}
             />
+            <ProductVariantModal showVariantModal={showVariantModal} setShowVariantModal={setShowVariantModal} product={product} />
         </div >
     )
 }

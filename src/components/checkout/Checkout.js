@@ -93,15 +93,27 @@ const Checkout = () => {
     const [isLocationPresent, setisLocationPresent] = useState(false);
     const [locModal, setLocModal] = useState(false);
     const [bodyScroll, setBodyScroll] = useState(false)
+    const [deliveryCharge, setDeliveryCharge] = useState(null)
 
 
     const stripePromise = loadStripe(setting?.payment_setting && setting?.payment_setting?.stripe_publishable_key);
 
     // console.log("Payment Methods ->", setting?.payment_setting, expectedTime);
-    useEffect(() => {
-        fetchCart();
 
-        api.getCartSeller(user?.jwtToken, city.city.latitude, city.city.longitude, 1)
+    useEffect(() => {
+
+        fetchCart();
+        let latitude;
+        let longitude;
+
+        if (address.address !== null) {
+            latitude = address.selected_address.latitude
+            longitude = address.selected_address.longitude
+        } else {
+            latitude = city.city.latitude
+            longitude = city.city.longitude
+        }
+        api.getCartSeller(user?.jwtToken, latitude, longitude, 1)
             .then(res => res.json())
             .then(result => {
                 setCodAllow(result?.data?.cod_allowed);
@@ -116,13 +128,23 @@ const Checkout = () => {
     }, [locModal])
 
     const fetchCart = async () => {
-        api.getCart(user?.jwtToken, city.city.latitude, city.city.longitude, 1)
+        let latitude;
+        let longitude;
+
+        if (address.address !== null) {
+            latitude = address.selected_address.latitude
+            longitude = address.selected_address.longitude
+        } else {
+            latitude = city.city.latitude
+            longitude = city.city.longitude
+        }
+        api.getCart(user?.jwtToken, latitude, longitude, 1)
             .then(response => response.json())
             .then(result => {
+
                 if (result.status === 1) {
                     dispatch(setCartCheckout({ data: result.data }));
                     dispatch(setWallet({ data: 0 }));
-
                     if (promoCode?.isPromoCode === true) {
                         setTotalPayment(result.data.total_amount - promoCode?.discount);
                     }
@@ -144,7 +166,6 @@ const Checkout = () => {
                 }
             })
             .catch(error => {
-
                 const isNoInternet = ValidateNoInternet(error);
                 if (isNoInternet) {
                     setIsNetworkError(isNoInternet);
@@ -163,15 +184,25 @@ const Checkout = () => {
                         dispatch(setWallet({ data: 0 }));
                         if (promoCode?.isPromoCode === true) {
                             setTotalPayment(result.data.total_amount - promoCode?.discount);
+                        } else if (cart?.promo_code) {
+                            dispatch(setPromoCode({
+                                code: cart.promo_code,
+                                discount: cart.promo_code.discount,
+                                isPromoCode: true
+                            }));
+                            setTotalPayment(result.data.total_amount - cart?.promo_code?.discount);
                         }
                         else {
                             setTotalPayment(result.data.total_amount);
                         }
+                        setCartError("")
+                    } else if (result.status === 0) {
+                        setCartError(result?.message)
                     }
 
                 })
                 .catch(error => console.log(error));
-    }, [address?.selected_address]);
+    }, [address?.selected_address, promoCode]);
 
 
     const checkLastOrderTime = (lastTime) => {
@@ -1140,6 +1171,7 @@ const Checkout = () => {
 
                                                                     <div className='d-flex justify-content-between'>
                                                                         <span>{t("delivery_charge")}</span>
+
                                                                         <div className='d-flex align-items-center'>
 
                                                                             <span>{setting.setting && setting.setting.currency}  {(cart?.checkout?.delivery_charge?.total_delivery_charge)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
@@ -1169,6 +1201,7 @@ const Checkout = () => {
                                                                         <span>{t("total")}</span>
                                                                         <div className='d-flex align-items-center total-amount' style={{ color: "var(--secondary-color)" }}>
                                                                             <span>
+                                                                                {/* TODO: */}
                                                                                 {setting.setting && setting.setting.currency}
                                                                                 {Number(totalPayment)?.toFixed(setting.setting && setting.setting.decimal_point)}
                                                                             </span>

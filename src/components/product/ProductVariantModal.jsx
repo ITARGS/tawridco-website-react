@@ -199,12 +199,12 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
                         {product?.variants?.map((variant) => {
                             return (
                                 <div className='row d-flex align-items-center variant-row'>
-                                    <div className='col-7'>{`${variant?.measurement} ${variant?.stock_unit_name}`}</div>
+                                    <div className='col-4 col-lg-7'>{`${variant?.measurement} ${variant?.stock_unit_name}`}</div>
                                     {variant?.is_unlimited_stock === 0 && variant?.stock == 0 ? <></> :
-                                        <div className='col-2 mr-4 variant-price'>{setting?.setting?.currency}{variant?.discounted_price == 0 ? variant?.price : variant?.discounted_price}</div>
+                                        <div className='col-4 col-lg-2 mr-4 variant-price'>{setting?.setting?.currency}{variant?.discounted_price == 0 ? variant?.price : variant?.discounted_price}</div>
                                     }
                                     {variant?.is_unlimited_stock === 0 && variant?.stock == 0 ? <span className='col-5 mr-4 variant-out-of-stock'>{t("outOfStock")} </span> :
-                                        <div className='col-3'>
+                                        <div className='col-4 col-lg-3 '>
 
                                             {cart?.isGuest === false && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == variant?.id)?.qty > 0 ||
                                                 cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === variant?.id)?.qty > 0 ? <div className='cart-variant-count-btn'><button

@@ -181,7 +181,7 @@
 }
 
 .product-grid .title a {
-    color: var(--font-color);
+    color: var(--font-color) !important;
     transition: all 0.3s ease 0s;
 }
 

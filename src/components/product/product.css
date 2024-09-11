@@ -674,6 +674,13 @@ input::placeholder {
   padding: 0px 8px;
 }
 
+.filter-row .brand-view-more {
+  color: var(--font-color);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
 #productlist .row .filter-row {
   /* background: var(--second-cards-color); */
   padding: 16px;

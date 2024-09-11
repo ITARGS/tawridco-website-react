@@ -166,6 +166,7 @@ const Login = React.memo((props) => {
                     setTimer(90)
                     setIsOTP(true)
                     setisLoading(false)
+
                 } catch (error) {
                     setPhonenum();
                     setError(error.message);
@@ -258,9 +259,12 @@ const Login = React.memo((props) => {
                 const res = await newApi.verifyOTP({ mobile: mobileNo, otp: OTP, country_code: `+${countryCode}` })
                 if (res.status === 1 && res?.message == "OTP is valid, but no user found with this phone number.") {
                     setRegisterModalShow(true)
+                    props.setShow(false);
                     setPhonenum(mobileNo)
                     setUserAuthType("phone")
                     dispatch(setAuthType({ data: "phone" }))
+                    setUserEmail("")
+                    setUserName("")
                 } else if (res.status === 1) {
                     const tokenSet = await dispatch(setTokenThunk(res?.data?.access_token))
                     await getCurrentUser()
@@ -361,6 +365,7 @@ const Login = React.memo((props) => {
                 setUserName(user?.providerData?.[0]?.displayName)
                 setPhonenum(user?.providerData?.[0]?.phoneNumber)
                 setRegisterModalShow(true)
+                props.setShow(false);
             }
             setisLoading(false)
         } catch (error) {
@@ -376,7 +381,7 @@ const Login = React.memo((props) => {
             const credential = GoogleAuthProvider.credentialFromResult(result);
             const token = credential.accessToken;
             const user = result.user;
-
+            dispatch(setAuthType({ data: "google" }))
             await loginApiCall(user, user?.providerData?.[0]?.email, fcm, "google")
         } catch (error) {
             console.log("error", error)

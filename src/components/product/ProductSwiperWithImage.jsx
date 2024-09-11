@@ -15,11 +15,14 @@ import { Link } from 'react-router-dom';
 const ProductSwiperWithImage = () => {
     const imageUrl = "https://images.pexels.com/photos/2255935/pexels-photo-2255935.jpeg?auto=compress&cs=tinysrgb&w=600";
     const city = useSelector(state => state.city);
+    const setting = useSelector(state => state.setting)
     const [product, setProducts] = useState([])
     useEffect(() => {
+        const latitude = city?.city?.latitude || setting?.setting?.default_city?.latitude
+        const longitude = city?.city?.longitude || setting?.setting?.default_city?.longitude
         const fetchData = async () => {
             try {
-                const res = await api.getProductbyFilter(city?.city?.latitude, city?.city?.longitude)
+                const res = await api.getProductbyFilter(latitude, longitude)
                 const { data } = await res.json();
                 setProducts(data);
             } catch (error) {

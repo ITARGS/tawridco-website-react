@@ -15,6 +15,7 @@ import { addGuestCartTotal, addtoGuestCart, setCart, setCartProducts, setCartSub
 import { useTranslation } from 'react-i18next';
 import ProductVariantModal from './ProductVariantModal';
 import Image from "../../utils/Product-Images-test.jpg"
+import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
@@ -94,8 +95,9 @@ const ProductCard = ({ product }) => {
     }
 
     const addToFavorite = async (prdctId) => {
+
         try {
-            if (user?.jwttoken) {
+            if (user?.jwtToken) {
                 const res = await newApi.addToFavorite({ product_id: prdctId });
                 if (res.status == 1) {
                     toast.success(res.message)
@@ -249,7 +251,7 @@ const ProductCard = ({ product }) => {
                 <div >
                     <div className="product-image">
                         <a onClick={() => navigate(`/product/${product.slug}`)} className="image">
-                            <img src={product?.image_url} />
+                            <ImageWithPlaceholder src={product?.image_url} alt={product?.slug} />
                         </a>
                         {selectedVariant?.discounted_price !== 0 ? <span className="product-discount-label">{calculateDiscount(selectedVariant?.discounted_price, selectedVariant?.price).toFixed(0)}% OFF</span> : <></>}
 

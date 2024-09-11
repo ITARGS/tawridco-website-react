@@ -17,14 +17,14 @@ import { Dropdown as AntdDropdown, Space } from 'antd';
 import { setCity } from "../../model/reducer/locationReducer";
 import { setPaymentSetting } from '../../model/reducer/settingReducer';
 import { setLanguage, setLanguageList } from "../../model/reducer/languageReducer";
-import { setFilterSearch, setFilterCategory, setProductBySearch } from "../../model/reducer/productFilterReducer";
+import { setFilterSearch, setFilterCategory, setProductBySearch, setFilterBrands, setFilterSection } from "../../model/reducer/productFilterReducer";
 import { setCSSMode } from '../../model/reducer/cssmodeReducer';
-import { setCart, setCartProducts, setCartSubTotal, setTotalCartValue } from '../../model/reducer/cartReducer';
+import { setCart, setCartProducts, setCartSubTotal, setIsGuest, setTotalCartValue } from '../../model/reducer/cartReducer';
 
 
 // icons import
 import { BsMoon, BsShopWindow } from 'react-icons/bs';
-import { BiUserCircle } from 'react-icons/bi';
+import { BiBell, BiBookmarkHeart, BiCartAlt, BiMoneyWithdraw, BiUserCircle, BiWallet } from 'react-icons/bi';
 import { MdSearch, MdGTranslate, MdNotificationsActive, MdOutlineWbSunny, MdOutlinePhoneInTalk, MdPhoneInTalk } from "react-icons/md";
 import { IoNotificationsOutline, IoHeartOutline, IoCartOutline, IoPersonOutline, IoContrast, IoCloseCircle, IoLocationOutline, IoWalletOutline } from 'react-icons/io5';
 import { IoMdArrowDropdown, IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
@@ -37,12 +37,15 @@ import { CiUser } from "react-icons/ci";
 import { FaMapLocationDot } from "react-icons/fa6";
 import { GrTransaction } from "react-icons/gr";
 import { RiLogoutCircleRLine } from 'react-icons/ri';
+import { confirmAlert } from 'react-confirm-alert';
 
 // components imports
 import Location from '../location/Location';
 import Login from '../login/Login';
 import Cart from '../cart/Cart';
 import { label } from 'yet-another-react-lightbox';
+import { logoutAuth } from '../../model/reducer/authReducer';
+import { removelocalstorageOTP } from '../../utils/manageLocalStorage';
 
 
 
@@ -87,13 +90,53 @@ const Header = () => {
         closeSidebarRef.current.click();
     };
 
+    const handleLogout = () => {
+
+        confirmAlert({
+            title: t('logout_title'),
+            message: t('logout_message'),
+            buttons: [
+                {
+                    label: t("Ok"),
+                    onClick: async () => {
+                        await api.logout(user?.jwtToken).then(response => response.json())
+                            .then(result => {
+                                if (result.status === 1) {
+                                    removelocalstorageOTP();
+                                    dispatch(setFilterBrands({ data: [] }));
+                                    dispatch(setFilterCategory({ data: null }));
+                                    dispatch(setFilterSearch({ data: null }));
+                                    dispatch(setFilterSection({ data: null }));
+                                    dispatch(setCartProducts({ data: [] }));
+                                    dispatch(setCartSubTotal({ data: 0 }));
+                                    dispatch(logoutAuth({ data: null }));
+                                    dispatch(setIsGuest({ data: true }));
+                                    toast.success("You're Successfully Logged Out");
+                                    navigate('/');
+                                }
+                                else {
+                                    toast.info(result.message);
+                                }
+                            });
+
+                    }
+                },
+                {
+                    label: t('Cancel'),
+                    onClick: () => { }
+                }
+            ]
+        });
+
+
+    };
 
     const items = [
         {
             key: '1',
             label: (
                 <span onClick={() => navigate("/profile")} className="custom-dropdown-item">
-                    <FaRegUserCircle size={20} />
+                    <BiUserCircle size={22} />
                     {t("editProfile")}
                 </span>
             ),
@@ -102,7 +145,7 @@ const Header = () => {
             key: '2',
             label: (
                 <span onClick={() => navigate("/profile/orders")} className="custom-dropdown-item">
-                    <IoCartOutline size={20} />
+                    <BiCartAlt size={22} />
                     {t("orders")}
                 </span>
             )
@@ -110,40 +153,60 @@ const Header = () => {
         {
             key: '3',
             label: (
-                <span className="custom-dropdown-item" onClick={() => navigate("/profile/address")}>
-                    <IoLocationOutline size={20} />
-                    {t("myAddress")}
+                <span onClick={() => navigate("/wishlist")} className="custom-dropdown-item">
+                    <BiBookmarkHeart size={22} />
+                    {t("wishlist")}
                 </span>
             )
         },
         {
             key: '4',
             label: (
-                <span className="custom-dropdown-item" onClick={() => navigate("/profile/wallet-transaction")}>
-                    <IoWalletOutline size={20} />
-                    {t("walletBalance")}
+                <span onClick={() => navigate("/notification")} className="custom-dropdown-item">
+                    <BiBell size={22} />
+                    {t("notification")}
                 </span>
             )
         },
         {
             key: '5',
             label: (
-                <span onClick={() => navigate("/profile/transactions")} className="custom-dropdown-item">
-                    <GrTransaction size={20} />
-                    {t("myTransaction")}
+                <span className="custom-dropdown-item" onClick={() => navigate("/profile/address")}>
+                    <IoLocationOutline size={22} />
+                    {t("myAddress")}
                 </span>
             )
         },
         {
             key: '6',
             label: (
-                <span className="custom-dropdown-item">
+                <span className="custom-dropdown-item" onClick={() => navigate("/profile/wallet-transaction")}>
+                    <BiWallet size={22} />
+                    {t("walletBalance")}
+                </span>
+            )
+        },
+        {
+            key: '7',
+            label: (
+                <span onClick={() => navigate("/profile/transactions")} className="custom-dropdown-item">
+                    <BiMoneyWithdraw size={22} />
+                    {t("myTransaction")}
+                </span>
+            )
+        },
+        {
+            key: '8',
+            label: (
+                <span className="custom-dropdown-item" onClick={handleLogout}>
                     <RiLogoutCircleRLine size={20} />
                     {t("logout")}
                 </span>
             )
         },
     ];
+
+
 
     useEffect(() => {
         const fetchCartData = async () => {
@@ -333,7 +396,7 @@ const Header = () => {
         // Store the timeout ID
         setTypingTimeout(timeout);
     };
-    console.log("setting", setting.setting.web_settings?.placeholder_image)
+    // console.log("setting", setting.setting.web_settings?.placeholder_image)
     return (
         <>
             {/* sidebar */}
@@ -400,29 +463,30 @@ const Header = () => {
                                         navigate('/faq');
                                     }}>{t('faq')}</button>
                                 </li>
-
-
                             </ul>
 
 
 
                             <div className='lang-mode-utils'>
                                 <div className='language-container' >
-                                    <MdGTranslate size={24} />
-                                    <Dropdown >
-                                        <Dropdown.Toggle variant='Secondary' >
-                                            {languages.current_language && languages.current_language.name}
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu>
-                                            {languages.available_languages && languages.available_languages.map((language, index) => {
-                                                return (
-                                                    <Dropdown.Item key={index} onClick={() => {
-                                                        handleChangeLanguage(language.id);
-                                                    }}>{language.name}</Dropdown.Item>
-                                                );
-                                            })}
-                                        </Dropdown.Menu>
-                                    </Dropdown>
+
+                                    {languages.available_languages?.length > 1 ? <div> <MdGTranslate size={24} />
+                                        <Dropdown >
+                                            <Dropdown.Toggle variant='Secondary' >
+                                                {languages.current_language && languages.current_language.name}
+                                            </Dropdown.Toggle>
+                                            <Dropdown.Menu>
+                                                {languages.available_languages && languages.available_languages.map((language, index) => {
+                                                    return (
+                                                        <Dropdown.Item key={index} onClick={() => {
+                                                            handleChangeLanguage(language.id);
+                                                        }}>{language.name}</Dropdown.Item>
+                                                    );
+                                                })}
+                                            </Dropdown.Menu>
+                                        </Dropdown></div> : <button className='language-btn-mobile'><MdGTranslate size={20} className='me-2' />
+                                        {languages.current_language && languages.current_language.name}</button>}
+
 
                                 </div>
                                 {/* <div className='util'>
@@ -474,7 +538,7 @@ const Header = () => {
                                 </div>
 
                                 <div className='language-container' >
-                                    <Dropdown>
+                                    {languages.available_languages?.length > 1 ? <Dropdown>
                                         <Dropdown.Toggle>
                                             <MdGTranslate size={20} className='me-2' />
                                             {languages.current_language && languages.current_language.name}
@@ -486,7 +550,9 @@ const Header = () => {
                                                 );
                                             })}
                                         </Dropdown.Menu>
-                                    </Dropdown>
+                                    </Dropdown> : <button className='language-btn'><MdGTranslate size={20} className='me-2' />
+                                        {languages.current_language && languages.current_language.name}</button>}
+
 
                                 </div>
                             </div>

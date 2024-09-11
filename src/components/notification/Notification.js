@@ -98,12 +98,12 @@ const Notification = () => {
                             <div className='notification-body'>
                               {notification.map((ntf, index) => (
                                 <div key={index} className='wrapper'>
-                                  {ntf.image_url === "" ? <div className='logo' style={{ background: "var(--secondary-color)" }}><IoNotifications fill='#fff' fontSize='5rem' /></div> : <img onError={placeHolderImage} src={ntf.image_url} alt='notification'></img>}
-                                  <div className='content'>
+                                  {ntf.image_url === "" ? <div className='logo col-4 col-lg-2 col-md-3' style={{ background: "var(--secondary-color)" }}><IoNotifications fill='#fff' fontSize='5rem' /></div> : <img onError={placeHolderImage} src={ntf.image_url} alt='notification' className='col-4 col-lg-2 col-md-3'></img>}
+                                  <div className='content col-4 col-lg-8 col-md-6'>
                                     <p className='title'>{ntf.title}</p>
                                     <p>{ntf.message}</p>
                                   </div>
-                                  <div className='d-flex flex-column justify-content-center'>
+                                  <div className='d-flex flex-column justify-content-center col-4 col-lg-2 col-md-3'>
                                     <span>
                                       {formatNotificationDate(ntf.date_sent)}
                                     </span>

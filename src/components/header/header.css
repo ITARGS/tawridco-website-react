@@ -895,6 +895,16 @@
   flex-direction: row !important;
 }
 
+.language-container .language-btn {
+  background-color: transparent;
+  color: #fff;
+}
+
+.language-container .language-btn-mobile {
+  background-color: transparent;
+  color: var(--font-color);
+}
+
 .language-container .dropdown {
   font-size: 24px !important;
 }

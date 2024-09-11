@@ -65,19 +65,35 @@ const ProductList2 = React.memo(() => {
     const [networkError, setNetworkError] = useState(false);
     const { t } = useTranslation();
     const [checkedList, setCheckedList] = useState([]);
+    const [totalBrands, setTotalBrands] = useState(null)
+    const [brandLimit, setBrandLimit] = useState(10)
+    const [brandOffset, setBrandOffset] = useState(0);
 
     const fetchBrands = () => {
-        api.getBrands()
+        // const offset = 
+        api.getBrands(brandLimit, brandOffset)
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    setbrands(result.data);
+                    console.log("result", result)
+                    if (brands == null) {
+                        setbrands(result?.data)
+                    } else {
+                        setbrands(prevBrands => [...prevBrands, ...result?.data]);
+                    }
+                    // setbrands(result.data);
+                    setTotalBrands(result?.total)
                 }
                 else {
                 }
             })
             .catch(error => console.log("error ", error));
     };
+
+    const loadMoreBrands = () => {
+        setBrandOffset(prevOffset => prevOffset + brandLimit); // Increase offset to fetch next set of brands
+    };
+
 
     const fetchCategories = (id = 0) => {
         setisLoader(true);
@@ -177,9 +193,9 @@ const ProductList2 = React.memo(() => {
     // console.log(category?.category);
 
     useEffect(() => {
-        if (brands === null) {
-            fetchBrands();
-        }
+
+        fetchBrands();
+
         if (category === null) {
             fetchCategories();
         }
@@ -200,7 +216,7 @@ const ProductList2 = React.memo(() => {
                 section_id: filter?.section_id
             });
 
-    }, [filter.search, filter.category_id, filter.brand_ids, filter.sort_filter, filter?.search_sizes, filter?.price_filter, offset]);
+    }, [filter.search, filter.category_id, filter.brand_ids, filter.sort_filter, filter?.search_sizes, filter?.price_filter, offset, brandOffset, brandLimit]);
 
 
 
@@ -248,7 +264,7 @@ const ProductList2 = React.memo(() => {
                                     setMinPrice(null);
                                     setMaxPrice(null);
                                     dispatch(clearAllFilter())
-                                    
+
                                 }}
                             > Clear All</p>
                         </div>
@@ -261,8 +277,9 @@ const ProductList2 = React.memo(() => {
                         </Collapse.Panel>
                         <Collapse.Panel header={t("brands")} key="2">
                             <div className='filter-row'>
+                                {console.log("brands", brands)}
                                 {
-                                    brands === null ? (<Loader />) :
+                                    brands == null ? (<Loader />) :
                                         brands?.map((brand, index) => {
                                             const isChecked = filter.brand_ids.includes(brand.id);
                                             return (
@@ -279,6 +296,8 @@ const ProductList2 = React.memo(() => {
                                             );
                                         })
                                 }
+                                {brands?.length < totalBrands ? <a className='brand-view-more' onClick={loadMoreBrands}>View moree.</a> : <></>}
+
                             </div>
                         </Collapse.Panel>
                         <Collapse.Panel header={t("priceRange")} key="3">
@@ -400,7 +419,7 @@ const ProductList2 = React.memo(() => {
                                 <div className="row">
                                     {/* {console.log(totalProducts, isLoader)} */}
                                     {!isLoader ? (<>
-                                        <div className='d-flex col-12 flex-row justify-content-between align-items-center filter-view '>
+                                        <div className='d-flex col-12 flex-row justify-content-between align-items-start filter-view flex-column flex-lg-row flex-md-row align-items-lg-center align-items-md-center'>
                                             <div className='d-flex gap-3 '>
                                                 <span className='total_product_count'>{totalProducts} - {t("products_found")}</span>
 

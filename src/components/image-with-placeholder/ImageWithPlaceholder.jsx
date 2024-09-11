@@ -1,10 +1,18 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ImagePlaceholder from "../../utils/image-placeholder/image.png";
+import { useSelector } from 'react-redux';
 
 
 const ImageWithPlaceholder = ({ src, alt, className, handleOnClick }) => {
+    const setting = useSelector(state => state.setting)
     const [imageSrc, setImageSrc] = useState(ImagePlaceholder);
     const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        setImageSrc(setting.setting.web_settings?.placeholder_image)
+    }, [])
+
+
 
     const handleLoad = () => {
         setIsLoaded(true);
@@ -12,7 +20,7 @@ const ImageWithPlaceholder = ({ src, alt, className, handleOnClick }) => {
     };
 
     const handleError = () => {
-        setImageSrc(ImagePlaceholder);
+        setImageSrc(setting.setting.web_settings?.placeholder_image);
     };
 
     return (

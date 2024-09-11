@@ -141,20 +141,26 @@ const api = {
         };
         return fetch(url, requestOptions);
     },
-    getBrands() {
+    getBrands(limit, offset) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
 
         // var formdata = new FormData();
-
+        let params = {
+            limit: limit,
+            offset: offset
+        };
         var requestOptions = {
             method: 'GET',
             headers: myHeaders,
             // body: formdata,
             redirect: 'follow'
         };
-
-        return fetch(appUrl + appSubUrl + "/brands", requestOptions);
+        let url = new URL(appUrl + appSubUrl + "/brands");
+        for (let p in params) {
+            url.searchParams.append(p, params[p]);
+        }
+        return fetch(url, requestOptions);
 
     },
     // getCategory(id = 0) {
