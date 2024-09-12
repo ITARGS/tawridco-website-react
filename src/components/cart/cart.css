@@ -112,7 +112,8 @@
 }
 
 .cart-sidebar-container .cart-sidebar-product .products-container::-webkit-scrollbar {
-  width: 0;
+  /* width: 0; */
+  /* margin-left: 1px; */
 }
 
 .cart-sidebar-container .cart-sidebar-product .products-container .cart-card {

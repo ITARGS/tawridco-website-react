@@ -1150,6 +1150,18 @@
   cursor: pointer;
 }
 
+.ant-dropdown-menu {
+  background-color: var(--body-background) !important;
+}
+
+.ant-dropdown-menu .ant-dropdown-menu-item {
+  color: var(--font-color) !important;
+}
+
+.ant-dropdown-menu .ant-dropdown-menu-item:hover {
+  background-color: var(--second-cards-color) !important;
+}
+
 .anticon-down {
   font-size: 14px;
 }

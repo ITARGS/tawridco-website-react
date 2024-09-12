@@ -913,7 +913,6 @@ const Checkout = () => {
 
 
                                                             <Calendar
-
                                                                 value={expectedDate.toString() === "Invalid Date" ? new Date() : expectedDate}
                                                                 onChange={(e) => {
                                                                     if (new Date(e) >= new Date()) {

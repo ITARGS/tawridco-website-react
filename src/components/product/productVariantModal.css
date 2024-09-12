@@ -16,7 +16,7 @@
 }
 
 .modal-body .product-info {
-    background-color: #F5F8F9;
+    background-color: var(--body-background);
     border-radius: 8px;
     padding: 16px;
     display: flex;
