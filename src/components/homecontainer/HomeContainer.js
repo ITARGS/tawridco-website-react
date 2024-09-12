@@ -8,10 +8,7 @@ import ShopByCountries from '../shop-by-countries/ShopByCountries';
 import ShopBySellers from '../shop-by-seller/ShopBySellers';
 import { useNavigate } from 'react-router-dom';
 import { setFilterCategory } from '../../model/reducer/productFilterReducer';
-import HorizonalProduct from '../product/HorizonalProductCard';
-import ProductContainer from '../product/ProductContainer';
-import HorizontalProductContainer from "../product/horizontalProductContainer"
-import ProductSwiperWithImage from '../product/ProductSwiperWithImage';
+
 
 const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryOfferArray }) => {
     const shop = useSelector((state) => state.shop);
@@ -57,31 +54,12 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
                 </div>
             ))}
-            {/* <div className='row mb-2'>
-                <div className='d-flex col-lg-4'>
 
-                    <HorizonalProduct />
-                </div>
-                <div className='d-flex col-lg-4'>
-
-                    <HorizonalProduct />
-                </div>
-                <div className='d-flex col-lg-4'>
-
-                    <HorizonalProduct />
-                </div>
-                <div className='d-flex col-lg-4'>
-
-                    <HorizonalProduct />
-                </div>
-            </div> */}
 
             {shop.shop?.is_category_section_in_homepage ?
                 <div className='category_section'>
                     <div className="container">
-
                         <Category />
-
                     </div>
                 </div>
                 : <></>}
@@ -122,10 +100,6 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     </div>
                 </div>
                 : <></>}
-
-            {/* <ProductContainer /> */}
-            {/* <HorizontalProductContainer /> */}
-            {/* <ProductSwiperWithImage /> */}
         </section>
 
     );

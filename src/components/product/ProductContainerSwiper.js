@@ -106,17 +106,19 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                             <p>{section.title}</p>
                                                             <span className='d-none d-md-block'>{section.short_description}</span>
                                                         </div>
-                                                        {/* <div>
-                                                            <Link to="/products" onClick={() => {
+
+                                                    </div>
+                                                    <div className='d-flex align-items-center flex-md-row flex-column'>
+                                                        <div>
+                                                            <Link className="d-flex" to="/products" onClick={() => {
                                                                 dispatch(setFilterSection({ data: section.id }));
                                                                 navigate('/products');
-
                                                             }}>{t('see_all')}</Link>
-                                                        </div> */}
-                                                    </div>
-                                                    <div>
-                                                        <button className={`prev-arrow-category prev-arrow-country section-${index0}`} ><IoMdArrowBack fill='black' size={20} /></button>
-                                                        <button className={`next-arrow-category next-arrow-country section-${index0}`} ><IoMdArrowForward fill='black' size={20} /></button>
+                                                        </div>
+                                                        <div className='d-flex'>
+                                                            <button className={`prev-arrow-category prev-arrow-country section-${index0}`}><IoMdArrowBack fill='black' size={20} /></button>
+                                                            <button className={`next-arrow-category next-arrow-country section-${index0}`}><IoMdArrowForward fill='black' size={20} /></button>
+                                                        </div>
                                                     </div>
 
                                                 </div>

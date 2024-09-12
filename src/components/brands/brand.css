@@ -132,6 +132,14 @@
   /* border-radius: 8px; */
   border: none;
   cursor: pointer;
+  padding: 24px;
+  border-radius: 8px;
+  background-color: var(--body-background);
+}
+
+.allBrandsSlider .content .card:hover {
+  background-color: transparent;
+  border: 1px solid lightgray;
 }
 
 .allBrandsSlider.home .content .card {
@@ -153,20 +161,18 @@
   border-bottom-right-radius: 30px;
 }
 
-.allBrandsSlider .content .card:hover {
+/* .allBrandsSlider .content .card:hover {
   outline: var(--secondary-color);
   transform: none !important;
-  /* box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05); */
-  /* border: 1px solid var(--secondary-color); */
   color: var(--secondary-color) !important;
-}
+} */
 
-.allBrandsSlider .content .card .card-body:hover p {
+/* .allBrandsSlider .content .card .card-body:hover p {
   color: var(--secondary-color) !important;
-}
+} */
 
 .allBrandsSlider .content .card:hover .card-body p {
-  color: var(--secondary-color) !important;
+  /* color: var(--secondary-color) !important; */
 }
 
 .allBrandsSlider .content .card .card-body p {

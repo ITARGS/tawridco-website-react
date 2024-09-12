@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import ProductVariantModal from './ProductVariantModal';
 import Image from "../../utils/Product-Images-test.jpg"
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
+import { BiHeart } from 'react-icons/bi';
 
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
@@ -256,7 +257,8 @@ const ProductCard = ({ product }) => {
                         {selectedVariant?.discounted_price !== 0 ? <span className="product-discount-label">{calculateDiscount(selectedVariant?.discounted_price, selectedVariant?.price).toFixed(0)}% OFF</span> : <></>}
 
                         <ul className="product-links">
-                            <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist"><i className="fas fa-heart fa-1x"></i></a></li>
+                            <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist">
+                                <BiHeart size={20} /></a></li>
                             <li onClick={() => {
                                 setselectedProduct(product)
                                 setShowModal(true)
