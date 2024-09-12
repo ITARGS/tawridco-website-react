@@ -75,7 +75,6 @@ const ProductList2 = React.memo(() => {
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    console.log("result", result)
                     if (brands == null) {
                         setbrands(result?.data)
                     } else {
@@ -277,7 +276,6 @@ const ProductList2 = React.memo(() => {
                         </Collapse.Panel>
                         <Collapse.Panel header={t("brands")} key="2">
                             <div className='filter-row'>
-                                {console.log("brands", brands)}
                                 {
                                     brands == null ? (<Loader />) :
                                         brands?.map((brand, index) => {

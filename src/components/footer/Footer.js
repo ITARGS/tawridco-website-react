@@ -181,7 +181,7 @@ export const Footer = () => {
                         : null}
                     <div className="copyright order-sm-1 order-2 col-xs-3 col-sm-3 col-md-3 col-12">
                         <div className="copyrightSubContainer col-xs-12 col-sm-12 col-md-12 mt-2 mt-sm-2 text-center text-white">
-                            <span className='company_name'>{setting.setting !== null ? setting.setting.web_settings.copyright_details : "App Name"}</span>
+                            <span className='company_name' dangerouslySetInnerHTML={{ __html: setting.setting !== null ? setting.setting.web_settings.copyright_details : "App Name" }}></span>
                         </div>
                     </div>
                     {setting.payment_setting ?
@@ -220,6 +220,6 @@ export const Footer = () => {
                         : <></>}
                 </div>
             </div>
-        </section>
+        </section >
     );
 };

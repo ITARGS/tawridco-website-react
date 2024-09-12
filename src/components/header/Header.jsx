@@ -504,12 +504,16 @@ const Header = () => {
 
             </div>
 
+
+
+
             {/* header */}
-            <header className='site-header  desktop-shadow-disable mobile-shadow-enable bg-white  mobile-nav-enable border-bottom' >
+            < header className='site-header  desktop-shadow-disable mobile-shadow-enable bg-white  mobile-nav-enable border-bottom' >
 
 
                 {/* top header */}
-                <div className={`header-top d-none d-md-block border-bottom ${(cssmode.cssmode === "dark") ? "dark-header-top" : ''}`}>
+                <div div className={`header-top d-none d-md-block border-bottom ${(cssmode.cssmode === "dark") ? "dark-header-top" : ''}`
+                }>
                     <div className="container">
                         <div className={`row justify-content-between`}>
                             <div className='col-md-6 d-flex justify-content-start align-items-center social-icons-cotainer'>
@@ -558,11 +562,11 @@ const Header = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div >
 
 
                 {/* center header */}
-                <div className={isSticky ? "sticky header-main  w-100" : "header-main  w-100"} >
+                < div className={isSticky ? "sticky header-main  w-100" : "header-main  w-100"} >
                     <div className="container">
                         <div className='d-flex row-reverse justify-content-between align-items-center top-header'>
 
@@ -619,7 +623,7 @@ const Header = () => {
                             <div className='header-btn-containers'>
                                 {/* {user?.jwtToken == "" ? :} */}
                                 <div className='me-5' onClick={() => setIsCartSidebarOpen(true)} role='button' data-bs-toggle="offcanvas" data-bs-target="#cartoffcanvasExample" aria-controls="cartoffcanvasExample">
-                                    <span className='cart-btn' >
+                                    <span className='cart-btn'  >
                                         <IoCartOutline size={24} />
                                         {
                                             cart.isGuest == true ? <p className={cart?.guestCart
@@ -678,7 +682,7 @@ const Header = () => {
 
                             </div>
                             <div className='hide-desktop header-icons'>
-                                <span className='cart-btn' >
+                                <span className='cart-btn' onClick={() => setIsCartSidebarOpen(true)}>
                                     <BsCart2 />
                                     {/* {
                                         cart.isGuest == true ? <p className={cart?.guestCart
@@ -689,9 +693,9 @@ const Header = () => {
                                     } */}
 
                                 </span>
-                                <span className='user-profile-btn'>
+                                {/* <span className='user-profile-btn'>
                                     <CiUser />
-                                </span>
+                                </span> */}
 
                                 {/* <BsThreeDotsVertical />  */}
                             </div>
@@ -716,8 +720,55 @@ const Header = () => {
                                         )}</h4>
                                 </span>
                             </div>
-                            <div className='col-lg-6 col-md-8 col-sm-8  column-left d-flex flex-column position-relative '>
-                                <div className='d-flex align-items-center justify-content-start col-12 column-left search'>
+
+
+                            <div className={`header-search ${mobileNavActKey == 2 ? "active " : ""} d-md-none`}>
+                                <div className='header-search-content'>
+
+                                    <Dropdown >
+                                        <Dropdown.Toggle>
+                                            {selectedCategory ? selectedCategory : `All categories`}
+                                        </Dropdown.Toggle>
+                                        <Dropdown.Menu >
+                                            <Dropdown.Item
+                                                onClick={() => handleCatChange("All categories")}>All categories</Dropdown.Item>
+                                            {category?.length > 0 &&
+                                                category?.map((cat) => {
+
+                                                    return (
+                                                        <Dropdown.Item
+                                                            key={cat.id}
+                                                            onClick={() => handleCatChange(cat)}
+                                                        >{cat.name}</Dropdown.Item>
+                                                    )
+                                                })
+                                            }
+                                        </Dropdown.Menu>
+                                    </Dropdown>
+                                    <input type='text' placeholder='I am looking for...' value={filter?.search} onChange={handleQueryChange} />
+                                    <button className='mobile-search-btn' onClick={() => {
+                                        dispatch(setProductBySearch({ data: "" }))
+                                        navigate("/products")
+                                        setMobileNavActKey(1)
+                                    }}><FaSearch size={20} />Search</button>
+
+                                </div>
+                                {filter?.search_product?.length > 0 ? <div className='d-flex flex-column  mobile-search-result'>
+
+                                    {filter?.search_product?.map((prdct) => {
+                                        return (
+                                            <Link to={`/product/${prdct?.slug}`} onClick={() => {
+                                                setQuery("")
+                                                dispatch(setProductBySearch({ data: "" }))
+                                                setMobileNavActKey(null)
+                                            }}> {prdct?.name}</Link>
+                                        )
+                                    })}
+                                </div> : null}
+                            </div>
+
+                            <div className={` col-lg-6 col-md-8 col-sm-8  column-left d-flex flex-column position-relative `}>
+                                <div className='d-flex align-items-center justify-content-start col-12 column-left search '>
                                     <Dropdown>
                                         <Dropdown.Toggle>
                                             {selectedCategory ? selectedCategory : `All categories`}
@@ -771,7 +822,7 @@ const Header = () => {
 
 
                 {/* Mobile bottom Nav */}
-                <nav className='header-mobile-nav' >
+                < nav className='header-mobile-nav' >
                     <div className='mobile-nav-wrapper'>
                         <ul>
                             <li className='menu-item'>
@@ -785,7 +836,7 @@ const Header = () => {
                                 </Link>
                             </li>
 
-                            <li className='menu-item'>
+                            <li className='menu-item d-block d-sm-none'>
                                 <button type='button' className={`search ${mobileNavActKey == 2 ? "active" : ""}`} ref={searchNavTrigger} onClick={() => {
                                     handleMobileNavActKey(2);
                                     searchNavTrigger.current.focus();
@@ -934,7 +985,7 @@ const Header = () => {
                 {/* login modal */}
                 < Login show={showModal} setShow={setShowModal} />
                 {/* location modal */}
-                <Modal
+                < Modal
                     className='location'
                     id="locationModal"
                     centered

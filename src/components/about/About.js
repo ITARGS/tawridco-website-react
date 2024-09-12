@@ -30,7 +30,7 @@ const About = () => {
                             </div>
                         </div>
                         <div className='container'>
-                            {console.log("About us", setting.setting.about_us)}
+
                             <div className='about-container' dangerouslySetInnerHTML={{ __html: setting.setting.about_us }}></div>
                         </div>
                     </>

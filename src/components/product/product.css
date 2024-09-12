@@ -841,6 +841,7 @@ input::placeholder {
   padding: 0px 9.5px;
   font-size: 14px;
   font-weight: 400;
+  color: var(--font-color);
 }
 
 .select select {

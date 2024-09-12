@@ -22,7 +22,7 @@ const ShopBySellersPage = () => {
     const filter = useSelector(state => state.productFilter);
     const city = useSelector(state => state.city.city);
 
-    const [limit, setLimit] = useState(1);
+    const [limit, setLimit] = useState(10);
     const [offset, setOffset] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -57,7 +57,7 @@ const ShopBySellersPage = () => {
     };
 
     const placeholderItems = Array.from({ length: 12 }).map((_, index) => index);
-
+    console.log("total data", totalData)
     return (
         <>
             <section className='allSellersContainer'>
