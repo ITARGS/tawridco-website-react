@@ -517,11 +517,25 @@ const Header = () => {
                     <div className="container">
                         <div className={`row justify-content-between`}>
                             <div className='col-md-6 d-flex justify-content-start align-items-center social-icons-cotainer'>
-                                <span>{t("follow_us")}</span>
+                                <span>{t('follow_us')}:
+
+                                    {setting.setting.social_media.map((icon, index) => {
+                                        return (
+                                            <div className='socical-icons'>
+                                                <a key={index} href={icon.link} className=''>
+                                                    <i className={` fab ${icon.icon} fa-lg  `} style={{ color: "#fff" }}>
+                                                    </i>
+                                                </a>
+                                            </div>
+
+                                        );
+                                    })}
+                                </span>
+                                {/* <span>{t("follow_us")}</span>
                                 <FaFacebookSquare className='social-icons border-end' size={30} />
                                 <FaInstagramSquare className='social-icons border-end' size={30} />
                                 <FaTwitterSquare className='social-icons border-end' size={30} />
-                                <FaLinkedin className='social-icons ' size={30} />
+                                <FaLinkedin className='social-icons ' size={30} /> */}
                                 {/* <Link to='/about' className={`borderPad  border-end ${(cssmode.cssmode === "dark") ? "dark-header-1" : ''}`} > {t('about_us')}</Link>
                                 <Link to='/contact' className={`borderPad border-end `} > {t('contact_us')}</Link>
                                 <Link to='/faq' className={`borderPad border-end `} >{t('faq')}</Link> */}

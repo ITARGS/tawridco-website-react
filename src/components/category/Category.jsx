@@ -80,16 +80,17 @@ const Category = () => {
                                 breakpoints={{
                                     1200: {
                                         slidesPerView: 6,
-                                        spaceBetween: 20,
+                                        spaceBetween: 15,
                                     },
                                     1024: {
                                         slidesPerView: 4,
-                                        spaceBetween: 20,
+                                        spaceBetween: 15,
                                     },
                                     768: {
                                         slidesPerView: 3,
                                         spaceBetween: 15,
                                     },
+                                    
                                     300: {
                                         slidesPerView: 2,
                                         spaceBetween: 10,

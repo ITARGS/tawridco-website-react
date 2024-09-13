@@ -7,6 +7,15 @@
   background-color: var(--body-background) !important;
 }
 
+.category_section_category {
+  margin: 32px 0px;
+}
+
+.category_section_category .swiper {
+  background-color: #fff;
+  border-radius: 4px;
+}
+
 .section {
   --flex-direction: initial;
   --flex-wrap: initial;

@@ -156,15 +156,52 @@ export const Footer = () => {
                                         </div>
                                     </>
                                         : <></>}
+
+                                    {setting.payment_setting ?
+                                        <div className='payment-methods'>
+                                            <span className='payment-method-heading'>{t("payment_method")}</span>
+                                            <div className="payment_methods_container order-sm-1 col-lg-12 col-xs-3 col-sm-3 col-md-6 col-12 d-flex">
+                                                {setting.payment_setting.cod_payment_method === "1" ?
+                                                    <span className='payment_methods'>
+                                                        <img src={cod_svg} alt="" srcSet="" />
+                                                    </span>
+                                                    : <></>}
+                                                {setting.payment_setting.paystack_payment_method === "1" ?
+                                                    <span className='payment_methods'>
+                                                        <img src={paystack_svg} alt="" srcSet="" />
+                                                    </span>
+                                                    : <></>}
+                                                {setting.payment_setting.paypal_payment_method === "1" ?
+                                                    <span className='payment_methods'>
+                                                        <img src={paypal_svg} alt="" srcSet="" />
+                                                    </span>
+                                                    : <></>}
+                                                {setting.payment_setting.stripe_payment_method === "1" ?
+                                                    <span className='payment_methods'>
+                                                        <img src={stripe_svg} alt="" srcSet="" />
+                                                    </span>
+                                                    : <></>}
+
+                                                {setting.payment_setting.razorpay_payment_method === "1" ?
+                                                    <span className='payment_methods'>
+                                                        <img src={razorpay_svg} alt="" srcSet="" />
+                                                    </span>
+                                                    : <></>}
+                                            </div>
+                                        </div>
+
+                                        : <></>}
+
                                 </div>
 
                             </div>
                         </div> : null}
                 </div>
             </div>
-            <div className="footer row">
-                <div className="container flex-sm-row flex-column  bottom-section-footer gap-5 ">
-                    {setting.setting && setting.setting.social_media.length > 0 ?
+            <div className="footer pb-3 d-flex justify-content-center">
+
+                {/* <div className="container row flex-sm-row flex-column  bottom-section-footer gap-5 "> */}
+                {/* {setting.setting && setting.setting.social_media.length > 0 ?
                         <div className="social-media-icons order-sm-0 col-xs-3 col-sm-3 col-md-3 col-12" key={"icons"} >
                             <span>{t('follow_us')}:
 
@@ -178,13 +215,13 @@ export const Footer = () => {
                                 })}
                             </span>
                         </div>
-                        : null}
-                    <div className="copyright order-sm-1 order-2 col-xs-3 col-sm-3 col-md-3 col-12">
-                        <div className="copyrightSubContainer col-xs-12 col-sm-12 col-md-12 mt-2 mt-sm-2 text-center text-white">
-                            <span className='company_name' dangerouslySetInnerHTML={{ __html: setting.setting !== null ? setting.setting.web_settings.copyright_details : "App Name" }}></span>
-                        </div>
+                        : null} */}
+                <div className="copyright order-sm-1 order-2 col-xs-3 col-sm-3 col-md-3 col-12">
+                    <div className="copyrightSubContainer col-xs-12 col-sm-12 col-md-12 mt-2 mt-sm-2 text-center text-white">
+                        <span className='company_name' dangerouslySetInnerHTML={{ __html: setting.setting !== null ? setting.setting.web_settings.copyright_details : "App Name" }}></span>
                     </div>
-                    {setting.payment_setting ?
+                </div>
+                {/* {setting.payment_setting ?
                         <div className="payment_methods_container order-sm-1 col-xs-3 col-sm-3 col-md-3 col-12">
                             {setting.payment_setting.cod_payment_method === "1" ?
                                 <span className='payment_methods'>
@@ -206,19 +243,15 @@ export const Footer = () => {
                                     <img src={stripe_svg} alt="" srcSet="" />
                                 </span>
                                 : <></>}
-                            {/* {setting.payment_setting.paytm_payment_method === "1" ?
-                                <span className='payment_methods'>
-                                    <img src={paytm_svg} alt="" srcSet="" />
-                                </span>
-                                : <></>} */}
+
                             {setting.payment_setting.razorpay_payment_method === "1" ?
                                 <span className='payment_methods'>
                                     <img src={razorpay_svg} alt="" srcSet="" />
                                 </span>
                                 : <></>}
                         </div>
-                        : <></>}
-                </div>
+                        : <></>} */}
+                {/* </div> */}
             </div>
         </section >
     );

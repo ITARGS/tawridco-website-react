@@ -651,6 +651,10 @@ input::placeholder {
   background-color: var(--body-background);
 }
 
+.ant-collapse .ant-collapse-item .ant-collapse-content .ant-collapse-content-box .filter-row .ant-tree .ant-tree-node-selected {
+  background-color: transparent;
+}
+
 .ant-collapse .ant-collapse-item .ant-collapse-content .ant-collapse-content-box .ant-slider {
   display: flex;
   align-items: center;
