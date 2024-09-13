@@ -134,7 +134,7 @@
   cursor: pointer;
   padding: 24px;
   border-radius: 8px;
-  background-color: var(--body-background);
+  background-color: var(--bs-body-bg);
 }
 
 .allBrandsSlider .content .card:hover {

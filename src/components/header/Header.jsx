@@ -681,16 +681,16 @@ const Header = () => {
 
 
                             </div>
-                            <div className='hide-desktop header-icons'>
-                                <span className='cart-btn' onClick={() => setIsCartSidebarOpen(true)}>
+                            <div className='hide-desktop header-icons '>
+                                <span className='responsive-cart-btn' onClick={() => setIsCartSidebarOpen(true)}>
                                     <BsCart2 />
-                                    {/* {
+                                    {
                                         cart.isGuest == true ? <p className={cart?.guestCart
                                             ?.length != 0 ? "d-flex" : "d-none"}> {cart?.guestCart
                                                 ?.length != 0 ? cart?.guestCart
                                                 ?.length : null}</p> :
                                             <p className={cart?.cartProducts?.length != 0 ? "d-flex" : "d-none"}> {cart?.cartProducts?.length != 0 ? cart?.cartProducts?.length : null}</p>
-                                    } */}
+                                    }
 
                                 </span>
                                 {/* <span className='user-profile-btn'>
@@ -836,7 +836,7 @@ const Header = () => {
                                 </Link>
                             </li>
 
-                            <li className='menu-item d-block d-sm-none'>
+                            <li className='menu-item '>
                                 <button type='button' className={`search ${mobileNavActKey == 2 ? "active" : ""}`} ref={searchNavTrigger} onClick={() => {
                                     handleMobileNavActKey(2);
                                     searchNavTrigger.current.focus();

@@ -1,5 +1,5 @@
 .category_section {
-  margin: 50px auto;
+  /* margin-bottom: 48px; */
   /* padding: 0 !important; */
 }
 
@@ -14,12 +14,16 @@
   border-radius: 8px;
 }
 
+.category_section_brand {
+  margin-bottom: 32px;
+}
+
 #allcategories .container .back-button {
   cursor: pointer;
 }
 
 .category_section_header {
-  margin-bottom: 25px;
+  margin-bottom: 24px;
   background-color: var(--second-cards-color);
   padding: 15px;
   border-radius: 5px;
@@ -58,12 +62,15 @@
   border: none;
   padding: 24px;
   border-radius: 10px;
+  background-color: transparent !important;
+  display: flex;
+  align-items: center;
   /* transition: transform 1.2s ease-in-out; */
 }
 
 .category-container .card:hover {
   transform: none !important;
-  border: 1px solid lightgray;
+  /* border: 1px solid lightgray; */
   /* box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05); */
   /* border: 1px solid var(--secondary-color); */
 }
@@ -84,9 +91,12 @@
   /* padding: 8px; */
   border-radius: 7px 7px 0px 0px;
   /* border: 1px solid #ddd; */
-  /* height: 120px; */
+  /* height: 150px; */
   /* margin-bottom: 15px; */
   /* transition: transform 0.7s ease-in-out; */
+  border-radius: 100% !important;
+  background-color: #fff;
+  padding: 8px;
 }
 
 .category-container .card .card-body {}
@@ -94,11 +104,20 @@
 .category-container .card .card-title {
   font-weight: 600;
   font-size: 16px;
-  line-height: 26px;
+  line-height: 20px;
   display: block;
-  white-space: nowrap;
+  margin-top: 22px;
+  /* white-space: nowrap; */
+  /* overflow: hidden; */
+  /* text-overflow: ellipsis; */
+  height: 42px;
   overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.category-container .category-main-img {
+  height: 132px;
+  width: 132px;
+  display: flex;
 }
 
 .category_button:hover {
@@ -192,10 +211,10 @@
 }
 
 #allcategories .content .card:hover {
-  outline: var(--secondary-color);
-  transform: none !important;
-  box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--secondary-color);
+  /* outline: var(--secondary-color); */
+  /* transform: none !important; */
+  /* box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05); */
+  /* border: 1px solid var(--secondary-color); */
   color: var(--secondary-color) !important;
 }
 
@@ -237,4 +256,8 @@
 
 #allcategories .categoryListPagination>a {
   color: var(--font-color);
+}
+
+.swiper {
+  padding: 0px !important;
 }

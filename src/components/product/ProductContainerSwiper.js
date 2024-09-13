@@ -141,24 +141,28 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                             prevEl: `.prev-arrow-country.section-${index0}`,
                                                             nextEl: `.next-arrow-country.section-${index0}`,
                                                         }}
-                                                        spaceBetween={10}
+
                                                         pagination={{ clickable: true }}
                                                         breakpoints={{
                                                             1200: {
                                                                 slidesPerView: 4,
+                                                                spaceBetween: 10
                                                             },
                                                             1024: {
                                                                 slidesPerView: 4,
+                                                                spaceBetween: 10
                                                             },
                                                             768: {
                                                                 slidesPerView: 3.5,
+                                                                spaceBetween: 10
                                                             },
                                                             300: {
                                                                 slidesPerView: 1.5,
+                                                                spaceBetween: 10
                                                             },
                                                         }}>
                                                         {section?.products?.map((product, index) => (
-                                                            <SwiperSlide className="row" key={index}>
+                                                            <SwiperSlide key={index}>
 
                                                                 <ProductCard product={product} />
 

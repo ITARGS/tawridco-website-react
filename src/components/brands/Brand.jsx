@@ -66,7 +66,7 @@ const Brand = () => {
                 },
                 768: {
                   slidesPerView: 3,
-                  spaceBetween: 15,
+                  spaceBetween: 20,
                 },
                 300: {
                   slidesPerView: 2,

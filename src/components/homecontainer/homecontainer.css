@@ -4,6 +4,7 @@
 
 .home-section {
   position: relative;
+  background-color: var(--body-background) !important;
 }
 
 .section {
@@ -33,7 +34,7 @@
   margin-left: auto;
   position: relative;
   height: 100%;
-  margin-bottom: 50px;
+  margin-bottom: 32px;
 }
 
 @media (max-width:770px) {
@@ -128,5 +129,6 @@
     height: auto;
     margin: 0;
     width: 100%;
+    background-color: #f2f5f7;
   }
 }

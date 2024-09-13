@@ -57,7 +57,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
 
 
             {shop.shop?.is_category_section_in_homepage ?
-                <div className='category_section'>
+                <div className='category_section_category'>
                     <div className="container">
                         <Category />
                     </div>
@@ -80,7 +80,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                 </div>
             ))}
             {shop.shop?.is_brand_section_in_homepage ?
-                <div className='category_section'>
+                <div className='category_section_brand'>
                     <div className="container">
                         <Brand />
                     </div>

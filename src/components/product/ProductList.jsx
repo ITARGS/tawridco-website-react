@@ -69,11 +69,12 @@ const ProductList2 = React.memo(() => {
     const [brandLimit, setBrandLimit] = useState(10)
     const [brandOffset, setBrandOffset] = useState(0);
 
-    const fetchBrands = () => {
+    const fetchBrands = (bOffset) => {
         // const offset = 
-        api.getBrands(brandLimit, brandOffset)
+        api.getBrands(brandLimit, bOffset)
             .then(response => response.json())
             .then(result => {
+                console.log("result", result)
                 if (result.status === 1) {
                     if (brands == null) {
                         setbrands(result?.data)
@@ -90,7 +91,8 @@ const ProductList2 = React.memo(() => {
     };
 
     const loadMoreBrands = () => {
-        setBrandOffset(prevOffset => prevOffset + brandLimit); // Increase offset to fetch next set of brands
+        setBrandOffset(prevOffset => prevOffset + brandLimit);
+        fetchBrands(brandOffset + brandLimit) // Increase offset to fetch next set of brands
     };
 
 
@@ -192,8 +194,9 @@ const ProductList2 = React.memo(() => {
     // console.log(category?.category);
 
     useEffect(() => {
-
-        fetchBrands();
+        if (brands == null) {
+            fetchBrands(0);
+        }
 
         if (category === null) {
             fetchCategories();
@@ -215,7 +218,7 @@ const ProductList2 = React.memo(() => {
                 section_id: filter?.section_id
             });
 
-    }, [filter.search, filter.category_id, filter.brand_ids, filter.sort_filter, filter?.search_sizes, filter?.price_filter, offset, brandOffset, brandLimit]);
+    }, [filter.search, filter.category_id, filter.brand_ids, filter.sort_filter, filter?.search_sizes, filter?.price_filter, offset]);
 
 
 
@@ -257,15 +260,20 @@ const ProductList2 = React.memo(() => {
                     <div className='filter-header'>
                         <div className='filter-sub-header '>
                             <h5>Filters</h5>
+
                             <p className='m-0' role='button'
                                 onClick={() => {
                                     setSelectedCategories([]);
                                     setMinPrice(null);
                                     setMaxPrice(null);
-                                    dispatch(clearAllFilter())
-
+                                    dispatch(clearAllFilter());
                                 }}
-                            > Clear All</p>
+                            >
+                                Clear All
+                            </p>
+
+
+
                         </div>
                     </div>
                     <Collapse defaultActiveKey={['1', '2', '3']} >
@@ -415,7 +423,6 @@ const ProductList2 = React.memo(() => {
                             {/* products according to applied filter */}
                             <div className='d-flex flex-column col-md-9 col-12 h-100 productList_container' style={{ gap: '20px' }}>
                                 <div className="row">
-                                    {/* {console.log(totalProducts, isLoader)} */}
                                     {!isLoader ? (<>
                                         <div className='d-flex col-12 flex-row justify-content-between align-items-start filter-view flex-column flex-lg-row flex-md-row align-items-lg-center align-items-md-center'>
                                             <div className='d-flex gap-3 '>

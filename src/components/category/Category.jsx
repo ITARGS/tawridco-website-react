@@ -102,8 +102,11 @@ const Category = () => {
                                                 {ctg.has_child
                                                     ? (
                                                         <Card onClick={() => selectCategory(ctg)}>
+                                                            <div className='category-main-img'>
+                                                                <ImageWithPlaceholder src={ctg.image_url} alt={ctg.subtitle} className={'card-img-top category_image'} />
+                                                            </div>
                                                             {/* <Card.Img onError={placeHolderImage} variant='top' src={ctg.image_url} alt={ctg.subtitle} className='card-img-top category_image' /> */}
-                                                            <ImageWithPlaceholder src={ctg.image_url} alt={ctg.subtitle} className={"card-img-top category_image"} />
+
                                                             <Card.Body className='card-body'>
                                                                 <Card.Title className="card-title">{ctg.name}</Card.Title>
                                                             </Card.Body>
@@ -111,8 +114,10 @@ const Category = () => {
                                                     )
                                                     : (
                                                         <Card onClick={() => selectCategory(ctg)}>
+                                                            <div className='category-main-img'>
+                                                                <ImageWithPlaceholder src={ctg.image_url} alt={ctg.subtitle} className={'card-img-top category_image'} />
+                                                            </div>
                                                             {/* <Card.Img onError={placeHolderImage} variant='top' src={ctg.image_url} alt={ctg.subtitle} className='card-img-top category_image' /> */}
-                                                            <ImageWithPlaceholder src={ctg.image_url} alt={ctg.subtitle} className={'card-img-top category_image'} />
                                                             <Card.Body className='card-body'>
                                                                 <Card.Title className="card-title">{ctg.name}</Card.Title>
                                                             </Card.Body>

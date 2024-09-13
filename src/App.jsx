@@ -235,7 +235,7 @@ const App = () => {
 
   const RootCss = `
   :root {
-    --body-background: #f7f7f7;
+    --body-background: #f3f5f7;
     --container-bg: #f2f3f9;
     --primary-color: #141a1f;
     --secondary-color: ${setting?.setting && setting?.setting?.web_settings?.color}; 
