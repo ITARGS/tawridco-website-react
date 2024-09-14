@@ -594,6 +594,7 @@ input::placeholder {
 #productlist .row .product-filter {
   border: 1px solid #D8E0E6;
   border-radius: 8px;
+  background-color: var(--second-cards-color);
 }
 
 #productlist .row .product-filter .filter-header {
@@ -623,6 +624,11 @@ input::placeholder {
   border-radius: 0px !important;
 }
 
+.ant-collapse .ant-collapse-item {
+
+  background-color: var(--second-cards-color) !important;
+}
+
 .ant-collapse .ant-collapse-item .ant-collapse-header {
   /* border: none !important;
   background-color: var(--body-background) !important;
@@ -640,7 +646,8 @@ input::placeholder {
 }
 
 .ant-collapse .ant-collapse-item .ant-collapse-content .ant-collapse-content-box {
-  background-color: var(--body-background);
+  background-color: var(--second-cards-color);
+  padding: 0px 16px 8px 16px;
 }
 
 .ant-collapse .ant-collapse-item .ant-collapse-content .ant-collapse-content-box .filter-row {
@@ -648,7 +655,7 @@ input::placeholder {
 }
 
 .ant-collapse .ant-collapse-item .ant-collapse-content .ant-collapse-content-box .filter-row .ant-tree {
-  background-color: var(--body-background);
+  background-color: var(--second-cards-color);
 }
 
 .ant-collapse .ant-collapse-item .ant-collapse-content .ant-collapse-content-box .filter-row .ant-tree .ant-tree-node-selected {
@@ -676,6 +683,17 @@ input::placeholder {
   justify-content: space-between;
   font-size: 16px;
   font-weight: 500;
+  color: var(--font-color);
+}
+
+.ant-collapse .ant-collapse-item .ant-collapse-content .ant-collapse-content-box .price-filter-apply-btn {
+  background-color: var(--body-background);
+  margin-top: 16px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 20px;
+  font-weight: 400;
+  width: 100%;
   color: var(--font-color);
 }
 
@@ -946,6 +964,12 @@ input::placeholder {
   margin: 20px 0 !important;
 }
 
+.productList_content .product-list-grid {
+  margin-top: 0.7rem !important;
+  margin-bottom: 0.7rem !important;
+
+}
+
 .productList_content .product-card .product-card-body .price .product_varients_drop .variant-section.dropdown .variant_selection_productList {
   width: 100%;
   background-color: #f2f3f9 !important;
@@ -972,10 +996,8 @@ input::placeholder {
 }
 
 .product-details-view .body-wrapper {
-  background-color: var(--second-cards-color);
   font-size: 14px;
-  display: flex;
-  border-radius: 5px;
+
 }
 
 .product-details-view .body-row {

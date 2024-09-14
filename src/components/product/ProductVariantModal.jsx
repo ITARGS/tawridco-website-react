@@ -134,15 +134,20 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
                     }
 
                 });
+
             } else {
                 if (flag == "add") {
                     dispatch(addGuestCartTotal({ data: finalPrice }));
                 } else if (flag == "remove") {
                     dispatch(subGuestCartTotal({ data: finalPrice }));
                 }
-                updatedProducts = cart?.guestCart?.filter(product =>
-                    product?.product_id != productId || product?.product_variant_id != productVariantId
+                updatedProducts = cart?.guestCart?.filter(product => {
+                    return (
+                        product?.product_id != productId || product?.product_variant_id != productVariantId
+                    )
+                }
                 );
+
                 // dispatch(subGuestCartTotal({ data: finalPrice }));
             }
 
@@ -161,7 +166,7 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
     };
     const handleValidateAddExistingGuestProduct = (productQuantity, product, quantity, variant) => {
         const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty;
-
+        console.log("product qty", quantity)
         if (Number(product.is_unlimited_stock)) {
             if (productQty >= Number(product?.total_allowed_quantity)) {
                 toast.error('Apologies, maximum product quantity limit reached');
@@ -178,7 +183,7 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
                 toast.error('Apologies, maximum cart quantity limit reached');
             }
             else {
-                console.log("variant id 2", variant?.id)
+
                 AddToGuestCart(product, product?.id, variant?.id, quantity, 1, variant, "add");
             }
         }
@@ -203,7 +208,7 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
                                     {variant?.is_unlimited_stock === 0 && variant?.stock == 0 ? <></> :
                                         <div className='col-4 col-lg-2 mr-4 variant-price'>{setting?.setting?.currency}{variant?.discounted_price == 0 ? variant?.price : variant?.discounted_price}</div>
                                     }
-                                    {variant?.is_unlimited_stock === 0 && variant?.stock == 0 ? <span className='col-5 mr-4 variant-out-of-stock'>{t("outOfStock")} </span> :
+                                    {variant?.is_unlimited_stock === 0 && variant?.stock == 0 ? <span className='col-5 mr-4 variant-out-of-stock'>{t("OutOfStock")} </span> :
                                         <div className='col-4 col-lg-3 '>
 
                                             {cart?.isGuest === false && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == variant?.id)?.qty > 0 ||
@@ -214,7 +219,7 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
                                                                 product,
                                                                 product?.id,
                                                                 variant?.id,
-                                                                cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty - 1,
+                                                                cart?.guestCart?.find((prdct) => prdct?.product_variant_id == variant?.id)?.qty - 1,
                                                                 1,
                                                                 variant,
                                                                 "remove"

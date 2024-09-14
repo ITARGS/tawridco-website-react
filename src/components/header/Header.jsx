@@ -519,7 +519,7 @@ const Header = () => {
                             <div className='col-md-6 d-flex justify-content-start align-items-center social-icons-cotainer'>
                                 <span>{t('follow_us')}:
 
-                                    {setting.setting.social_media.map((icon, index) => {
+                                    {setting?.setting && setting?.setting?.social_media?.map((icon, index) => {
                                         return (
                                             <div className='socical-icons'>
                                                 <a key={index} href={icon.link} className=''>

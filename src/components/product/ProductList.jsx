@@ -74,7 +74,6 @@ const ProductList2 = React.memo(() => {
         api.getBrands(brandLimit, bOffset)
             .then(response => response.json())
             .then(result => {
-                console.log("result", result)
                 if (result.status === 1) {
                     if (brands == null) {
                         setbrands(result?.data)
@@ -321,6 +320,9 @@ const ProductList2 = React.memo(() => {
                                     <p>{setting?.setting?.currency}{values[0]}</p>
                                     <p>{setting?.setting?.currency}{values[1]}</p>
                                 </div>
+                                <button className='price-filter-apply-btn'>
+                                    Apply
+                                </button>
                             </div>
 
 
@@ -487,7 +489,7 @@ const ProductList2 = React.memo(() => {
                                                         <div className='h-100 productList_content'>
                                                             <div className="row  flex-wrap">
                                                                 {isGridView ? productresult.map((product, index) => (
-                                                                    <div key={product?.id} className='col-md-6 col-sm-6 col-lg-3 col-12 my-2 '>
+                                                                    <div key={product?.id} className='col-md-6 col-sm-6 col-lg-3 col-12 product-list-grid '>
                                                                         <ProductCard product={product} />
                                                                     </div>
                                                                 )) : productresult.map((product, index) => (

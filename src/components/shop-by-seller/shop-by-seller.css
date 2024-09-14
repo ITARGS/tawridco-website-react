@@ -1,5 +1,5 @@
 #all-sellers .seller_section_header {
-  margin-bottom: 25px;
+  margin-bottom: 24px;
   background-color: var(--second-cards-color);
   padding: 15px;
   border-radius: 5px;
@@ -131,13 +131,15 @@
   justify-content: center;
 }
 
+
+
 .allSellersContainer.home .content .card {
   border-radius: 8px;
   display: flex;
   flex-direction: row;
   align-items: center;
   margin: 5px;
-  height: 112px;
+  /* height: 112px; */
   transition: color .5s ease-in-out, box-shadow .5s ease-in-out;
 }
 

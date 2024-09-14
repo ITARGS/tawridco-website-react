@@ -1,5 +1,5 @@
 .category_section {
-  /* margin-bottom: 48px; */
+  margin-bottom: 48px;
   /* padding: 0 !important; */
 }
 
@@ -15,7 +15,7 @@
 }
 
 .category_section_brand {
-  margin-bottom: 32px;
+  margin-bottom: 48px;
 }
 
 #allcategories .container .back-button {
@@ -86,7 +86,7 @@
 
 .category-container .card .category_image {
   /* width: 120px; */
-  /* border-radius: 100%; */
+  border-radius: 100% !important;
   margin: 0 auto;
   /* padding: 8px; */
   border-radius: 7px 7px 0px 0px;

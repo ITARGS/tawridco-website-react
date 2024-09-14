@@ -34,11 +34,15 @@ const OrderDetails = React.memo(() => {
     const [showRatingEditModal, setShowRatingEditModal] = useState(false);
     const [isNetworkError, setIsNetworkError] = useState(false);
     // const [showReturnModal, setShowReturnModal] = useState(false);
-    const [showReturnModal, setShowReturnModal] = useState(Array(orderData?.items?.length).fill(false));
-    const [showCancelModal, setShowCancelModal] = useState(Array(orderData?.items?.length).fill(false));
+    const [showReturnModal, setShowReturnModal] = useState([]);
+    const [showCancelModal, setShowCancelModal] = useState([]);
     const urlParams = useParams();
 
+    // useEffect(() => {
+    // }, [])
     useEffect(() => {
+        setShowReturnModal(Array(orderData?.items?.length).fill(false))
+        setShowCancelModal(Array(orderData?.items?.length).fill(false))
         if (orderData?.active_status === "6") {
             setOrderStatus(t("delivered"));
         } else if (orderData?.active_status === "5") {
@@ -55,6 +59,7 @@ const OrderDetails = React.memo(() => {
             setOrderStatus(t("returned"));
         }
     }, [orderData]);
+
 
 
     const placeHolderImage = (e) => {

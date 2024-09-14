@@ -90,7 +90,7 @@ const ShopBySellers = () => {
                             {shop.shop?.sellers?.map((seller, index) => (
                                 <SwiperSlide key={index}>
                                     <div className="my-3 content" onClick={() => handleSellerFilter(seller?.id)}>
-                                        <div className='card'>
+                                        <div className='card d-flex flex-column flex-sm-row'>
                                             <ImageWithPlaceholder className='card-img-top' src={seller.logo_url} alt='country' />
                                             {/* <div className='card-body' style={{ cursor: "pointer" }}> */}
                                             <p>{seller.store_name} </p>
