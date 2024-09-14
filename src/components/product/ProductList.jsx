@@ -68,6 +68,8 @@ const ProductList2 = React.memo(() => {
     const [totalBrands, setTotalBrands] = useState(null)
     const [brandLimit, setBrandLimit] = useState(10)
     const [brandOffset, setBrandOffset] = useState(0);
+    const [tempMinPrice, setTempMinPrice] = useState(null)
+    const [tempMaxPrice, setTempMaxPrice] = useState(null)
 
     const fetchBrands = (bOffset) => {
         // const offset = 
@@ -117,7 +119,6 @@ const ProductList2 = React.memo(() => {
             .then(response => response.json())
             .then(result => {
                 if (result.status === 1) {
-                    // console.log("Filter Product From Api ->", result);
                     if (minPrice == null && maxPrice == null && filter?.price_filter == null) {
                         setMinPrice(parseInt(result.total_min_price));
                         if (result.total_min_price === result.total_max_price) {
@@ -312,15 +313,21 @@ const ProductList2 = React.memo(() => {
                                         setValues(newValues);
                                     }}
                                     value={values}
-                                    onChangeComplete={(newValues) => {
-                                        dispatch(setFilterMinMaxPrice({ data: { min_price: newValues[0], max_price: newValues[1] } }))
-                                    }}
+                                    onChangeComplete={
+                                        (newValues) => {
+                                            setTempMinPrice(newValues[0])
+                                            setTempMaxPrice(newValues[1])
+                                        }
+
+                                    }
                                 />
                                 <div className='range-prices'>
                                     <p>{setting?.setting?.currency}{values[0]}</p>
                                     <p>{setting?.setting?.currency}{values[1]}</p>
                                 </div>
-                                <button className='price-filter-apply-btn'>
+                                <button className='price-filter-apply-btn' onClick={(newValues) => {
+                                    dispatch(setFilterMinMaxPrice({ data: { min_price: tempMinPrice, max_price: tempMaxPrice } }))
+                                }}>
                                     Apply
                                 </button>
                             </div>

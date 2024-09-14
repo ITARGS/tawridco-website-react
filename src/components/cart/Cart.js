@@ -339,6 +339,7 @@ const Cart = ({ isCartSidebarOpen, setIsCartSidebarOpen }) => {
                     <span>{t("empty_cart_list_description")}</span>
                     <button type='button' className="close-canvas" data-bs-dismiss="offcanvas" aria-label="Close" onClick={() => {
                         navigate('/products');
+                        setIsCartSidebarOpen(false)
                     }}>{t("empty_cart_list_button_name")}</button>
                 </div>) : (
                 <>

@@ -991,7 +991,7 @@ input::placeholder {
 
 .product-details-view .top-wrapper {
   margin-top: 30px;
-  background-color: #fff;
+  background-color: var(--second-cards-color);
   border-radius: 10px;
 }
 

@@ -87,7 +87,7 @@ const ListViewCard = ({ product }) => {
 
     const addToFavorite = async (prdctId) => {
         try {
-            if (user?.jwttoken) {
+            if (user?.jwtToken) {
                 const res = await newApi.addToFavorite({ product_id: prdctId });
                 if (res.status == 1) {
                     toast.success(res.message)
