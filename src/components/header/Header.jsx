@@ -38,6 +38,7 @@ import { FaMapLocationDot } from "react-icons/fa6";
 import { GrTransaction } from "react-icons/gr";
 import { RiLogoutCircleRLine } from 'react-icons/ri';
 import { confirmAlert } from 'react-confirm-alert';
+import { BiMoon, BiSun } from "react-icons/bi";
 
 // components imports
 import Location from '../location/Location';
@@ -695,18 +696,29 @@ const Header = () => {
 
 
                             </div>
-                            <div className='hide-desktop header-icons '>
-                                <span className='responsive-cart-btn' onClick={() => setIsCartSidebarOpen(true)}>
-                                    <BsCart2 />
-                                    {
-                                        cart.isGuest == true ? <p className={cart?.guestCart
-                                            ?.length != 0 ? "d-flex" : "d-none"}> {cart?.guestCart
-                                                ?.length != 0 ? cart?.guestCart
-                                                ?.length : null}</p> :
-                                            <p className={cart?.cartProducts?.length != 0 ? "d-flex" : "d-none"}> {cart?.cartProducts?.length != 0 ? cart?.cartProducts?.length : null}</p>
-                                    }
+                            {/* TODO: */}
+                            <div className='hide-desktop row header-icons'>
+                                <div className='col-6'>
+                                    {cssmode?.cssmode === "dark" ? <span><BiMoon size={20} onClick={() => handleThemeChange("light")} /></span> : <span onClick={() => handleThemeChange("dark")}><BiSun size={20} /></span>}
 
-                                </span>
+                                </div>
+                                <div className='col-6'>
+                                    <div className='position-relative'>
+                                        <span className='responsive-cart-btn ' onClick={() => setIsCartSidebarOpen(true)}>
+                                            <BsCart2 />
+                                            {
+                                                cart.isGuest == true ? <p className={cart?.guestCart
+                                                    ?.length != 0 ? "d-flex" : "d-none"}> {cart?.guestCart
+                                                        ?.length != 0 ? cart?.guestCart
+                                                        ?.length : null}</p> :
+                                                    <p className={cart?.cartProducts?.length != 0 ? "d-flex" : "d-none"}> {cart?.cartProducts?.length != 0 ? cart?.cartProducts?.length : null}</p>
+                                            }
+
+                                        </span>
+                                    </div>
+
+                                </div>
+
                                 {/* <span className='user-profile-btn'>
                                     <CiUser />
                                 </span> */}

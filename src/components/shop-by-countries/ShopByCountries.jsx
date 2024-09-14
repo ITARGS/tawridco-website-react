@@ -31,21 +31,23 @@ const ShopByCountries = () => {
         <>
             {(shop?.shop?.is_country_section_in_homepage && (shop?.shop?.countries?.length > 0)) ?
                 <section id='all-countries'>
-                    <div className="row countries_section_header">
-                        <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
-                            <div className="title d-md-flex align-items-center ">
-                                <p>{t('shop_by')} {t('countries')}</p>
-                                <Link className='d-none d-md-block' to='/countries'>{t('see_all')} {t('countries')}<AiOutlineArrowRight size={15} className='see_countries_arrow' /> </Link>
-                            </div>
-                            <div className=' d-md-none'>
-                                <Link className='country_button' to='/countries'>{t('see_all')}</Link>
-                            </div>
-                            {(shop?.shop?.countries?.length > 5) ?
-                                <div className="justify-content-end align-items-ceneter d-md-flex d-none">
-                                    <button className='prev-arrow-country'><FaChevronLeft fill='black' size={20} /></button>
-                                    <button className='next-arrow-country'><FaChevronRight fill='black' size={20} /></button>
+                    <div className=" countries_section_header">
+                        <div className='row'>
+                            <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
+                                <div className="title d-md-flex align-items-center ">
+                                    <p>{t('shop_by')} {t('countries')}</p>
+                                    <Link className='d-none d-md-block' to='/countries'>{t('see_all')} {t('countries')}<AiOutlineArrowRight size={15} className='see_countries_arrow' /> </Link>
                                 </div>
-                                : null}
+                                <div className=' d-md-none'>
+                                    <Link className='country_button' to='/countries'>{t('see_all')}</Link>
+                                </div>
+                                {(shop?.shop?.countries?.length > 5) ?
+                                    <div className="justify-content-end align-items-ceneter d-md-flex d-none">
+                                        <button className='prev-arrow-country'><FaChevronLeft fill='black' size={20} /></button>
+                                        <button className='next-arrow-country'><FaChevronRight fill='black' size={20} /></button>
+                                    </div>
+                                    : null}
+                            </div>
                         </div>
                     </div>
                     <div className='row justify-content-center home allCountriesContainer'>

@@ -165,7 +165,7 @@
   /* border-bottom: 1px solid #ddd; */
   padding: 15px !important;
   position: relative;
-  background-color: var(--second-cards-color);
+  background-color: var(--bs-body-bg);
   padding: 12px;
   border-radius: 5px;
 }
@@ -592,13 +592,13 @@ input::placeholder {
 }
 
 #productlist .row .product-filter {
-  border: 1px solid #D8E0E6;
+  border: 1px solid var(--bs-body-bg);
   border-radius: 8px;
-  background-color: var(--second-cards-color);
+  background-color: var(--bs-body-bg);
 }
 
 #productlist .row .product-filter .filter-header {
-  border-bottom: 1px solid #D8E0E6;
+  border-bottom: 1px solid var(--border-color);
 }
 
 #productlist .row .product-filter .filter-header .filter-sub-header {
@@ -625,8 +625,8 @@ input::placeholder {
 }
 
 .ant-collapse .ant-collapse-item {
-
-  background-color: var(--second-cards-color) !important;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--bs-body-bg) !important;
 }
 
 .ant-collapse .ant-collapse-item .ant-collapse-header {
@@ -646,7 +646,7 @@ input::placeholder {
 }
 
 .ant-collapse .ant-collapse-item .ant-collapse-content .ant-collapse-content-box {
-  background-color: var(--second-cards-color);
+  background-color: var(--bs-body-bg);
   padding: 0px 16px 8px 16px;
 }
 
@@ -655,7 +655,7 @@ input::placeholder {
 }
 
 .ant-collapse .ant-collapse-item .ant-collapse-content .ant-collapse-content-box .filter-row .ant-tree {
-  background-color: var(--second-cards-color);
+  background-color: var(--bs-body-bg);
 }
 
 .ant-collapse .ant-collapse-item .ant-collapse-content .ant-collapse-content-box .filter-row .ant-tree .ant-tree-node-selected {
@@ -838,10 +838,10 @@ input::placeholder {
 }
 
 #productlist .row .filter-view {
-  background: var(--second-cards-color);
+  background: var(--bs-body-bg);
   padding: 10px;
   border-radius: 10px;
-  border: 1px solid #D8E0E6;
+  border: 1px solid var(--border-color);
   padding: 16px;
 }
 
@@ -1938,7 +1938,7 @@ input::placeholder {
 .breadCrumbs {
   width: 100%;
   font-size: 16px;
-  background-color: var(--second-cards-color);
+  background-color: var(--bs-body-bg);
   color: var(--font-color);
   margin-bottom: 15px;
   padding: 10px;

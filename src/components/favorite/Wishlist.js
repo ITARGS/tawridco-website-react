@@ -229,11 +229,11 @@ const Wishlist = () => {
                                                                     <div className='image-container'>
                                                                         {/* <img onError={placeHolderImage} src={product.image_url} alt='product'></img> */}
                                                                         <ImageWithPlaceholder src={product.image_url} alt='productImage' />
-                                                                        {!Number(product.is_unlimited_stock) && product.variants[0].status === 0 &&
+                                                                        {/* {!Number(product.is_unlimited_stock) && product.variants[0].status === 0 &&
                                                                             <div className="out_of_stockOverlay">
                                                                                 <span className="out_of_stockText">{t("out_of_stock")}</span>
                                                                             </div>
-                                                                        }
+                                                                        } */}
                                                                     </div>
                                                                     <div className=''>
                                                                         <span>{product.name}</span>
@@ -250,67 +250,72 @@ const Wishlist = () => {
                                                                             product.variants[0]?.discounted_price.toFixed(setting.setting && setting.setting.decimal_point) :
                                                                             product.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : 0)}</span>
                                                                 </th>
-
                                                                 <th className='quantity'>
-                                                                    {cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 0 ?
-                                                                        <>
-                                                                            <div className='counter' id={`input-cart-wishlist${index}`}>
-                                                                                <button type='button' onClick={() => {
-                                                                                    if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 1) {
-                                                                                        addtoCart(product.id, product.variants[0]?.id, cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty - 1);
-                                                                                    } else {
-                                                                                        removefromCart(product.id, product.variants[0]?.id);
+                                                                    {product?.variants?.length <= 1 && product?.variants?.[0]?.is_unlimited_stock == 0 && product?.variants?.[0]?.stock == 0 ?
 
-                                                                                    }
-                                                                                }}><BiMinus fill='#fff' /></button>
-
-                                                                                <span id={`input-cart-sidebar${index}`} >{cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty}</span>
-
-                                                                                <button type='button' onClick={() => {
-
-                                                                                    if (Number(product.is_unlimited_stock)) {
-
-                                                                                        if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty < Number(setting.setting.max_cart_items_count)) {
-                                                                                            addtoCart(product.id, product.variants[0]?.id, cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty + 1);
-
-
-                                                                                        } else {
-                                                                                            toast.error('Apologies, maximum product quantity limit reached!');
-                                                                                        }
-                                                                                    } else {
-
-                                                                                        if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty >= Number(product.variants[0]?.stock)) {
-                                                                                            toast.error(t("out_of_stock_message"));
-                                                                                        }
-                                                                                        else if (Number(cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty) >= Number(product.total_allowed_quantity)) {
-                                                                                            toast.error('Apologies, maximum product quantity limit reached');
-                                                                                        } else {
-
-                                                                                            addtoCart(product.id, product.variants[0]?.id, cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty + 1);
-                                                                                        }
-                                                                                    }
-
-                                                                                }}><BsPlus fill='#fff' /></button>
-                                                                            </div>
-                                                                        </>
+                                                                        <span className="out_of_stockText .text-danger">{t("out_of_stock")}</span>
 
                                                                         :
-                                                                        <>
-                                                                            <button type='button' id={`Add-to-cart-wishlist${index}`} className='add-to-cart active'
-                                                                                onClick={() => {
-                                                                                    if (user?.jwtToken !== "") {
-                                                                                        addtoCart(product.id, product.variants[0]?.id, 1);
-                                                                                        setP_id(product.id);
-                                                                                        setP_V_id(product.variants[0]?.id);
-                                                                                        setQnty(1);
-                                                                                    }
-                                                                                    else {
-                                                                                        toast.error(t("required_login_message_for_cartRedirect"));
-                                                                                    }
 
-                                                                                }}
-                                                                                disabled={!Number(product.is_unlimited_stock) && product.variants[0].status === 0}
-                                                                            >{t("add_to_cart")}</button></>}
+                                                                        cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 0 ?
+                                                                            <>
+                                                                                <div className='counter' id={`input-cart-wishlist${index}`}>
+                                                                                    <button type='button' onClick={() => {
+                                                                                        if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty > 1) {
+                                                                                            addtoCart(product.id, product.variants[0]?.id, cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty - 1);
+                                                                                        } else {
+                                                                                            removefromCart(product.id, product.variants[0]?.id);
+
+                                                                                        }
+                                                                                    }}><BiMinus fill='#fff' /></button>
+
+                                                                                    <span id={`input-cart-sidebar${index}`} >{cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty}</span>
+
+                                                                                    <button type='button' onClick={() => {
+
+                                                                                        if (Number(product.is_unlimited_stock)) {
+
+                                                                                            if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty < Number(setting.setting.max_cart_items_count)) {
+                                                                                                addtoCart(product.id, product.variants[0]?.id, cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty + 1);
+
+
+                                                                                            } else {
+                                                                                                toast.error('Apologies, maximum product quantity limit reached!');
+                                                                                            }
+                                                                                        } else {
+
+                                                                                            if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty >= Number(product.variants[0]?.stock)) {
+                                                                                                toast.error(t("out_of_stock_message"));
+                                                                                            }
+                                                                                            else if (Number(cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty) >= Number(product.total_allowed_quantity)) {
+                                                                                                toast.error('Apologies, maximum product quantity limit reached');
+                                                                                            } else {
+
+                                                                                                addtoCart(product.id, product.variants[0]?.id, cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty + 1);
+                                                                                            }
+                                                                                        }
+
+                                                                                    }}><BsPlus fill='#fff' /></button>
+                                                                                </div>
+                                                                            </>
+
+                                                                            :
+                                                                            <>
+                                                                                <button type='button' id={`Add-to-cart-wishlist${index}`} className='add-to-cart active'
+                                                                                    onClick={() => {
+                                                                                        if (user?.jwtToken !== "") {
+                                                                                            addtoCart(product.id, product.variants[0]?.id, 1);
+                                                                                            setP_id(product.id);
+                                                                                            setP_V_id(product.variants[0]?.id);
+                                                                                            setQnty(1);
+                                                                                        }
+                                                                                        else {
+                                                                                            toast.error(t("required_login_message_for_cartRedirect"));
+                                                                                        }
+
+                                                                                    }}
+                                                                                    disabled={!Number(product.is_unlimited_stock) && product.variants[0].status === 0}
+                                                                                >{t("add_to_cart")}</button></>}
 
 
 
@@ -318,6 +323,8 @@ const Wishlist = () => {
 
 
                                                                 </th>
+
+
 
                                                                 <th className='remove last-column'>
                                                                     <button type='button' onClick={() => removefromFavorite(product.id)}>

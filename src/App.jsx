@@ -256,6 +256,7 @@ const App = () => {
     --loader-bg: #fff;
     --skeleton-highlight-color: #f5f5f5;
     --skeleton-base-color: #ebebeb;
+    --border-color:#d8e0e6;
   }
   [data-bs-theme="dark"]{
     --body-background: #141414;
@@ -272,6 +273,7 @@ const App = () => {
     --loader-bg: transparent;
     --skeleton-highlight-color: #3a4a5a;
     --skeleton-base-color: #2e3a47;
+    --border-color:#4A4949;
   }
   input[type="radio"]:checked {
     background-color: var(--secondary-color); /* Change background color when checked */

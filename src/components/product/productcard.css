@@ -1,10 +1,10 @@
 .product-grid {
 
-    background-color: var(--second-cards-color);
+    background-color: var(--bs-body-bg);
 
     border-radius: 4px;
     padding: 12px;
-    border: 1px solid #D8E0E6;
+    border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
 }
@@ -99,6 +99,7 @@
     transform: translateX(0);
 }
 
+
 .product-grid .product-links li a {
     color: #2a3640;
     background: #fff;
@@ -109,10 +110,15 @@
     border-radius: 50px;
     display: block;
     position: relative;
-    box-shadow: 0 0 30px 0 rgba(0, 0, 0, .06);
+    /* box-shadow: 0 0 30px 0 rgba(0, 0, 0, .06); */
     transition: all 0.5s ease-out 0s;
     background-color: var(--second-cards-color);
     color: var(--font-color);
+    border: 1px solid var(--border-color);
+    align-items: center;
+    display: flex;
+    justify-content: center;
+
 }
 
 
@@ -167,7 +173,7 @@
 .product-grid .title {
     margin-top: 12px;
     color: #2a3640;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 600;
     text-transform: capitalize;
     width: 100%;
@@ -314,7 +320,7 @@
     font-size: 16px;
     height: 84%;
     margin: 5px 0px;
-    border: 1px solid #D8E0E6;
+    border: 1px solid var(--border-color);
     align-items: center;
 }
 

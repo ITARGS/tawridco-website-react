@@ -1,6 +1,6 @@
 #all-brands .brand_section_header {
   margin-bottom: 24px;
-  background-color: var(--second-cards-color);
+  background-color: var(--bs-body-bg);
   padding: 15px;
   border-radius: 5px;
 }
@@ -139,7 +139,7 @@
 
 .allBrandsSlider .content .card:hover {
   background-color: transparent;
-  border: 1px solid lightgray;
+  border: 1px solid var(--border-color);
 }
 
 .allBrandsSlider.home .content .card {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import "./productcard.css";
 import { Rate } from 'antd';
@@ -16,7 +16,9 @@ import { useTranslation } from 'react-i18next';
 import ProductVariantModal from './ProductVariantModal';
 import Image from "../../utils/Product-Images-test.jpg"
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
-import { BiHeart } from 'react-icons/bi';
+import { BiHeart, BiSolidHeart } from 'react-icons/bi';
+import { LuEye } from "react-icons/lu";
+import { addFavoriteProductId } from '../../model/reducer/favouriteReducer';
 
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
@@ -26,6 +28,7 @@ const ProductCard = ({ product }) => {
     const setting = useSelector(state => (state.setting));
     const cart = useSelector(state => (state.cart))
     const user = useSelector(state => (state.user))
+    const favoriteProducts = useSelector(state => (state.favourite))
 
     // state variables
     const [p_id, setP_id] = useState(0);
@@ -102,6 +105,7 @@ const ProductCard = ({ product }) => {
                 const res = await newApi.addToFavorite({ product_id: prdctId });
                 if (res.status == 1) {
                     toast.success(res.message)
+                    dispatch(addFavoriteProductId({ data: prdctId }))
                 } else {
                     toast.error(res.message)
                 }
@@ -113,6 +117,8 @@ const ProductCard = ({ product }) => {
             console.log(error)
         }
     }
+
+
 
 
     const handleValidateAddNewProduct = (productQuantity, product) => {
@@ -263,11 +269,12 @@ const ProductCard = ({ product }) => {
 
                         <ul className="product-links">
                             <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist">
-                                <BiHeart size={20} /></a></li>
+                                {favoriteProducts.favouriteProductIds && favoriteProducts.favouriteProductIds?.includes(product?.id) ? <BiSolidHeart size={20} /> : <BiHeart size={20} />}
+                            </a></li>
                             <li onClick={() => {
                                 setselectedProduct(product)
                                 setShowModal(true)
-                            }}><a data-tip="Quick View" ><i className="fa fa-eye fa-1x  "></i></a></li>
+                            }}><a data-tip="Quick View" ><LuEye size={20} /></a></li>
                         </ul>
                     </div>
                     <div className="product-content" onClick={() => navigate(`/product/${product.slug}`)}>

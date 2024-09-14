@@ -44,32 +44,35 @@ const Category = () => {
             {(category && (category?.length > 0))
                 ?
                 <>
-                    <div className="row category_section_header">
-                        <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
-                            <div className="title d-md-flex align-items-center ">
-                                <p>{t('shop_by')} {t('categories')}</p>
-                                {/* <Link className='d-none d-md-block' to='/category/all'>{t('see_all')} {t('categories')}<AiOutlineArrowRight size={15} className='see_category_arrow' /> </Link> */}
-                            </div>
-                            <div className=' d-md-none'>
-                                {/* <Link className='category_button' to='/category/all'>{t('see_all')}</Link> */}
-                            </div>
-                            <div className='d-flex align-items-center'>
-                                <Link className='category_button' to='/category/all'>{t('see_all')}</Link>
-                                {
+                    <div className=" category_section_header">
+                        <div className='row'>
+                            <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
+                                <div className="title d-md-flex align-items-center ">
+                                    <p>{t('shop_by')} {t('categories')}</p>
+                                    {/* <Link className='d-none d-md-block' to='/category/all'>{t('see_all')} {t('categories')}<AiOutlineArrowRight size={15} className='see_category_arrow' /> </Link> */}
+                                </div>
+                                <div className=' d-md-none'>
+                                    {/* <Link className='category_button' to='/category/all'>{t('see_all')}</Link> */}
+                                </div>
+                                <div className='d-flex align-items-center'>
+                                    <Link className='category_button' to='/category/all'>{t('see_all')}</Link>
+                                    {
 
-                                    category?.length > 5 ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                                        <button className='prev-arrow-category' ><IoMdArrowBack fill='black' size={20} /></button>
-                                        <button className='next-arrow-category' ><IoMdArrowForward fill='black' size={20} /></button>
-                                    </div> : <></>
-                                }
+                                        category?.length > 5 ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
+                                            <button className='prev-arrow-category' ><IoMdArrowBack fill='black' size={20} /></button>
+                                            <button className='next-arrow-category' ><IoMdArrowForward fill='black' size={20} /></button>
+                                        </div> : <></>
+                                    }
+                                </div>
+
+
                             </div>
-
-
                         </div>
-                    </div>
-                    <div className="caegory_section_content">
 
-                        <div className='row ' id="expandCategory">
+                    </div>
+                    <div className="caegory_section_content row">
+
+                        <div className='' id="expandCategory">
                             <Swiper modules={[Navigation, Pagination]}
                                 navigation={{
                                     prevEl: '.prev-arrow-category',
@@ -90,7 +93,7 @@ const Category = () => {
                                         slidesPerView: 3,
                                         spaceBetween: 15,
                                     },
-                                    
+
                                     300: {
                                         slidesPerView: 2,
                                         spaceBetween: 10,

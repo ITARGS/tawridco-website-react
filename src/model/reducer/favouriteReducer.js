@@ -21,10 +21,13 @@ export const favouriteReducer = createSlice({
         },
         setFavouriteProductIds: (state, action) => {
             state.favouriteProductIds = action.payload.data;
+        },
+        addFavoriteProductId: (state, action) => {
+            state.favouriteProductIds = [...state.favouriteProductIds, action.payload.data]
         }
     }
 });
 
 
-export const { setFavourite, setFavouriteLength, setFavouriteProductIds } = favouriteReducer.actions;
+export const { setFavourite, setFavouriteLength, setFavouriteProductIds, addFavoriteProductId } = favouriteReducer.actions;
 export default favouriteReducer.reducer;

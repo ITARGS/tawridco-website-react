@@ -101,7 +101,8 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                             <div className='product_section row flex-column' value={index0} onChange={(e) => { setOfferContainer(index0); }}>
 
                                                 <div className="d-flex product_title_content justify-content-between align-items-center col-md-12">
-                                                    <div>
+
+                                                    <div >
                                                         <div className="product-title-content-container">
                                                             <p>{section.title}</p>
                                                             <span className='d-none d-md-block'>{section.short_description}</span>
@@ -145,15 +146,19 @@ const ProductContainer = React.memo(({ showModal, setShowModal, BelowSectionOffe
                                                         pagination={{ clickable: true }}
                                                         breakpoints={{
                                                             1200: {
-                                                                slidesPerView: 4,
+                                                                slidesPerView: 5,
                                                                 spaceBetween: 10
                                                             },
                                                             1024: {
-                                                                slidesPerView: 4,
+                                                                slidesPerView: 4.5,
                                                                 spaceBetween: 10
                                                             },
                                                             768: {
                                                                 slidesPerView: 3.5,
+                                                                spaceBetween: 10
+                                                            },
+                                                            500: {
+                                                                slidesPerView: 2,
                                                                 spaceBetween: 10
                                                             },
                                                             300: {

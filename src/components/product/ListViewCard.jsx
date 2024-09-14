@@ -13,6 +13,9 @@ import { toast } from 'react-toastify';
 import { addGuestCartTotal, addtoGuestCart, setCart, setCartProducts, setCartSubTotal, subGuestCartTotal } from '../../model/reducer/cartReducer';
 import ProductVariantModal from './ProductVariantModal';
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
+import { LuEye } from "react-icons/lu";
+import { BiHeart, BiSolidHeart } from 'react-icons/bi';
+import { addFavoriteProductId } from '../../model/reducer/favouriteReducer';
 
 const ListViewCard = ({ product }) => {
     const navigate = useNavigate();
@@ -21,6 +24,7 @@ const ListViewCard = ({ product }) => {
     const setting = useSelector(state => (state.setting));
     const cart = useSelector(state => (state.cart))
     const user = useSelector(state => (state.user))
+    const favoriteProducts = useSelector(state => (state.favourite))
 
     const [p_id, setP_id] = useState(0);
     const [p_v_id, setP_V_id] = useState(0);
@@ -91,6 +95,7 @@ const ListViewCard = ({ product }) => {
                 const res = await newApi.addToFavorite({ product_id: prdctId });
                 if (res.status == 1) {
                     toast.success(res.message)
+                    dispatch(addFavoriteProductId({ data: prdctId }))
                 } else {
                     toast.error(res.message)
                 }
@@ -251,14 +256,14 @@ const ListViewCard = ({ product }) => {
                             <ImageWithPlaceholder src={product.image_url} alt={product?.slug} />
                         </a>
                         <ul className="product-links">
-                            <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist"><i className="fas fa-heart fa-1x"></i></a></li>
+                            <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist">{favoriteProducts.favouriteProductIds && favoriteProducts.favouriteProductIds?.includes(product?.id) ? <BiSolidHeart size={20} /> : <BiHeart size={20} />}</a></li>
                             <li onClick={() => {
                             }}><a data-tip="Quick View"
                                 onClick={() => {
                                     setselectedProduct(product)
                                     setShowModal(true)
                                 }}
-                            ><i className="fa fa-eye fa-1x"></i></a></li>
+                            ><LuEye size={20} /></a></li>
                         </ul>
                     </div>
 

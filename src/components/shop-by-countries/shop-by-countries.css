@@ -1,6 +1,6 @@
 #all-countries .countries_section_header {
   margin-bottom: 24px;
-  background-color: var(--second-cards-color);
+  background-color: var(--bs-body-bg);
   padding: 15px;
   border-radius: 5px;
 }

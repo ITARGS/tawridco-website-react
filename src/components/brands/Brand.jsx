@@ -30,22 +30,25 @@ const Brand = () => {
     <>
       {(shop.shop?.is_brand_section_in_homepage && (shop?.shop?.brands?.length > 0)) ? (
         <section id="all-brands">
-          <div className="row brand_section_header">
-            <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
-              <div className="title d-md-flex align-items-center ">
-                <p>{t('shop_by')} {t('brands')}</p>
-                <Link className='d-none d-md-block' to='/brands'>{t('see_all')} {t('brands')}<AiOutlineArrowRight size={15} className='see_brand_arrow' /> </Link>
-              </div>
-              <div className=' d-md-none'>
-                <Link className='brand_button' to='/brands'>{t('see_all')}</Link>
-              </div>
-              {(shop?.shop?.brands?.length > 5) ? (
-                <div className="justify-content-end align-items-ceneter d-md-flex d-none">
-                  <button className='prev-arrow-brand'><FaChevronLeft size={20} /></button>
-                  <button className='next-arrow-brand'><FaChevronRight size={20} /></button>
+          <div className=" brand_section_header">
+            <div className='row'>
+              <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
+                <div className="title d-md-flex align-items-center ">
+                  <p>{t('shop_by')} {t('brands')}</p>
+                  <Link className='d-none d-md-block' to='/brands'>{t('see_all')} {t('brands')}<AiOutlineArrowRight size={15} className='see_brand_arrow' /> </Link>
                 </div>
-              ) : null}
+                <div className=' d-md-none'>
+                  <Link className='brand_button' to='/brands'>{t('see_all')}</Link>
+                </div>
+                {(shop?.shop?.brands?.length > 5) ? (
+                  <div className="justify-content-end align-items-ceneter d-md-flex d-none">
+                    <button className='prev-arrow-brand'><FaChevronLeft size={20} /></button>
+                    <button className='next-arrow-brand'><FaChevronRight size={20} /></button>
+                  </div>
+                ) : null}
+              </div>
             </div>
+
           </div>
           <div className='row justify-content-center home allBrandsSlider'>
             <Swiper

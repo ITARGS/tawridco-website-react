@@ -12,7 +12,7 @@
 }
 
 .category_section_category .swiper {
-  background-color: var(--second-cards-color);
+  background-color: var(--bs-body-bg);
   border-radius: 4px;
 }
 
@@ -138,6 +138,6 @@
     height: auto;
     margin: 0;
     width: 100%;
-    background-color: #f2f5f7;
+    background-color: var(--body-background);
   }
 }
