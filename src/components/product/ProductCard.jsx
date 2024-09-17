@@ -14,7 +14,6 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import { addGuestCartTotal, addtoGuestCart, setCart, setCartProducts, setCartSubTotal, subGuestCartTotal } from '../../model/reducer/cartReducer';
 import { useTranslation } from 'react-i18next';
 import ProductVariantModal from './ProductVariantModal';
-import Image from "../../utils/Product-Images-test.jpg"
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
 import { BiHeart, BiSolidHeart } from 'react-icons/bi';
 import { LuEye } from "react-icons/lu";
@@ -82,7 +81,6 @@ const ProductCard = ({ product }) => {
     }
 
     const getProductQuantities = (products) => {
-
         return Object.entries(products?.reduce((quantities, product) => {
             const existingQty = quantities[product.product_id] || 0;
             return { ...quantities, [product.product_id]: existingQty + product.qty };
@@ -99,7 +97,6 @@ const ProductCard = ({ product }) => {
     }
 
     const addToFavorite = async (prdctId) => {
-
         try {
             if (user?.jwtToken) {
                 const res = await newApi.addToFavorite({ product_id: prdctId });
@@ -169,6 +166,8 @@ const ProductCard = ({ product }) => {
             toast.error(t("out_of_stock_message"));
         }
     };
+
+
     const AddToGuestCart = (product, productId, productVariantId, Qty, isExisting, flag) => {
         const finalPrice = selectedVariant?.discounted_price !== 0 ? selectedVariant?.discounted_price : selectedVariant?.price
         if (isExisting) {
@@ -198,7 +197,6 @@ const ProductCard = ({ product }) => {
                 updatedProducts = cart?.guestCart?.filter(product =>
                     product?.product_id != productId && product?.product_variant_id != productVariantId
                 );
-                // dispatch(subGuestCartTotal({ data: finalPrice }));
             }
 
             dispatch(addtoGuestCart({ data: updatedProducts }));
@@ -214,16 +212,6 @@ const ProductCard = ({ product }) => {
             dispatch(addtoGuestCart({ data: [...cart?.guestCart, productData] }));
         }
     };
-
-    const computeSubTotal = (products) => {
-        const subTotal = products.reduce((prev, curr) => {
-            prev += (curr.discounted_price !== 0 ? curr.discounted_price * curr.qty : curr.price * curr.qty);
-            return prev;
-        }, 0);
-        dispatch(addGuestCartTotal(subTotal));
-    };
-
-
 
     const handleValidateAddExistingGuestProduct = (productQuantity, product, quantity) => {
         const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty;

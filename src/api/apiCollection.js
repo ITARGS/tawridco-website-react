@@ -70,8 +70,12 @@ export const getShop = async ({ latitude, longitude }) => {
     const response = api.get(apiEndPoints.getShop, { params })
     return response.data
 }
-export const getBrands = async () => {
-    const response = await api.get(apiEndPoints.getBrands)
+export const getBrands = async ({ limit, offset }) => {
+    let params = {
+        limit: limit,
+        offset: offset
+    };
+    const response = await api.get(apiEndPoints.getBrands, { params })
     return response.data
 }
 export const getCategory = async ({ id = "", limit = "", offset = "", slug = "" }) => {
@@ -200,3 +204,4 @@ export const getAddress = async ({ }) => {
     const response = await api.get(apiEndPoints.getAddress)
     return response.data
 }
+

@@ -1279,12 +1279,17 @@ input::placeholder {
   font-weight: 600;
 }
 
+
 .product-details-view .detail-wrapper .bottom-section .product-overview {
-  width: 100%;
-  background-color: var(--body-background);
-  padding: 15px;
+  /* background-color: var(--body-background); */
   color: var(--font-color);
-  margin: 10px 0px;
+  margin: 10px 0;
+  /* padding: 10px; */
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
 }
 
 .product-details-view .detail-wrapper .bottom-section .returnContainer .returnDetail,
@@ -1741,10 +1746,21 @@ input::placeholder {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  margin-top: 24px;
 }
 
-.pagination li {
-  background-color: inherit;
+.pagination .load-mote-btn {
+  background-color: #29363F;
+  padding: 6px 12px;
+  gap: 4px;
+  border-radius: 4px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.pagination .load-mote-btn:hover {
+  cursor: pointer;
 }
 
 .pagination a {

@@ -90,7 +90,6 @@ const Favorite = React.memo(() => {
                         .then(res => {
                             setisLoader(false);
                             if (res.status === 1) {
-
                                 dispatch(setCart({ data: res }));
                                 // dispatch({ type: ActionTypes.SET_CART, payload: res });
                             }

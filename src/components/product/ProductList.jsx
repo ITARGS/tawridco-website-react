@@ -1,27 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { AiOutlineEye, AiOutlineCloseCircle } from 'react-icons/ai';
+import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { useLocation, useNavigate } from 'react-router-dom';
-import api from '../../api/api';
-import Pagination from 'react-js-pagination';
-import { toast } from 'react-toastify';
+import * as newApi from "../../api/apiCollection"
 import Loader from '../loader/Loader';
 import No_Orders from '../../utils/zero-state-screens/No_Orders.svg';
-import QuickViewModal from './QuickViewModal';
-import { IoIosArrowDown } from 'react-icons/io';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
-import { Range, getTrackBackground } from 'react-range';
 import { setCategory } from '../../model/reducer/categoryReducer';
 import { clearAllFilter, setFilterBrands, setFilterByCountry, setFilterBySeller, setFilterCategory, setFilterMinMaxPrice, setFilterProductSizes, setFilterSearch, setFilterSection, setFilterSort } from '../../model/reducer/productFilterReducer';
-import { setSelectedProduct } from '../../model/reducer/selectedProduct';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import Popup from "../same-seller-popup/Popup";
 // import "./product.css";
 import CategoryComponent from './Categories';
 import { MdSignalWifiConnectedNoInternet0 } from "react-icons/md";
-import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
+
 import ProductCard from './ProductCard';
 import ListViewCard from "./ListViewCard"
 import { BsFillGrid3X3GapFill } from 'react-icons/bs';
@@ -34,7 +28,6 @@ const ProductList2 = React.memo(() => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-
     const closeCanvas = useRef();
     const category = useSelector(state => state.category?.category);
     const city = useSelector(state => state.city);
@@ -42,10 +35,8 @@ const ProductList2 = React.memo(() => {
     const setting = useSelector(state => (state.setting));
     const user = useSelector(state => (state.user));
 
-
     const [productresult, setproductresult] = useState([]);
     const [brands, setbrands] = useState(null);
-    const [selectedProduct, setselectedProduct] = useState({});
     const [isGridView, setIsGridView] = useState(true)
     const [offset, setoffset] = useState(0);
     const [totalProducts, settotalProducts] = useState(0);
@@ -54,41 +45,34 @@ const ProductList2 = React.memo(() => {
     const [minPrice, setMinPrice] = useState(null);
     const [maxPrice, setMaxPrice] = useState(null);
     const [values, setValues] = useState([]);
-    const [showModal, setShowModal] = useState(false);
     const [sizes, setSizes] = useState([]);
-    const [p_id, setP_id] = useState(0);
-    const [p_v_id, setP_V_id] = useState(0);
-    const [qnty, setQnty] = useState(0);
     const location = useLocation();
     const [showPriceFilter, setShowPriceFilter] = useState(true);
     const [selectedCategories, setSelectedCategories] = useState(filter?.category_id !== null ? [filter?.category_id] : []);
     const [networkError, setNetworkError] = useState(false);
     const { t } = useTranslation();
-    const [checkedList, setCheckedList] = useState([]);
     const [totalBrands, setTotalBrands] = useState(null)
-    const [brandLimit, setBrandLimit] = useState(10)
     const [brandOffset, setBrandOffset] = useState(0);
     const [tempMinPrice, setTempMinPrice] = useState(null)
     const [tempMaxPrice, setTempMaxPrice] = useState(null)
 
-    const fetchBrands = (bOffset) => {
-        // const offset = 
-        api.getBrands(brandLimit, bOffset)
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    if (brands == null) {
-                        setbrands(result?.data)
-                    } else {
-                        setbrands(prevBrands => [...prevBrands, ...result?.data]);
-                    }
-                    // setbrands(result.data);
-                    setTotalBrands(result?.total)
+    const brandLimit = 10;
+
+
+    const fetchBrands = async (bOffset) => {
+        try {
+            const result = await newApi.getBrands({ limit: brandLimit, offset: bOffset });
+            if (result.status === 1) {
+                if (brands == null) {
+                    setbrands(result?.data)
+                } else {
+                    setbrands(prevBrands => [...prevBrands, ...result?.data]);
                 }
-                else {
-                }
-            })
-            .catch(error => console.log("error ", error));
+                setTotalBrands(result?.total)
+            }
+        } catch (error) {
+            console.log("Error", error)
+        }
     };
 
     const loadMoreBrands = () => {
@@ -97,59 +81,63 @@ const ProductList2 = React.memo(() => {
     };
 
 
-    const fetchCategories = (id = 0) => {
-        setisLoader(true);
-        api.getCategory(id)
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    dispatch(setCategory({ data: result.data }));
-                }
-                setisLoader(false);
-            })
-            .catch(error => {
-                setisLoader(false);
-                console.log("error ", error);
-            });
+    const fetchCategories = async (id = 0) => {
+        try {
+            setisLoader(true);
+            const result = await newApi.getCategory({ id: id });
+            if (result.status === 1) {
+                dispatch(setCategory({ data: result.data }));
+            }
+            setisLoader(false);
+        } catch (error) {
+            setisLoader(false);
+            console.log("Error", error)
+        }
     };
 
+    const handlePrices = async (result) => {
+        if (minPrice == null && maxPrice == null && filter?.price_filter == null) {
+            setMinPrice(parseInt(result.total_min_price));
+            if (result.total_min_price === result.total_max_price) {
+                setMaxPrice(parseInt(result.total_max_price) + 100);
+                setValues([parseInt(result.total_min_price), parseInt(result.total_max_price) + 100]);
+            } else {
+                setMaxPrice(parseInt(result.total_max_price));
+                setValues([parseInt(result.total_min_price), parseInt(result.total_max_price)]);
+            }
+        }
+    }
+
     const filterProductsFromApi = async (filter) => {
-        setisLoader(true);
-        await api.getProductbyFilter(city?.city?.latitude, city?.city?.longitude, filter, user?.jwtToken)
-            .then(response => response.json())
-            .then(result => {
-                if (result.status === 1) {
-                    if (minPrice == null && maxPrice == null && filter?.price_filter == null) {
-                        setMinPrice(parseInt(result.total_min_price));
-                        if (result.total_min_price === result.total_max_price) {
-                            setMaxPrice(parseInt(result.total_max_price) + 100);
-                            setValues([parseInt(result.total_min_price), parseInt(result.total_max_price) + 100]);
-                        } else {
-                            setMaxPrice(parseInt(result.total_max_price));
-                            setValues([parseInt(result.total_min_price), parseInt(result.total_max_price)]);
-                        }
-                    }
+        try {
+            setisLoader(true);
+            const result = await newApi.productByFilter({ latitude: city?.city?.latitude, longitude: city?.city?.longitude, filters: filter })
+            if (result.status === 1) {
+                handlePrices(result)
+                if (filter.category_ids || filter.brand_ids || filter.price_filter?.min_price || filter.price_filter?.max_price) {
                     setproductresult(result.data);
-                    setSizes(result.sizes);
-                    settotalProducts(result.total);
-                    setShowPriceFilter(true);
+                } else {
+                    setproductresult((prevProduct) => [...prevProduct, ...result.data]);
                 }
-                else {
-                    setproductresult([]);
-                    settotalProducts(0);
-                    setSizes([]);
-                    setShowPriceFilter(false);
-                }
-                setisLoader(false);
-            })
-            .catch(error => {
-                const regex = /Failed to fetch/g;
-                if (regex.test(error.message)) {
-                    console.log("Network Error");
-                    setNetworkError(true);
-                }
-                console.log(error.message);
-            });
+                setSizes(result.sizes);
+                settotalProducts(result.total);
+                setShowPriceFilter(true);
+            } else {
+                setproductresult([]);
+                settotalProducts(0);
+                setSizes([]);
+                setShowPriceFilter(false);
+            }
+            setisLoader(false);
+        } catch (error) {
+            const regex = /Failed to fetch/g;
+            if (regex.test(error.message)) {
+                console.log("Network Error");
+                setNetworkError(true);
+            }
+            console.log(error.message);
+        }
+
     };
 
 
@@ -191,7 +179,6 @@ const ProductList2 = React.memo(() => {
         // console.log("Sorted Brand Ids ->", sorted_brand_ids);
         dispatch(setFilterBrands({ data: sorted_brand_ids }));
     };
-    // console.log(category?.category);
 
     useEffect(() => {
         if (brands == null) {
@@ -201,7 +188,7 @@ const ProductList2 = React.memo(() => {
         if (category === null) {
             fetchCategories();
         }
-        if (location.pathname === "/products")
+        if (location.pathname === "/products") {
             filterProductsFromApi({
                 min_price: filter.price_filter?.min_price,
                 max_price: filter.price_filter?.max_price,
@@ -218,41 +205,20 @@ const ProductList2 = React.memo(() => {
                 section_id: filter?.section_id
             });
 
+        }
+
     }, [filter.search, filter.category_id, filter.brand_ids, filter.sort_filter, filter?.search_sizes, filter?.price_filter, offset]);
 
 
 
     useEffect(() => {
+        setproductresult([])
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, []);
 
-
-
-
-
-
-    const placeHolderImage = (e) => {
-
-        e.target.src = setting.setting?.web_logo;
-    };
-
-    const handleCheckboxToggle = (size) => {
-        const updatedSizes = filter.search_sizes.map(obj =>
-            (obj.size === size.size && obj.unit_id === size.unit_id && obj.short_code === size.short_code) ?
-                { ...obj, checked: !obj.checked } : obj
-        );
-
-        if (!updatedSizes.some(obj => obj.size === size.size && obj.unit_id === size.unit_id && obj.short_code === size.short_code)) {
-            // If the size is not found, add a new entry with checked set to true
-            updatedSizes.push({ size: size.size, short_code: size.short_code, unit_id: size.unit_id, checked: true });
-        }
-
-        dispatch(setFilterProductSizes({
-            data: updatedSizes,
-        }));
-    };
-
-
+    const handleFetchMore = async () => {
+        setoffset(offSet => offSet + total_products_per_page)
+    }
     const Filter = () => {
         return (
             <>
@@ -267,19 +233,18 @@ const ProductList2 = React.memo(() => {
                                     setMinPrice(null);
                                     setMaxPrice(null);
                                     dispatch(clearAllFilter());
+                                    setoffset(0)
+                                    setproductresult([])
                                 }}
                             >
                                 Clear All
                             </p>
-
-
-
                         </div>
                     </div>
                     <Collapse defaultActiveKey={['1', '2', '3']} >
                         <Collapse.Panel header={t("product_category")} key="1" >
                             <div className='filter-row'>
-                                <CategoryComponent data={category} selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories} />
+                                <CategoryComponent data={category} selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories} setproductresult={setproductresult} setoffset={setoffset} />
                             </div>
                         </Collapse.Panel>
                         <Collapse.Panel header={t("brands")} key="2">
@@ -292,7 +257,11 @@ const ProductList2 = React.memo(() => {
                                                 <div key={brand.id}>
                                                     <Checkbox
                                                         checked={isChecked}
-                                                        onChange={() => filterbyBrands(brand)}
+                                                        onChange={() => {
+                                                            setproductresult([])
+                                                            filterbyBrands(brand)
+                                                        }}
+
                                                     >
                                                         <Checkbox.Group>
                                                         </Checkbox.Group>
@@ -318,7 +287,6 @@ const ProductList2 = React.memo(() => {
                                             setTempMinPrice(newValues[0])
                                             setTempMaxPrice(newValues[1])
                                         }
-
                                     }
                                 />
                                 <div className='range-prices'>
@@ -326,71 +294,23 @@ const ProductList2 = React.memo(() => {
                                     <p>{setting?.setting?.currency}{values[1]}</p>
                                 </div>
                                 <button className='price-filter-apply-btn' onClick={(newValues) => {
+                                    setoffset(0)
+                                    setproductresult([])
                                     dispatch(setFilterMinMaxPrice({ data: { min_price: tempMinPrice, max_price: tempMaxPrice } }))
                                 }}>
                                     Apply
                                 </button>
                             </div>
-
-
                         </Collapse.Panel>
                         {/* <Collapse.Panel header={t("seller")} key="4">
                         </Collapse.Panel> */}
                     </Collapse>
-
-
-                    {/* {(sizes?.length !== 0 && sizes?.length !== undefined) ?
-                        <div className='filter-row'>
-                            <h2 className='product-filter-headline d-flex w-100 align-items-center justify-content-between'>
-                                <span>{t("Filter By Sizes")}</span>
-
-                            </h2>
-                            {!sizes
-                                ?
-                                (<Loader />)
-                                :
-                                (<div id='filterBySizeContainer'>
-                                    {sizes.map((size, index) => (
-                                        <div
-                                            whiletap={{ scale: 0.8 }}
-                                            onClick={() => {
-                                                closeCanvas.current.click();
-                                            }} className={`d-flex justify-content-between align-items-center px-4 filter-bar`} key={index}>
-                                            <div className='d-flex'>
-                                                <p>{size.size} {size.short_code}</p>
-                                            </div>
-                                            <input type='checkbox'
-                                                checked={filter?.search_sizes.some(obj => obj.size === size.size && obj.checked && obj.short_code === size.short_code && obj.unit_id === size.unit_id)}
-                                                onChange={() => {
-                                                    handleCheckboxToggle(size);
-                                                }}
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                                )
-                            }
-                        </div> : null
-                    } */}
                 </div>
             </>
         );
     };
 
-
-
-
-
-    //page change
-    const handlePageChange = (pageNum) => {
-        setcurrPage(pageNum);
-        setoffset(pageNum * total_products_per_page - total_products_per_page);
-    };
-
     const placeholderItems = Array.from({ length: 12 }).map((_, index) => index);
-
-
-
     return (
         <>
             {!networkError ?
@@ -444,6 +364,7 @@ const ProductList2 = React.memo(() => {
                                                 <div className='d-flex align-items-center'>
                                                     <span className='sort-by'>Sort By</span>
                                                     <select className="form-select" aria-label="Default select example" defaultValue={filter.sort_filter} onChange={(e) => {
+                                                        setproductresult([])
                                                         dispatch(setFilterSort({ data: e.target.value }));
                                                     }}>
                                                         <option value="new">{t("newest_first")}</option>
@@ -480,7 +401,7 @@ const ProductList2 = React.memo(() => {
                                                 <div className='h-100 productList_content'>
                                                     <div className='row flex-wrap'>
                                                         {placeholderItems.map((index) => (
-                                                            <div key={index} className={`${!filter.grid_view ? 'col-6 list-view ' : 'col-md-6 col-sm-6 col-lg-4 flex-column mt-3'}`}>
+                                                            <div key={index} className={`${!filter.grid_view ? 'col-12 list-view ' : 'col-md-6 col-sm-6 col-lg-4 col-12 flex-column mt-3 col-xl-3'}`}>
                                                                 <Skeleton height={330} className='mt-3' borderRadius={8} />
                                                             </div>
                                                         ))}
@@ -496,7 +417,7 @@ const ProductList2 = React.memo(() => {
                                                         <div className='h-100 productList_content'>
                                                             <div className="row  flex-wrap">
                                                                 {isGridView ? productresult.map((product, index) => (
-                                                                    <div key={product?.id} className='col-md-6 col-sm-6 col-lg-3 col-12 product-list-grid '>
+                                                                    <div key={product?.id} className='col-md-6 col-sm-6 col-lg-4 col-12 product-list-grid col-xl-3'>
                                                                         <ProductCard product={product} />
                                                                     </div>
                                                                 )) : productresult.map((product, index) => (
@@ -504,31 +425,14 @@ const ProductList2 = React.memo(() => {
                                                                         <ListViewCard product={product} />
                                                                     </div>
                                                                 ))}
-                                                                {/* {productresult.map((product, index) => (
-                                                                    <div key={product?.id} className={`${isGridView == false ? 'col-6 list-view ' : 'col-md-6 col-sm-6 col-lg-4 col-12 my-2 '}`}>
-                                                                        <ProductCard product={product} />
-                                                                    </div>
-                                                                ))} */}
-
-
-
                                                             </div>
-
-                                                            <div>
-                                                                {(totalProducts > total_products_per_page) ?
-                                                                    <Pagination
-                                                                        itemClass='productListingItems'
-                                                                        activePage={currPage}
-                                                                        itemsCountPerPage={total_products_per_page}
-                                                                        totalItemsCount={totalProducts}
-                                                                        pageRangeDisplayed={5}
-                                                                        onChange={handlePageChange.bind(this)}
-                                                                    /> : null
+                                                            <div className='pagination'>
+                                                                {(totalProducts > productresult?.length) ?
+                                                                    <button className='load-mote-btn' onClick={handleFetchMore}>Load More</button>
+                                                                    : null
                                                                 }
                                                             </div>
                                                         </div>
-
-
                                                     )
                                                     : (
                                                         <div className='no-product'>
@@ -536,11 +440,7 @@ const ProductList2 = React.memo(() => {
                                                             <p>No Products Found</p>
                                                         </div>
                                                     )}
-
-
-
                                             </>
-
                                         )}
                                 </div>
                             </div>
@@ -560,4 +460,4 @@ const ProductList2 = React.memo(() => {
 
 });
 
-export default ProductList2;;
+export default ProductList2;

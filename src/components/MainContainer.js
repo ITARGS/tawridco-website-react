@@ -32,7 +32,6 @@ const MainContainer = () => {
     };
     return (
         <>
-
             {setting.setting === null
                 ? <Loader screen='full' />
                 : (
@@ -41,7 +40,6 @@ const MainContainer = () => {
                             <HomeContainer OfferImagesArray={aboveHomeSlider} BelowSliderOfferArray={BelowHomeSlider} BelowCategoryOfferArray={BelowCategory} />
                             <ProductContainer showModal={showModal} setShowModal={setShowModal} BelowSectionOfferArray={BelowSectionOfferArray} />
                         </div>
-
                         {parseInt(setting.setting.popup_enabled) === 1 ?
                             (
                                 <>
@@ -60,9 +58,7 @@ const MainContainer = () => {
                                                     window.location = setting.setting.popup_url;
                                                 }
                                                 else if (setting.setting?.popup_type === "category") {
-
                                                 }
-
                                             }}
                                                 style={{ width: "100%", height: "100%" }} onError={placeHolderImage}></img>
                                         </Modal.Body>

@@ -214,7 +214,6 @@ const Header = () => {
             try {
                 const result = await newApi.getCart({ latitude: city?.city?.latitude, longitude: city?.city?.longitude })
                 if (result.status == 1) {
-
                     const productsData = result?.data?.cart?.map((product) => {
                         return {
                             product_id: product?.product_id,
@@ -222,8 +221,8 @@ const Header = () => {
                             qty: product?.qty
                         };
                     });
-                    dispatch(setCartSubTotal({ data: result?.data?.sub_total }))
                     dispatch(setCartProducts({ data: productsData }));
+                    dispatch(setCartSubTotal({ data: result?.data?.sub_total }))
                 } else if (result.message == "No item(s) found in users cart") {
                     dispatch(setCartProducts({ data: [] }));
                 }
@@ -231,8 +230,11 @@ const Header = () => {
                 console.log(err?.message);
             }
         };
-        fetchCartData()
-    }, [])
+        if (user?.jwtToken) {
+            fetchCartData()
+        }
+    }, [user?.jwtToken])
+
     // cart?.cartSubTotal, cart?.guestCartTotal
     useEffect(() => {
         if (bodyScroll) {
@@ -356,16 +358,9 @@ const Header = () => {
         setSelectedCategoryId(category?.id)
     }
 
-
-
     const handleSearch = async (query) => {
-        // const filter = {}
-        // filter.search = query
-        // filter.category_ids = selectedCategoryId
-
         try {
             const response = await newApi.productByFilter({ latitude: city?.city?.latitude, longitude: city?.city?.longitude, filters: filter })
-
             dispatch(setProductBySearch({ data: response?.data }))
         } catch (error) {
             console.log("error", error)
@@ -490,13 +485,6 @@ const Header = () => {
 
 
                                 </div>
-                                {/* <div className='util'>
-                                    <span>Select Mode</span>
-                                    <select className='' onChange={handleCssModeChange}>
-                                        <option value="light">Light</option>
-                                        <option value="dark">Dark</option>
-                                    </select>
-                                </div> */}
 
                             </div>
                         </nav>
@@ -532,14 +520,6 @@ const Header = () => {
                                         );
                                     })}
                                 </span>
-                                {/* <span>{t("follow_us")}</span>
-                                <FaFacebookSquare className='social-icons border-end' size={30} />
-                                <FaInstagramSquare className='social-icons border-end' size={30} />
-                                <FaTwitterSquare className='social-icons border-end' size={30} />
-                                <FaLinkedin className='social-icons ' size={30} /> */}
-                                {/* <Link to='/about' className={`borderPad  border-end ${(cssmode.cssmode === "dark") ? "dark-header-1" : ''}`} > {t('about_us')}</Link>
-                                <Link to='/contact' className={`borderPad border-end `} > {t('contact_us')}</Link>
-                                <Link to='/faq' className={`borderPad border-end `} >{t('faq')}</Link> */}
                             </div>
                             <div className='col-md-6 d-flex justify-content-end'>
 
@@ -652,7 +632,7 @@ const Header = () => {
                                     <span className='cart-value'>
                                         <span>Your Cart</span>
                                         <h4>{setting.setting && setting.setting.currency}{
-                                            cart.isGuest == true ? cart?.guestCartTotal && cart?.guestCartTotal?.toFixed(2) :
+                                            cart.isGuest == true ? cart?.guestCartTotal?.toFixed(2) :
                                                 cart?.cartSubTotal?.toFixed(2)
                                         }</h4>
                                     </span>
@@ -696,8 +676,8 @@ const Header = () => {
 
 
                             </div>
-                            {/* TODO: */}
-                            <div className='hide-desktop row header-icons'>
+
+                            <div className=' row header-icons'>
                                 <div className='col-6'>
                                     {cssmode?.cssmode === "dark" ? <span><BiMoon size={20} onClick={() => handleThemeChange("light")} /></span> : <span onClick={() => handleThemeChange("dark")}><BiSun size={20} /></span>}
 

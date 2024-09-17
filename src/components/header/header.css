@@ -1053,7 +1053,7 @@
   color: var(--font-color);
   font-size: 24px !important;
   text-decoration: none;
-  display: none;
+  display: none !important;
 }
 
 /* Version 2.0.4 updated css */
@@ -1406,13 +1406,13 @@
 
 /* responsive mobile view */
 
-@media (max-width:767px) {
+@media (max-width:768px) {
   .site-header .header-main .container .bottom-header .search {
     display: none !important;
   }
 
   .header-icons {
-    display: flex;
+    display: flex !important;
     align-items: center;
     /* margin-right: 36px; */
   }
