@@ -9,7 +9,7 @@ const initialState = {
     category_id: null,
     grid_view: true,
     price_filter: null,
-    sort_filter: 'new',  //new,old,high,low,discount,popular
+    sort_filter: '',  //new,old,high,low,discount,popular
     section_products: null,
     search_sizes: [],
     seller_id: "",

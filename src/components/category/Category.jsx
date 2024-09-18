@@ -102,7 +102,7 @@ const Category = () => {
                                 {
                                     category?.map((ctg, index) => (
                                         <div className="col-md-12" key={index}>
-                                            <SwiperSlide className='category-container'>
+                                            <SwiperSlide className='category-container' key={index}>
                                                 {ctg.has_child
                                                     ? (
                                                         <Card onClick={() => selectCategory(ctg)}>

@@ -204,4 +204,52 @@ export const getAddress = async ({ }) => {
     const response = await api.get(apiEndPoints.getAddress)
     return response.data
 }
-
+export const addAddress = async ({ name, mobile, type, address, landmark, area, pincode, city, state, country, alternate_mobile, latitiude, longitude, is_default }) => {
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("mobile", mobile);
+    formData.append("type", type);
+    formData.append("address", address);
+    formData.append("landmark", landmark);
+    formData.append("area", area);
+    formData.append("pincode", pincode);
+    formData.append("city", city);
+    formData.append("state", state);
+    formData.append("country", country);
+    formData.append("alternate_mobile", alternate_mobile ? alternate_mobile : "");
+    formData.append("latitude", latitiude);
+    formData.append("longitude", longitude);
+    formData.append("is_default", is_default ? 1 : 0);
+    const response = await api.post(`${apiEndPoints.getAddress}/${apiEndPoints.add}`)
+    return response.data;
+}
+export const deleteAddress = async ({ addressID }) => {
+    const formData = new FormData();
+    formData.append("id", addressID)
+    const response = await api.post(`${apiEndPoints.getAddress}/${apiEndPoints.deleteItem}`)
+    return response.data;
+}
+export const updateAddress = async ({ address_id, name, mobile, type, address, landmark, area, pincode, city, state, country, alternate_mobile, latitiude, longitude, is_default }) => {
+    const formData = new FormData();
+    formData.append("id", address_id);
+    formData.append("name", name);
+    formData.append("mobile", mobile);
+    formData.append("type", type);
+    formData.append("address", address);
+    formData.append("landmark", landmark);
+    formData.append("area", area);
+    formData.append("pincode", pincode);
+    formData.append("city", city);
+    formData.append("state", state);
+    formData.append("country", country);
+    formData.append("alternate_mobile", alternate_mobile ? alternate_mobile : "");
+    formData.append("latitude", latitiude);
+    formData.append("longitude", longitude);
+    formData.append("is_default", is_default ? 1 : 0);
+    const response = await api.post(`${apiEndPoints.getAddress}/${apiEndPoints.update}`)
+    return response.data;
+}
+export const fetchTimeSlot = async ({ }) => {
+    const response = await api.get(`${apiEndPoints.getSettings}/${apiEndPoints.getTimeSlot}`)
+    return response.data
+}

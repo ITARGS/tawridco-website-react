@@ -114,7 +114,7 @@ const ProductList2 = React.memo(() => {
             const result = await newApi.productByFilter({ latitude: city?.city?.latitude, longitude: city?.city?.longitude, filters: filter })
             if (result.status === 1) {
                 handlePrices(result)
-                if (filter.category_ids || filter.brand_ids || filter.price_filter?.min_price || filter.price_filter?.max_price) {
+                if ((filter.category_ids || filter.brand_ids || filter.price_filter?.min_price || filter.price_filter?.max_price) && (offset == 0)) {
                     setproductresult(result.data);
                 } else {
                     setproductresult((prevProduct) => [...prevProduct, ...result.data]);
@@ -271,7 +271,7 @@ const ProductList2 = React.memo(() => {
                                             );
                                         })
                                 }
-                                {brands?.length < totalBrands ? <a className='brand-view-more' onClick={loadMoreBrands}>View moree.</a> : <></>}
+                                {brands?.length < totalBrands ? <a className='brand-view-more' onClick={loadMoreBrands}>{t("showMore")}</a> : <></>}
 
                             </div>
                         </Collapse.Panel>
@@ -367,6 +367,7 @@ const ProductList2 = React.memo(() => {
                                                         setproductresult([])
                                                         dispatch(setFilterSort({ data: e.target.value }));
                                                     }}>
+                                                        <option value="">{t("default")}</option>
                                                         <option value="new">{t("newest_first")}</option>
                                                         <option value="old">{t("oldest_first")}</option>
                                                         <option value="high">{t("high_to_low")}</option>
@@ -401,8 +402,8 @@ const ProductList2 = React.memo(() => {
                                                 <div className='h-100 productList_content'>
                                                     <div className='row flex-wrap'>
                                                         {placeholderItems.map((index) => (
-                                                            <div key={index} className={`${!filter.grid_view ? 'col-12 list-view ' : 'col-md-6 col-sm-6 col-lg-4 col-12 flex-column mt-3 col-xl-3'}`}>
-                                                                <Skeleton height={330} className='mt-3' borderRadius={8} />
+                                                            <div key={index} className={`${!isGridView ? 'col-12 list-view ' : 'col-md-6 col-sm-6 col-lg-4 col-12 flex-column mt-3 col-xl-3'}`}>
+                                                                <Skeleton height={230} className='mt-3' borderRadius={8} />
                                                             </div>
                                                         ))}
                                                     </div>

@@ -352,5 +352,7 @@
   "custom_send_sms_error_message": "It seems there is some error in sms gateway.Please try again later!",
   "productVariants": "Product Variants",
   "OutOfStock": "Out of Stock",
-  "myTransaction": "My Transactions"
+  "myTransaction": "My Transactions",
+  "default": "Default",
+  "showMore": "Show More"
 }

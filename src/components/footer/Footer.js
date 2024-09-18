@@ -182,11 +182,7 @@ export const Footer = () => {
                                                     </span>
                                                     : <></>}
 
-                                                {setting.payment_setting.razorpay_payment_method === "1" ?
-                                                    <span className='payment_methods'>
-                                                        <img src={razorpay_svg} alt="" srcSet="" />
-                                                    </span>
-                                                    : <></>}
+
                                             </div>
                                         </div>
 

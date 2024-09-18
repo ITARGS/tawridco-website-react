@@ -225,7 +225,7 @@
     height: 100%;
 }
 
-@media (max-width:435px) {
+@media (max-width:768px) {
     .list-view-product-grid .horizontal-product-buttons {
         display: flex;
         flex-direction: row;

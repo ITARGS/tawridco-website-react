@@ -9,18 +9,31 @@ const ImageWithPlaceholder = ({ src, alt, className, handleOnClick }) => {
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        setImageSrc(setting.setting.web_settings?.placeholder_image)
+        if (setting.setting.web_settings?.placeholder_image == undefined) {
+            setImageSrc(ImagePlaceholder)
+
+        } else {
+
+            setImageSrc(setting.setting.web_settings?.placeholder_image);
+        }
     }, [])
 
 
-
+    // console.log("src", src)
     const handleLoad = () => {
         setIsLoaded(true);
         setImageSrc(src);
     };
 
     const handleError = () => {
-        setImageSrc(setting.setting.web_settings?.placeholder_image);
+        if (setting.setting.web_settings?.placeholder_image == undefined) {
+            setImageSrc(ImagePlaceholder)
+
+        } else {
+
+            setImageSrc(setting.setting.web_settings?.placeholder_image);
+        }
+
     };
 
     return (

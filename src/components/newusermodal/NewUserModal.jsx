@@ -9,7 +9,7 @@ import './newmodal.css';
 import { useTranslation } from 'react-i18next';
 import { setCurrentUser, setJWTToken } from "../../model/reducer/authReducer";
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
-import { addtoGuestCart, setCart, setCartProducts, setIsGuest } from '../../model/reducer/cartReducer';
+import { addtoGuestCart, setCart, setCartProducts, setCartSubTotal, setGuestCartTotal, setIsGuest } from '../../model/reducer/cartReducer';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import { setSetting } from '../../model/reducer/settingReducer';
 import { setTokenThunk } from '../../model/thunk/loginThunk';
@@ -41,6 +41,33 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
         dispatch(setFavouriteProductIds({ data: setting?.data?.favorite_product_ids }));
     }
 
+    const fetchCart = async (latitude, longitude) => {
+        try {
+            const response = await newApi.getCart({ latitude: latitude, longitude: longitude })
+            if (response.status === 1) {
+                dispatch(setCart({ data: response.data }))
+                const productsData = getProductData(response.data)
+                dispatch(setCartProducts({ data: productsData }));
+                dispatch(setCartSubTotal({ data: response?.data?.sub_total }))
+            } else {
+                dispatch(setCart({ data: null }));
+            }
+        } catch (error) {
+            console.log("error", error)
+        }
+    }
+
+    const getProductData = (cartData) => {
+        const cartProducts = cartData?.cart?.map((product) => {
+            return {
+                product_id: product?.product_id,
+                product_variant_id: product?.product_variant_id,
+                qty: product?.qty
+            }
+        })
+        return cartProducts;
+    }
+
     const handleUserRegistration = async (e) => {
         let latitude;
         let longitude;
@@ -63,6 +90,7 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                 if (cart?.isGuest === true && cart?.guestCart?.length !== 0 && res?.data?.user?.status == 1) {
                     await AddtoCartBulk(res?.data.access_token);
                 }
+                await fetchCart(latitude, longitude);
                 setRegisterModalShow(false);
                 toast.success(t("register_successfully"));
                 setLoginModal(false)
@@ -81,8 +109,8 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
             const response = await api.bulkAddToCart(token, variantIds.join(","), quantities.join(","));
             const result = await response.json();
             if (result.status == 1) {
-                // toast.success(t("guest_products_added_to_cart"));
-                dispatch(addtoGuestCart({ data: [] }));
+                dispatch(setGuestCartTotal({ data: 0 }));
+                dispatch(addtoGuestCart({ data: [] }))
             } else {
                 console.log("Add to Bulk Cart Error Occurred");
             }

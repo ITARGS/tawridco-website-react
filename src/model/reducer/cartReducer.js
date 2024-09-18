@@ -64,7 +64,8 @@ export const cartReducer = createSlice({
         },
         subGuestCartTotal: (state, action) => {
             state.guestCartTotal -= action.payload.data
-        }
+        },
+        
     }
 });
 

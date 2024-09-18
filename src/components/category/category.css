@@ -183,9 +183,16 @@
 } */
 
 #allcategories .content .card {
-  border-radius: 8px;
-  /* padding-top: 10px; */
+  /* border-radius: 8px; */
+  text-align: center;
+  width: 100%;
   cursor: pointer;
+  border: none;
+  padding: 24px;
+  border-radius: 10px;
+  background-color: transparent !important;
+  display: flex;
+  align-items: center;
 }
 
 #allcategories.home .content .card {

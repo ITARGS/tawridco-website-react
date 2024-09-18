@@ -18,7 +18,7 @@ import { setTokenThunk } from '../../model/thunk/loginThunk';
 import { Modal } from 'react-bootstrap';
 import { setSetting } from '../../model/reducer/settingReducer';
 import { setFavouriteLength, setFavouriteProductIds } from '../../model/reducer/favouriteReducer';
-import { addtoGuestCart, setCart, setCartProducts, setIsGuest } from '../../model/reducer/cartReducer';
+import { addtoGuestCart, setCart, setCartProducts, setCartSubTotal, setGuestCartTotal, setIsGuest } from '../../model/reducer/cartReducer';
 import NewUserModal from '../newusermodal/NewUserModal';
 import { IoCloseSharp } from "react-icons/io5";
 import GoogleAuthButton from "../../utils/buttons/googleLogin.svg"
@@ -158,6 +158,7 @@ const Login = React.memo((props) => {
         }
         else {
             const phoneNumberWithoutSpaces = `${phonenum}`.replace(/\s+/g, "");
+
             if (setting?.setting?.firebase_authentication == 1) {
                 let appVerifier = window?.recaptchaVerifier;
                 try {
@@ -214,6 +215,7 @@ const Login = React.memo((props) => {
                 dispatch(setCart({ data: response.data }))
                 const productsData = getProductData(response.data)
                 dispatch(setCartProducts({ data: productsData }));
+                dispatch(setCartSubTotal({ data: response?.data?.sub_total }))
             } else {
                 dispatch(setCart({ data: null }));
             }
@@ -235,7 +237,8 @@ const Login = React.memo((props) => {
         let latitude;
         let longitude;
         e.preventDefault();
-
+        const phoneNumberWithoutSpaces = `${phonenum}`.replace(/\s+/g, "");
+        const mobileNumber = phonenum?.split(" ")[1]
         if (setting?.setting?.firebase_authentication == 1) {
             try {
                 setisLoading(true);
@@ -243,7 +246,7 @@ const Login = React.memo((props) => {
                 const OTPResult = await confirmationResult.confirm(OTP)
                 setUid(OTPResult.user.id)
                 dispatch(setAuthId({ data: OTPResult.user.id }));
-                const loginResponse = await loginApiCall(OTPResult.user, phonenum, fcm, "phone")
+                const loginResponse = await loginApiCall(OTPResult.user, mobileNumber, fcm, "phone")
 
             } catch (error) {
 
@@ -271,6 +274,8 @@ const Login = React.memo((props) => {
                     dispatch(setAuthType({ data: "phone" }))
                     if (res?.data?.user?.status == 1) {
                         dispatch(setIsGuest({ data: false }));
+                        dispatch(setGuestCartTotal({ data: 0 }));
+                        dispatch(addtoGuestCart({ data: [] }))
                     }
                     await handleFetchSetting();
                     latitude = city?.city?.latitude || setting?.setting?.default_city?.latitude
@@ -302,7 +307,7 @@ const Login = React.memo((props) => {
 
 
 
-
+    // TODO:
     const AddtoCartBulk = async (token) => {
         try {
             const variantIds = cart?.guestCart?.map((p) => p.product_variant_id);
@@ -310,7 +315,8 @@ const Login = React.memo((props) => {
             const response = await api.bulkAddToCart(token, variantIds.join(","), quantities.join(","));
             const result = await response.json();
             if (result.status == 1) {
-                dispatch(addtoGuestCart({ data: [] }));
+                dispatch(setGuestCartTotal({ data: 0 }));
+                dispatch(addtoGuestCart({ data: [] }))
             } else {
                 console.log("Add to Bulk Cart Error Occurred");
             }

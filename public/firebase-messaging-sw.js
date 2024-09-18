@@ -3,6 +3,7 @@ importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js')
 
 
 firebase.initializeApp({
+    // EDITME:
     apiKey: 'AIzaSyBT3LL_VaQavGOX8hV8kRSLpWrkbBKX8io',
     authDomain: 'egrocer-457a9.firebaseapp.com',
     projectId: 'egrocer-457a9',
