@@ -14,6 +14,8 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
     const shop = useSelector((state) => state.shop);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+
     return (
         // elementor-section-height-min-height elementor-section-items-stretch elementor-section-boxed elementor-section-height-default
         <section id="home" className='home-section  home-element section'>

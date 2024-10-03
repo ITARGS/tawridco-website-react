@@ -21,6 +21,7 @@ import ListViewCard from "./ListViewCard"
 import { BsFillGrid3X3GapFill } from 'react-icons/bs';
 import { FaThList } from 'react-icons/fa';
 import { Collapse, Slider, Checkbox } from "antd";
+import HorizonalProduct from './HorizontalProductCard';
 
 const ProductList2 = React.memo(() => {
     const total_products_per_page = 12;
