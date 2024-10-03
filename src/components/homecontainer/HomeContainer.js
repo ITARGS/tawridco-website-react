@@ -8,7 +8,10 @@ import ShopByCountries from '../shop-by-countries/ShopByCountries';
 import ShopBySellers from '../shop-by-seller/ShopBySellers';
 import { useNavigate } from 'react-router-dom';
 import { setFilterCategory } from '../../model/reducer/productFilterReducer';
-
+import HorizontalProductContainer from '../product/horizontalProductContainer';
+import VerticaleProductContainer from '../product/VerticaleProductContainer';
+import ProductSwiperWithImage from '../product/ProductSwiperWithImage';
+import ProductContainer from '../product/ProductContainerSwiper';
 
 const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryOfferArray }) => {
     const shop = useSelector((state) => state.shop);
@@ -16,11 +19,27 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
     const navigate = useNavigate();
 
 
+    const aboveHomeSection = shop?.shop?.sections?.filter((section) => section?.position == "top");
+    const belowHomeSliderSection = shop?.shop?.sections?.filter((section) => section?.position == "below_slider");
+    const belowCategorySection = shop?.shop?.sections?.filter((section) => section?.position == "below_category");
+    const belowShopSellerSection = shop?.shop?.sections?.filter((section) => section?.position == "below-shop");
+    const belowCoutrySection = shop?.shop?.sections?.filter((section) => section?.position == "below-country");
+    const belowBrandsSection = shop?.shop?.sections?.filter((section) => section?.position == "below-brand");
+
     return (
-        // elementor-section-height-min-height elementor-section-items-stretch elementor-section-boxed elementor-section-height-default
         <section id="home" className='home-section  home-element section'>
-            {/* Slider & Category */}
             <div className='container'>
+                {aboveHomeSection?.map((section) => {
+                    if (section?.style_web == "style_1") {
+                        return (<ProductContainer section={section} />)
+                    } else if (section?.style_web == "style_2") {
+                        return (<VerticaleProductContainer section={section} />)
+                    } else if (section?.style_web == "style_3") {
+                        return (<HorizontalProductContainer section={section} />)
+                    } else if (section?.style_web == "style_4") {
+                        return (<ProductSwiperWithImage section={section} />)
+                    }
+                })}
                 {OfferImagesArray?.map((offer) => (
                     <div className='col-md-12 p-0 col-12 my-3 my-md-5' key={offer?.id} onClick={() => {
                         if (offer?.category) {
@@ -102,6 +121,8 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     </div>
                 </div>
                 : <></>}
+
+            {/* <ProductSwiperWithImage /> */}
         </section>
 
     );

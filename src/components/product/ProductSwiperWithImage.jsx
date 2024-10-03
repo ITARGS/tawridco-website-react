@@ -12,7 +12,7 @@ import { IoMdArrowBack, IoMdArrowForward } from 'react-icons/io';
 import { Link } from 'react-router-dom';
 
 
-const ProductSwiperWithImage = () => {
+const ProductSwiperWithImage = ({ section }) => {
     const imageUrl = "https://images.pexels.com/photos/2255935/pexels-photo-2255935.jpeg?auto=compress&cs=tinysrgb&w=600";
     const city = useSelector(state => state.city);
     const setting = useSelector(state => state.setting)
@@ -49,14 +49,14 @@ const ProductSwiperWithImage = () => {
                         </div>
                     </div>
                 </div>
-                <div className='d-flex product-image-container-swiper row align-items-center '>
-                    <div className='col-3 overflow-hidden '>
+                <div className='d-flex product-image-container-swiper row  '>
+                    <div className='col-6 overflow-hidden col-sm-12'>
 
                         <img src={imageUrl} className='swiper-cover-img' />
                     </div>
 
                     <Swiper
-                        className='col-9'
+                        className='col-6 col-sm-12'
                         modules={[Navigation, Pagination]}
                         navigation={{
                             prevEl: `.prev-btn`,
@@ -72,7 +72,7 @@ const ProductSwiperWithImage = () => {
                                 slidesPerView: 3,
                             },
                             768: {
-                                slidesPerView: 3.5,
+                                slidesPerView: 2.5,
                             },
                             300: {
                                 slidesPerView: 1.5,

@@ -400,9 +400,6 @@ const Login = React.memo((props) => {
         props.setShow(false);
         // Navigate('/policy/Privacy_Policy');
     };
-
-
-    console.log("phone number", phonenum)
     const handleOnPhoneChange = (value, data, event, formattedValue) => {
 
 
