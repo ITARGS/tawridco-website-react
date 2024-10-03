@@ -15,7 +15,7 @@ import { setSetting } from '../../model/reducer/settingReducer';
 import { setTokenThunk } from '../../model/thunk/loginThunk';
 
 
-function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode, userEmail, setUserEmail, userName, setUserName, setLoginModal, setIsOTP, userAuthType }) {
+function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode, userEmail, setUserEmail, userName, setUserName, setLoginModal, setIsOTP, userAuthType, phoneNumberWithoutCountryCode }) {
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -32,7 +32,6 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
     const [error, setError] = useState("");
 
     const closeModalRef = useRef();
-
 
     const handleFetchSetting = async () => {
         const setting = await newApi.getSetting()
@@ -68,16 +67,22 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
         return cartProducts;
     }
 
+
+
     const handleUserRegistration = async (e) => {
         let latitude;
         let longitude;
         e.preventDefault();
+
+
         try {
             if (phoneNum?.length < countryCode?.length || phoneNum == null) {
                 setError(t("please_enter_phone_number"))
                 setisLoading(false)
             } else {
-                const res = await newApi.registerUser({ id: userEmail, name: userName, email: userEmail, mobile: phoneNum, type: userAuthType, fcm: fcm_token, country_code: countryCode })
+
+
+                const res = await newApi.registerUser({ id: userEmail, name: userName, email: userEmail, mobile: phoneNumberWithoutCountryCode, type: userAuthType, fcm: fcm_token, country_code: countryCode })
 
                 const tokenSet = await dispatch(setTokenThunk(res?.data?.access_token))
                 await getCurrentUser()

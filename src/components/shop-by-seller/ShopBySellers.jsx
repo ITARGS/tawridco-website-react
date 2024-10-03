@@ -69,7 +69,7 @@ const ShopBySellers = () => {
                             slidesPerView={5}
                             breakpoints={{
                                 1200: {
-                                    slidesPerView: 5,
+                                    slidesPerView: 4,
                                     spaceBetween: 20,
                                 },
                                 1024: {

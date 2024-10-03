@@ -12,7 +12,6 @@ export const registerUser = async ({ name, email, mobile, type, fcm, country_cod
     formData.append("mobile", mobile)
     formData.append("type", type)
     formData.append("fcm_token", fcm);
-    formData.append("fcm_token", fcm);
     formData.append("platform", "web");
     const response = await api.post(apiEndPoints.register, formData)
     return response.data

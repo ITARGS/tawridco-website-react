@@ -632,7 +632,6 @@ const Header = () => {
                                     </span>
                                     <span className='cart-value'>
                                         <span>Your Cart</span>
-                                        {console.log("cart total", cart?.cartSubTotal?.toFixed(2))}
                                         <h4>{setting.setting && setting.setting.currency}{
                                             cart.isGuest == true ? cart?.guestCartTotal?.toFixed(2) :
                                                 cart?.cartSubTotal?.toFixed(2)

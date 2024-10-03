@@ -47,6 +47,7 @@ const Login = React.memo((props) => {
     const [userEmail, setUserEmail] = useState("")
     const [userName, setUserName] = useState("")
     const [userAuthType, setUserAuthType] = useState("")
+    const [phoneNumberWithoutCountryCode, setPhoneNumberWithoutCountryCode] = useState(null)
 
     const [phonenum, setPhonenum] = useState(
         isDemoMode === "true" ? `${countryDialCode} ${phoneNumber.trim()}` : ""
@@ -238,7 +239,7 @@ const Login = React.memo((props) => {
         let longitude;
         e.preventDefault();
         const phoneNumberWithoutSpaces = `${phonenum}`.replace(/\s+/g, "");
-        const mobileNumber = phonenum?.split(" ")[1]
+
         if (setting?.setting?.firebase_authentication == 1) {
             try {
                 setisLoading(true);
@@ -246,7 +247,7 @@ const Login = React.memo((props) => {
                 const OTPResult = await confirmationResult.confirm(OTP)
                 setUid(OTPResult.user.id)
                 dispatch(setAuthId({ data: OTPResult.user.id }));
-                const loginResponse = await loginApiCall(OTPResult.user, mobileNumber, fcm, "phone")
+                const loginResponse = await loginApiCall(OTPResult.user, phoneNumberWithoutCountryCode, fcm, "phone")
 
             } catch (error) {
 
@@ -256,16 +257,16 @@ const Login = React.memo((props) => {
             }
         } else if (setting?.setting?.custom_sms_gateway_otp_based == 1) {
             const mobileNo = phonenum?.split(" ")?.[1]
-
             try {
                 setisLoading(true);
-                const res = await newApi.verifyOTP({ mobile: mobileNo, otp: OTP, country_code: `+${countryCode}` })
+                const res = await newApi.verifyOTP({ mobile: phoneNumberWithoutCountryCode, otp: OTP, country_code: `+${countryCode}` })
                 if (res.status === 1 && res?.message == "OTP is valid, but no user found with this phone number.") {
+
+                    dispatch(setAuthType({ data: "phone" }))
                     setRegisterModalShow(true)
                     props.setShow(false);
                     setPhonenum(mobileNo)
                     setUserAuthType("phone")
-                    dispatch(setAuthType({ data: "phone" }))
                     setUserEmail("")
                     setUserName("")
                 } else if (res.status === 1) {
@@ -304,10 +305,6 @@ const Login = React.memo((props) => {
         }
 
     }
-
-
-
-    // TODO:
     const AddtoCartBulk = async (token) => {
         try {
             const variantIds = cart?.guestCart?.map((p) => p.product_variant_id);
@@ -334,6 +331,7 @@ const Login = React.memo((props) => {
 
 
     const loginApiCall = async (user, id, fcm, type) => {
+        console.log("id", id)
         let latitude;
         let longitude;
         try {
@@ -403,10 +401,15 @@ const Login = React.memo((props) => {
         // Navigate('/policy/Privacy_Policy');
     };
 
+
+    console.log("phone number", phonenum)
     const handleOnPhoneChange = (value, data, event, formattedValue) => {
+
+
         if (value?.length > 0) {
-            const formattedPhone = `+${data?.dialCode} ${value.slice(data.dialCode.length)}`;
+            const formattedPhone = `+${data?.dialCode}  ${value.slice(data.dialCode.length)}`;
             setPhonenum(formattedPhone);
+            setPhoneNumberWithoutCountryCode(value.slice(data.dialCode.length))
         } else {
             setPhonenum("");
         }
@@ -539,6 +542,7 @@ const Login = React.memo((props) => {
                 setLoginModal={props.setShow}
                 setIsOTP={setIsOTP}
                 userAuthType={userAuthType}
+                phoneNumberWithoutCountryCode={phoneNumberWithoutCountryCode}
             />
         </>
     );

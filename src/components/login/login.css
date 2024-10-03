@@ -300,7 +300,7 @@
   padding: 10px;
   justify-content: center;
   border-radius: 5px;
-  border: 1px solid var(--font-color);
+
   background-color: var(--body-background);
   color: var(--font-color);
 }

@@ -123,12 +123,24 @@
   color: var(--secondary-color);
 }
 
-.allSellersContainer .content .card {
+/* .allSellersContainer .content .card {
   border-radius: 8px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+} */
+
+.allSellersContainer .content .card {
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+  padding: 18px;
+  /* display: flex;
+  align-items: center;
+  justify-content: center; */
 }
 
 .allSellersContainer.home .content .card {
@@ -136,14 +148,14 @@
   border-radius: 8px;
   display: flex;
   flex-direction: row;
-  margin: 5px;
+  /* margin: 5px; */
   transition: color .5s ease-in-out, box-shadow .5s ease-in-out;
   padding: 16px;
 }
 
 .allSellersContainer.home .content .card:hover {
   color: #fff !important;
-  box-shadow: inset 250px 0 0 0 var(--secondary-color);
+  box-shadow: inset 330px 0 0 0 var(--secondary-color) !important;
 }
 
 .allSellersContainer .content .card img {

@@ -21,6 +21,8 @@ import Popup from '../same-seller-popup/Popup';
 import { ValidateNoInternet } from '../../utils/NoInternetValidator';
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 import ImageWithPlaceholder from "../image-with-placeholder/ImageWithPlaceholder.jsx";
+import ProductVariantModal from '../product/ProductVariantModal.jsx';
+
 
 const Wishlist = () => {
 
@@ -43,6 +45,9 @@ const Wishlist = () => {
     const [p_v_id, setP_V_id] = useState(0);
     const [qnty, setQnty] = useState(0);
     const [isNetworkError, setIsNetworkError] = useState(false);
+    const [showVariantModal, setShowVariantModal] = useState(false)
+
+
     useEffect(() => {
         if (sizes.sizes === null || sizes.status === 'loading') {
             if (city.city !== null && favorite.favorite !== null) {
@@ -82,7 +87,12 @@ const Wishlist = () => {
             });
     }, []);
 
-
+    const handleVariantModal = (product) => {
+        setselectedProduct(product)
+        if (product?.variants?.length > 1) {
+            setShowVariantModal(true)
+        }
+    }
 
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
@@ -237,8 +247,12 @@ const Wishlist = () => {
                                                                     </div>
                                                                     <div className=''>
                                                                         <span>{product.name}</span>
-                                                                        <div className='variant-section' onClick={() => { setselectedProduct(product); }} >{product.variants[0]?.measurement} {product.variants[0]?.stock_unit_name}
-                                                                            {/* <IoIosArrowDown /> */}
+                                                                        <div className='variant-section' onClick={() => {
+
+                                                                            handleVariantModal(product);
+                                                                        }} >{product.variants[0]?.measurement} {product.variants[0]?.stock_unit_name}
+                                                                            {product.variants?.length > 1 ? <IoIosArrowDown /> : null}
+
                                                                         </div>
                                                                     </div>
                                                                 </th>
@@ -341,6 +355,7 @@ const Wishlist = () => {
                             </>
                         )}
                     </div>
+                    {console.log("selected product from wishlist", selectedProduct)}
                     <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} />
                     <Popup
                         product_id={p_id}
@@ -351,6 +366,8 @@ const Wishlist = () => {
                         city={city}
                         setP_V_id={setP_V_id}
                         setP_id={setP_id} />
+                    {console.log("selected product", selectedProduct)}
+                    <ProductVariantModal showVariantModal={showVariantModal} setShowVariantModal={setShowVariantModal} product={selectedProduct} />
                 </section>
                 :
                 <div className='d-flex flex-column justify-content-center align-items-center noInternetContainer'>

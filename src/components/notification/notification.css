@@ -60,6 +60,18 @@
   color: var(--sub-text-color);
 }
 
+.notification-container .notification-body .wrapper .content .notification-link {
+  color: var(--secondary-color);
+  font-weight: 700;
+  font-size: 14px;
+  /* cursor: pointer; */
+  text-decoration: none;
+}
+
+.notification-container .notification-body .wrapper .content .notification-link :hover {
+  cursor: pointer;
+}
+
 .notification-container .notification-body .wrapper .content p.title {
   font-weight: bold;
   color: var(--font-color);
