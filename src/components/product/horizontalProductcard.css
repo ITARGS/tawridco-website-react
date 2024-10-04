@@ -5,10 +5,10 @@
     /* height: 220px; */
     border-radius: 4px;
     padding: 12px;
-    border: 1px solid #D8E0E6;
+    border: 1px solid var(--border-color);
     position: relative;
     overflow: hidden;
-    margin-bottom: 24px;
+    margin-bottom: 5px;
 }
 
 .horizontal-product-grid div {

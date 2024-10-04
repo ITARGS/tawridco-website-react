@@ -540,6 +540,7 @@ const Login = React.memo((props) => {
                 setIsOTP={setIsOTP}
                 userAuthType={userAuthType}
                 phoneNumberWithoutCountryCode={phoneNumberWithoutCountryCode}
+                setPhoneNumberWithoutCountryCode={setPhoneNumberWithoutCountryCode}
             />
         </>
     );

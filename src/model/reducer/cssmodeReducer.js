@@ -16,16 +16,6 @@ export const cssmodeReducer = createSlice({
             state.cssmode = action.payload.data;
         }
     }
-    //     switch(type) {
-    //         case ActionTypes.SET_CSSMODE:
-    //     return {
-    //         status: "fulfill",
-    //         cssmode: payload,
-    //     };
-
-    //     default:
-    //             return state;
-    // }
 });
 
 export const { setCSSMode } = cssmodeReducer.actions;

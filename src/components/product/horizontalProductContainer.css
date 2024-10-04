@@ -1,12 +1,12 @@
-.products-container-section {
-    background-color: var(--body-background);
-    padding: 46px 0px;
+.horizontal-product-section {
+    padding: 24px;
 }
 
 .container .product-container-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: var(--font-color);
 }
 
 .container .product-container-header h2 {
@@ -48,4 +48,8 @@
     aspect-ratio: 266/395;
     padding: 12px 0px;
     border-radius: 12px;
+}
+
+.horizontal-product-section {
+    padding: 24px;
 }

@@ -38,7 +38,7 @@ const MainContainer = () => {
                     <>
                         <div className='home-page content' style={{ paddingBottom: "5px", minHeight: "75vh" }}>
                             <HomeContainer OfferImagesArray={aboveHomeSlider} BelowSliderOfferArray={BelowHomeSlider} BelowCategoryOfferArray={BelowCategory} />
-                            <ProductContainer showModal={showModal} setShowModal={setShowModal} BelowSectionOfferArray={BelowSectionOfferArray} />
+                            {/* <ProductContainer showModal={showModal} setShowModal={setShowModal} BelowSectionOfferArray={BelowSectionOfferArray} /> */}
                         </div>
                         {parseInt(setting.setting.popup_enabled) === 1 ?
                             (

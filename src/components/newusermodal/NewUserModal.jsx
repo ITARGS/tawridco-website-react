@@ -15,7 +15,7 @@ import { setSetting } from '../../model/reducer/settingReducer';
 import { setTokenThunk } from '../../model/thunk/loginThunk';
 
 
-function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode, userEmail, setUserEmail, userName, setUserName, setLoginModal, setIsOTP, userAuthType, phoneNumberWithoutCountryCode }) {
+function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPhoneNum, countryCode, userEmail, setUserEmail, userName, setUserName, setLoginModal, setIsOTP, userAuthType, phoneNumberWithoutCountryCode, setPhoneNumberWithoutCountryCode }) {
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
@@ -73,10 +73,8 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
         let latitude;
         let longitude;
         e.preventDefault();
-
-
         try {
-            if (phoneNum?.length < countryCode?.length || phoneNum == null) {
+            if (phoneNumberWithoutCountryCode?.length < countryCode?.length || phoneNumberWithoutCountryCode == null) {
                 setError(t("please_enter_phone_number"))
                 setisLoading(false)
             } else {
@@ -172,7 +170,7 @@ function NewUserModal({ registerModalShow, setRegisterModalShow, phoneNum, setPh
                             required
                             className={userAuthType == "google" ? "inactive-input" : "active-input"}
                         />
-                        <input type='tel' placeholder={t('mobile_number')} disabled={userAuthType == "phone"} value={phoneNum} onChange={(e) => setPhoneNum(e.target.value)}
+                        <input type='tel' placeholder={t('mobile_number')} disabled={userAuthType == "phone"} value={phoneNumberWithoutCountryCode} onChange={(e) => setPhoneNumberWithoutCountryCode(e.target.value)}
                             className={userAuthType == "phone" ? "inactive-input" : "active-input"}
                         />
                     </div>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Category from '../category/Category';
 import Slider from '../sliders/Slider';
 import './homecontainer.css';
@@ -15,46 +15,67 @@ import ProductContainer from '../product/ProductContainerSwiper';
 
 const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryOfferArray }) => {
     const shop = useSelector((state) => state.shop);
+    const { cssmode } = useSelector(state => state.cssmode)
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    // const [aboveHomeSection, setAboveHomeSection] = useState(null);
+    // const [belowSliderSection, setBelowSliderSection] = useState(null);
+    // const [belowCategorySection, setBelowCategorySection] = useState(null);
+    // const [belowBrandSection, setBelowBrandSection] = useState(null)
+    // const [beloCountrySection, setBelowCountrySection] = useState(null)
+    // const [belowShopSection, setBelowShopSection] = useState(null)
 
+
+
+    // useEffect(() => {
     const aboveHomeSection = shop?.shop?.sections?.filter((section) => section?.position == "top");
+    // setAboveHomeSection(aboveHomeSection)
     const belowHomeSliderSection = shop?.shop?.sections?.filter((section) => section?.position == "below_slider");
+    // setBelowSliderSection(belowSliderSection)
     const belowCategorySection = shop?.shop?.sections?.filter((section) => section?.position == "below_category");
-    const belowShopSellerSection = shop?.shop?.sections?.filter((section) => section?.position == "below-shop");
-    const belowCoutrySection = shop?.shop?.sections?.filter((section) => section?.position == "below-country");
-    const belowBrandsSection = shop?.shop?.sections?.filter((section) => section?.position == "below-brand");
+    // setBelowCategorySection(belowCategorySection)
+    const belowBrandsSection = shop?.shop?.sections?.filter((section) => section?.position == "custom_below_shop_by_brands");
+    // setBelowBrandSection(belowBrandsSection)
+    const belowCoutrySection = shop?.shop?.sections?.filter((section) => section?.position == "below_shop_by_country_of_origin");
+    // setBelowCountrySection(belowCoutrySection)
+    const belowShopSellerSection = shop?.shop?.sections?.filter((section) => section?.position == "below_shop_by_seller");
+    // setBelowShopSection(belowShopSellerSection)
+
+    // }, [shop])
+
+
 
     return (
         <section id="home" className='home-section  home-element section'>
-            <div className='container'>
-                {aboveHomeSection?.map((section) => {
-                    if (section?.style_web == "style_1") {
-                        return (<ProductContainer section={section} />)
-                    } else if (section?.style_web == "style_2") {
-                        return (<VerticaleProductContainer section={section} />)
-                    } else if (section?.style_web == "style_3") {
-                        return (<HorizontalProductContainer section={section} />)
-                    } else if (section?.style_web == "style_4") {
-                        return (<ProductSwiperWithImage section={section} />)
+            {/* <div className='container'> */}
+            {OfferImagesArray?.map((offer) => (
+                <div className='col-md-12 p-0 col-12 my-3 my-md-5 container' key={offer?.id} onClick={() => {
+                    if (offer?.category) {
+                        dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
+                        navigate("/products");
+                    } else if (offer?.product) {
+                        navigate(`/product/${offer.product.slug}`);
+                    } else if (offer?.offer_url) {
+                        window.open(offer?.offer_url, "_blank");
                     }
-                })}
-                {OfferImagesArray?.map((offer) => (
-                    <div className='col-md-12 p-0 col-12 my-3 my-md-5' key={offer?.id} onClick={() => {
-                        if (offer?.category) {
-                            dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
-                            navigate("/products");
-                        } else if (offer?.product) {
-                            navigate(`/product/${offer.product.slug}`);
-                        } else if (offer?.offer_url) {
-                            window.open(offer?.offer_url, "_blank");
-                        }
-                    }}>
-                        <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
-                    </div>
-                ))}
-            </div>
+                }}>
+                    <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
+                </div>
+            ))}
+            {aboveHomeSection?.map((section) => {
+                if (section?.style_web == "style_1") {
+                    return (<ProductContainer section={section} />)
+                } else if (section?.style_web == "style_2") {
+                    return (<VerticaleProductContainer section={section} />)
+                } else if (section?.style_web == "style_3") {
+                    return (<HorizontalProductContainer section={section} />)
+                } else if (section?.style_web == "style_4") {
+                    return (<ProductSwiperWithImage section={section} />)
+                }
+            })}
+
+
             <div className='home-container row mx-5'>
                 <div className="col-md-12 p-0 col-12">
                     <Slider />
@@ -75,8 +96,17 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
                 </div>
             ))}
-
-
+            {belowHomeSliderSection?.map((section) => {
+                if (section?.style_web == "style_1") {
+                    return (<ProductContainer section={section} />)
+                } else if (section?.style_web == "style_2") {
+                    return (<VerticaleProductContainer section={section} />)
+                } else if (section?.style_web == "style_3") {
+                    return (<HorizontalProductContainer section={section} />)
+                } else if (section?.style_web == "style_4") {
+                    return (<ProductSwiperWithImage section={section} />)
+                }
+            })}
             {shop.shop?.is_category_section_in_homepage ?
                 <div className='category_section_category'>
                     <div className="container">
@@ -84,8 +114,6 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     </div>
                 </div>
                 : <></>}
-
-
             {BelowCategoryOfferArray?.map((offer) => (
                 <div className='col-md-12 p-0 col-12 my-3 my-md-5 container' key={offer?.id} onClick={() => {
                     if (offer?.category) {
@@ -100,6 +128,19 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
                 </div>
             ))}
+
+            {belowCategorySection?.map((section) => {
+                if (section?.style_web == "style_1") {
+                    return (<ProductContainer section={section} />)
+                } else if (section?.style_web == "style_2") {
+                    return (<VerticaleProductContainer section={section} />)
+                } else if (section?.style_web == "style_3") {
+                    return (<HorizontalProductContainer section={section} />)
+                } else if (section?.style_web == "style_4") {
+                    return (<ProductSwiperWithImage section={section} />)
+                }
+            })}
+
             {shop.shop?.is_brand_section_in_homepage ?
                 <div className='category_section_brand'>
                     <div className="container">
@@ -107,6 +148,19 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     </div>
                 </div>
                 : <></>}
+
+            {belowBrandsSection?.map((section) => {
+                if (section?.style_web == "style_1") {
+                    return (<ProductContainer section={section} />)
+                } else if (section?.style_web == "style_2") {
+                    return (<VerticaleProductContainer section={section} />)
+                } else if (section?.style_web == "style_3") {
+                    return (<HorizontalProductContainer section={section} />)
+                } else if (section?.style_web == "style_4") {
+                    return (<ProductSwiperWithImage section={section} />)
+                }
+            })}
+
             {shop.shop?.is_country_section_in_homepage ?
                 <div className='category_section'>
                     <div className='container'>
@@ -114,6 +168,19 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     </div>
                 </div>
                 : <></>}
+            {belowCoutrySection?.map((section) => {
+                if (section?.style_web == "style_1") {
+                    return (<ProductContainer section={section} />)
+                } else if (section?.style_web == "style_2") {
+                    return (<VerticaleProductContainer section={section} />)
+                } else if (section?.style_web == "style_3") {
+                    return (<HorizontalProductContainer section={section} />)
+                } else if (section?.style_web == "style_4") {
+                    return (<ProductSwiperWithImage section={section} />)
+                }
+            })}
+
+
             {shop.shop?.is_seller_section_in_homepage ?
                 <div className='category_section'>
                     <div className='container'>
@@ -121,6 +188,18 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     </div>
                 </div>
                 : <></>}
+            {belowShopSellerSection?.map((section) => {
+                if (section?.style_web == "style_1") {
+                    return (<ProductContainer section={section} />)
+                } else if (section?.style_web == "style_2") {
+                    return (<VerticaleProductContainer section={section} />)
+                } else if (section?.style_web == "style_3") {
+                    return (<HorizontalProductContainer section={section} />)
+                } else if (section?.style_web == "style_4") {
+                    return (<ProductSwiperWithImage section={section} />)
+                }
+            })}
+
 
             {/* <ProductSwiperWithImage /> */}
         </section>
