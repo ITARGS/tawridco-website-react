@@ -1,13 +1,13 @@
 #all-sellers .seller_section_header {
   margin-bottom: 24px;
   background-color: var(--second-cards-color);
-  padding: 15px;
+  /* padding: 15px; */
   border-radius: 5px;
 }
 
 #all-sellers .seller_section_header p {
-  font-size: 18px;
-  line-height: 32px;
+  font-size: 24px;
+  line-height: 29px;
   color: var(--font-color);
   letter-spacing: 2px;
   font-weight: 700 !important;

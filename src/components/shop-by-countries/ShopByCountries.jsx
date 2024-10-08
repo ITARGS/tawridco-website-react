@@ -12,6 +12,7 @@ import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { IoMdArrowBack, IoMdArrowForward } from 'react-icons/io';
 
 const ShopByCountries = () => {
     const navigate = useNavigate();
@@ -36,17 +37,22 @@ const ShopByCountries = () => {
                             <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
                                 <div className="title d-md-flex align-items-center ">
                                     <p>{t('shop_by')} {t('countries')}</p>
-                                    <Link className='d-none d-md-block' to='/countries'>{t('see_all')} {t('countries')}<AiOutlineArrowRight size={15} className='see_countries_arrow' /> </Link>
+                                    {/* <Link className='d-none d-md-block' to='/countries'>{t('see_all')} {t('countries')}<AiOutlineArrowRight size={15} className='see_countries_arrow' /> </Link> */}
                                 </div>
-                                <div className=' d-md-none'>
+                                {/* <div className=' d-md-none'>
                                     <Link className='country_button' to='/countries'>{t('see_all')}</Link>
+                                </div> */}
+                                <div className='d-flex align-items-center'>
+                                    {
+
+                                        shop.shop?.countries?.length > 5 ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
+                                            <Link className='category_button' to='/countries'>{t('see_all')}</Link>
+                                            <button className='prev-arrow-country' ><IoMdArrowBack fill='black' size={20} /></button>
+                                            <button className='next-arrow-country' ><IoMdArrowForward fill='black' size={20} /></button>
+                                        </div> : <></>
+                                    }
                                 </div>
-                                {(shop?.shop?.countries?.length > 5) ?
-                                    <div className="justify-content-end align-items-ceneter d-md-flex d-none">
-                                        <button className='prev-arrow-country'><FaChevronLeft fill='black' size={20} /></button>
-                                        <button className='next-arrow-country'><FaChevronRight fill='black' size={20} /></button>
-                                    </div>
-                                    : null}
+
                             </div>
                         </div>
                     </div>

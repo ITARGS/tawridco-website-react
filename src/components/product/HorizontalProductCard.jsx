@@ -13,6 +13,8 @@ import { toast } from 'react-toastify';
 import { addGuestCartTotal, addtoGuestCart, setCart, setCartProducts, setCartSubTotal, subGuestCartTotal } from '../../model/reducer/cartReducer';
 import ProductVariantModal from './ProductVariantModal';
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
+import { BiHeart, BiSolidHeart } from 'react-icons/bi';
+import { addFavoriteProductId } from '../../model/reducer/favouriteReducer';
 const HorizonalProduct = ({ product }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch()
@@ -20,6 +22,7 @@ const HorizonalProduct = ({ product }) => {
     const setting = useSelector(state => (state.setting));
     const cart = useSelector(state => (state.cart))
     const user = useSelector(state => (state.user))
+    const favoriteProducts = useSelector(state => (state.favourite))
 
     const [p_id, setP_id] = useState(0);
     const [p_v_id, setP_V_id] = useState(0);
@@ -88,10 +91,11 @@ const HorizonalProduct = ({ product }) => {
 
     const addToFavorite = async (prdctId) => {
         try {
-            if (user?.jwttoken) {
+            if (user?.jwtToken) {
                 const res = await newApi.addToFavorite({ product_id: prdctId });
                 if (res.status == 1) {
                     toast.success(res.message)
+                    dispatch(addFavoriteProductId({ data: prdctId }))
                 } else {
                     toast.error(res.message)
                 }
@@ -103,6 +107,7 @@ const HorizonalProduct = ({ product }) => {
             console.log(error)
         }
     }
+
     const handleValidateAddNewProduct = (productQuantity, product) => {
         const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
 
@@ -255,8 +260,12 @@ const HorizonalProduct = ({ product }) => {
                         <a className="image">
                             <ImageWithPlaceholder src={product.image_url} alt={product?.slug} />
                         </a>
-                        <ul className="product-links">
-                            <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist"><i className="fas fa-heart fa-1x"></i></a></li>
+                        <ul
+                            className="product-links">
+                            <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist">
+                                {favoriteProducts.favouriteProductIds && favoriteProducts.favouriteProductIds?.includes(product?.id) ? <BiSolidHeart size={20} /> : <BiHeart size={20} />}
+                            </a></li>
+                            {/* <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist"><i className="fas fa-heart fa-1x"></i></a></li> */}
                             <li onClick={() => {
                             }}><a data-tip="Quick View"
                                 onClick={() => {

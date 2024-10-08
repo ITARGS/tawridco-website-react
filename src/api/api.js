@@ -765,6 +765,7 @@ const api = {
 
     },
     initiate_transaction(token, order_id, payment_method, type, wallet_amount) {
+
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append('Authorization', token_prefix + token);
@@ -796,6 +797,10 @@ const api = {
         }
         else if (payment_method.toLocaleLowerCase() === "cashfree") {
             formData.append("payment_method", "Cashfree");
+            formData.append("request_from", "website");
+        }
+        else if (payment_method.toLocaleLowerCase() === "paytabs") {
+            formData.append("payment_method", "Paytabs");
             formData.append("request_from", "website");
         }
 

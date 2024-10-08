@@ -235,7 +235,8 @@ const App = () => {
 
   const RootCss = `
   :root {
-    --body-background: #f3f5f7;
+    --body-background: #fff;
+    --buttons-background-color:#f3f5f7;
     --container-bg: #f2f3f9;
     --primary-color: #141a1f;
     --secondary-color: ${setting?.setting && setting?.setting?.web_settings?.color}; 
@@ -260,6 +261,7 @@ const App = () => {
   }
   [data-bs-theme="dark"]{
     --body-background: #141414;
+    --buttons-background-color:#141414;
     --primary-color: #202934;
     --secondary-color:${setting.setting && setting.setting.web_settings.dark_color};
     --sub-text-color: #8b8b8b;

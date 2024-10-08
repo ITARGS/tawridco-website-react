@@ -11,6 +11,7 @@ import { Navigation, Pagination } from 'swiper/modules';
 import { clearAllFilter, setFilterBySeller } from '../../model/reducer/productFilterReducer';
 import "./shop-by-seller.css";
 import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder';
+import { IoMdArrowBack, IoMdArrowForward } from 'react-icons/io';
 
 const ShopBySellers = () => {
     const navigate = useNavigate();
@@ -47,15 +48,22 @@ const ShopBySellers = () => {
                         <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
                             <div className="title d-md-flex align-items-center ">
                                 <p>{t('shop_by')} {t('sellers')}</p>
-                                <Link className='d-none d-md-block' to='/sellers'>{t('see_all')} {t('sellers')}<AiOutlineArrowRight size={15} className='see_sellers_arrow' /> </Link>
+                                {/* <Link className='d-none d-md-block' to='/sellers'>{t('see_all')} {t('sellers')}<AiOutlineArrowRight size={15} className='see_sellers_arrow' /> </Link> */}
                             </div>
-                            <div className=' d-md-none'>
+                            {/* <div className=' d-md-none'>
                                 <Link className='seller_button' to='/sellers'>{t('see_all')}</Link>
+                            </div> */}
+                            <div className='d-flex align-items-center'>
+                                {
+
+                                    shop.shop?.sellers?.length > 5 ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
+                                        <Link className='category_button' to='/category/all'>{t('see_all')}</Link>
+                                        <button className='prev-arrow-category' ><IoMdArrowBack fill='black' size={20} /></button>
+                                        <button className='next-arrow-category' ><IoMdArrowForward fill='black' size={20} /></button>
+                                    </div> : <></>
+                                }
                             </div>
-                            {(shop?.shop?.sellers?.length > 5) ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                                <button className='prev-arrow-seller' onClick={handlePrevClick}><FaChevronLeft size={20} /></button>
-                                <button className='next-arrow-seller' onClick={handleNextClick}><FaChevronRight size={20} /></button>
-                            </div> : null}
+
                         </div>
                     </div>
                     <div className='row justify-content-center home allSellersContainer'>

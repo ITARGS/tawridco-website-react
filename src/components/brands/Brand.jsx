@@ -12,6 +12,7 @@ import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { IoMdArrowBack, IoMdArrowForward } from 'react-icons/io';
 
 const Brand = () => {
   const shop = useSelector(state => state.shop);
@@ -35,17 +36,20 @@ const Brand = () => {
               <div className="col-md-12 col-12 d-flex justify-content-between align-items-center p-0">
                 <div className="title d-md-flex align-items-center ">
                   <p>{t('shop_by')} {t('brands')}</p>
-                  <Link className='d-none d-md-block' to='/brands'>{t('see_all')} {t('brands')}<AiOutlineArrowRight size={15} className='see_brand_arrow' /> </Link>
                 </div>
                 <div className=' d-md-none'>
-                  <Link className='brand_button' to='/brands'>{t('see_all')}</Link>
                 </div>
-                {(shop?.shop?.brands?.length > 5) ? (
-                  <div className="justify-content-end align-items-ceneter d-md-flex d-none">
-                    <button className='prev-arrow-brand'><FaChevronLeft size={20} /></button>
-                    <button className='next-arrow-brand'><FaChevronRight size={20} /></button>
-                  </div>
-                ) : null}
+                <div className="justify-content-end align-items-center d-md-flex d-none">
+                  {/* <Link className='d-none d-md-block' to='/brands'>{t('see_all')} {t('brands')}<AiOutlineArrowRight size={15} className='see_brand_arrow' /> </Link> */}
+                  {
+
+                    shop.shop?.brands?.length > 5 ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
+                      <Link className='brand_button' to='/brands'>{t('see_all')}</Link>
+                      <button className='prev-arrow-brand' ><IoMdArrowBack fill='black' size={20} /></button>
+                      <button className='next-arrow-brand' ><IoMdArrowForward fill='black' size={20} /></button>
+                    </div> : <></>
+                  }
+                </div>
               </div>
             </div>
 

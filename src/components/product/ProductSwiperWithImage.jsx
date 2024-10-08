@@ -12,7 +12,7 @@ import { IoMdArrowBack, IoMdArrowForward } from 'react-icons/io';
 import { Link } from 'react-router-dom';
 
 
-const ProductSwiperWithImage = ({ section }) => {
+const ProductSwiperWithImage = ({ section, index }) => {
     const imageUrl = "https://images.pexels.com/photos/2255935/pexels-photo-2255935.jpeg?auto=compress&cs=tinysrgb&w=600";
     const { cssmode } = useSelector(state => state.cssmode)
     const city = useSelector(state => state.city);
@@ -37,13 +37,12 @@ const ProductSwiperWithImage = ({ section }) => {
     return (
         <>
             {section?.products?.length > 0 ?
-                <section style={cssmode == "dark" ? {
+                <section className='product-container-with-image' style={cssmode == "dark" ? {
                     backgroundColor: section?.background_color_for_dark_theme
                 } : {
                     backgroundColor: section?.background_color_for_light_theme
                 }}>
                     <div className='container'>
-
                         <div>
                             <div className='product-container-header'>
                                 <div>
@@ -53,54 +52,59 @@ const ProductSwiperWithImage = ({ section }) => {
                                 <div className='d-flex align-items-center'>
                                     <Link to='/products'>View all</Link>
                                     <div>
-                                        <button className={`prev-btn prev-arrow-category`} ><IoMdArrowBack fill='black' size={20} /></button>
-                                        <button className={`next-btn next-arrow-category`} ><IoMdArrowForward fill='black' size={20} /></button>
+                                        <button className={` prev-arrow-category prev-btn-${index}`}><IoMdArrowBack fill='black' size={20} /></button>
+                                        <button className={` next-arrow-category next-btn-${index}`}><IoMdArrowForward fill='black' size={20} /></button>
                                     </div>
                                 </div>
                             </div>
-                            <div className='d-flex product-image-container-swiper row  '>
-                                <div className='col-6 overflow-hidden col-sm-12'>
 
+                            {/* Bootstrap grid */}
+                            <div className="row product-image-container-swiper">
+                                {/* Image column */}
+                                <div className='col-lg-3 col-md-12 col-12 overflow-hidden'>
                                     <img src={imageUrl} className='swiper-cover-img' />
                                 </div>
 
-                                <Swiper
-                                    className='col-6 col-sm-12'
-                                    modules={[Navigation, Pagination]}
-                                    navigation={{
-                                        prevEl: `.prev-btn`,
-                                        nextEl: `.next-btn`,
-                                    }}
-                                    spaceBetween={10}
-                                    pagination={{ clickable: true }}
-                                    breakpoints={{
-                                        1200: {
-                                            slidesPerView: 3,
-                                        },
-                                        1024: {
-                                            slidesPerView: 3,
-                                        },
-                                        768: {
-                                            slidesPerView: 2.5,
-                                        },
-                                        300: {
-                                            slidesPerView: 1.5,
-                                        },
-                                    }}>
-                                    {product && product?.map((prdct) => {
-                                        return (
-                                            <SwiperSlide>
-                                                <div className=''>
+                                {/* Swiper slider column */}
+                                <div className='col-lg-9 col-md-12 col-12'>
+                                    <Swiper
+                                        modules={[Navigation, Pagination]}
+                                        navigation={{
+                                            prevEl: `.prev-btn-${index}`,
+                                            nextEl: `.next-btn-${index}`,
+                                        }}
+                                        spaceBetween={10}
+                                        pagination={{ clickable: true }}
+                                        breakpoints={{
+                                            1200: {
+                                                slidesPerView: 3,
+                                            },
+                                            1024: {
+                                                slidesPerView: 3,
+                                            },
+                                            768: {
+                                                slidesPerView: 2.5,
+                                            },
+                                            425: {
+                                                slidesPerView: 2,
+                                            },
+                                            300: {
+                                                slidesPerView: 1,
+                                            },
+                                        }}>
+                                        {product && product?.map((prdct) => {
+                                            return (
+                                                <SwiperSlide key={prdct.id}>
                                                     <ProductCard product={prdct} />
-                                                </div>
-                                            </SwiperSlide>
-                                        )
-                                    })}
-                                </Swiper>
+                                                </SwiperSlide>
+                                            )
+                                        })}
+                                    </Swiper>
+                                </div>
                             </div>
                         </div>
-
                     </div>
+
                 </section>
                 : null}
         </>

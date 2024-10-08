@@ -20,6 +20,7 @@ import Loader from '../loader/Loader';
 import { loadStripe } from '@stripe/stripe-js';
 import InjectCheckout from './AddWalletStripeModal';
 import cashfree from '../../utils/ic_cashfree.svg';
+import paytabs from '../../utils/Icons/ic_paytabs.svg';
 
 const AddWalletModal = (props) => {
 
@@ -177,7 +178,7 @@ const AddWalletModal = (props) => {
         }
         try {
             let response, result;
-            if (paymentMethod === "paypal" || paymentMethod === "stripe" || paymentMethod === "razorpay" || paymentMethod === "midtrans" || paymentMethod === "phonepe" || paymentMethod === "cashfree") {
+            if (paymentMethod === "paypal" || paymentMethod === "stripe" || paymentMethod === "razorpay" || paymentMethod === "midtrans" || paymentMethod === "phonepe" || paymentMethod === "cashfree" || paymentMethod === "paytabs") {
                 response = await api.initiate_transaction(user?.jwtToken, null, paymentMethod, "wallet", walletAmount);
                 result = await response.json();
             }
@@ -243,6 +244,26 @@ const AddWalletModal = (props) => {
                     window.removeEventListener("message", messageEventListener);
                 };
             } else if (paymentMethod === "cashfree") {
+                const paymentWindow = window.open(result?.data?.redirectUrl, "_blank");
+                const messageEventListener = async (event) => {
+                    // console.log(event.data);
+                    if (event.data === "Recharge Done") {
+                        paymentWindow.close();
+                        dispatch(addUserBalance({ data: walletAmount }));
+                        toast.success(t("wallet_recharge_successfull"));
+                        window.removeEventListener("message", messageEventListener);
+                        props.setShowModal(false);
+                        props.fetchTransactions();
+                        // Remove the event listener once the task is completed
+                    }
+                };
+                // Add the event listener
+                window.addEventListener("message", messageEventListener);
+                paymentWindow.onbeforeunload = () => {
+                    // Remove the event listener if the payment window is closed without making payment
+                    window.removeEventListener("message", messageEventListener);
+                };
+            } else if (paymentMethod === "paytabs") {
                 const paymentWindow = window.open(result?.data?.redirectUrl, "_blank");
                 const messageEventListener = async (event) => {
                     // console.log(event.data);
@@ -392,6 +413,15 @@ const AddWalletModal = (props) => {
                                             </div>
                                             <div>
                                                 <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("phonepe")} />
+                                            </div>
+                                        </div> : null}
+                                        {setting?.payment_setting?.paytabs_payment_method === "1" ? <div className='d-flex flex-row justify-content-between align-items-center paymentContainer'>
+                                            <div>
+                                                <img className='PhonePeSVG me-2' src={paytabs} alt='PaytabsSVG' />
+                                                {t("paytabs")}
+                                            </div>
+                                            <div>
+                                                <input type='radio' id='paymentRadioBtn' name='paymentRadioBtn' onChange={() => handlePmtMethodChange("paytabs")} />
                                             </div>
                                         </div> : null}
 

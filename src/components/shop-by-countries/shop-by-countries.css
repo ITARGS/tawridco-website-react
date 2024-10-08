@@ -1,13 +1,13 @@
 #all-countries .countries_section_header {
   margin-bottom: 24px;
   background-color: var(--bs-body-bg);
-  padding: 15px;
+  /* padding: 15px; */
   border-radius: 5px;
 }
 
 #all-countries .countries_section_header p {
-  font-size: 18px;
-  line-height: 32px;
+  font-size: 24px;
+  line-height: 29px;
   color: var(--font-color);
   letter-spacing: 2px;
   font-weight: 700 !important;
@@ -15,7 +15,7 @@
 }
 
 #all-countries .countries_section_header a {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 400 !important;
   letter-spacing: 1px;
   color: var(--secondary-color);
@@ -43,13 +43,13 @@
   right: 5%;
   padding: 8px;
   background: var(--second-cards-color);
-  box-shadow: 0 0 1px 1px var(--body-background), 0 3px 1px 0 var(--body-background);
   font-size: 15px;
   z-index: 10;
   opacity: 0.7 !important;
   visibility: visible;
   border-radius: 100%;
   transition: all 300ms linear;
+  border: 1.5px solid var(--border-color);
 }
 
 #all-countries .countries_section_header .prev-arrow-country>svg {
@@ -69,12 +69,12 @@
   right: 0;
   padding: 8px;
   background: var(--second-cards-color);
-  box-shadow: 0 0 1px 1px var(--body-background), 0 3px 1px 0 var(--body-background);
   font-size: 15px;
   z-index: 10;
   opacity: 0.7 !important;
   visibility: visible;
   border-radius: 100%;
+  border: 1.5px solid var(--border-color);
   transition: all 300ms linear;
 }
 
@@ -137,7 +137,8 @@
 
 .allCountriesContainer.home .content .card {
   border-radius: 8px;
-
+  border: none;
+  padding: 24px;
   margin: 5px;
 }
 
@@ -157,8 +158,7 @@
 .allCountriesContainer .content .card:hover {
   outline: var(--secondary-color);
   transform: none !important;
-  box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--secondary-color);
+  border: 1px solid var(--border-color);
   color: var(--secondary-color) !important;
 }
 

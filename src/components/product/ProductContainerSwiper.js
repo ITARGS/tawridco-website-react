@@ -19,7 +19,7 @@ import 'swiper/css/pagination';
 import ProductCard from './ProductCard';
 
 
-const ProductContainer = React.memo(({ section }) => {
+const ProductContainer = React.memo(({ section, index }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { t } = useTranslation();
@@ -63,8 +63,8 @@ const ProductContainer = React.memo(({ section }) => {
                                                 }}>{t('see_all')}</Link>
                                             </div>
                                             <div className='d-flex'>
-                                                <button className={`prev-arrow-category prev-arrow-country `}><IoMdArrowBack fill='black' size={20} /></button>
-                                                <button className={`next-arrow-category next-arrow-country `}><IoMdArrowForward fill='black' size={20} /></button>
+                                                <button className={` prev-arrow-section prev-arrow-section-${index}`}><IoMdArrowBack fill='black' size={20} /></button>
+                                                <button className={` next-arrow-section next-arrow-section-${index}`}><IoMdArrowForward fill='black' size={20} /></button>
                                             </div>
                                         </div>
 
@@ -75,8 +75,8 @@ const ProductContainer = React.memo(({ section }) => {
                                         <Swiper
                                             modules={[Navigation, Pagination]}
                                             navigation={{
-                                                prevEl: `.prev-arrow-country.section`,
-                                                nextEl: `.next-arrow-country.section`,
+                                                prevEl: `.prev-arrow-section-${index} `,
+                                                nextEl: `.next-arrow-section-${index}`,
                                             }}
 
                                             pagination={{ clickable: true }}

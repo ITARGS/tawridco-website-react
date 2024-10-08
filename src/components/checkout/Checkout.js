@@ -9,6 +9,7 @@ import rozerpay from '../../utils/ic_razorpay.svg';
 // import cashfree from '../../utils/ic_cashfree-2.svg';
 import cashfree from '../../utils/ic_cashfree.svg';
 import paystack from '../../utils/ic_paystack.svg';
+import paytabs from '../../utils/Icons/ic_paytabs.svg';
 import Stripe from '../../utils/Checkout_stripe.svg';
 import cod from '../../utils/ic_cod.svg';
 import { useDispatch, useSelector } from 'react-redux';
@@ -429,6 +430,7 @@ const Checkout = () => {
 
     const HandlePlaceOrder = async (e) => {
         // e.preventDefault();
+        console.log("paytabs", paymentMethod)
         //place order
         if (!expectedDate) {
             toast.error(t('please_select_date'));
@@ -453,8 +455,7 @@ const Checkout = () => {
                 toast.error("Please Select Preferred Delivery Time");
                 setloadingPlaceOrder(false);
                 return;
-            }
-            else if (paymentMethod === 'COD') {
+            } else if (paymentMethod === 'COD') {
                 // place order
                 await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
@@ -489,8 +490,7 @@ const Checkout = () => {
                         setloadingPlaceOrder(false);
                         console.log(error);
                     });
-            }
-            else if (paymentMethod === 'Razorpay') {
+            } else if (paymentMethod === 'Razorpay') {
                 await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
                     .then(async result => {
@@ -531,8 +531,7 @@ const Checkout = () => {
                         }
                     })
                     .catch(error => console.log(error));
-            }
-            else if (paymentMethod === "Cashfree") {
+            } else if (paymentMethod === "Cashfree") {
                 await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote).then((res) => res.json()).then(async (result) => {
                     if (result.status === 1) {
                         setOrderNote("");
@@ -567,8 +566,7 @@ const Checkout = () => {
                         setOrderNote("");
                     }
                 })
-            }
-            else if (paymentMethod === 'Paystack') {
+            } else if (paymentMethod === 'Paystack') {
                 await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
                     .then(result => {
@@ -595,8 +593,7 @@ const Checkout = () => {
                     })
                     .catch(error => console.log(error));
 
-            }
-            else if (paymentMethod === "Stripe") {
+            } else if (paymentMethod === "Stripe") {
                 setStripeModalShow(true);
                 await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
@@ -636,8 +633,7 @@ const Checkout = () => {
                     })
                     .catch(error => console.log(error));
                 setloadingPlaceOrder(false);
-            }
-            else if (paymentMethod === 'Paypal') {
+            } else if (paymentMethod === 'Paypal') {
                 await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
                     .then(async result => {
@@ -680,8 +676,7 @@ const Checkout = () => {
                         }
                     })
                     .catch(error => console.log(error));
-            }
-            else if (paymentMethod === 'Wallet') {
+            } else if (paymentMethod === 'Wallet') {
                 await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote)
                     .then(response => response.json())
                     .then(async (result) => {
@@ -803,6 +798,41 @@ const Checkout = () => {
                         }
                     })
                     .catch(error => console.log(error));
+            } else if (paymentMethod == "Paytabs") {
+                await api.placeOrder(user?.jwtToken, cart.checkout.product_variant_id, cart.checkout.quantity, cart.checkout.sub_total, cart.checkout.delivery_charge.total_delivery_charge, totalPayment, paymentMethod, address.selected_address.id, delivery_time, cart.promo_code?.promo_code_id, cart.is_wallet_checked ? (walletDeductionAmt) : null, cart.is_wallet_checked ? 1 : 0, orderNote).then((res) => res.json()).then(async (result) => {
+                    if (result.status === 1) {
+                        setOrderNote("");
+                        dispatch(setCartPromo({ data: null }));
+                        setloadingPlaceOrder(false);
+                        setOrderID(result.data.order_id);
+                        await api.initiate_transaction(user?.jwtToken, result?.data?.order_id, "Paytabs", "order").then((res) => res.json()).then((res) => {
+                            if (res?.status === 1) {
+                                setisLoader(false);
+                                setloadingPlaceOrder(false);
+                                setpaymentUrl(res.data?.redirectUrl);
+                                dispatch(deductUserBalance({ data: walletDeductionAmt }));
+                                dispatch(setCartPromo({ data: null }));
+                                let subWindow = window.open(res?.data?.redirectUrl, '_parent');
+                            } else {
+                                toast.error(res.message);
+                                setloadingPlaceOrder(false);
+                            }
+                            dispatch(setPromoCode({
+                                code: null,
+                                discount: 0,
+                                isPromoCode: false
+                            }));
+                        }).catch((err) => {
+                            toast.error(err.message);
+                            setisLoader(false);
+                            setloadingPlaceOrder(false);
+                        })
+                    } else {
+                        toast.error(result.message);
+                        setloadingPlaceOrder(false);
+                        setOrderNote("");
+                    }
+                })
             }
         }
     };
@@ -1129,6 +1159,19 @@ const Checkout = () => {
                                                             </div>
                                                         </label>
                                                         : null}
+                                                    {setting?.payment_setting?.paytabs_payment_method === "1" ? <label className="form-check-label cursorPointer" htmlFor='paytabs'>
+                                                        <div className='payment-selector'>
+                                                            <img src={paytabs} alt='paytabs' />
+                                                            <div className="">
+                                                                <span>{t("paytabs")}</span>
+                                                            </div>
+                                                            <input type="radio" name="payment-method" id='paytabs' onChange={() => {
+                                                                setpaymentMethod("Paytabs");
+                                                            }} />
+                                                        </div>
+                                                    </label> : null}
+
+
                                                 </div>
                                             }
 
@@ -1200,7 +1243,6 @@ const Checkout = () => {
                                                                         <span>{t("total")}</span>
                                                                         <div className='d-flex align-items-center total-amount' style={{ color: "var(--secondary-color)" }}>
                                                                             <span>
-                                                                                {/* TODO: */}
                                                                                 {setting.setting && setting.setting.currency}
                                                                                 {Number(totalPayment)?.toFixed(setting.setting && setting.setting.decimal_point)}
                                                                             </span>

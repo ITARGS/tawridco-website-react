@@ -63,15 +63,15 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
                 </div>
             ))}
-            {aboveHomeSection?.map((section) => {
+            {aboveHomeSection?.map((section, index) => {
                 if (section?.style_web == "style_1") {
-                    return (<ProductContainer section={section} />)
+                    return (<ProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_2") {
-                    return (<VerticaleProductContainer section={section} />)
+                    return (<VerticaleProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_3") {
-                    return (<HorizontalProductContainer section={section} />)
+                    return (<HorizontalProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_4") {
-                    return (<ProductSwiperWithImage section={section} />)
+                    return (<ProductSwiperWithImage section={section} index={index} />)
                 }
             })}
 
@@ -96,15 +96,15 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
                 </div>
             ))}
-            {belowHomeSliderSection?.map((section) => {
+            {belowHomeSliderSection?.map((section, index) => {
                 if (section?.style_web == "style_1") {
-                    return (<ProductContainer section={section} />)
+                    return (<ProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_2") {
-                    return (<VerticaleProductContainer section={section} />)
+                    return (<VerticaleProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_3") {
-                    return (<HorizontalProductContainer section={section} />)
+                    return (<HorizontalProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_4") {
-                    return (<ProductSwiperWithImage section={section} />)
+                    return (<ProductSwiperWithImage section={section} index={index} />)
                 }
             })}
             {shop.shop?.is_category_section_in_homepage ?
@@ -129,15 +129,15 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                 </div>
             ))}
 
-            {belowCategorySection?.map((section) => {
+            {belowCategorySection?.map((section, index) => {
                 if (section?.style_web == "style_1") {
-                    return (<ProductContainer section={section} />)
+                    return (<ProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_2") {
-                    return (<VerticaleProductContainer section={section} />)
+                    return (<VerticaleProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_3") {
-                    return (<HorizontalProductContainer section={section} />)
+                    return (<HorizontalProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_4") {
-                    return (<ProductSwiperWithImage section={section} />)
+                    return (<ProductSwiperWithImage section={section} index={index} />)
                 }
             })}
 
@@ -149,15 +149,15 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                 </div>
                 : <></>}
 
-            {belowBrandsSection?.map((section) => {
+            {belowBrandsSection?.map((section, index) => {
                 if (section?.style_web == "style_1") {
-                    return (<ProductContainer section={section} />)
+                    return (<ProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_2") {
-                    return (<VerticaleProductContainer section={section} />)
+                    return (<VerticaleProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_3") {
-                    return (<HorizontalProductContainer section={section} />)
+                    return (<HorizontalProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_4") {
-                    return (<ProductSwiperWithImage section={section} />)
+                    return (<ProductSwiperWithImage section={section} index={index} />)
                 }
             })}
 
@@ -168,15 +168,15 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     </div>
                 </div>
                 : <></>}
-            {belowCoutrySection?.map((section) => {
+            {belowCoutrySection?.map((section, index) => {
                 if (section?.style_web == "style_1") {
-                    return (<ProductContainer section={section} />)
+                    return (<ProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_2") {
-                    return (<VerticaleProductContainer section={section} />)
+                    return (<VerticaleProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_3") {
-                    return (<HorizontalProductContainer section={section} />)
+                    return (<HorizontalProductContainer section={section} index={index} />)
                 } else if (section?.style_web == "style_4") {
-                    return (<ProductSwiperWithImage section={section} />)
+                    return (<ProductSwiperWithImage section={section} index={index} />)
                 }
             })}
 
