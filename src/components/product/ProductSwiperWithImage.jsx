@@ -5,35 +5,30 @@ import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import api from '../../api/api';
 import ProductCard from './ProductCard';
 import { IoMdArrowBack, IoMdArrowForward } from 'react-icons/io';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { setFilterCategory } from '../../model/reducer/productFilterReducer';
 
 
 const ProductSwiperWithImage = ({ section, index }) => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate()
     const imageUrl = "https://images.pexels.com/photos/2255935/pexels-photo-2255935.jpeg?auto=compress&cs=tinysrgb&w=600";
     const { cssmode } = useSelector(state => state.cssmode)
-    const city = useSelector(state => state.city);
-    const setting = useSelector(state => state.setting)
-    const [product, setProducts] = useState([])
+    const shop = useSelector((state) => state.shop);
+    const [promotionImage, setPromotionImage] = useState(null)
     useEffect(() => {
-        const latitude = city?.city?.latitude || setting?.setting?.default_city?.latitude
-        const longitude = city?.city?.longitude || setting?.setting?.default_city?.longitude
-        const fetchData = async () => {
-            try {
-                const res = await api.getProductbyFilter(latitude, longitude)
-                const { data } = await res.json();
-                setProducts(data);
-            } catch (error) {
-                console.log(error)
-            }
+        const promotionImageBelowSection = shop?.shop?.offers?.filter((offer) => offer?.position == "below_section");
+        const image = promotionImageBelowSection?.filter((offer) => {
+            return offer?.section?.title == section?.title
+        })
+        setPromotionImage(image)
+    }, [section])
 
 
-        }
-        fetchData();
-    }, [])
     return (
         <>
             {section?.products?.length > 0 ?
@@ -46,8 +41,8 @@ const ProductSwiperWithImage = ({ section, index }) => {
                         <div>
                             <div className='product-container-header'>
                                 <div>
-                                    <h2>Top Selling Products</h2>
-                                    <p>Discover the most popular grocery items loved by our customers.</p>
+                                    <h2>{section?.title}</h2>
+                                    <p>{section?.short_description}</p>
                                 </div>
                                 <div className='d-flex align-items-center'>
                                     <Link to='/products'>View all</Link>
@@ -58,14 +53,13 @@ const ProductSwiperWithImage = ({ section, index }) => {
                                 </div>
                             </div>
 
-                            {/* Bootstrap grid */}
                             <div className="row product-image-container-swiper">
-                                {/* Image column */}
-                                <div className='col-lg-3 col-md-12 col-12 overflow-hidden'>
+
+                                <div className='col-lg-3 col-md-6 col-12 overflow-hidden'>
                                     <img src={imageUrl} className='swiper-cover-img' />
                                 </div>
 
-                                {/* Swiper slider column */}
+
                                 <div className='col-lg-9 col-md-12 col-12'>
                                     <Swiper
                                         modules={[Navigation, Pagination]}
@@ -89,10 +83,10 @@ const ProductSwiperWithImage = ({ section, index }) => {
                                                 slidesPerView: 2,
                                             },
                                             300: {
-                                                slidesPerView: 1,
+                                                slidesPerView: 1.6,
                                             },
                                         }}>
-                                        {product && product?.map((prdct) => {
+                                        {section?.products && section?.products?.map((prdct) => {
                                             return (
                                                 <SwiperSlide key={prdct.id}>
                                                     <ProductCard product={prdct} />
@@ -104,9 +98,23 @@ const ProductSwiperWithImage = ({ section, index }) => {
                             </div>
                         </div>
                     </div>
-
                 </section>
                 : null}
+            {promotionImage?.map((offer) => (
+                <div className='col-md-12  col-12 my-3 my-md-5 container promotion-img' key={offer?.id} onClick={() => {
+                    if (offer?.category) {
+                        dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
+                        navigate("/products");
+                    } else if (offer?.product) {
+                        navigate(`/product/${offer.product.slug}`);
+                    } else if (offer?.offer_url) {
+                        window.open(offer?.offer_url, "_blank");
+                    }
+                }}>
+                    <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
+                </div>
+            ))}
+
         </>
     )
 }

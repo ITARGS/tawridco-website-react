@@ -142,10 +142,11 @@ const Checkout = () => {
         api.getCart(user?.jwtToken, latitude, longitude, 1)
             .then(response => response.json())
             .then(result => {
-
+                console.log("Result", result)
                 if (result.status === 1) {
                     dispatch(setCartCheckout({ data: result.data }));
                     dispatch(setWallet({ data: 0 }));
+
                     if (promoCode?.isPromoCode === true) {
                         setTotalPayment(result.data.total_amount - promoCode?.discount);
                     }
@@ -163,7 +164,6 @@ const Checkout = () => {
                     setCartError("")
                 } else if (result.status === 0) {
                     setCartError(result?.message)
-
                 }
             })
             .catch(error => {
@@ -182,6 +182,7 @@ const Checkout = () => {
                     if (result.status === 1) {
                         setCodAllow(result?.data?.cod_allowed);
                         dispatch(setCartCheckout({ data: result.data }));
+                        setDeliveryCharge(result?.data?.delivery_charge?.total_delivery_charge)
                         dispatch(setWallet({ data: 0 }));
                         if (promoCode?.isPromoCode === true) {
                             setTotalPayment(result.data.total_amount - promoCode?.discount);
@@ -199,6 +200,9 @@ const Checkout = () => {
                         setCartError("")
                     } else if (result.status === 0) {
                         setCartError(result?.message)
+                        const updatedTotalPayment = totalPayment - deliveryCharge;
+                        setTotalPayment(updatedTotalPayment)
+                        setDeliveryCharge(0)
                     }
 
                 })
@@ -1206,7 +1210,6 @@ const Checkout = () => {
                                                                     <div className='d-flex justify-content-between'>
                                                                         <span>{t("sub_total")}</span>
                                                                         <div className='d-flex align-items-center'>
-
                                                                             <span>{setting.setting && setting.setting.currency}   {(cart?.checkout?.sub_total)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
                                                                         </div>
                                                                     </div>
@@ -1215,8 +1218,8 @@ const Checkout = () => {
                                                                         <span>{t("delivery_charge")}</span>
 
                                                                         <div className='d-flex align-items-center'>
+                                                                            {cartError === "" ? <span>{setting.setting && setting.setting.currency}  {(cart?.checkout?.delivery_charge?.total_delivery_charge)?.toFixed(setting.setting && setting.setting.decimal_point)}</span> : deliveryCharge}
 
-                                                                            <span>{setting.setting && setting.setting.currency}  {(cart?.checkout?.delivery_charge?.total_delivery_charge)?.toFixed(setting.setting && setting.setting.decimal_point)}</span>
                                                                         </div>
                                                                     </div>
 

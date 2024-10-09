@@ -1,6 +1,6 @@
 #all-sellers .seller_section_header {
   margin-bottom: 24px;
-  background-color: var(--second-cards-color);
+  /* background-color: var(--second-cards-color); */
   /* padding: 15px; */
   border-radius: 5px;
 }

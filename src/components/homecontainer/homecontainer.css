@@ -8,11 +8,11 @@
 }
 
 .category_section_category {
-  margin: 24px 0px;
+  padding: 24px 0px;
 }
 
 .category_section_category .swiper {
-  background-color: var(--bs-body-bg);
+  /* background-color: var(--bs-body-bg); */
   border-radius: 4px;
 }
 

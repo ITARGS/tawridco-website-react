@@ -94,3 +94,14 @@
         aspect-ratio: 2/2;
     }
 }
+
+@media (max-width: 575px) and (min-width: 400px) {
+    .custom-col {
+        width: 50% !important;
+        /* Two cards per row */
+    }
+}
+
+.promotion-img {
+    padding: 24px 0px;
+}

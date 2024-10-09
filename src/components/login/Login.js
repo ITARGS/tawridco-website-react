@@ -331,7 +331,7 @@ const Login = React.memo((props) => {
 
 
     const loginApiCall = async (user, id, fcm, type) => {
-        console.log("id", id)
+      
         let latitude;
         let longitude;
         try {

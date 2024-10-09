@@ -2047,3 +2047,7 @@ input::placeholder {
   transition: all 300ms linear;
   border: 1.5px solid #8BA2B3;
 }
+
+.promotion-img {
+  padding: 24px 0px;
+}

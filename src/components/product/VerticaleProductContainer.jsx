@@ -41,7 +41,7 @@ const VerticaleProductContainer = ({ section }) => {
                         <div className='product-containers row my-4'>
                             {section?.products?.length > 0 && section?.products?.slice(0, 8)?.map((prdct) => {
                                 return (
-                                    <div className='col-md-4 col-sm-6 col-lg-3 col-12 m-0 p-0'>
+                                    <div className='col-md-4 col-xs-6  col-sm-6 col-lg-3 col-12 m-0 p-0 custom-col'>
                                         <ProductCard product={prdct} />
                                     </div>
                                 )
@@ -51,7 +51,7 @@ const VerticaleProductContainer = ({ section }) => {
                 </div>
             </section> : null}
             {promotionImage?.map((offer) => (
-                <div className='col-md-12 p-0 col-12 my-3 my-md-5 container' key={offer?.id} onClick={() => {
+                <div className='col-md-12 col-12 my-3 my-md-5 container promotion-img' key={offer?.id} onClick={() => {
                     if (offer?.category) {
                         dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
                         navigate("/products");

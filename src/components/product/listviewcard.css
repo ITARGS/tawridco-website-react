@@ -271,7 +271,7 @@
     padding: 8px;
     align-items: center;
     font-size: 16px;
-    background-color: var(--body-background);
+    background-color: var(--buttons-background-color);
     color: var(--font-color);
     justify-content: space-between;
     width: 100%;

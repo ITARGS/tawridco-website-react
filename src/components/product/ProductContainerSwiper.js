@@ -54,7 +54,7 @@ const ProductContainer = React.memo(({ section, index }) => {
                                                 <span className='d-none d-md-block'>{section.short_description}</span>
                                             </div>
                                         </div>
-                                        <div className='d-flex align-items-center flex-md-row flex-column'>
+                                        {section?.products?.length > 5 ? <div className='d-flex align-items-center flex-md-row flex-column'>
                                             <div>
                                                 <Link className="d-flex" to="/products" onClick={() => {
                                                     dispatch(clearAllFilter());
@@ -66,7 +66,8 @@ const ProductContainer = React.memo(({ section, index }) => {
                                                 <button className={` prev-arrow-section prev-arrow-section-${index}`}><IoMdArrowBack fill='black' size={20} /></button>
                                                 <button className={` next-arrow-section next-arrow-section-${index}`}><IoMdArrowForward fill='black' size={20} /></button>
                                             </div>
-                                        </div>
+                                        </div> : null}
+
 
                                     </div>
 
@@ -121,7 +122,7 @@ const ProductContainer = React.memo(({ section, index }) => {
                 </section >
                 : null}
             {promotionImage?.map((offer) => (
-                <div className='col-md-12 p-0 col-12 my-3 my-md-5 container' key={offer?.id} onClick={() => {
+                <div className='col-md-12  col-12 my-3 my-md-5 container promotion-img' key={offer?.id} onClick={() => {
                     if (offer?.category) {
                         dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
                         navigate("/products");

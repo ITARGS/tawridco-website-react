@@ -49,7 +49,7 @@ const HorizontalProductContainer = ({ section }) => {
                                     <Link to="/products" >View all</Link>
                                 </div>
                             </div>
-                            <div className='horizontal-products row my-4'>
+                            <div className='horizontal-products row '>
                                 {section?.products?.slice(0, 6)?.map((prdct) => {
                                     return (
                                         <div className='col-md-6 col-sm-6 col-lg-4 col-12 my-2'>
@@ -66,7 +66,7 @@ const HorizontalProductContainer = ({ section }) => {
                 </section>
                 : null}
             {promotionImage?.map((offer) => (
-                <div className='col-md-12 p-0 col-12 my-3 my-md-5 container' key={offer?.id} onClick={() => {
+                <div className='col-md-12  col-12 my-3 my-md-5 container promotion-img' key={offer?.id} onClick={() => {
                     if (offer?.category) {
                         dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
                         navigate("/products");
