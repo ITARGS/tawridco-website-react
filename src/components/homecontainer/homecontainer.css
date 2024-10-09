@@ -75,3 +75,7 @@
     background-color: var(--body-background);
   }
 }
+
+.promotion-img {
+  padding: 24px 0px;
+}

@@ -182,6 +182,7 @@ const ProductList2 = React.memo(() => {
     };
 
     useEffect(() => {
+        console.log("search", filter.search)
         if (brands == null) {
             fetchBrands(0);
         }
@@ -190,6 +191,7 @@ const ProductList2 = React.memo(() => {
             fetchCategories();
         }
         if (location.pathname === "/products") {
+
             filterProductsFromApi({
                 min_price: filter.price_filter?.min_price,
                 max_price: filter.price_filter?.max_price,

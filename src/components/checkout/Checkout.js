@@ -17,7 +17,7 @@ import paypal from "../../utils/ic_paypal.svg";
 import Midtrans from "../../utils/Icons/Midtrans.svg";
 import PhonepeSVG from "../../utils/Icons/Phonepe.svg";
 import { toast } from 'react-toastify';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Router, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Modal from 'react-bootstrap/Modal';
 // import { Modal } from 'antd';
@@ -28,7 +28,7 @@ import animate1 from '../../utils/order_placed_back_animation.json';
 import animate2 from '../../utils/order_success_tick_animation.json';
 
 //payment methods
-import useRazorpay from 'react-razorpay';
+import { useRazorpay } from 'react-razorpay';
 import { loadStripe } from '@stripe/stripe-js';
 import {
     Elements,
@@ -142,7 +142,7 @@ const Checkout = () => {
         api.getCart(user?.jwtToken, latitude, longitude, 1)
             .then(response => response.json())
             .then(result => {
-                console.log("Result", result)
+
                 if (result.status === 1) {
                     dispatch(setCartCheckout({ data: result.data }));
                     dispatch(setWallet({ data: 0 }));
@@ -262,7 +262,23 @@ const Checkout = () => {
         setLocModal(true);
         setBodyScroll(true);
     };
-    const [Razorpay] = useRazorpay();
+
+    const initializeRazorpay = () => {
+        return new Promise((resolve) => {
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            // document.body.appendChild(script);
+            script.onload = () => {
+                resolve(true);
+            };
+            script.onerror = () => {
+                resolve(false);
+            };
+
+            document.body.appendChild(script);
+        });
+    };
+    const { Razorpay } = useRazorpay();
     const handleRozarpayPayment = useCallback(async (order_id, razorpay_transaction_id, amount, name, email, mobile, app_name) => {
         const res = await initializeRazorpay();
         if (!res) {
@@ -271,6 +287,7 @@ const Checkout = () => {
         }
         const key = setting.payment_setting && setting.payment_setting.razorpay_key;
         const convertedAmount = Math.floor(amount * 100);
+
         const options = {
             key: key,
             amount: convertedAmount,
@@ -281,11 +298,11 @@ const Checkout = () => {
             order_id: razorpay_transaction_id,
             handler: async (res) => {
                 if (res.razorpay_payment_id) {
-                    setloadingPlaceOrder(true);
+                    // setloadingPlaceOrder(true);
                     await api.addRazorpayTransaction(user?.jwtToken, order_id, res.razorpay_payment_id, res.razorpay_order_id, res.razorpay_payment_id, res.razorpay_signature)
                         .then(response => response.json())
                         .then(result => {
-                            setloadingPlaceOrder(false);
+                            // setloadingPlaceOrder(false);
                             if (result.status === 1) {
                                 toast.success(result.message);
                                 setIsOrderPlaced(true);
@@ -294,19 +311,14 @@ const Checkout = () => {
                                 dispatch(setCartSubTotal({ data: 0 }));
                             }
                             else {
-
                                 toast.error(result.message);
                             }
                         })
-                        .catch(error => console.log(error));
-                    //Add Transaction
+                        .catch(error => {
+                            // rzpay.close()
+                            console.log(error)
+                        })
                 }
-
-
-            },
-            oncancel: async (res) => {
-                handleRazorpayCancel(order_id);
-
             },
             modal: {
                 confirm_close: true,
@@ -329,7 +341,9 @@ const Checkout = () => {
                 color: setting.setting && setting.setting.web_settings.color,
             },
         };
+
         const rzpay = new window.Razorpay(options);
+
         rzpay.on('payment.cancel', function (response) {
             alert("Payment Cancelled");
             handleRazorpayCancel(order_id);
@@ -337,26 +351,13 @@ const Checkout = () => {
         rzpay.on('payment.failed', function (response) {
             api.deleteOrder(user?.jwtToken, order_id);
         });
+
         rzpay.open();
 
     }, [Razorpay]);
 
-    const initializeRazorpay = () => {
-        return new Promise((resolve) => {
-            const script = document.createElement("script");
-            script.src = "https://checkout.razorpay.com/v1/checkout.js";
-            // document.body.appendChild(script);
 
-            script.onload = () => {
-                resolve(true);
-            };
-            script.onerror = () => {
-                resolve(false);
-            };
 
-            document.body.appendChild(script);
-        });
-    };
 
     const handleRazorpayCancel = (order_id) => {
         api.deleteOrder(user?.jwtToken, order_id);
@@ -434,7 +435,6 @@ const Checkout = () => {
 
     const HandlePlaceOrder = async (e) => {
         // e.preventDefault();
-        console.log("paytabs", paymentMethod)
         //place order
         if (!expectedDate) {
             toast.error(t('please_select_date'));
@@ -509,7 +509,6 @@ const Checkout = () => {
                                         setloadingPlaceOrder(false);
                                         dispatch(setCartPromo({ data: null }));
                                         handleRozarpayPayment(result.data.order_id, res.data.transaction_id, cart.promo_code ? (cart.promo_code.discounted_amount + cart.checkout.delivery_charge.total_delivery_charge) : cart.checkout.total_amount, user.user.name, user.user.email, user.user.mobile, setting.setting?.app_name, walletDeductionAmt);
-                                        handleRozarpayPayment(result.data.order_id, res.data.transaction_id, totalPayment, user.user.name, user.user.email, user.user.mobile, setting.setting?.app_name);
                                     }
                                     else {
                                         api.deleteOrder(user?.jwtToken, result.data.order_id);

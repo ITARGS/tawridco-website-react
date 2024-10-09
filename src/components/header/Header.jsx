@@ -17,7 +17,7 @@ import { Dropdown as AntdDropdown, Space } from 'antd';
 import { setCity } from "../../model/reducer/locationReducer";
 import { setPaymentSetting } from '../../model/reducer/settingReducer';
 import { setLanguage, setLanguageList } from "../../model/reducer/languageReducer";
-import { setFilterSearch, setFilterCategory, setProductBySearch, setFilterBrands, setFilterSection } from "../../model/reducer/productFilterReducer";
+import { setFilterSearch, setFilterCategory, setProductBySearch, setFilterBrands, setFilterSection, clearAllFilter } from "../../model/reducer/productFilterReducer";
 import { setCSSMode } from '../../model/reducer/cssmodeReducer';
 import { setCart, setCartProducts, setCartSubTotal, setIsGuest, setTotalCartValue } from '../../model/reducer/cartReducer';
 
@@ -359,7 +359,7 @@ const Header = () => {
         setSelectedCategoryId(category?.id)
     }
 
-    const handleSearch = async (query) => {
+    const handleSearch = async () => {
         try {
             const response = await newApi.productByFilter({ latitude: city?.city?.latitude, longitude: city?.city?.longitude, filters: filter })
             dispatch(setProductBySearch({ data: response?.data }))

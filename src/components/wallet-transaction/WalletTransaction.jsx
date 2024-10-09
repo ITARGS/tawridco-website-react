@@ -65,7 +65,6 @@ const WalletTransaction = () => {
         const dateTimeObj = new Date(transactionDate);
         const options = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
         const timeInAMPMFormat = dateTimeObj.toLocaleString('en-US', options);
-        console.log("updated date", timeInAMPMFormat)
         return timeInAMPMFormat;
     };
 

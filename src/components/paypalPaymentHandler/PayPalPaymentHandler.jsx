@@ -30,16 +30,18 @@ const PayPalPaymentHandler = () => {
     const [timer, setTimer] = useState(5);
     const interval = useRef();
     const timeout = useRef();
-    // https://devegrocer.thewrteam.in/web-payment-status?order_id=wallet-20240509133121-32&status_code=200&transaction_status=capture
-    // https://devegrocer.thewrteam.in/web-payment-status?status=PAYMENT_SUCCESS&type=order&payment_method=Phonepe
-    //https://devegrocer.thewrteam.in/web-payment-status?status=success&type=wallet&payment_method=Cashfree
-    //https://devegrocer.thewrteam.in/web-payment-status?status=failed&type=order&payment_method=Cashfree
     useEffect(() => {
         let intervalId;
         if (queryParamsObj.status == "PAYMENT_SUCCESS" && queryParamsObj.type == "wallet" && queryParamsObj.payment_method == "Phonepe") {
             intervalId = setInterval(() => {
                 window.opener.postMessage("Recharge Done", "*");
             }, 1000);
+        }
+        else if (queryParamsObj.status == "" && queryParamsObj.type == "wallet" && queryParamsObj.payment_method == "Paytabs") {
+            toast.error("Something went wrong");
+        }
+        else if (queryParamsObj.status == "failed" && queryParamsObj.type == "wallet" && queryParamsObj.payment_method == "Paytabs") {
+            toast.error("Payment failed");
         }
         else if (queryParamsObj.status_code == 200 && queryParamsObj.order_id.split("-")[0] == "wallet") {
             intervalId = setInterval(() => {
@@ -53,10 +55,16 @@ const PayPalPaymentHandler = () => {
         else if (queryParamsObj.type === "wallet") {
             toast.success(t("wallet_recharge_paypal_pending_message"));
         } else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "failed" && queryParamsObj.type == "order") {
-            toast.error("Order failed")
+            toast.error("Recharge Fail");
         }
         else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "" && queryParamsObj.type == "order") {
             toast.error("Order cancelled")
+        } else if (queryParamsObj.payment_method == "Paytabs" && queryParamsObj.status == "" && queryParamsObj.type == "order") {
+            toast.error("Order cancelled")
+        }
+        else if (queryParamsObj.status == "failed" && queryParamsObj.type == "order" && queryParamsObj.payment_method == "Paytabs") {
+
+            toast.error("Order failed")
         }
         else {
             setIsOrderPayment(true);

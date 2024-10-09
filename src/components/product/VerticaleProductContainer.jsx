@@ -22,11 +22,14 @@ const VerticaleProductContainer = ({ section }) => {
 
     return (
         <>
-            {section?.products?.length > 0 ? <section className='products-container-section' style={cssmode == "dark" ? {
-                backgroundColor: section?.background_color_for_dark_theme
-            } : {
-                backgroundColor: section?.background_color_for_light_theme
-            }}>
+            {section?.products?.length > 0 ? <section className='products-container-section' style={cssmode == "dark" ?
+                section?.background_color_for_dark_theme != "" ? { backgroundColor: section?.background_color_for_dark_theme } :
+                    { backgroundColor: "var(--body-background-color)" }
+                :
+                section?.background_color_for_light_theme != "" ?
+                    { backgroundColor: section?.background_color_for_light_theme } :
+                    { backgroundColor: "var(--body-background-color)" }
+            }>
                 <div className='container'>
                     <div>
                         <div className='product-container-header'>
@@ -51,7 +54,7 @@ const VerticaleProductContainer = ({ section }) => {
                 </div>
             </section> : null}
             {promotionImage?.map((offer) => (
-                <div className='col-md-12 col-12 my-3 my-md-5 container promotion-img' key={offer?.id} onClick={() => {
+                <div className='col-md-12 col-12  container promotion-img' key={offer?.id} onClick={() => {
                     if (offer?.category) {
                         dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
                         navigate("/products");

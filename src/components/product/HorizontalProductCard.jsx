@@ -316,63 +316,66 @@ const HorizonalProduct = ({ product }) => {
 
 
                     </div>
+                    {
+                        product?.variants?.length <= 1 && product?.variants?.[0]?.is_unlimited_stock == 0 && product?.variants?.[0]?.stock == 0 ? <span className='horizontal-card-variant-out-of-stock '>{t("OutOfStock")} </span> :
+                            <div className='horizontal-product-buttons'>
+                                <button className='qty-button' onClick={() => handleVariantModal(product)}>{`${selectedVariant?.measurement} ${selectedVariant?.stock_unit_name}`}<span>{product?.variants?.length > 1 ? <IoMdArrowDropdown /> : null}</span></button>
+                                {cart?.isGuest === false && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id)?.qty > 0 ||
+                                    cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === selectedVariant?.id)?.qty > 0 ? <div className='horizontal-cart-count-btn '><button
+                                        onClick={() => {
+                                            if (cart?.isGuest) {
+                                                AddToGuestCart(
+                                                    product,
+                                                    product?.id,
+                                                    selectedVariant?.id,
+                                                    cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty - 1,
+                                                    1,
+                                                    "remove"
+                                                );
+                                            } else {
+                                                if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id).qty == 1) {
+                                                    removeFromCart(product?.id, selectedVariant?.id)
+                                                } else {
+                                                    addToCart(product.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant?.id)?.qty - 1);
+                                                }
+                                            }
+                                        }}
+                                    ><FaMinus /></button>
 
-                    <div className='horizontal-product-buttons'>
-                        <button className='qty-button' onClick={() => handleVariantModal(product)}>{`${selectedVariant?.measurement} ${selectedVariant?.stock_unit_name}`}<span>{product?.variants?.length > 1 ? <IoMdArrowDropdown /> : null}</span></button>
-                        {cart?.isGuest === false && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id)?.qty > 0 ||
-                            cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === selectedVariant?.id)?.qty > 0 ? <div className='horizontal-cart-count-btn '><button
-                                onClick={() => {
-                                    if (cart?.isGuest) {
-                                        AddToGuestCart(
-                                            product,
-                                            product?.id,
-                                            selectedVariant?.id,
-                                            cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty - 1,
-                                            1,
-                                            "remove"
-                                        );
-                                    } else {
-                                        if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id).qty == 1) {
-                                            removeFromCart(product?.id, selectedVariant?.id)
+                                    <input value={
+                                        cart.isGuest === false ?
+                                            cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
+                                            : cart?.guestCart?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
+                                    } disabled min='1' type='number' max={selectedVariant?.stock} />
+
+                                    <button onClick={() => {
+                                        if (cart?.isGuest) {
+                                            const productQuantity = getProductQuantities(cart?.guestCart)
+                                            handleValidateAddExistingGuestProduct(
+                                                productQuantity,
+                                                product,
+                                                cart?.guestCart?.find(prdct => prdct?.product_id == product?.id && prdct?.product_variant_id == selectedVariant?.id)?.qty + 1
+                                            )
                                         } else {
-                                            addToCart(product.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant?.id)?.qty - 1);
+                                            const quantity = getProductQuantities(cart?.cartProducts)
+                                            handleValidateAddExistingProduct(quantity, product)
                                         }
-                                    }
-                                }}
-                            ><FaMinus /></button>
+                                    }}><FaPlus /></button>
+                                </div> : <button className='price-button'
+                                    onClick={() => {
+                                        if (cart?.isGuest) {
+                                            const quantity = getProductQuantities(cart?.cartProducts)
+                                            handleAddNewProductGuest(quantity, product)
+                                        } else {
+                                            const quantity = getProductQuantities(cart?.cartProducts)
+                                            handleValidateAddNewProduct(quantity, product)
+                                        }
+                                    }}
+                                ><FaShoppingBasket className='mx-2' size={20} />Add</button>}
 
-                            <input value={
-                                cart.isGuest === false ?
-                                    cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
-                                    : cart?.guestCart?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
-                            } disabled min='1' type='number' max={selectedVariant?.stock} />
+                            </div>
+                    }
 
-                            <button onClick={() => {
-                                if (cart?.isGuest) {
-                                    const productQuantity = getProductQuantities(cart?.guestCart)
-                                    handleValidateAddExistingGuestProduct(
-                                        productQuantity,
-                                        product,
-                                        cart?.guestCart?.find(prdct => prdct?.product_id == product?.id && prdct?.product_variant_id == selectedVariant?.id)?.qty + 1
-                                    )
-                                } else {
-                                    const quantity = getProductQuantities(cart?.cartProducts)
-                                    handleValidateAddExistingProduct(quantity, product)
-                                }
-                            }}><FaPlus /></button>
-                        </div> : <button className='price-button'
-                            onClick={() => {
-                                if (cart?.isGuest) {
-                                    const quantity = getProductQuantities(cart?.cartProducts)
-                                    handleAddNewProductGuest(quantity, product)
-                                } else {
-                                    const quantity = getProductQuantities(cart?.cartProducts)
-                                    handleValidateAddNewProduct(quantity, product)
-                                }
-                            }}
-                        ><FaShoppingBasket className='mx-2' size={20} />Add</button>}
-
-                    </div>
 
 
                 </div>

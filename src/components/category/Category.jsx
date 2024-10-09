@@ -58,7 +58,7 @@ const Category = () => {
                                     {
 
                                         category?.length > 5 ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                                            <Link className='category_button' to='/category/all'>{t('see_all')}</Link>
+                                        <Link className='category_button' to='/category/all'>{t('see_all')}</Link>
                                             <button className='prev-arrow-category' ><IoMdArrowBack fill='black' size={20} /></button>
                                             <button className='next-arrow-category' ><IoMdArrowForward fill='black' size={20} /></button>
                                         </div> : <></>

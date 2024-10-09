@@ -10,7 +10,7 @@ import StripeSVG from "../../utils/Stripe.svg";
 import MidtransSVG from "../../utils/Icons/Midtrans.svg";
 import PhonePeSVG from "../../utils/Icons/Phonepe.svg";
 import api from '../../api/api';
-import useRazorpay from 'react-razorpay';
+import { useRazorpay } from 'react-razorpay';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from "react-toastify";
 import { addUserBalance } from '../../model/reducer/authReducer';
@@ -29,9 +29,6 @@ const AddWalletModal = (props) => {
     const setting = useSelector(state => state.setting);
     const user = useSelector(state => state.user);
     const dispatch = useDispatch();
-
-    console.log("payment setting", setting?.payment_setting)
-
     const [walletAmount, setWalletAmount] = useState(0);
     const [paymentMethod, setPaymentMethod] = useState("");
     const [stripeTransId, setStripeTransId] = useState(null);
@@ -67,7 +64,7 @@ const AddWalletModal = (props) => {
         });
     };
 
-    const [Razorpay] = useRazorpay();
+    const { Razorpay } = useRazorpay();
 
     const handleRazorpayPayment = useCallback(async (razorpay_transaction_id, amount, name, email, mobile, app_name) => {
         const res = await initializeRazorpay();
@@ -136,6 +133,7 @@ const AddWalletModal = (props) => {
         rzpay.on('payment.failed', function (response) {
             toast.error(response);
         });
+        console.log("hello world from wallet")
         rzpay.open();
     }, [Razorpay]);
 

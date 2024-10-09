@@ -29,7 +29,7 @@ const CARD_OPTIONS = {
 const StripeModal = (props) => {
 
     const dispatch = useDispatch();
-    
+
     const user = useSelector((state) => state.user);
 
     const [loadingPay, setloadingPay] = useState(false);

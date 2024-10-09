@@ -50,7 +50,7 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
         <section id="home" className='home-section  home-element section'>
             {/* <div className='container'> */}
             {OfferImagesArray?.map((offer) => (
-                <div className='col-md-12 p-0 col-12 my-3 my-md-5 container' key={offer?.id} onClick={() => {
+                <div className='col-md-12 col-12 container promotion-img' key={offer?.id} onClick={() => {
                     if (offer?.category) {
                         dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
                         navigate("/products");

@@ -300,8 +300,7 @@
   padding: 10px;
   justify-content: center;
   border-radius: 5px;
-
-  background-color: var(--body-background);
+  background-color: var(--buttons-background-color);
   color: var(--font-color);
 }
 

@@ -32,11 +32,14 @@ const ProductSwiperWithImage = ({ section, index }) => {
     return (
         <>
             {section?.products?.length > 0 ?
-                <section className='product-container-with-image' style={cssmode == "dark" ? {
-                    backgroundColor: section?.background_color_for_dark_theme
-                } : {
-                    backgroundColor: section?.background_color_for_light_theme
-                }}>
+                <section className='product-container-with-image' style={cssmode == "dark" ?
+                    section?.background_color_for_dark_theme != "" ? { backgroundColor: section?.background_color_for_dark_theme } :
+                        { backgroundColor: "var(--body-background-color)" }
+                    :
+                    section?.background_color_for_light_theme != "" ?
+                        { backgroundColor: section?.background_color_for_light_theme } :
+                        { backgroundColor: "var(--body-background-color)" }
+                }>
                     <div className='container'>
                         <div>
                             <div className='product-container-header'>
@@ -98,22 +101,24 @@ const ProductSwiperWithImage = ({ section, index }) => {
                             </div>
                         </div>
                     </div>
-                </section>
+                </section >
                 : null}
-            {promotionImage?.map((offer) => (
-                <div className='col-md-12  col-12 my-3 my-md-5 container promotion-img' key={offer?.id} onClick={() => {
-                    if (offer?.category) {
-                        dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
-                        navigate("/products");
-                    } else if (offer?.product) {
-                        navigate(`/product/${offer.product.slug}`);
-                    } else if (offer?.offer_url) {
-                        window.open(offer?.offer_url, "_blank");
-                    }
-                }}>
-                    <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
-                </div>
-            ))}
+            {
+                promotionImage?.map((offer) => (
+                    <div className='col-md-12  col-12 container promotion-img' key={offer?.id} onClick={() => {
+                        if (offer?.category) {
+                            dispatch(setFilterCategory({ data: offer?.category?.id.toString() }));
+                            navigate("/products");
+                        } else if (offer?.product) {
+                            navigate(`/product/${offer.product.slug}`);
+                        } else if (offer?.offer_url) {
+                            window.open(offer?.offer_url, "_blank");
+                        }
+                    }}>
+                        <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
+                    </div>
+                ))
+            }
 
         </>
     )

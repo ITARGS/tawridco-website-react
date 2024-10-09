@@ -47,7 +47,7 @@ const Login = React.memo((props) => {
     const [userEmail, setUserEmail] = useState("")
     const [userName, setUserName] = useState("")
     const [userAuthType, setUserAuthType] = useState("")
-    const [phoneNumberWithoutCountryCode, setPhoneNumberWithoutCountryCode] = useState(null)
+    const [phoneNumberWithoutCountryCode, setPhoneNumberWithoutCountryCode] = useState(isDemoMode === "true" ? `${phoneNumber.trim()}` : "")
 
     const [phonenum, setPhonenum] = useState(
         isDemoMode === "true" ? `${countryDialCode} ${phoneNumber.trim()}` : ""
@@ -331,7 +331,7 @@ const Login = React.memo((props) => {
 
 
     const loginApiCall = async (user, id, fcm, type) => {
-      
+
         let latitude;
         let longitude;
         try {
