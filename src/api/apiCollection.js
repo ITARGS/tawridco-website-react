@@ -252,3 +252,9 @@ export const fetchTimeSlot = async ({ }) => {
     const response = await api.get(`${apiEndPoints.getSettings}/${apiEndPoints.getTimeSlot}`)
     return response.data
 }
+export const liveOrderTracking = async ({ orderId }) => {
+    const formData = new FormData();
+    formData?.append("order_id", orderId);
+    const response = await api.post(`${apiEndPoints.liveTracking}`, formData)
+    return response.data
+}

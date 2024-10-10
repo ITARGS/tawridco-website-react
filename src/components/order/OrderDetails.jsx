@@ -212,42 +212,7 @@ const OrderDetails = React.memo(() => {
                                                                                 <span className="discounted-price">
                                                                                     {`${setting.setting?.currency} ${item.price}`}
                                                                                 </span>
-                                                                                {/* {item.discounted_price !== 0 ?
-                                                                                <span className="original-price">
-                                                                                    {`${setting.setting?.currency} ${item.price}`}
-                                                                                </span>
-                                                                                : ""} */}
                                                                             </div>
-                                                                            {/* <div className="actions-container">
-
-                                                                            {!Number(item?.active_status) >= 6 && item?.return_status == 1 ?
-                                                                                <span className="return">
-                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('return')}</button>
-                                                                                </span>
-                                                                                : <></>
-                                                                            }
-
-                                                                            {!Number(item?.active_status) <= 6 && !Number(item?.active_status) <= item?.till_status && item?.cancelable_status == 1 ?
-                                                                                <span className="cancel">
-                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 7)}>{t('cancel')}</button>
-                                                                                </span>
-                                                                                : <></>
-
-                                                                            }
-                                                                            {!Number(item?.active_status === 7 && item?.active_status === '7') ?
-                                                                                <span className="cancel">
-                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 7)}>cancelled</button>
-                                                                                </span>
-                                                                                : <></>
-                                                                            }
-                                                                            {!Number(item?.active_status) == 8 ?
-                                                                                <span className="return">
-                                                                                    <button onClick={() => handleUpdateStatus(item?.id, 8)}>{t('returned')}</button>
-                                                                                </span>
-                                                                                : <></>
-                                                                            }
-
-                                                                        </div> */}
                                                                             <div className="actions-container">
                                                                                 {Number(item?.active_status) == 6 && item?.return_status == 1 && item?.return_requested === null ?
                                                                                     <span className="return">
@@ -447,16 +412,7 @@ const OrderDetails = React.memo(() => {
                                             </div>
                                         </div>
 
-                                        {/* <hr /> */}
 
-                                        {/* <div className="container-footer">
-                                        <div className="cancelReturnBtnWrapper">
-                                            {
-                                                orderData?.items[0]?.cancelable_status === 1 ?
-                                                    "Cancel" : 'no cancel'
-                                            }
-                                        </div>
-                                    </div> */}
                                     </div>
                                 </div>
                             </div>
@@ -473,10 +429,7 @@ const OrderDetails = React.memo(() => {
                                             </span>
                                         </div>
                                         <div className="status-body">
-                                            {/* <div className="checkmark">
-                                            <input type="checkbox" defaultChecked disabled />
-                                            <ImCheckboxChecked fill='#55AE7B' />
-                                        </div> */}
+
                                             <div className="order-status-details">
                                                 <div className="order-status">
                                                     {`${t('order')} ${orderStatus}`}
@@ -491,9 +444,6 @@ const OrderDetails = React.memo(() => {
                                                 </div>
                                             </div>
                                             <div className="payment-status">
-                                                {/* <span className={`${orderData?.bank_transfer_status ? 'done' : ''}`}>
-                                                {orderData?.bank_transfer_status ? t('payment_pending') : t('payment_done')}
-                                            </span> */}
                                             </div>
                                         </div>
                                     </div>

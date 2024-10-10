@@ -47,13 +47,14 @@ const ProductSwiperWithImage = ({ section, index }) => {
                                     <h2>{section?.title}</h2>
                                     <p>{section?.short_description}</p>
                                 </div>
-                                <div className='d-flex align-items-center'>
+                                {section?.products?.length > 3 ? <div className='d-flex align-items-center'>
                                     <Link to='/products'>View all</Link>
                                     <div>
                                         <button className={` prev-arrow-category prev-btn-${index}`}><IoMdArrowBack fill='black' size={20} /></button>
                                         <button className={` next-arrow-category next-btn-${index}`}><IoMdArrowForward fill='black' size={20} /></button>
                                     </div>
-                                </div>
+                                </div> : null}
+
                             </div>
 
                             <div className="row product-image-container-swiper">

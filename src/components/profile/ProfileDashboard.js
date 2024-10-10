@@ -302,52 +302,7 @@ const ProfileDashboard = (props) => {
                         {parseFloat(user?.user?.balance).toFixed(setting?.setting && setting?.setting?.decimal_point)}
                     </p>
                 </div>
-                {/* {isupdating
-                    ? (
-                        <div className="d-flex justify-content-center">
-                            <div className="spinner-border" role="status">
-                                <span className="visually-hidden">Loading...</span>
-                            </div>
-                        </div>
-                    )
-                    : <div className="basicInfo-container">
-                        <div className="image-container">
-                            {selectedFile ?
-                                <>
-                                    <img src={URL.createObjectURL(selectedFile)} alt='userProfileImage' />
-                                    <div className="button-container-badge">
-                                        <label htmlFor="file">
-                                            <input type='file' onChange={(e) => {
-                                                setselectedFile(e.target.files[0]);
-                                            }} className="badge-img" /><FaEdit size={25} fill='var(--secondary-color)' />
-                                        </label>
-                                    </div>
-                                </>
-                                :
-                                <>
-                                    <img onError={placeHolderImage} src={user.user && user.user.profile} alt='logo'></img>
-                                    <div className="button-container-badge">
-                                        <label htmlFor="file">
-                                            <input type='file' onChange={(e) => {
-                                                setselectedFile(e.target.files[0]);
-                                            }} className="badge-img" /><FaEdit size={25} fill='var(--secondary-color)' />
-                                        </label>
-                                    </div>
-                                </>
-                            }
-                        </div>
-                        <p className='userName'>{user.user.name.split(' ')[0]}</p>
-                        <span className='userEmail'>{user.user.email}</span>
-                        <div className='image-container d-flex align-items-center mt-4 walletContainer' >
-                            <PiWallet size={35} fill={'var(--secondary-color)'} />
-                            {t("Wallet Balance")}
-                            <p style={{ color: 'var(--secondary-color' }} className='mb-0'>
-                                {setting?.setting?.currency}
-                                {parseFloat(user?.user?.balance).toFixed(setting?.setting && setting?.setting?.decimal_point)}
-                            </p>
-                        </div>
-                    </div>
-                } */}
+
 
 
                 <div className="navigation-container">

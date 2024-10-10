@@ -356,5 +356,6 @@
   "myTransaction": "My Transactions",
   "default": "Default",
   "showMore": "Show More",
-  "goto": "Go to"
+  "goto": "Go to",
+  "livetracking": "Live Tracking"
 }

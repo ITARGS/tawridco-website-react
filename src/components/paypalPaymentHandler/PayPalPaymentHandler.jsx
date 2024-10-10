@@ -19,66 +19,49 @@ const PayPalPaymentHandler = () => {
     const navigate = useNavigate();
     const user = useSelector(state => state?.user);
     const queryParams = new URLSearchParams(location.search);
-    // console.log(queryParams);
     const queryParamsObj = {};
     for (const [key, value] of queryParams.entries()) {
         queryParamsObj[key] = value;
-        // console.log(key, value);
     }
-    // console.log(queryParamsObj);
     const [isOrderPayment, setIsOrderPayment] = useState(false);
     const [timer, setTimer] = useState(5);
     const interval = useRef();
     const timeout = useRef();
+    // https://devegrocer.thewrteam.in/web-payment-status?order_id=order-2266-178&status_code=201&transaction_status=pending&action=back
     useEffect(() => {
         let intervalId;
-        if (queryParamsObj.status == "PAYMENT_SUCCESS" && queryParamsObj.type == "wallet" && queryParamsObj.payment_method == "Phonepe") {
-            intervalId = setInterval(() => {
-                window.opener.postMessage("Recharge Done", "*");
-            }, 1000);
-        }
-        else if (queryParamsObj.status == "" && queryParamsObj.type == "wallet" && queryParamsObj.payment_method == "Paytabs") {
-            toast.error("Something went wrong");
-        }
-        else if (queryParamsObj.status == "failed" && queryParamsObj.type == "wallet" && queryParamsObj.payment_method == "Paytabs") {
-            toast.error("Payment failed");
-        }
-        else if (queryParamsObj.status_code == 200 && queryParamsObj.order_id.split("-")[0] == "wallet") {
-            intervalId = setInterval(() => {
-                window.opener.postMessage("Recharge Done", "*");
-            }, 1000);
-        } else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "success" && queryParamsObj.type == "wallet") {
-            toast.success("Recharge Done");
-        } else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "failed" && queryParamsObj.type == "wallet") {
-            toast.error("Recharge Fail");
-        }
-        else if (queryParamsObj.type === "wallet") {
-            toast.success(t("wallet_recharge_paypal_pending_message"));
-        } else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "failed" && queryParamsObj.type == "order") {
-            toast.error("Recharge Fail");
-        }
-        else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "" && queryParamsObj.type == "order") {
-            toast.error("Order cancelled")
-        } else if (queryParamsObj.payment_method == "Paytabs" && queryParamsObj.status == "" && queryParamsObj.type == "order") {
-            toast.error("Order cancelled")
-        }
-        else if (queryParamsObj.status == "failed" && queryParamsObj.type == "order" && queryParamsObj.payment_method == "Paytabs") {
-
-            toast.error("Order failed")
-        }
-        else {
-            setIsOrderPayment(true);
-            try {
-                api.removeCart(user?.jwtToken).then((res) => res.json()).then((result) => {
-                    if (result?.status === 1) {
-                        dispatch(setCart({ data: null }));
-                        dispatch(setCartCheckout({ data: null }));
-                        dispatch(setCartProducts({ data: [] }));
-                        dispatch(setCartSubTotal({ data: 0 }));
-                    }
-                });
-            } catch (err) {
-                console.log(err.message);
+        if (queryParamsObj.type == "wallet") {
+            if (queryParamsObj.status == "failed") {
+                toast.error("Payment failed");
+            } else if (queryParamsObj.status == "PAYMENT_SUCCESS" || queryParamsObj.status == "success" || queryParamsObj.status_code == 200) {
+                intervalId = setInterval(() => {
+                    window.opener.postMessage("Recharge Done", "*");
+                }, 1000);
+            } else if (queryParamsObj.status == "") {
+                toast.error("Something went wrong");
+            }
+        } else {
+            if (queryParamsObj.status == "failed") {
+                toast.error("Payment failed");
+            } else if (queryParamsObj.status == "") {
+                toast.error("Something went wrong");
+            } else if (queryParamsObj.status_code = 201 && queryParamsObj.action == "back") {
+                toast.error("payment cancelled");
+            }
+            else {
+                setIsOrderPayment(true);
+                try {
+                    api.removeCart(user?.jwtToken).then((res) => res.json()).then((result) => {
+                        if (result?.status === 1) {
+                            dispatch(setCart({ data: null }));
+                            dispatch(setCartCheckout({ data: null }));
+                            dispatch(setCartProducts({ data: [] }));
+                            dispatch(setCartSubTotal({ data: 0 }));
+                        }
+                    });
+                } catch (err) {
+                    console.log(err.message);
+                }
             }
         }
         interval.current = setInterval(() => {
@@ -93,6 +76,70 @@ const PayPalPaymentHandler = () => {
             clearTimeout(timeout);
             clearInterval(intervalId);
         };
+        // if (queryParamsObj.status == "PAYMENT_SUCCESS" && queryParamsObj.type == "wallet" && queryParamsObj.payment_method == "Phonepe") {
+        //     intervalId = setInterval(() => {
+        //         window.opener.postMessage("Recharge Done", "*");
+        //     }, 1000);
+        // }
+        // else if (queryParamsObj.status == "" && queryParamsObj.type == "wallet" && queryParamsObj.payment_method == "Paytabs") {
+        //     toast.error("Something went wrong");
+        // }
+        // else if (queryParamsObj.status == "failed" && queryParamsObj.type == "wallet" && queryParamsObj.payment_method == "Paytabs") {
+        //     toast.error("Payment failed");
+        // }
+        // else if (queryParamsObj.status_code == 200 && queryParamsObj.order_id.split("-")[0] == "wallet") {
+        //     intervalId = setInterval(() => {
+        //         window.opener.postMessage("Recharge Done", "*");
+        //     }, 1000);
+        // }
+        // else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "success" && queryParamsObj.type == "wallet") {
+        //     toast.success("Recharge Done");
+        // }
+        // else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "failed" && queryParamsObj.type == "wallet") {
+        //     toast.error("Recharge Fail");
+        // }
+        // else if (queryParamsObj.type === "wallet") {
+        //     toast.success(t("wallet_recharge_paypal_pending_message"));
+        // }
+        // else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "failed" && queryParamsObj.type == "order") {
+        //     toast.error("Recharge Fail");
+        // }
+        // else if (queryParamsObj.payment_method == "Cashfree" && queryParamsObj.status == "" && queryParamsObj.type == "order") {
+        //     toast.error("Order cancelled")
+        // }
+        // else if (queryParamsObj.payment_method == "Paytabs" && queryParamsObj.status == "" && queryParamsObj.type == "order") {
+        //     toast.error("Order cancelled")
+        // }
+        // else if (queryParamsObj.status == "failed" && queryParamsObj.type == "order" && queryParamsObj.payment_method == "Paytabs") {
+        //     toast.error("Order failed")
+        // }
+        // else {
+        //     setIsOrderPayment(true);
+        //     try {
+        //         api.removeCart(user?.jwtToken).then((res) => res.json()).then((result) => {
+        //             if (result?.status === 1) {
+        //                 dispatch(setCart({ data: null }));
+        //                 dispatch(setCartCheckout({ data: null }));
+        //                 dispatch(setCartProducts({ data: [] }));
+        //                 dispatch(setCartSubTotal({ data: 0 }));
+        //             }
+        //         });
+        //     } catch (err) {
+        //         console.log(err.message);
+        //     }
+        // }
+        // interval.current = setInterval(() => {
+        //     setTimer(prev => prev - 1);
+        // }, 1000);
+        // timeout.current = setTimeout(() => {
+        //     setIsOrderPayment(false);
+        //     navigate("/");
+        // }, 6000);
+        // return () => {
+        //     clearInterval(interval.current);
+        //     clearTimeout(timeout);
+        //     clearInterval(intervalId);
+        // };
     }, []);
 
     if (queryParams.size === 0) {

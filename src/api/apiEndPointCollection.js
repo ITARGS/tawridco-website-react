@@ -44,6 +44,7 @@ export const bulkAddToCart = "bulk_add_to_cart_items"
 export const checkUserExists = "verify_user"
 export const sendSms = "send_sms"
 export const verifyContact = "verify_user"
+export const liveTracking = "live-tracking"
 
 export const remove = "remove"
 export const add = "add"

@@ -24,6 +24,7 @@ import CancelledSVG from "../../utils/Icons/statusIcons/status_icon_cancel.svg";
 import ReturnedSVG from "../../utils/Icons/statusIcons/status_icon_returned.svg";
 import { ValidateNoInternet } from '../../utils/NoInternetValidator';
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
+import LiveTrackingModal from '../live-tracking-modal/LiveTrackingModal';
 
 const Order = () => {
 
@@ -37,6 +38,9 @@ const Order = () => {
     const [currPage, setcurrPage] = useState(1);
     const [isLoader, setisLoader] = useState(false);
     const [showTracker, setShowTracker] = useState(false);
+    const [showLiveLocationModal, setShowLiveLocationModal] = useState(false)
+    const [element, setElement] = useState({});
+    const [selectedOrder, setSelectedOrder] = useState(null)
 
     const componentRef = useRef();
     const total_orders_per_page = 10;
@@ -135,7 +139,6 @@ const Order = () => {
         const dateTimeObj = new Date(transactionDate);
         const options = { hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: true };
         const timeInAMPMFormat = dateTimeObj.toLocaleString('en-US', options);
-        console.log("updated date", timeInAMPMFormat)
         return timeInAMPMFormat;
     };
 
@@ -143,21 +146,12 @@ const Order = () => {
     const getOrderStatus = (pid) => {
         for (let i = 0; i < ActiveOrders.length; i++) {
             const element = ActiveOrders[i];
-            // if (element.id === pid) {
-            //     let html = `
-
-            //                         `;
-            //     document.getElementById('mainContentTrack').innerHTML = html;
-
-            // }
             closeModalRef.current.click();
         }
     };
-    const [element, setElement] = useState({});
+
     const setHtml = (ID, status = 0) => {
-
         if (!status) {
-
             ActiveOrders.map((obj, index) => {
                 if (obj.id === Number(ID)) {
                     setElement(obj);
@@ -197,6 +191,7 @@ const Order = () => {
             </>
         );
     };
+
     const getStatus = (flag) => {
         return (
             <>
@@ -210,6 +205,16 @@ const Order = () => {
                                             Number(flag[0]) == 8 ? t("returned") : null}
             </>);
     };
+
+    const handleLiveTrackOrder = (e, order) => {
+        if (order?.active_status !== "5") {
+            setHtml(e.target.value);
+            getOrderStatus(e.target.value);
+        } else {
+            setShowLiveLocationModal(true);
+            setSelectedOrder(order)
+        }
+    }
 
     return (
         <>
@@ -262,7 +267,6 @@ const Order = () => {
                                                             ))}
                                                             </th>
                                                             <th>
-
                                                                 {order.created_at.substring(0, 10)}
                                                                 <p>{convertToAMPM(order.created_at)}</p>
                                                             </th>
@@ -270,8 +274,13 @@ const Order = () => {
                                                                 <FaRupeeSign fontSize={'1.7rem'} /> {order.final_total}
                                                             </th>
                                                             <th className='button-container'>
-                                                                <button type='button' id={`track - ${order.order_id} `} data-bs-toggle="modal" data-bs-target="#trackModal" className='track' value={order.order_id} onClick={(e) => { setHtml(e.target.value); getOrderStatus(e.target.value); }}>{t("track_order")}</button>
-                                                                {/* <button type='button' id={`invoice - ${order.order_id} `} className='Invoice' value={order.order_id} onClick={(e) => { setHtml(e.target.value); getInvoice(e.target.value) }}>{t("get_invoice")}</button> */}
+                                                                <button type='button' id={`track - ${order.order_id} `} data-bs-toggle={order.active_status !== "5" ? "modal" : undefined}
+                                                                    data-bs-target={order.active_status !== "5" ? "#trackModal" : undefined} className='track' value={order.order_id}
+                                                                    onClick={(e) => {
+                                                                        handleLiveTrackOrder(e, order)
+
+                                                                    }}>{t("track_order")}</button>
+
                                                                 <button onClick={() => {
                                                                     navigate(`${order.order_id}`);
                                                                 }} className='Invoice'>{t('view_details')}</button>
@@ -333,8 +342,9 @@ const Order = () => {
                                                                 <FaRupeeSign fontSize={'1.7rem'} /> {order.final_total}
                                                             </th>
                                                             <th className='button-container'>
-                                                                <button type='button' id={`track - ${order.order_id} `} data-bs-toggle="modal" data-bs-target="#trackModal" className='track' value={order.order_id} onClick={(e) => { setHtml(e.target.value, 1); getOrderStatus(e.target.value); }}>{t("track_order")}</button>
-                                                                {/* <button type='button' id={`invoice - ${order.order_id} `} className='Invoice' value={order.order_id} onClick={(e) => { setHtml(e.target.value); getInvoice(e.target.value) }}>{t("get_invoice")}</button> */}
+
+                                                                <button type='button' id={`track - ${order.order_id} `} data-bs-toggle="modal" data-bs-target="#trackModal" className='track' value={order.order_id}
+                                                                    onClick={(e) => { setHtml(e.target.value, 1); getOrderStatus(e.target.value); }}>{t("track_order")}</button>
                                                                 <button onClick={() => {
                                                                     navigate(`${order.order_id}`);
                                                                 }} className='Invoice'>{t('view_details')}</button>
@@ -412,6 +422,7 @@ const Order = () => {
                     <p>{t("no_internet_connection")}</p>
                 </div>
             }
+            <LiveTrackingModal showLiveLocationModal={showLiveLocationModal} setShowLiveLocationModal={setShowLiveLocationModal} selectedOrder={selectedOrder} />
         </>
 
     );
