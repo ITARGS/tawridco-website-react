@@ -20,25 +20,41 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
         lng: null,
     });
 
+    const fetchLocation = async () => {
+        try {
+            const res = await newApi.liveOrderTracking({ orderId: selectedOrder?.id })
+            const latitude = parseFloat(res?.data?.latitude);
+            const longitude = parseFloat(res?.data?.longitude);
+            setRiderLocation({ lat: latitude, lng: longitude })
+        } catch (error) {
+            console.log("error", error)
+        }
+    }
+
+    useEffect(() => {
+        let interval;
+        if (showLiveLocationModal) {
+            interval = setInterval(() => {
+                if (showLiveLocationModal) {
+                    fetchLocation(selectedOrder?.id);
+                }
+            }, 15000);
+        }
+        return () => {
+            clearInterval(interval);
+        };
+    }, [showLiveLocationModal, fetchLocation]);
+
+
 
 
     useEffect(() => {
-        const fetchLocation = async () => {
-            try {
-                const res = await newApi.liveOrderTracking({ orderId: selectedOrder?.id })
-                console.log("delivery boy locatoin", res)
-            } catch (error) {
-                console.log("error", error)
-            }
-        }
         if (selectedOrder?.latitude && selectedOrder?.longitude) {
-
             setUserLocation({
                 lat: parseFloat(selectedOrder?.latitude),
                 lng: parseFloat(selectedOrder?.longitude)
             });
         }
-        fetchLocation()
     }, [selectedOrder]);
 
     const handleClose = () => setShowLiveLocationModal(false);
@@ -46,10 +62,7 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
         width: '558px',
         height: '410px'
     };
-    const center = {
-        lat: 23.2404495,
-        lng: 69.7110914
-    };
+
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: process.env.REACT_APP_MAP_API
@@ -59,7 +72,7 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
 
     const onLoad = React.useCallback(function callback(map) {
         // This is just an example of getting and using the map instance!!! don't just blindly copy!
-        const bounds = new window.google.maps.LatLngBounds(center);
+        const bounds = new window.google.maps.LatLngBounds(riderLocation);
         map.fitBounds(bounds);
 
         setMap(map)
@@ -86,7 +99,7 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
         ],
     };
 
-    function formatDate(dateString) {
+    const formatDate = (dateString) => {
         const date = new Date(dateString);
         const day = date.getDate();
         const month = date.toLocaleString('default', { month: 'long' });
@@ -95,8 +108,6 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
         const minutes = date.getMinutes().toString().padStart(2, '0');
         const ampm = hours >= 12 ? 'PM' : 'AM';
         const formattedHours = (hours % 12) || 12;
-
-        // Combine all parts into the desired format
         return `${day}, ${month}, ${year}, ${formattedHours}:${minutes} ${ampm}`;
     }
 
@@ -109,16 +120,20 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
                 <Modal.Body>
                     <div className='d-flex live-location-container'>
                         <div className='col-6 location'>
-
                             {isLoaded ? <GoogleMap
                                 mapContainerStyle={containerStyle}
-                                center={center}
+                                center={riderLocation}
                                 zoom={7}
                                 onLoad={onLoad}
                                 onUnmount={onUnmount}
                             >
-                                <Marker position={riderLocation}></Marker>
-                                <Marker position={userLocation}></Marker>
+                                {riderLocation && userLocation && (
+                                    <>
+                                        <Marker position={riderLocation}></Marker>
+                                        <Marker position={userLocation}></Marker>
+                                    </>
+                                )}
+
                                 <></>
                                 {riderLocation && userLocation && (
                                     <Polyline path={[riderLocation, userLocation]} options={polylineOptions} />

@@ -267,6 +267,7 @@ const Order = () => {
                                                             ))}
                                                             </th>
                                                             <th>
+
                                                                 {order.created_at.substring(0, 10)}
                                                                 <p>{convertToAMPM(order.created_at)}</p>
                                                             </th>
@@ -422,7 +423,9 @@ const Order = () => {
                     <p>{t("no_internet_connection")}</p>
                 </div>
             }
-            <LiveTrackingModal showLiveLocationModal={showLiveLocationModal} setShowLiveLocationModal={setShowLiveLocationModal} selectedOrder={selectedOrder} />
+            {showLiveLocationModal &&
+                <LiveTrackingModal showLiveLocationModal={showLiveLocationModal} setShowLiveLocationModal={setShowLiveLocationModal} selectedOrder={selectedOrder} />
+            }
         </>
 
     );

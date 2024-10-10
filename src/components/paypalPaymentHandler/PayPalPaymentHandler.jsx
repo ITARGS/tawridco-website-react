@@ -27,7 +27,7 @@ const PayPalPaymentHandler = () => {
     const [timer, setTimer] = useState(5);
     const interval = useRef();
     const timeout = useRef();
-    // https://devegrocer.thewrteam.in/web-payment-status?order_id=order-2266-178&status_code=201&transaction_status=pending&action=back
+    // https://devegrocer.thewrteam.in/web-payment-status?order_id=order-2274-252&status_code=201&transaction_status=pending&action=back
     useEffect(() => {
         let intervalId;
         if (queryParamsObj.type == "wallet") {
@@ -41,12 +41,27 @@ const PayPalPaymentHandler = () => {
                 toast.error("Something went wrong");
             }
         } else {
+            const orderId = queryParamsObj.order_id.split("-")[1]
+
             if (queryParamsObj.status == "failed") {
                 toast.error("Payment failed");
+                api.deleteOrder(user?.jwtToken, orderId).then((res) => (res.json()).then((result) => {
+                })).catch((err) => {
+                    console.log("Error", err)
+                })
             } else if (queryParamsObj.status == "") {
+                api.deleteOrder(user?.jwtToken, orderId).then((res) => (res.json()).then((result) => {
+                })).catch((err) => {
+                    console.log("Error", err)
+                })
                 toast.error("Something went wrong");
             } else if (queryParamsObj.status_code = 201 && queryParamsObj.action == "back") {
                 toast.error("payment cancelled");
+                api.deleteOrder(user?.jwtToken, orderId).then((res) => (res.json()).then((result) => {
+
+                })).catch((err) => {
+                    console.log("Error", err)
+                })
             }
             else {
                 setIsOrderPayment(true);
