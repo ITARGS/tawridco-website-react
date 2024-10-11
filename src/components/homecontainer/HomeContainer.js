@@ -19,33 +19,17 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    // const [aboveHomeSection, setAboveHomeSection] = useState(null);
-    // const [belowSliderSection, setBelowSliderSection] = useState(null);
-    // const [belowCategorySection, setBelowCategorySection] = useState(null);
-    // const [belowBrandSection, setBelowBrandSection] = useState(null)
-    // const [beloCountrySection, setBelowCountrySection] = useState(null)
-    // const [belowShopSection, setBelowShopSection] = useState(null)
 
 
 
-    // useEffect(() => {
     const aboveHomeSection = shop?.shop?.sections?.filter((section) => section?.position == "top");
-    // setAboveHomeSection(aboveHomeSection)
     const belowHomeSliderSection = shop?.shop?.sections?.filter((section) => section?.position == "below_slider");
-    // setBelowSliderSection(belowSliderSection)
     const belowCategorySection = shop?.shop?.sections?.filter((section) => section?.position == "below_category");
-    // setBelowCategorySection(belowCategorySection)
     const belowBrandsSection = shop?.shop?.sections?.filter((section) => section?.position == "custom_below_shop_by_brands");
-    // setBelowBrandSection(belowBrandsSection)
     const belowCoutrySection = shop?.shop?.sections?.filter((section) => section?.position == "below_shop_by_country_of_origin");
-    // setBelowCountrySection(belowCoutrySection)
     const belowShopSellerSection = shop?.shop?.sections?.filter((section) => section?.position == "below_shop_by_seller");
-    // setBelowShopSection(belowShopSellerSection)
 
     // }, [shop])
-
-
-
     return (
         <section id="home" className='home-section  home-element section'>
             {/* <div className='container'> */}

@@ -18,12 +18,13 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
         lat: null,
         lng: null,
     });
+    const [showOverlay, setShowOverlay] = useState(false);
 
     const fetchLocation = async () => {
         try {
             const res = await newApi.liveOrderTracking({ orderId: selectedOrder?.id });
             if (res.error == true) {
-                console.log(res.message)
+                setShowOverlay(true);
             } else {
                 const latitude = parseFloat(res?.data?.latitude);
                 const longitude = parseFloat(res?.data?.longitude);
@@ -54,9 +55,6 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
         };
     }, [showLiveLocationModal, fetchLocation]);
 
-
-
-
     useEffect(() => {
         if (selectedOrder?.latitude && selectedOrder?.longitude) {
             setUserLocation({
@@ -69,7 +67,8 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
     const handleClose = () => setShowLiveLocationModal(false);
     const containerStyle = {
         width: '558px',
-        height: '410px'
+        height: '410px',
+        position: 'relative',
     };
 
     const { isLoaded } = useJsApiLoader({
@@ -83,7 +82,6 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
         // This is just an example of getting and using the map instance!!! don't just blindly copy!
         const bounds = new window.google.maps.LatLngBounds(riderLocation && riderLocation);
         map.fitBounds(bounds);
-
         setMap(map)
     }, [])
 
@@ -128,25 +126,38 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
                 <Modal.Body>
                     <div className='d-flex live-location-container flex-column flex-lg-row flex'>
                         <div className='col-12 location col-lg-6 '>
-                            {isLoaded ? <GoogleMap
-                                mapContainerStyle={containerStyle}
-                                center={riderLocation && riderLocation}
-                                zoom={7}
-                                onLoad={onLoad}
-                                onUnmount={onUnmount}
-                            >
-                                {riderLocation && userLocation && (
-                                    <>
-                                        <Marker position={riderLocation}></Marker>
-                                        <Marker position={userLocation}></Marker>
-                                    </>
-                                )}
+                            {isLoaded ?
+                                <div style={{ position: 'relative' }}>
 
-                                <></>
-                                {riderLocation && userLocation && (
-                                    <Polyline path={[riderLocation, userLocation]} options={polylineOptions} />
-                                )}
-                            </GoogleMap> : null}
+                                    <GoogleMap
+                                        mapContainerStyle={containerStyle}
+                                        center={riderLocation && riderLocation}
+                                        zoom={7}
+                                        onLoad={onLoad}
+                                        onUnmount={onUnmount}
+                                    >
+                                        {riderLocation && userLocation && (
+                                            <>
+                                                <Marker position={riderLocation}></Marker>
+                                                <Marker position={userLocation}></Marker>
+                                            </>
+                                        )}
+                                        <></>
+                                        {riderLocation && userLocation && (
+                                            <Polyline path={[riderLocation, userLocation]} options={polylineOptions} />
+                                        )}
+                                    </GoogleMap>
+
+                                    {showOverlay && (
+                                        <div className="overlay-fullscreen">
+                                            {console.log("hello worlrd")}
+                                            <div className="overlay-content">
+                                                <p>Unable to load tracking data</p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                </div> : null}
                         </div>
                         <div className='col-12 col-lg-6  order-detail pt-3 pt-md-0 pt-lg-0'>
 

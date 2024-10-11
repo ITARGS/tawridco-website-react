@@ -146,8 +146,6 @@ const HorizonalProduct = ({ product }) => {
         }
     };
 
-
-
     const handleAddNewProductGuest = (productQuantity, product) => {
         const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
         if (Number(productQty || 0) < Number(product.total_allowed_quantity)) {
@@ -242,10 +240,10 @@ const HorizonalProduct = ({ product }) => {
 
     return (
         <div className='horizontal-product-grid '>
-            <div className='row'>
+            <div className='row' >
                 <div className="product-image col-6" >
-                    <div className='image-container'>
-                        <a className="image">
+                    <div className='image-container' onClick={() => navigate(`/product/${product.slug}`)}>
+                        <a className="image" >
                             <ImageWithPlaceholder src={product.image_url} alt={product?.slug} />
                         </a>
                         <ul
@@ -253,7 +251,6 @@ const HorizonalProduct = ({ product }) => {
                             <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist">
                                 {favoriteProducts.favouriteProductIds && favoriteProducts.favouriteProductIds?.includes(product?.id) ? <BiSolidHeart size={20} /> : <BiHeart size={20} />}
                             </a></li>
-                            {/* <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist"><i className="fas fa-heart fa-1x"></i></a></li> */}
                             <li onClick={() => {
                             }}><a data-tip="Quick View"
                                 onClick={() => {
