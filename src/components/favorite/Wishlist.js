@@ -22,7 +22,7 @@ import { ValidateNoInternet } from '../../utils/NoInternetValidator';
 import { MdSignalWifiConnectedNoInternet0 } from 'react-icons/md';
 import ImageWithPlaceholder from "../image-with-placeholder/ImageWithPlaceholder.jsx";
 import ProductVariantModal from '../product/ProductVariantModal.jsx';
-
+import * as newApi from "../../api/apiCollection.js"
 
 const Wishlist = () => {
 
@@ -95,91 +95,89 @@ const Wishlist = () => {
     }
 
     //Add to Cart
-    const addtoCart = async (product_id, product_variant_id, qty) => {
-        await api.addToCart(user?.jwtToken, product_id, product_variant_id, qty)
-            .then(response => response.json())
-            .then(async (result) => {
-                if (result.status === 1) {
-                    // toast.success(result.message);
-                    if (cart?.cartProducts?.find((product) => (product?.product_id == product_id) && (product?.product_variant_id == product_variant_id))?.qty == undefined) {
-                        dispatch(setCart({ data: result }));
-                        dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
-                        const updatedCartCount = [...cart?.cartProducts, { product_id: product_id, product_variant_id: product_variant_id, qty: qty }];
-                        dispatch(setCartProducts({ data: updatedCartCount }));
-                    } else {
-                        const updatedProducts = cart?.cartProducts?.map(product => {
-                            if ((product.product_id == product_id) && (product?.product_variant_id == product_variant_id)) {
-                                return { ...product, qty: qty };
-                            } else {
-                                return product;
-                            }
-                        });
-                        dispatch(setCart({ data: result }));
-                        dispatch(setCartProducts({ data: updatedProducts }));
-                        dispatch(setCartSubTotal({ data: result?.data?.sub_total }));
-                    }
-                }
-                else if (result?.data?.one_seller_error_code == 1) {
-                    dispatch(setSellerFlag({ data: 1 }));
-                    // console.log(result.message);
-                    // toast.error(t(`${result.message}`));
-                } else {
-                    toast.error(result.message);
-                }
-            });
-    };
 
-    //remove from Cart
-    const removefromCart = async (product_id, product_variant_id) => {
-        setisLoader(true);
-        await api.removeFromCart(user?.jwtToken, product_id, product_variant_id)
-            .then(response => response.json())
-            .then(async (result) => {
-                if (result.status === 1) {
-                    // toast.success(result.message);
-                    dispatch(setCartSubTotal({ data: result?.sub_total }));
-                    const updatedCartProducts = cart?.cartProducts?.filter(product => {
-                        if (product?.product_variant_id != product_variant_id) {
+    const addtoCart = async (productId, productVId, qty) => {
+        try {
+            const response = await newApi.addToCart({ product_id: productId, product_variant_id: productVId, qty: qty })
+            if (response.status === 1) {
+                if (cart?.cartProducts?.find((product) => ((product?.product_id == productId) && (product?.product_variant_id == productVId)))?.qty == undefined) {
+                    dispatch(setCart({ data: response }));
+                    const updatedCartCount = [...cart?.cartProducts, { product_id: productId, product_variant_id: productVId, qty: qty }];
+                    dispatch(setCartProducts({ data: updatedCartCount }));
+                    dispatch(setCartSubTotal({ data: response?.sub_total }));
+                }
+                else {
+                    const updatedProducts = cart?.cartProducts?.map(product => {
+                        if (((product.product_id == productId) && (product?.product_variant_id == productVId))) {
+                            return { ...product, qty: qty };
+                        } else {
                             return product;
                         }
                     });
-                    dispatch(setCartProducts({ data: updatedCartProducts ? updatedCartProducts : [] }));
-                    setisLoader(false);
+                    dispatch(setCart({ data: response }));
+                    dispatch(setCartProducts({ data: updatedProducts }));
+                    dispatch(setCartSubTotal({ data: response?.sub_total }));
                 }
-                else {
-                    setisLoader(false);
-                    toast.error(result.message);
-                }
-            })
-            .catch(error => console.log(error));
-    };
+            }
+        } catch (error) {
+            console.log("error", error)
+        }
+    }
+
+    const removefromCart = async (productId, variantId) => {
+        try {
+            const response = await newApi.removeFromCart({ product_id: productId, product_variant_id: variantId })
+            if (response?.status === 1) {
+                const updatedProducts = cart?.cartProducts?.filter(product => ((product?.product_id != productId) && (product?.product_variant_id != variantId)));
+                dispatch(setCartSubTotal({ data: response?.sub_total }));
+                dispatch(setCartProducts({ data: updatedProducts }));
+            } else {
+                toast.error(response.message)
+            }
+        } catch (error) {
+            console.log("error", error)
+        }
+    }
 
     //remove from favorite
-    const removefromFavorite = async (product_id) => {
+    const removefromFavorite = async (productId) => {
         setisLoader(true);
-        await api.removeFromFavorite(user?.jwtToken, product_id)
-            .then(response => response.json())
-            .then(async (result) => {
-                if (result.status === 1) {
-                    // toast.success(result.message);
-                    await api.getFavorite(user?.jwtToken, city?.city?.latitude, city?.city?.longitude)
-                        .then((res) => res.json())
-                        .then((result) => {
-                            dispatch(setFavourite({ data: result }));
-                        });
-                    const updatedFavouriteProducts = favorite?.favouriteProductIds.filter(id => id != product_id);
-                    dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
-                    const updatedFavouriteLength = favorite?.favouritelength - 1;
-                    dispatch(setFavouriteLength({ data: updatedFavouriteLength }));
-                    setisLoader(false);
-                }
-                else {
-                    setisLoader(false);
-                    toast.error(result.message);
-                }
-            });
+        const res = await newApi.removeFromFavorite({ product_id: productId })
+        if (res.status === 1) {
+            const updatedFavoriteList = favorite.favorite.data.filter(item => item.id !== productId);
+            dispatch(setFavourite({ data: { ...favorite.favorite, data: updatedFavoriteList } }));
+            const updatedFavouriteProducts = favorite?.favouriteProductIds.filter(id => id != productId);
+            dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
+            const updatedFavouriteLength = favorite?.favouritelength - 1;
+            dispatch(setFavouriteLength({ data: updatedFavouriteLength }));
+            setisLoader(false);
+        } else {
+            setisLoader(false);
+            toast.error(res.message);
+        }
+    }
+    // const removefromFavorite = async (product_id) => {
+    //     setisLoader(true);
+    //     await api.removeFromFavorite(user?.jwtToken, product_id)
+    //         .then(response => response.json())
+    //         .then(async (result) => {
+    //             if (result.status === 1) {
 
-    };
+    //                 const updatedFavoriteList = favorite.favorite.data.filter(item => item.id !== product_id);
+    //                 dispatch(setFavourite({ data: { ...favorite.favorite, data: updatedFavoriteList } }));
+    //                 const updatedFavouriteProducts = favorite?.favouriteProductIds.filter(id => id != product_id);
+    //                 dispatch(setFavouriteProductIds({ data: updatedFavouriteProducts }));
+    //                 const updatedFavouriteLength = favorite?.favouritelength - 1;
+    //                 dispatch(setFavouriteLength({ data: updatedFavouriteLength }));
+    //                 setisLoader(false);
+    //             }
+    //             else {
+    //                 setisLoader(false);
+    //                 toast.error(result.message);
+    //             }
+    //         });
+
+    // };
     const { t } = useTranslation();
     const placeHolderImage = (e) => {
 
@@ -237,13 +235,9 @@ const Wishlist = () => {
                                                             <tr key={index} className=''>
                                                                 <th className='products-image-container first-column'>
                                                                     <div className='image-container'>
-                                                                        {/* <img onError={placeHolderImage} src={product.image_url} alt='product'></img> */}
+
                                                                         <ImageWithPlaceholder src={product.image_url} alt='productImage' />
-                                                                        {/* {!Number(product.is_unlimited_stock) && product.variants[0].status === 0 &&
-                                                                            <div className="out_of_stockOverlay">
-                                                                                <span className="out_of_stockText">{t("out_of_stock")}</span>
-                                                                            </div>
-                                                                        } */}
+
                                                                     </div>
                                                                     <div className=''>
                                                                         <span>{product.name}</span>
@@ -330,16 +324,7 @@ const Wishlist = () => {
                                                                                     }}
                                                                                     disabled={!Number(product.is_unlimited_stock) && product.variants[0].status === 0}
                                                                                 >{t("add_to_cart")}</button></>}
-
-
-
-
-
-
                                                                 </th>
-
-
-
                                                                 <th className='remove last-column'>
                                                                     <button type='button' onClick={() => removefromFavorite(product.id)}>
                                                                         <RiDeleteBinLine fill='red' fontSize={'2.985rem'} />
@@ -355,7 +340,6 @@ const Wishlist = () => {
                             </>
                         )}
                     </div>
-                    {console.log("selected product from wishlist", selectedProduct)}
                     <QuickViewModal selectedProduct={selectedProduct} setselectedProduct={setselectedProduct} />
                     <Popup
                         product_id={p_id}
@@ -366,7 +350,6 @@ const Wishlist = () => {
                         city={city}
                         setP_V_id={setP_V_id}
                         setP_id={setP_id} />
-                    {console.log("selected product", selectedProduct)}
                     <ProductVariantModal showVariantModal={showVariantModal} setShowVariantModal={setShowVariantModal} product={selectedProduct} />
                 </section>
                 :

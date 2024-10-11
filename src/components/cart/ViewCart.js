@@ -108,7 +108,6 @@ const ViewCart = () => {
     //Add to Cart
     const addtoCart = async (product_id, product_variant_id, qty) => {
         // setisLoader(true);
-
         await api.addToCart(user?.jwtToken, product_id, product_variant_id, qty)
             .then(response => response.json())
             .then(async (result) => {

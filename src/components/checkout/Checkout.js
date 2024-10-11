@@ -381,7 +381,6 @@ const Checkout = () => {
                 dispatch(setWallet({ data: 0 }));
             },
             callback: async function (response) {
-
                 setloadingPlaceOrder(true);
                 await api.addTransaction(user?.jwtToken, orderid, response.reference, paymentMethod, "order")
                     .then(response => response.json())

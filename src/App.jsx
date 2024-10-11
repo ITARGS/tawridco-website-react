@@ -46,6 +46,7 @@ import CategoryChild from './components/category/CategoryChild';
 import { Helmet } from 'react-helmet-async';
 import Maintenance from './components/maintenance/Maintenance';
 import "./utils/i18n.js";
+import NewFooter from './components/footer/NewFooter.jsx';
 
 const App = () => {
   const dispatch = useDispatch();
@@ -186,7 +187,6 @@ const App = () => {
                 longitude: city?.city?.longitude
               }
             };
-            console.log("setting", updatedSetting)
             dispatch(setSetting({ data: updatedSetting }));
             // dispatch(setFavouriteLength({ data: updatedSetting?.setting?.favorite_product_ids?.length }));
             // dispatch(setFavouriteProductIds({ data: updatedSetting?.setting?.favorite_product_ids }));
@@ -373,10 +373,10 @@ const App = () => {
           <ScrollTop key="scrollTop" />
         </main>
         <Footer key="footer" />
+        {/* <NewFooter key="newfooter" /> */}
         <ToastContainer theme={cssmode?.cssmode} key="toastContainer" bodyClassName={"toast-body"} className={"toastContainer"} toastClassName='toast-container-class' />
       </div>
     </AnimatePresence>
-
   );
 };
 

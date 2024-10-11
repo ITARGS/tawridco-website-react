@@ -11,10 +11,9 @@ import * as newApi from '../../api/apiCollection';
 
 
 const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, selectedOrder }) => {
-
     const { t } = useTranslation();
     const [map, setMap] = useState(null);
-    const [riderLocation, setRiderLocation] = useState({ lat: 23.2404495, lng: 69.7110914 });
+    const [riderLocation, setRiderLocation] = useState();
     const [userLocation, setUserLocation] = useState({
         lat: null,
         lng: null,
@@ -22,14 +21,24 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
 
     const fetchLocation = async () => {
         try {
-            const res = await newApi.liveOrderTracking({ orderId: selectedOrder?.id })
-            const latitude = parseFloat(res?.data?.latitude);
-            const longitude = parseFloat(res?.data?.longitude);
-            setRiderLocation({ lat: latitude, lng: longitude })
+            const res = await newApi.liveOrderTracking({ orderId: selectedOrder?.id });
+            if (res.error == true) {
+                console.log(res.message)
+            } else {
+                const latitude = parseFloat(res?.data?.latitude);
+                const longitude = parseFloat(res?.data?.longitude);
+                setRiderLocation({ lat: latitude, lng: longitude })
+            }
         } catch (error) {
             console.log("error", error)
         }
     }
+
+    useEffect(() => {
+        if (showLiveLocationModal) {
+            fetchLocation(selectedOrder?.id);
+        }
+    }, [selectedOrder])
 
     useEffect(() => {
         let interval;
@@ -72,7 +81,7 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
 
     const onLoad = React.useCallback(function callback(map) {
         // This is just an example of getting and using the map instance!!! don't just blindly copy!
-        const bounds = new window.google.maps.LatLngBounds(riderLocation);
+        const bounds = new window.google.maps.LatLngBounds(riderLocation && riderLocation);
         map.fitBounds(bounds);
 
         setMap(map)
@@ -110,7 +119,6 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
         const formattedHours = (hours % 12) || 12;
         return `${day}, ${month}, ${year}, ${formattedHours}:${minutes} ${ampm}`;
     }
-
     return (
         <>
             <Modal show={showLiveLocationModal} onHide={handleClose} size='xl' centered>
@@ -118,11 +126,11 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
                     <Modal.Title>{t("livetracking")}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <div className='d-flex live-location-container'>
-                        <div className='col-6 location'>
+                    <div className='d-flex live-location-container flex-column flex-lg-row flex'>
+                        <div className='col-12 location col-lg-6 '>
                             {isLoaded ? <GoogleMap
                                 mapContainerStyle={containerStyle}
-                                center={riderLocation}
+                                center={riderLocation && riderLocation}
                                 zoom={7}
                                 onLoad={onLoad}
                                 onUnmount={onUnmount}
@@ -140,7 +148,7 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
                                 )}
                             </GoogleMap> : null}
                         </div>
-                        <div className='col-6 order-detail'>
+                        <div className='col-12 col-lg-6  order-detail pt-3 pt-md-0 pt-lg-0'>
 
                             <div className='d-flex justify-content-between order-detail-header'>
                                 <h1>Order Detail</h1>

@@ -10,7 +10,7 @@
 }
 
 .view-cart-container .viewcart-product-wrapper .products-table .products-image-container .variant-section {
-  background-color: var(--body-background) !important;
+  background-color: var(--buttons-background-color) !important;
   border-radius: 5px;
   color: var(--font-color) !important;
   font-size: 14px !important;

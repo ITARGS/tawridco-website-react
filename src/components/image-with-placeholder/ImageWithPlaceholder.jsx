@@ -2,38 +2,27 @@ import React, { useEffect, useState } from 'react';
 import ImagePlaceholder from "../../utils/image-placeholder/image.png";
 import { useSelector } from 'react-redux';
 
-
 const ImageWithPlaceholder = ({ src, alt, className, handleOnClick }) => {
-    const setting = useSelector(state => state.setting)
-    const [imageSrc, setImageSrc] = useState(ImagePlaceholder);
+    const setting = useSelector(state => state.setting);
+    const [imageSrc, setImageSrc] = useState(src);  // Initialize with the actual image src
     const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        if (setting.setting.web_settings?.placeholder_image == undefined || setting.setting.web_settings?.placeholder_image == "") {
-            setImageSrc(ImagePlaceholder)
-
+        if (!src || src === '') {
+            // If the `src` is empty or undefined, use the placeholder image
+            setImageSrc(setting.setting?.web_settings?.placeholder_image || ImagePlaceholder);
         } else {
-
-            setImageSrc(setting.setting.web_settings?.placeholder_image);
+            setImageSrc(src);
         }
-    }, [])
+    }, [src, setting]);  // Add `src` to the dependency array
 
-
-    // console.log("src", src)
     const handleLoad = () => {
         setIsLoaded(true);
-        setImageSrc(src);
     };
 
     const handleError = () => {
-        if (setting.setting.web_settings?.placeholder_image == undefined || setting.setting.web_settings?.placeholder_image == "") {
-            setImageSrc(ImagePlaceholder)
-
-        } else {
-
-            setImageSrc(setting.setting.web_settings?.placeholder_image);
-        }
-
+        // If there's an error loading the image, fall back to the placeholder
+        setImageSrc(setting.setting?.web_settings?.placeholder_image || ImagePlaceholder);
     };
 
     return (

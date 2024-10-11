@@ -41,7 +41,7 @@ const PayPalPaymentHandler = () => {
                 toast.error("Something went wrong");
             }
         } else {
-            const orderId = queryParamsObj.order_id.split("-")[1]
+            const orderId = queryParamsObj?.order_id && queryParamsObj?.order_id?.split("-")[1]
 
             if (queryParamsObj.status == "failed") {
                 toast.error("Payment failed");

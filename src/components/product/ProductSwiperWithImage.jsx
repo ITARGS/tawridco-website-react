@@ -59,8 +59,8 @@ const ProductSwiperWithImage = ({ section, index }) => {
 
                             <div className="row product-image-container-swiper">
 
-                                <div className='col-lg-3 col-md-6 col-12 overflow-hidden'>
-                                    <img src={imageUrl} className='swiper-cover-img' />
+                                <div className='col-lg-3  col-12 overflow-hidden'>
+                                    <img src={section?.banner_web_url} className='swiper-cover-img' />
                                 </div>
 
 

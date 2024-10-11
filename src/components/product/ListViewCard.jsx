@@ -316,7 +316,7 @@ const ListViewCard = ({ product }) => {
                             <button className='qty-button' onClick={() => handleVariantModal(product)}>{`${selectedVariant?.measurement} ${selectedVariant?.stock_unit_name}`}<span>{product?.variants?.length > 1 ? <IoMdArrowDropdown /> : null}</span></button>
 
                             {cart?.isGuest === false && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id)?.qty > 0 ||
-                                cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === selectedVariant?.id)?.qty > 0 ? <div className='horizontal-cart-count-btn '><button
+                                cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === selectedVariant?.id)?.qty > 0 ? <div className='listview-cart-count-btn '><button
                                     onClick={() => {
                                         if (cart?.isGuest) {
                                             AddToGuestCart(

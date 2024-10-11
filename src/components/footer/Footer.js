@@ -94,8 +94,6 @@ export const Footer = () => {
                         </div> : null}
 
                     <div
-                        // className={`${setting?.setting?.web_settings?.is_android_app === "1" ||
-                        //     setting?.setting?.web_settings?.is_ios_app === "1" ? "col-xs-3 col-sm-3 col-md-3 col-12" : "col-xs-4 col-sm-4 col-md-4 col-12"} `}
                         className={`${footerLayout}`}
                     >
                         <h5>{t('store_info')}</h5>
@@ -196,58 +194,12 @@ export const Footer = () => {
             </div>
             <div className="footer pb-3 d-flex justify-content-center">
 
-                {/* <div className="container row flex-sm-row flex-column  bottom-section-footer gap-5 "> */}
-                {/* {setting.setting && setting.setting.social_media.length > 0 ?
-                        <div className="social-media-icons order-sm-0 col-xs-3 col-sm-3 col-md-3 col-12" key={"icons"} >
-                            <span>{t('follow_us')}:
-
-                                {setting.setting.social_media.map((icon, index) => {
-                                    return (
-                                        <a key={index} href={icon.link} className='socical-icons'>
-                                            <i className={` fab ${icon.icon} fa-lg`} style={{ color: "#fff" }}>
-                                            </i>
-                                        </a>
-                                    );
-                                })}
-                            </span>
-                        </div>
-                        : null} */}
                 <div className="copyright order-sm-1 order-2 col-xs-3 col-sm-3 col-md-3 col-12">
                     <div className="copyrightSubContainer col-xs-12 col-sm-12 col-md-12 mt-2 mt-sm-2 text-center text-white">
                         <span className='company_name' dangerouslySetInnerHTML={{ __html: setting.setting !== null ? setting.setting.web_settings.copyright_details : "App Name" }}></span>
                     </div>
                 </div>
-                {/* {setting.payment_setting ?
-                        <div className="payment_methods_container order-sm-1 col-xs-3 col-sm-3 col-md-3 col-12">
-                            {setting.payment_setting.cod_payment_method === "1" ?
-                                <span className='payment_methods'>
-                                    <img src={cod_svg} alt="" srcSet="" />
-                                </span>
-                                : <></>}
-                            {setting.payment_setting.paystack_payment_method === "1" ?
-                                <span className='payment_methods'>
-                                    <img src={paystack_svg} alt="" srcSet="" />
-                                </span>
-                                : <></>}
-                            {setting.payment_setting.paypal_payment_method === "1" ?
-                                <span className='payment_methods'>
-                                    <img src={paypal_svg} alt="" srcSet="" />
-                                </span>
-                                : <></>}
-                            {setting.payment_setting.stripe_payment_method === "1" ?
-                                <span className='payment_methods'>
-                                    <img src={stripe_svg} alt="" srcSet="" />
-                                </span>
-                                : <></>}
 
-                            {setting.payment_setting.razorpay_payment_method === "1" ?
-                                <span className='payment_methods'>
-                                    <img src={razorpay_svg} alt="" srcSet="" />
-                                </span>
-                                : <></>}
-                        </div>
-                        : <></>} */}
-                {/* </div> */}
             </div>
         </section >
     );

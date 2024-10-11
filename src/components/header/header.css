@@ -1025,7 +1025,8 @@
 }
 
 .follow-icons-container {
-  background-color: var(--body-background);
+  background-color: var(--buttons-background-color);
+  ;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1122,7 +1123,7 @@
   position: absolute;
   top: 0px;
   right: -7px;
-  color: var(--body-background);
+  background-color: var(--buttons-background-color);
   background-color: var(--font-color);
   /* padding: 1px 5px; */
   border-radius: 100%;
@@ -1132,6 +1133,7 @@
   width: 18px;
   align-items: center;
   justify-content: center;
+  color: var(--body-background);
 }
 
 
@@ -1139,7 +1141,7 @@
   position: absolute;
   top: -7px;
   right: 0px;
-  color: var(--body-background);
+  background-color: var(--buttons-background-color);
   background-color: var(--font-color);
   /* padding: 1px 5px; */
   border-radius: 100%;
@@ -1148,6 +1150,7 @@
   height: 18px;
   width: 18px;
   align-items: center;
+  color: var(--body-background);
   justify-content: center;
 }
 
@@ -1198,7 +1201,7 @@
 }
 
 .ant-dropdown-menu .ant-dropdown-menu-item:hover {
-  background-color: var(--body-background) !important;
+  background-color: var(--buttons-background-color) !important;
 }
 
 .anticon-down {
@@ -1297,7 +1300,7 @@
 
 
 .site-header .header-main .container .bottom-header .search .dropdown-toggle {
-  background-color: var(--body-color) !important;
+  background-color: var(--buttons-background-color) !important;
   ;
   color: var(--font-color);
   border: none;
@@ -1466,7 +1469,7 @@
 .site-header .header-main .container .bottom-header .search-result {
   position: absolute;
   top: 50px;
-  background-color: var(--body-background);
+  background-color: var(--buttons-background-color);
   width: 100% !important;
   padding: 10px;
   font-size: 14px;

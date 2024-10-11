@@ -91,7 +91,7 @@
     .product-image-container-swiper .swiper-cover-img {
         height: 100%;
         width: 100%;
-        aspect-ratio: 2/2;
+        aspect-ratio: 3/2;
     }
 }
 

@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { setCart, setSellerFlag } from '../../model/reducer/cartReducer';
 import { setFavourite } from '../../model/reducer/favouriteReducer';
 import Popup from '../same-seller-popup/Popup';
+import * as newApi from "../../api/apiCollection";
 
 
 const Favorite = React.memo(() => {
@@ -39,7 +40,6 @@ const Favorite = React.memo(() => {
         else {
             setisfavoriteEmpty(false);
         }
-
     }, [favorite]);
 
     // console.log(p_id, p_v_id, qnty);
@@ -49,8 +49,6 @@ const Favorite = React.memo(() => {
         setP_id(product_id);
         setP_V_id(product_variant_id);
         setQnty(qty);
-        // console.log("Favourite State ->", product_id, product_variant_id, qty);
-        // console.log("Favourite State -> ", p_id, p_v_id, qnty);
         setisLoader(true);
         await api.addToCart(user?.jwtToken, product_id, product_variant_id, qty)
             .then(response => response.json())
@@ -139,7 +137,6 @@ const Favorite = React.memo(() => {
     };
     const { t } = useTranslation();
     const placeHolderImage = (e) => {
-
         e.target.src = setting.setting?.web_logo;
     };
     return (

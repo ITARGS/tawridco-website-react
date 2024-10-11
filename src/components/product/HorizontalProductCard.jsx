@@ -156,8 +156,8 @@ const HorizonalProduct = ({ product }) => {
             toast.error(t("out_of_stock_message"));
         }
     };
-    const AddToGuestCart = (product, productId, productVariantId, Qty, isExisting, flag) => {
 
+    const AddToGuestCart = (product, productId, productVariantId, Qty, isExisting, flag) => {
         const finalPrice = selectedVariant?.discounted_price !== 0 ? selectedVariant?.discounted_price : selectedVariant?.price
         if (isExisting) {
             let updatedProducts;
@@ -203,20 +203,8 @@ const HorizonalProduct = ({ product }) => {
         }
     };
 
-
-    const computeSubTotal = (products) => {
-        const subTotal = products.reduce((prev, curr) => {
-            prev += (curr.discounted_price !== 0 ? curr.discounted_price * curr.qty : curr.price * curr.qty);
-            return prev;
-        }, 0);
-        dispatch(addGuestCartTotal(subTotal));
-    };
-
-
-
     const handleValidateAddExistingGuestProduct = (productQuantity, product, quantity) => {
         const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty;
-
         if (Number(product.is_unlimited_stock)) {
             if (productQty >= Number(product?.total_allowed_quantity)) {
                 toast.error('Apologies, maximum product quantity limit reached');
@@ -275,11 +263,7 @@ const HorizonalProduct = ({ product }) => {
                             ><i className="fa fa-eye fa-1x"></i></a></li>
                         </ul>
                     </div>
-
                     {selectedVariant?.discounted_price !== 0 ? <span className="product-discount-label">{calculateDiscount(selectedVariant?.discounted_price, selectedVariant?.price).toFixed(0)}% OFF</span> : <></>}
-
-
-
                 </div>
                 <div className="horizontal-product-content col-6">
                     <div className='horizontal-product-head'>
