@@ -23,7 +23,8 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
     const fetchLocation = async () => {
         try {
             const res = await newApi.liveOrderTracking({ orderId: selectedOrder?.id });
-            if (res.error == true) {
+
+            if (res.status == 0) {
                 setShowOverlay(true);
             } else {
                 const latitude = parseFloat(res?.data?.latitude);
@@ -173,7 +174,7 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
                                 </div>
 
                             </div>
-                            <div className='delivery-status d-flex flex-column'>
+                            {/* <div className='delivery-status d-flex flex-column'>
                                 <p className='delivery-header'>Deliery Detail</p>
                                 <div className='delivery-detail d-flex'>
                                     <div className='sender col-6 d-flex gap-3 align-items-center'>
@@ -195,7 +196,7 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                             {selectedOrder?.delivery_boy_name == null ? null : <div className='partner-detail d-flex flex-column'>
                                 <p>Delivery Partner Details </p>
                                 <div className='d-flex justify-content-between partner-container align-items-center'>

@@ -252,9 +252,93 @@ export const fetchTimeSlot = async ({ }) => {
     const response = await api.get(`${apiEndPoints.getSettings}/${apiEndPoints.getTimeSlot}`)
     return response.data
 }
-export const liveOrderTracking = async ({ orderId }) => {
+export const placeOrder = async ({ product_variant_id, quantity, total, delivery_charge, final_total, payment_method, address_id, deliveryTime, promocode_id = 0, wallet_balance, wallet_used, order_note }) => {
     const formData = new FormData();
-    formData?.append("order_id", orderId);
-    const response = await api.post(`${apiEndPoints.liveTracking}`, formData)
+    formData.append("product_variant_id", product_variant_id);
+    formData.append("quantity", quantity);
+    formData.append("total", total);
+    formData.append("delivery_charge", delivery_charge);
+    formData.append("final_total", final_total);
+    formData.append("payment_method", payment_method);
+    formData.append("address_id", address_id);
+    if (deliveryTime === "NaN-NaN-NaN undefined") {
+        formData.append("delivery_time", "N/A");
+    } else {
+        formData.append("delivery_time", deliveryTime);
+    }
+    if (order_note !== "") {
+        formData.append("order_note", order_note);
+    }
+    if (wallet_balance) {
+        formData.append("wallet_balance", wallet_balance);
+    }
+    if (wallet_used) {
+        formData.append("wallet_used", wallet_used);
+    }
+    promocode_id !== 0 && formData.append("promocode_id", promocode_id);
+    payment_method === "COD" || payment_method === "Wallet" ? formData.append("status", 2) : formData.append("status", 1);
+    const response = await api.post(`${apiEndPoints.placeOrder}`, formData)
+    return response.data
+}
+export const deleteOrder = async ({ orderId }) => {
+    const formData = new FormData();
+    formData.append("order_id", orderId)
+    const response = await api.post(apiEndPoints.deleteOrder, formData)
+    return response.data
+}
+export const getOrders = async ({ limit, offset, type = 1, orderId = 0 }) => {
+    let params = orderId != 0 ? { order_id: orderId } : { limit: limit, offset: offset, type: type };
+    const response = api.get(apiEndPoints.getOrders, { params })
+    return response.data
+}
+export const getPaymentSettings = async ({ }) => {
+    const response = await api.get(`${apiEndPoints.getSettings}/${apiEndPoints.getPaymentMethods}`)
+    return response.data
+}
+export const getTransactions = async ({ limit, offset, type = "transactions" }) => {
+    var params = { limit: limit, offset: offset, type: type };
+    const response = await api.get(`${apiEndPoints.getTransactions}`, params)
+    return response.data;
+}
+export const getInvoices = async ({ orderId }) => {
+    const formData = new FormData();
+    formData.append("order_id", orderId);
+    const response = await api.post(apiEndPoints.getInvoice, formData);
+    return response.data;
+}
+export const addTransaction = async ({ orderId, transactionId, transactionMethod, type, walletAmount }) => {
+    const formData = new FormData();
+    formData.append("transaction_id", transactionId);
+    formData.append("payment_method", transactionMethod);
+    if (type) {
+        formData.append("type", type)
+    }
+    if (walletAmount) {
+        formData.append("wallet_amount", walletAmount);
+    }
+    if (orderId) {
+        formData.append("order_id", orderId);
+    }
+    formData.append('device_type', 'web');
+    formData.append('app_version', '1.0');
+    const response = await api.post(apiEndPoints.addTransaction, formData)
+    return response.data
+}
+// export const initiateTrasaction = async ({ orderId = 0, paymentMethod, type, walletAmount }) => {
+//     const supportedPaymentMethods = ["razorpay", "midtrans", "cashfree", "paystack", "paytabs", "phonepe", "stripe", "paypal"]
+//     const formData = new FormData();
+//     orderId != 0 && formData.append("order_id", orderId);
+//     type && formData.append("type", type);
+//     walletAmount && formData.append("wallet_amount", walletAmount)
+//     if(supportedPaymentMethods.includes(paymentMethod.toLowerCase())){
+
+//     }
+// }
+
+export const liveOrderTracking = async ({ orderId }) => {
+    const params = {
+        order_id: orderId
+    }
+    const response = await api.get(`${apiEndPoints.liveTracking}`, { params })
     return response.data
 }

@@ -107,7 +107,6 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     <img className={`offerImages ${offer?.category ? "cursorPointer" : ""} ${offer?.product ? "cursorPointer" : ""} ${offer?.offer_url ? "cursorPointer" : ""}`} src={offer.image_url} alt="offers" />
                 </div>
             ))}
-
             {belowCategorySection?.map((section, index) => {
                 if (section?.style_web == "style_1") {
                     return (<ProductContainer section={section} index={index} />)
@@ -119,7 +118,6 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     return (<ProductSwiperWithImage section={section} index={index} />)
                 }
             })}
-
             {shop.shop?.is_brand_section_in_homepage ?
                 <div className='category_section_brand'>
                     <div className="container">
@@ -127,7 +125,6 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     </div>
                 </div>
                 : <></>}
-
             {belowBrandsSection?.map((section, index) => {
                 if (section?.style_web == "style_1") {
                     return (<ProductContainer section={section} index={index} />)
@@ -139,7 +136,6 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     return (<ProductSwiperWithImage section={section} index={index} />)
                 }
             })}
-
             {shop.shop?.is_country_section_in_homepage ?
                 <div className='category_section'>
                     <div className='container'>
@@ -158,8 +154,6 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     return (<ProductSwiperWithImage section={section} index={index} />)
                 }
             })}
-
-
             {shop.shop?.is_seller_section_in_homepage ?
                 <div className='category_section'>
                     <div className='container'>
@@ -178,8 +172,6 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     return (<ProductSwiperWithImage section={section} />)
                 }
             })}
-
-
             {/* <ProductSwiperWithImage /> */}
         </section>
 

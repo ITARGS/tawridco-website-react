@@ -616,7 +616,6 @@ const api = {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
-
         var formdata = new FormData();
         formdata.append("product_variant_id", product_variant_id);
         formdata.append("quantity", quantity);
@@ -658,7 +657,6 @@ const api = {
         myHeaders.append("Authorization", token_prefix + token);
         var formdata = new FormData();
         formdata.append("order_id", order_id);
-
         var requestOptions = {
             method: 'POST',
             headers: myHeaders,
@@ -671,13 +669,11 @@ const api = {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
-
         var requestOptions = {
             method: 'GET',
             headers: myHeaders,
             redirect: 'follow'
         };
-
         var params = !order_id ? { limit: limit, offset: offset, type: type } : { order_id };
         var url = new URL(appUrl + appSubUrl + "/orders");
         for (let k in params) {
@@ -690,13 +686,11 @@ const api = {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
-
         var requestOptions = {
             method: 'GET',
             headers: myHeaders,
             redirect: 'follow'
         };
-
         return fetch(appUrl + appSubUrl + "/settings/payment_methods", requestOptions);
     },
     getTransactions(token, limit = 10, offset = 0, type = 'transactions') {
