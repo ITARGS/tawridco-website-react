@@ -92,11 +92,11 @@
 }
 
 .live-location-container .order-detail .partner-detail .partner-container {
-    padding: 24px;
+    padding: 12px;
     background-color: var(--buttons-background-color);
     gap: 16px;
     align-items: center !important;
-    border-radius: 12px;
+    /* border-radius: 12px; */
 }
 
 .live-location-container .order-detail .partner-detail .partner-container .avatar-img {
@@ -118,7 +118,7 @@
 .live-location-container .order-detail .partner-detail .partner-container .partner-prsnl-detail p {
     font-size: 14px;
     font-weight: 400;
-    padding-bottom: 18px;
+
 }
 
 .partner-phone-svg {

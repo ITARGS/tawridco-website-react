@@ -18,8 +18,8 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
         lat: null,
         lng: null,
     });
-    const [showOverlay, setShowOverlay] = useState(false);
 
+    const [showOverlay, setShowOverlay] = useState(false);
     const fetchLocation = async () => {
         try {
             const res = await newApi.liveOrderTracking({ orderId: selectedOrder?.id });
@@ -67,8 +67,7 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
     const handleClose = () => setShowLiveLocationModal(false);
     const containerStyle = {
         width: '558px',
-        height: '410px',
-        position: 'relative',
+        height: '410px'
     };
 
     const { isLoaded } = useJsApiLoader({
@@ -79,7 +78,6 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
     const GOOGLE_MAPS_LIBRARIES = ["places", "geometry"];
 
     const onLoad = React.useCallback(function callback(map) {
-        // This is just an example of getting and using the map instance!!! don't just blindly copy!
         const bounds = new window.google.maps.LatLngBounds(riderLocation && riderLocation);
         map.fitBounds(bounds);
         setMap(map)
@@ -117,6 +115,7 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
         const formattedHours = (hours % 12) || 12;
         return `${day}, ${month}, ${year}, ${formattedHours}:${minutes} ${ampm}`;
     }
+    // console.log("selected order", selectedOrder)
     return (
         <>
             <Modal show={showLiveLocationModal} onHide={handleClose} size='xl' centered>
@@ -150,7 +149,6 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
 
                                     {showOverlay && (
                                         <div className="overlay-fullscreen">
-                                            {console.log("hello worlrd")}
                                             <div className="overlay-content">
                                                 <p>Unable to load tracking data</p>
                                             </div>
@@ -197,26 +195,23 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
-                            <div className='partner-detail d-flex flex-column'>
+                            {selectedOrder?.delivery_boy_name == null ? null : <div className='partner-detail d-flex flex-column'>
                                 <p>Delivery Partner Details </p>
                                 <div className='d-flex justify-content-between partner-container align-items-center'>
                                     <div className='d-flex align-items-center gap-4'>
-                                        <div className='avatar-img'>
-                                            <img src="https://s3-alpha-sig.figma.com/img/eec8/9617/26f8036592d7892fdc64d9e9578e192f?Expires=1729468800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=U05Q3xdgiWrM0cn9R1G7ElHlf57xjmVYot8HbNKnHx~9gnF750yjufrpxxvln4zbisQ98vW9Q~xyfP8~AVF2THK1WGGYSNtTp31G0Ipt4ruYEmkAe1Vkcn880eC~OEK2ZtExmnalzOdHWw1KdJ2-l3IadFxS1a6~yGQuW4Xqh65tjjVXcN49O2LfcdnKcMnfR7WdrBIpcC10f-eLaOXujgaoUu4KSIf3FCLGGV8aNy8yhwfHE3I8ieOEKDJuCj2sN6CfWrfvoqLbwbc6W9BijE3ZfSuUHhIBNTe6VRvyu83tMaES-ZmiSpSabyTunbicr7N7mtDNnAFeZxRkpiGsUw__" alt="" />
-                                        </div>
-
                                         <div className='partner-prsnl-detail'>
-                                            <h2>Tony Stark</h2>
-                                            <p>9876543210</p>
+                                            <h2>{selectedOrder?.delivery_boy_name}</h2>
+                                            <p>{selectedOrder?.delivery_boy_mobile}</p>
                                         </div>
-
                                     </div>
-                                    <div className='partner-phone-svg'> <BiPhoneCall size={25} color='white' /></div>
+                                    <div className='partner-phone-svg'> <a href={`tel:${selectedOrder?.delivery_boy_mobile ? selectedOrder?.delivery_boy_mobile : ""}`}>
+                                        <BiPhoneCall size={25} color='white' />
+                                    </a></div>
                                 </div>
+                            </div>}
 
-                            </div>
+
                         </div>
                     </div>
                 </Modal.Body>

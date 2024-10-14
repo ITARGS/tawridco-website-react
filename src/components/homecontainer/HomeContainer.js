@@ -21,7 +21,6 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
 
 
 
-
     const aboveHomeSection = shop?.shop?.sections?.filter((section) => section?.position == "top");
     const belowHomeSliderSection = shop?.shop?.sections?.filter((section) => section?.position == "below_slider");
     const belowCategorySection = shop?.shop?.sections?.filter((section) => section?.position == "below_category");
@@ -29,7 +28,6 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
     const belowCoutrySection = shop?.shop?.sections?.filter((section) => section?.position == "below_shop_by_country_of_origin");
     const belowShopSellerSection = shop?.shop?.sections?.filter((section) => section?.position == "below_shop_by_seller");
 
-    // }, [shop])
     return (
         <section id="home" className='home-section  home-element section'>
             {/* <div className='container'> */}
@@ -58,14 +56,11 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     return (<ProductSwiperWithImage section={section} index={index} />)
                 }
             })}
-
-
             <div className='home-container row mx-5'>
                 <div className="col-md-12 p-0 col-12">
                     <Slider />
                 </div>
             </div>
-
             {BelowSliderOfferArray?.map((offer) => (
                 <div className='col-md-12 p-0 col-12 my-3 my-md-5 container' key={offer?.id} onClick={() => {
                     if (offer?.category) {

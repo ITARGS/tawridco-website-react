@@ -35,6 +35,7 @@ const ProductList2 = React.memo(() => {
     const filter = useSelector(state => state.productFilter);
     const setting = useSelector(state => (state.setting));
     const user = useSelector(state => (state.user));
+    const shop = useSelector((state) => state.shop);
 
     const [productresult, setproductresult] = useState([]);
     const [brands, setbrands] = useState(null);
@@ -162,27 +163,26 @@ const ProductList2 = React.memo(() => {
         setIsGridView(false)
     }
 
-    //onClick event of brands
+
     const filterbyBrands = (brand) => {
         setcurrPage(1);
         setoffset(0);
         var brand_ids = [...filter.brand_ids];
-
-
         if (brand_ids.includes(brand.id)) {
             brand_ids.splice(brand_ids.indexOf(brand.id), 1);
         }
         else {
             brand_ids.push(parseInt(brand.id));
         }
-
         const sorted_brand_ids = sort_unique_brand_ids(brand_ids);
-        // console.log("Sorted Brand Ids ->", sorted_brand_ids);
         dispatch(setFilterBrands({ data: sorted_brand_ids }));
     };
 
+    const filterBySeller = (seller) => {
+        dispatch(setFilterBySeller({ data: seller?.id }))
+    }
+
     useEffect(() => {
-        console.log("search", filter.search)
         if (brands == null) {
             fetchBrands(0);
         }
@@ -222,6 +222,7 @@ const ProductList2 = React.memo(() => {
     const handleFetchMore = async () => {
         setoffset(offSet => offSet + total_products_per_page)
     }
+
     const Filter = () => {
         return (
             <>
@@ -250,7 +251,7 @@ const ProductList2 = React.memo(() => {
                                 <CategoryComponent data={category} selectedCategories={selectedCategories} setSelectedCategories={setSelectedCategories} setproductresult={setproductresult} setoffset={setoffset} />
                             </div>
                         </Collapse.Panel>
-                        <Collapse.Panel header={t("brands")} key="2">
+                        {brands?.length <= 0 ? null : <Collapse.Panel header={t("brands")} key="2">
                             <div className='filter-row'>
                                 {
                                     brands == null ? (<Loader />) :
@@ -277,7 +278,33 @@ const ProductList2 = React.memo(() => {
                                 {brands?.length < totalBrands ? <a className='brand-view-more' onClick={loadMoreBrands}>{t("showMore")}</a> : <></>}
 
                             </div>
-                        </Collapse.Panel>
+                        </Collapse.Panel>}
+                        {/* {shop?.shop?.sellers?.length <= 0 ? null :
+                            <Collapse.Panel header={t("seller")} key="3">
+                                <div className='filter-row'>
+                                    {shop?.shop?.sellers?.length <= 0 ? null :
+                                        shop?.shop?.sellers?.map((seller) => {
+                                            const isChecked = filter.brand_ids.includes(seller.id);
+                                            return (
+                                                <div key={seller.id}>
+                                                    <Checkbox
+                                                        checked={isChecked}
+                                                        onChange={() => {
+                                                            setproductresult([])
+                                                            filterBySeller(seller)
+                                                        }}
+                                                    >
+                                                        <Checkbox.Group>
+                                                        </Checkbox.Group>
+                                                    </Checkbox>
+                                                    <span className='brand-name'>{seller.name}</span>
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </div>
+                            </Collapse.Panel>
+                        } */}
                         <Collapse.Panel header={t("priceRange")} key="3">
                             <div>
                                 <Slider range min={minPrice}
@@ -305,8 +332,6 @@ const ProductList2 = React.memo(() => {
                                 </button>
                             </div>
                         </Collapse.Panel>
-                        {/* <Collapse.Panel header={t("seller")} key="4">
-                        </Collapse.Panel> */}
                     </Collapse>
                 </div>
             </>

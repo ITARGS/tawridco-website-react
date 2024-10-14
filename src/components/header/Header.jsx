@@ -818,10 +818,10 @@ const Header = () => {
                                 </div> : null}
 
                             </div>
-
-                            <div className='contact d-none d-xl-block'>
+                            {setting.setting.support_number ? <div className='contact d-none d-xl-block'>
                                 <a href={`tel:${setting.setting !== null ? setting.setting.support_number : "number"}`}> <MdPhoneInTalk size={22} />  {setting.setting !== null ? setting.setting.support_number : "number"}</a>
-                            </div>
+                            </div> : null}
+
                         </div>
                     </div >
                 </div >

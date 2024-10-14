@@ -62,17 +62,9 @@ export const productFilterReducer = createSlice({
         },
         setFilterBySeller: (state, action) => {
             state.seller_id = action.payload.data;
-            // state.brand_ids = [];
-            // state.country_id = "";
-            // state.category_id = "";
-            // state.section_id = null;
         },
         setFilterByCountry: (state, action) => {
             state.country_id = action.payload.data;
-            // state.brand_ids = [];
-            // state.seller_id = "";
-            // state.category_id = "";
-            // state.section_id = null;
         },
         setProductBySearch: (state, action) => {
             state.search_product = action.payload.data

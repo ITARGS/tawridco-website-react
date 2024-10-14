@@ -242,8 +242,8 @@ const HorizonalProduct = ({ product }) => {
         <div className='horizontal-product-grid '>
             <div className='row' >
                 <div className="product-image col-6" >
-                    <div className='image-container' onClick={() => navigate(`/product/${product.slug}`)}>
-                        <a className="image" >
+                    <div className='image-container'>
+                        <a className="image" onClick={() => navigate(`/product/${product.slug}`)}>
                             <ImageWithPlaceholder src={product.image_url} alt={product?.slug} />
                         </a>
                         <ul
