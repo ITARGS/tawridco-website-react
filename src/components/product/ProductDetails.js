@@ -397,18 +397,18 @@ const ProductDetails = () => {
     const handleValidateAddExistingProduct = (productQuantity, product) => {
         if (Number(product.is_unlimited_stock)) {
             if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty < Number(product?.total_allowed_quantity)) {
-                addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
+                addtoCart(product.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
             } else {
                 toast.error('Apologies, maximum product quantity limit reached!');
             }
         } else {
-            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(product.variants[0].stock)) {
+            if (productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty >= Number(selectedVariant.stock)) {
                 toast.error(t("out_of_stock_message"));
             }
             else if (Number(productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty) >= Number(product.total_allowed_quantity)) {
                 toast.error('Apologies, maximum product quantity limit reached');
             } else {
-                addtoCart(product.id, product.variants[0].id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == product.variants[0].id)?.qty + 1);
+                addtoCart(product.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty + 1);
             }
         }
     };
@@ -416,14 +416,15 @@ const ProductDetails = () => {
 
     const handleValidateAddNewProduct = (productQuantity, productdata) => {
         if (user?.jwtToken !== "") {
-            if (productQuantity?.find(prdct => prdct?.product_id == productdata?.id)?.qty >= Number(productdata?.total_allowed_quantity)) {
+            const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
+            if ((productQty || 0) >= Number(productdata?.total_allowed_quantity)) {
                 toast.error(t("limited_product_stock_error"));
             }
             else if (Number(productdata.is_unlimited_stock)) {
                 addtoCart(productdata.id, selectedVariant.id, 1);
             } else {
                 if (selectedVariant.status) {
-                    addtoCart(productdata.id, productdata.variants[0].id, 1);
+                    addtoCart(productdata.id, selectedVariant.id, 1);
                     setP_id(productdata.id);
                     setP_V_id(selectedVariant.id);
                     setQnty(1);
@@ -569,7 +570,7 @@ const ProductDetails = () => {
                                             <div className='detail-wrapper'>
                                                 <div className='top-section'>
                                                     <p className='product_name'>{productdata.name}</p>
-                                
+
                                                     <div className='d-flex flex-column gap-2 align-items-start my-1'>
                                                         <div id="price-section" className='d-flex flex-row gap-2 align-items-center my-1'>
                                                             {setting.setting && setting.setting.currency}<p id='fa-rupee' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price == 0 ? selectedVariant.price.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price.toFixed(setting.setting && setting.setting.decimal_point)) : (productdata.variants[0].discounted_price === 0 ? productdata.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : productdata.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point))}</p>
@@ -874,7 +875,7 @@ const ProductDetails = () => {
                                                 }}
 
                                             >
-                                               
+
                                                 {similarProducts?.map((related_product, index) => (
                                                     <div className="" key={related_product?.id}>
                                                         <SwiperSlide>

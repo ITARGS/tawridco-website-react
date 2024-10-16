@@ -99,14 +99,12 @@ const Checkout = () => {
 
     const stripePromise = loadStripe(setting?.payment_setting && setting?.payment_setting?.stripe_publishable_key);
 
-    // console.log("Payment Methods ->", setting?.payment_setting, expectedTime);
+
 
     useEffect(() => {
-
         fetchCart();
         let latitude;
         let longitude;
-
         if (address.address !== null) {
             latitude = address.selected_address.latitude
             longitude = address.selected_address.longitude
@@ -210,21 +208,7 @@ const Checkout = () => {
     }, [address?.selected_address, promoCode]);
 
 
-    const checkLastOrderTime = (lastTime) => {
-        const currentTime = expectedDate == "Invalid Date" ? new Date() : expectedDate;
-        if (currentTime > new Date()) {
-            return true;
-        }
-        const hours = lastTime.split(':')[0];
-        const minutes = lastTime.split(':')[1];
-        const seconds = lastTime.split(':')[2];
-        const lastOrderTime = new Date();
-        lastOrderTime.setHours(hours);
-        lastOrderTime.setMinutes(minutes);
-        lastOrderTime.setSeconds(seconds);
-        return currentTime <= lastOrderTime;
 
-    };
 
 
     const fetchTimeSlot = () => {
@@ -242,6 +226,22 @@ const Checkout = () => {
             .catch(error => console.log(error));
 
     };
+
+    const checkLastOrderTime = (lastTime) => {
+        const currentTime = expectedDate == "Invalid Date" ? new Date() : expectedDate;
+        if (currentTime > new Date()) {
+            return true;
+        }
+        const hours = lastTime.split(':')[0];
+        const minutes = lastTime.split(':')[1];
+        const seconds = lastTime.split(':')[2];
+        const lastOrderTime = new Date();
+        lastOrderTime.setHours(hours);
+        lastOrderTime.setMinutes(minutes);
+        lastOrderTime.setSeconds(seconds);
+        return currentTime <= lastOrderTime;
+    };
+
 
     // Filter the time slots based on last_order_time
     useEffect(() => {
@@ -352,9 +352,6 @@ const Checkout = () => {
 
     }, [Razorpay]);
 
-
-
-
     const handleRazorpayCancel = (order_id) => {
         api.deleteOrder(user?.jwtToken, order_id);
         setWalletDeductionAmt(walletDeductionAmt);
@@ -444,6 +441,7 @@ const Checkout = () => {
         else {
             setDeliveryTime(`${expectedDate.getDate()}-${expectedDate.getMonth() + 1}-${expectedDate.getFullYear()} ${expectedTime?.title}`);
             const delivery_time = `${expectedDate.getDate()}-${expectedDate.getMonth() + 1}-${expectedDate.getFullYear()} ${expectedTime?.title}`;
+
             setloadingPlaceOrder(true);
             if (paymentMethod === "") {
                 toast.error(t("please_select_payment_method"));
@@ -1246,10 +1244,6 @@ const Checkout = () => {
 
                                                                         </div>
                                                                     </div>
-
-
-                                                                    {console.log(" setting?.payment_setting", setting?.payment_setting)}
-
                                                                     {loadingPlaceOrder
                                                                         ?
                                                                         <Loader screen='full' background='none' content={"Your transaction is being processed.Please don't refresh the page."} />

@@ -131,6 +131,7 @@ const ProductCard = ({ product }) => {
         const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
 
         if ((productQty || 0) >= Number(product?.total_allowed_quantity)) {
+
             toast.error('Oops, Limited Stock Available');
         }
         else if (Number(product.is_unlimited_stock)) {
@@ -139,6 +140,7 @@ const ProductCard = ({ product }) => {
             if (selectedVariant?.status) {
                 addToCart(product.id, selectedVariant?.id, 1);
             } else {
+
                 toast.error('Oops, Limited Stock Available');
             }
         }
