@@ -73,7 +73,6 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
         }));
     }
     const handleValidateAddNewProduct = (productQuantity, product, variant) => {
-
         const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
         if ((productQty) >= Number(product?.total_allowed_quantity)) {
             toast.error('Oops, Limited Stock Available');
@@ -84,7 +83,6 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
             if (variant?.status) {
                 addToCart(product.id, variant?.id, 1);
             } else {
-
                 toast.error('Oops, Limited Stock Available');
             }
         }
@@ -99,7 +97,7 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
                 toast.error('Apologies, maximum product quantity limit reached!');
             }
         } else {
-            if (productQty >= Number(product.variants[0].stock)) {
+            if (productQty >= Number(variant?.stock)) {
                 toast.error(t("out_of_stock_message"));
             }
             else if (Number(productQty) >= Number(product.total_allowed_quantity)) {
@@ -190,7 +188,7 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
             }
         }
     };
-    // console.log(product)
+
     return (
         <>
             <Modal show={showVariantModal} onHide={handleClose} size='md' centered>
@@ -207,10 +205,10 @@ function ProductVariantModal({ product, showVariantModal, setShowVariantModal })
                             return (
                                 <div className='row d-flex align-items-center variant-row'>
                                     <div className='col-4 col-lg-7'>{`${variant?.measurement} ${variant?.stock_unit_name}`}</div>
-                                    {variant?.is_unlimited_stock === 0 && variant?.stock == 0 ? <></> :
+                                    {variant?.is_unlimited_stock === 0 && variant?.stock <= 0 ? <></> :
                                         <div className='col-4 col-lg-2 mr-4 variant-price'>{setting?.setting?.currency}{variant?.discounted_price == 0 ? variant?.price : variant?.discounted_price}</div>
                                     }
-                                    {variant?.is_unlimited_stock === 0 && variant?.stock == 0 ? <span className='col-5 mr-4 variant-out-of-stock'>{t("OutOfStock")} </span> :
+                                    {variant?.is_unlimited_stock === 0 && variant?.stock <= 0 ? <span className='col-5 mr-4 variant-out-of-stock'>{t("OutOfStock")} </span> :
                                         <div className='col-4 col-lg-3 '>
 
                                             {cart?.isGuest === false && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == variant?.id)?.qty > 0 ||

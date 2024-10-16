@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import "./productcard.css";
 import { Rate } from 'antd';
@@ -18,6 +18,9 @@ import ImageWithPlaceholder from '../image-with-placeholder/ImageWithPlaceholder
 import { BiHeart, BiSolidHeart } from 'react-icons/bi';
 import { LuEye } from "react-icons/lu";
 import { addFavoriteProductId } from '../../model/reducer/favouriteReducer';
+import VegIcon from "../../utils/Icons/VegIcon.svg";
+import NonVegIcon from "../../utils/Icons/NonVegIcon.svg";
+
 
 const ProductCard = ({ product }) => {
     const navigate = useNavigate();
@@ -34,8 +37,18 @@ const ProductCard = ({ product }) => {
     const [p_v_id, setP_V_id] = useState(0);
     const [showModal, setShowModal] = useState(false);
     const [selectedProduct, setselectedProduct] = useState({});
-    const [selectedVariant, setSelectedVariant] = useState(product?.variants[0])
+    const [selectedVariant, setSelectedVariant] = useState()
+
     const [showVariantModal, setShowVariantModal] = useState(false)
+
+    useEffect(() => {
+        const inStockVariant = product?.variants?.find((variant) => variant?.is_unlimited_stock === 0 && variant?.stock > 0)
+        if (inStockVariant == undefined) {
+            setSelectedVariant(product?.variants[0])
+        } else {
+            setSelectedVariant(inStockVariant)
+        }
+    }, [])
 
     const addToCart = async (productId, productVId, qty) => {
         try {
@@ -114,17 +127,14 @@ const ProductCard = ({ product }) => {
             console.log(error)
         }
     }
-
-
-
-
     const handleValidateAddNewProduct = (productQuantity, product) => {
         const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
+
         if ((productQty || 0) >= Number(product?.total_allowed_quantity)) {
             toast.error('Oops, Limited Stock Available');
         }
         else if (Number(product.is_unlimited_stock)) {
-            addToCart(product.id, product?.variants?.[0].id, 1);
+            addToCart(product.id, selectedVariant.id, 1);
         } else {
             if (selectedVariant?.status) {
                 addToCart(product.id, selectedVariant?.id, 1);
@@ -144,7 +154,7 @@ const ProductCard = ({ product }) => {
                 toast.error('Apologies, maximum product quantity limit reached!');
             }
         } else {
-            if (productQty >= Number(product.variants[0].stock)) {
+            if (productQty >= Number(selectedVariant.stock)) {
                 toast.error(t("out_of_stock_message"));
             }
             else if (Number(productQty) >= Number(product.total_allowed_quantity)) {
@@ -157,7 +167,7 @@ const ProductCard = ({ product }) => {
 
     const handleAddNewProductGuest = (productQuantity, product) => {
         const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
-        if (product?.variants?.[0]?.is_unlimited_stock == 0 && product?.variants?.[0]?.stock == 0) {
+        if (selectedVariant?.is_unlimited_stock == 0 && selectedVariant?.stock == 0) {
             toast.error(t("out_of_stock_message"));
         }
         else if (Number(productQty || 0) < Number(product.total_allowed_quantity)) {
@@ -166,7 +176,6 @@ const ProductCard = ({ product }) => {
             toast.error(t("out_of_stock_message"));
         }
     };
-
 
     const AddToGuestCart = (product, productId, productVariantId, Qty, isExisting, flag) => {
         const finalPrice = selectedVariant?.discounted_price !== 0 ? selectedVariant?.discounted_price : selectedVariant?.price
@@ -245,13 +254,74 @@ const ProductCard = ({ product }) => {
         }
     }
 
+    const handleQuantityDecrease = () => {
+
+        if (cart?.isGuest) {
+            AddToGuestCart(
+                product,
+                product?.id,
+                selectedVariant?.id,
+                cart?.guestCart?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id)?.qty - 1,
+                1,
+                "remove"
+            );
+        } else {
+            if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id).qty == 1) {
+                removeFromCart(product?.id, selectedVariant?.id)
+            } else {
+                addToCart(product.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant?.id)?.qty - 1);
+            }
+        }
+    }
+
+    const handleQuantityIncrease = () => {
+        if (cart?.isGuest) {
+            const productQuantity = getProductQuantities(cart?.guestCart)
+            handleValidateAddExistingGuestProduct(
+                productQuantity,
+                product,
+                cart?.guestCart?.find(prdct => prdct?.product_id == product?.id && prdct?.product_variant_id == selectedVariant?.id)?.qty + 1
+            )
+        } else {
+            const quantity = getProductQuantities(cart?.cartProducts)
+            handleValidateAddExistingProduct(quantity, product)
+        }
+    }
+
+    const handleIntialAddToCart = () => {
+        if (cart?.isGuest) {
+            const quantity = getProductQuantities(cart?.cartProducts)
+            handleAddNewProductGuest(quantity, product)
+        } else {
+            const quantity = getProductQuantities(cart?.cartProducts)
+            handleValidateAddNewProduct(quantity, product)
+        }
+    }
+
+    const isProductAvailabel = ((product?.variants?.length <= 1 && product?.variants?.[0]?.is_unlimited_stock == 0 && product?.variants?.[0]?.stock == 0) || (selectedVariant?.stock == 0 && selectedVariant?.is_unlimited_stock == 0))
+
+
+    const isProductAlreadyAdded = ((cart?.isGuest === false && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id)?.qty > 0) ||
+        (cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === selectedVariant?.id)?.qty > 0))
+
+    const addedQuantity = cart.isGuest === false ?
+        cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant?.id)?.qty
+        : cart?.guestCart?.find(prdct => prdct?.product_variant_id == selectedVariant?.id)?.qty
+
     return (
         <div >
             <div className="product-grid" >
                 <div >
                     <div className="product-image">
-                        <a onClick={() => navigate(`/product/${product.slug}`)} className="image">
-                            <ImageWithPlaceholder src={product?.image_url} alt={product?.slug} />
+                        <a onClick={() => navigate(`/product/${product?.slug}`)} className="image">
+                            <ImageWithPlaceholder src={product?.image_url} alt={product?.slug} className="horizontal-product-img" />
+                            {product?.indicator ?
+                                <div className='product-vegen-type'>
+                                    {product?.indicator == 1 ? <img src={VegIcon} alt="Veg icons" /> : <img src={NonVegIcon} alt="non Veg icons" />}
+
+                                </div>
+                                : null}
+
                         </a>
                         {selectedVariant?.discounted_price !== 0 ? <span className="product-discount-label">{calculateDiscount(selectedVariant?.discounted_price, selectedVariant?.price).toFixed(0)}% OFF</span> : <></>}
 
@@ -264,6 +334,7 @@ const ProductCard = ({ product }) => {
                                 setShowModal(true)
                             }}><a data-tip="Quick View" ><LuEye size={20} /></a></li>
                         </ul>
+
                     </div>
                     <div className="product-content" onClick={() => navigate(`/product/${product.slug}`)}>
                         <div >
@@ -301,66 +372,27 @@ const ProductCard = ({ product }) => {
                 </div>
 
                 {
-                    product?.variants?.length <= 1 && product?.variants?.[0]?.is_unlimited_stock == 0 && product?.variants?.[0]?.stock == 0 ? <span className='variant-out-of-stock'>{t("OutOfStock")} </span> :
-                        <div className='product-btn'>
+                    isProductAvailabel ? <span className='vertical-variant-out-of-stock'>{t("OutOfStock")} </span> :
+                        <div className='vertical-product-btn'>
                             <button className='product-qty-btn' onClick={() => handleVariantModal(product)}>
                                 {`${selectedVariant?.measurement} ${selectedVariant?.stock_unit_name}`} {product?.variants?.length > 1 ? <IoMdArrowDropdown /> : null}
                             </button>
 
-                            {cart?.isGuest === false && cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id)?.qty > 0 ||
-                                cart?.isGuest === true && cart?.guestCart?.find((prdct) => prdct?.product_variant_id === selectedVariant?.id)?.qty > 0
-                                ?
-                                <div className='cart-count-btn'><button
-                                    onClick={() => {
-                                        if (cart?.isGuest) {
-                                            AddToGuestCart(
-                                                product,
-                                                product?.id,
-                                                selectedVariant?.id,
-                                                cart?.guestCart?.find((prdct) => prdct?.product_variant_id == product?.variants?.[0]?.id)?.qty - 1,
-                                                1,
-                                                "remove"
-                                            );
-                                        } else {
-                                            if (cart?.cartProducts?.find((prdct) => prdct?.product_variant_id == selectedVariant?.id).qty == 1) {
-                                                removeFromCart(product?.id, selectedVariant?.id)
-                                            } else {
-                                                addToCart(product.id, selectedVariant.id, cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant?.id)?.qty - 1);
-                                            }
-                                        }
-                                    }}
-                                ><FaMinus /></button>
-
-                                    <input value={
-                                        cart.isGuest === false ?
-                                            cart?.cartProducts?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
-                                            : cart?.guestCart?.find(prdct => prdct?.product_variant_id == selectedVariant.id)?.qty
-                                    } disabled min='1' type='number' max={selectedVariant?.stock} />
-
-                                    <button onClick={() => {
-                                        if (cart?.isGuest) {
-                                            const productQuantity = getProductQuantities(cart?.guestCart)
-                                            handleValidateAddExistingGuestProduct(
-                                                productQuantity,
-                                                product,
-                                                cart?.guestCart?.find(prdct => prdct?.product_id == product?.id && prdct?.product_variant_id == selectedVariant?.id)?.qty + 1
-                                            )
-                                        } else {
-                                            const quantity = getProductQuantities(cart?.cartProducts)
-                                            handleValidateAddExistingProduct(quantity, product)
-                                        }
-                                    }}><FaPlus /></button>
-                                </div>
-                                : <button className='product-cart-btn' onClick={() => {
-                                    if (cart?.isGuest) {
-                                        const quantity = getProductQuantities(cart?.cartProducts)
-                                        handleAddNewProductGuest(quantity, product)
-                                    } else {
-                                        const quantity = getProductQuantities(cart?.cartProducts)
-                                        handleValidateAddNewProduct(quantity, product)
-                                    }
-
-                                }} ><FaShoppingBasket className='mx-2' size={20} />Add</button>}
+                            {
+                                isProductAlreadyAdded ?
+                                    <div className='cart-count-btn'><button
+                                        onClick={() => {
+                                            handleQuantityDecrease()
+                                        }}
+                                    ><FaMinus /></button>
+                                        <input value={addedQuantity} disabled min='1' type='number' max={selectedVariant?.stock} />
+                                        <button onClick={() => {
+                                            handleQuantityIncrease()
+                                        }}><FaPlus /></button>
+                                    </div>
+                                    : <button className='product-cart-btn' onClick={() => {
+                                        handleIntialAddToCart()
+                                    }} ><FaShoppingBasket className='mx-2' size={20} />Add</button>}
 
                         </div>
                 }

@@ -569,19 +569,7 @@ const ProductDetails = () => {
                                             <div className='detail-wrapper'>
                                                 <div className='top-section'>
                                                     <p className='product_name'>{productdata.name}</p>
-                                                    {/* {Object.keys(productbrand).length === 0
-                                                    ? null
-                                                    : (
-                                                        <div className='product-brand'>
-                                                            <span className='brand-title'>{t("brand")}:</span>
-                                                            <span className='brand-name' onClick={() => {
-                                                                dispatch({ type: ActionTypes.SET_FILTER_BRANDS, payload: productbrand.id.toString() })
-                                                                navigate('/products')
-                                                            }}>
-                                                                {productbrand.name}
-                                                            </span>
-                                                        </div>
-                                                    )} */}
+                                
                                                     <div className='d-flex flex-column gap-2 align-items-start my-1'>
                                                         <div id="price-section" className='d-flex flex-row gap-2 align-items-center my-1'>
                                                             {setting.setting && setting.setting.currency}<p id='fa-rupee' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price == 0 ? selectedVariant.price.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price.toFixed(setting.setting && setting.setting.decimal_point)) : (productdata.variants[0].discounted_price === 0 ? productdata.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : productdata.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point))}</p>

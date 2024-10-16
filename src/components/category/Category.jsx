@@ -58,9 +58,9 @@ const Category = () => {
                                     {
 
                                         category?.length > 5 ? <div className=" justify-content-end align-items-ceneter d-md-flex d-none">
-                                        <Link className='category_button' to='/category/all'>{t('see_all')}</Link>
-                                            <button className='prev-arrow-category' ><IoMdArrowBack fill='black' size={20} /></button>
-                                            <button className='next-arrow-category' ><IoMdArrowForward fill='black' size={20} /></button>
+                                            <Link className='category_button' to='/category/all'>{t('see_all')}</Link>
+                                            <button className='prev-arrow-category prev-arrow-cat' ><IoMdArrowBack fill='black' size={20} /></button>
+                                            <button className='next-arrow-category next-arrow-cat' ><IoMdArrowForward fill='black' size={20} /></button>
                                         </div> : <></>
                                     }
                                 </div>
@@ -75,8 +75,8 @@ const Category = () => {
                         <div className='' id="expandCategory">
                             <Swiper modules={[Navigation, Pagination]}
                                 navigation={{
-                                    prevEl: '.prev-arrow-category',
-                                    nextEl: '.next-arrow-category',
+                                    prevEl: '.prev-arrow-cat',
+                                    nextEl: '.next-arrow-cat',
                                 }}
 
                                 pagination={{ clickable: true }}

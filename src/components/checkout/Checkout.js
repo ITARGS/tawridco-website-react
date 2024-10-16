@@ -211,21 +211,17 @@ const Checkout = () => {
 
 
     const checkLastOrderTime = (lastTime) => {
-        const currentTime = expectedDate ? expectedDate : new Date();
+        const currentTime = expectedDate == "Invalid Date" ? new Date() : expectedDate;
         if (currentTime > new Date()) {
             return true;
         }
         const hours = lastTime.split(':')[0];
         const minutes = lastTime.split(':')[1];
         const seconds = lastTime.split(':')[2];
-
         const lastOrderTime = new Date();
-
         lastOrderTime.setHours(hours);
         lastOrderTime.setMinutes(minutes);
         lastOrderTime.setSeconds(seconds);
-
-
         return currentTime <= lastOrderTime;
 
     };
@@ -973,7 +969,7 @@ const Checkout = () => {
                                                                 : (
                                                                     <>
 
-                                                                        {timeslots?.time_slots.filter((element) => checkLastOrderTime(element?.last_order_time)).map((timeslot, index) => {
+                                                                        {timeslots?.time_slots?.filter((element) => checkLastOrderTime(element?.last_order_time)).map((timeslot, index) => {
                                                                             return (
 
                                                                                 <div key={index} className='time-slot-container'>
@@ -1252,7 +1248,7 @@ const Checkout = () => {
                                                                     </div>
 
 
-
+                                                                    {console.log(" setting?.payment_setting", setting?.payment_setting)}
 
                                                                     {loadingPlaceOrder
                                                                         ?
@@ -1268,7 +1264,9 @@ const Checkout = () => {
                                                                                     setting.payment_setting.stripe_payment_method === "1" ||
                                                                                     setting.payment_setting.paypal_payment_method === "1" ||
                                                                                     setting?.payment_setting?.phonepay_payment_method === "1" ||
-                                                                                    setting?.payment_setting?.midtrans_payment_method === "1"
+                                                                                    setting?.payment_setting?.midtrans_payment_method === "1" ||
+                                                                                    setting?.payment_setting?.cashfree_payment_method === "1" ||
+                                                                                    setting?.payment_setting?.paytabs_payment_method === "1"
                                                                                     ? (
                                                                                         <div className='button-container'>
                                                                                             {paymentMethod === "Stripe" && setting

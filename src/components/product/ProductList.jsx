@@ -191,7 +191,6 @@ const ProductList2 = React.memo(() => {
             fetchCategories();
         }
         if (location.pathname === "/products") {
-
             filterProductsFromApi({
                 min_price: filter.price_filter?.min_price,
                 max_price: filter.price_filter?.max_price,
@@ -337,6 +336,8 @@ const ProductList2 = React.memo(() => {
             </>
         );
     };
+
+
 
     const placeholderItems = Array.from({ length: 12 }).map((_, index) => index);
     return (

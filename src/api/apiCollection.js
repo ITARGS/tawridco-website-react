@@ -2,6 +2,7 @@
 import api from "./apiMiddleware";
 import store from "../model/store";
 import * as apiEndPoints from "./apiEndPointCollection"
+import { setPaymentMethod } from "../utils/helperFunctions/helperFunction"
 
 export const registerUser = async ({ name, email, mobile, type, fcm, country_code }) => {
     const formData = new FormData();
@@ -324,16 +325,41 @@ export const addTransaction = async ({ orderId, transactionId, transactionMethod
     const response = await api.post(apiEndPoints.addTransaction, formData)
     return response.data
 }
-// export const initiateTrasaction = async ({ orderId = 0, paymentMethod, type, walletAmount }) => {
-//     const supportedPaymentMethods = ["razorpay", "midtrans", "cashfree", "paystack", "paytabs", "phonepe", "stripe", "paypal"]
-//     const formData = new FormData();
-//     orderId != 0 && formData.append("order_id", orderId);
-//     type && formData.append("type", type);
-//     walletAmount && formData.append("wallet_amount", walletAmount)
-//     if(supportedPaymentMethods.includes(paymentMethod.toLowerCase())){
-
-//     }
-// }
+export const initiateTrasaction = async ({ orderId = 0, paymentMethod, type, walletAmount }) => {
+    const supportedPaymentMethods = ["razorpay", "midtrans", "cashfree", "paystack", "paytabs", "phonepe", "stripe", "paypal"]
+    const formData = new FormData();
+    orderId != 0 && formData.append("order_id", orderId);
+    type && formData.append("type", type);
+    walletAmount && formData.append("wallet_amount", walletAmount)
+    if (supportedPaymentMethods.includes(paymentMethod.toLowerCase())) {
+        setPaymentMethod(formData, paymentMethod)
+    } else {
+        console.log("payment method is not supported")
+    }
+    const response = await api.post(apiEndPoints.initiateTrasaction, formData)
+    return response.data
+}
+export const addRazorpayTransaction = async ({ orderId, transactionId, type = "order", paymentMethod = "Razorpay" }) => {
+    const formData = new FormData();
+    formData.append("order_id", orderId)
+    formData.append("transaction_id", transactionId)
+    formData.append("type", type)
+    formData.append("payment_method", paymentMethod)
+    formData.append('device_type', 'web');
+    formData.append('app_version', '1.0');
+    const response = await api.post(apiEndPoints.addTransaction, formData)
+    return response.data;
+}
+export const getNotification = async ({ limit = 5, offset = (1 * 5 - 5) }) => {
+    const params = { limit: limit, offset: offset }
+    const response = await api.get(apiEndPoints.getNotification, { params })
+    return response.data
+}
+export const getFaq = async ({limit,offset}) => {
+    const params = {limit:limit,offset:offset}
+    const response = await api.get(apiEndPoints.getFaq)
+    return response.data;
+}
 
 export const liveOrderTracking = async ({ orderId }) => {
     const params = {

@@ -8,12 +8,15 @@
   background: none !important;
   font-size: 3rem !important;
 }
-.location .header button > svg {
+
+.location .header button>svg {
   fill: var(--font-color);
 }
+
 .location .header h5 {
   color: var(--font-color);
 }
+
 .location .body .location-logo {
   height: 100px !important;
   margin: 30px !important;
@@ -107,7 +110,7 @@
 
 .location .body input[type="text"] {
   width: 100%;
-  background: var(--body-background);
+  background: var(--buttons-background-color);
   /* border: 1px solid var(--container-bg); */
   border-radius: 5px;
   padding: 6px;
@@ -127,16 +130,20 @@
 .location .map-content button {
   font-size: 2rem;
 }
+
 .location .map-content-p {
   color: var(--font-color);
 }
+
 /* z-index problem of munualy text select location */
 .pac-container {
   z-index: 1055 !important;
 }
+
 .location .ant-modal-content {
   background-color: var(--second-cards-color) !important;
 }
+
 .ant-modal .ant-modal-footer {
   display: none !important;
 }
@@ -177,9 +184,11 @@
     top: 53px;
   }
 }
+
 .mapWrapper {
   position: relative !important;
 }
+
 .current-location-click {
   position: absolute;
   z-index: 5;
@@ -199,6 +208,7 @@
   height: 40px;
   font-size: 1.845rem;
 }
+
 .current-location-logo {
   width: 20px;
   height: 20px;
@@ -210,6 +220,7 @@
     right: 10px;
   }
 }
+
 @media screen and (max-width: 450px) {
   .location .body .location-logo {
     width: 100%;

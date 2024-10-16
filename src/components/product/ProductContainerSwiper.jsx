@@ -8,7 +8,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { IoMdArrowBack, IoMdArrowForward } from 'react-icons/io';
 import { useTranslation } from 'react-i18next';
 import { setProductSizes } from "../../model/reducer/productSizesReducer";
-import { clearAllFilter, setFilterCategory, setFilterSection } from '../../model/reducer/productFilterReducer';
+import { clearAllFilter, setFilterCategory, setFilterSection, setFilterSort } from '../../model/reducer/productFilterReducer';
 import Loader from '../loader/Loader';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -35,6 +35,20 @@ const ProductContainer = React.memo(({ section, index }) => {
         setPromotionImage(image)
     }, [section])
 
+    const handleViewMore = () => {
+        dispatch(setFilterCategory({ data: section?.category_ids }));
+        if (section?.product_type == "most_selling_products") {
+            dispatch(setFilterSort({ data: "popular" }))
+        } else if (section?.product_type == "all_products") {
+            dispatch(setFilterSort({ data: "" }))
+        } else if (section?.product_type == "new_added_products") {
+            dispatch(setFilterSort({ data: "new" }))
+        } else {
+            dispatch(setFilterSort({ data: "" }))
+        }
+        navigate("/products")
+    }
+
     return (
         <>
             {section?.products?.length > 0 ?
@@ -53,17 +67,15 @@ const ProductContainer = React.memo(({ section, index }) => {
                                     <div className="d-flex product_title_content justify-content-between align-items-center col-md-12">
                                         <div >
                                             <div className="product-title-content-container">
-                                                <p>{section.title}</p>
-                                                <span className='d-none d-md-block'>{section.short_description}</span>
+                                                <h2>{section.title?.length > 50 ? section.title?.substring(0, 50) + "..." : section.title}</h2>
+                                                <p className=' d-md-block'>{section.short_description?.lenght > 70 ? section.short_description?.substring(0, 70) + "..." : section.short_description}</p>
                                             </div>
                                         </div>
                                         {section?.products?.length > 5 ? <div className='d-flex align-items-center flex-md-row flex-column'>
                                             <div>
-                                                <Link className="d-flex" to="/products" onClick={() => {
-                                                    dispatch(clearAllFilter());
-                                                    dispatch(setFilterSection({ data: section.id }));
-                                                    navigate('/products');
-                                                }}>{t('see_all')}</Link>
+                                                <span className="d-flex" onClick={() => {
+                                                    handleViewMore()
+                                                }}>{t('see_all')}</span>
                                             </div>
                                             <div className='d-flex'>
                                                 <button className={` prev-arrow-section prev-arrow-section-${index}`}><IoMdArrowBack fill='black' size={20} /></button>

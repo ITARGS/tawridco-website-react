@@ -136,24 +136,6 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     return (<ProductSwiperWithImage section={section} index={index} />)
                 }
             })}
-            {shop.shop?.is_country_section_in_homepage ?
-                <div className='category_section'>
-                    <div className='container'>
-                        <ShopByCountries />
-                    </div>
-                </div>
-                : <></>}
-            {belowCoutrySection?.map((section, index) => {
-                if (section?.style_web == "style_1") {
-                    return (<ProductContainer section={section} index={index} />)
-                } else if (section?.style_web == "style_2") {
-                    return (<VerticaleProductContainer section={section} index={index} />)
-                } else if (section?.style_web == "style_3") {
-                    return (<HorizontalProductContainer section={section} index={index} />)
-                } else if (section?.style_web == "style_4") {
-                    return (<ProductSwiperWithImage section={section} index={index} />)
-                }
-            })}
             {shop.shop?.is_seller_section_in_homepage ?
                 <div className='category_section'>
                     <div className='container'>
@@ -172,7 +154,24 @@ const HomeContainer = ({ OfferImagesArray, BelowSliderOfferArray, BelowCategoryO
                     return (<ProductSwiperWithImage section={section} />)
                 }
             })}
-            {/* <ProductSwiperWithImage /> */}
+            {shop.shop?.is_country_section_in_homepage ?
+                <div className='category_section'>
+                    <div className='container'>
+                        <ShopByCountries />
+                    </div>
+                </div>
+                : <></>}
+            {belowCoutrySection?.map((section, index) => {
+                if (section?.style_web == "style_1") {
+                    return (<ProductContainer section={section} index={index} />)
+                } else if (section?.style_web == "style_2") {
+                    return (<VerticaleProductContainer section={section} index={index} />)
+                } else if (section?.style_web == "style_3") {
+                    return (<HorizontalProductContainer section={section} index={index} />)
+                } else if (section?.style_web == "style_4") {
+                    return (<ProductSwiperWithImage section={section} index={index} />)
+                }
+            })}
         </section>
 
     );

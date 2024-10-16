@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import api from '../../api/api';
 import HorizontalProductcard from "./HorizontalProductCard"
 import { Link } from 'react-router-dom';
-import { setFilterCategory } from '../../model/reducer/productFilterReducer';
+import { setFilterCategory, setFilterSort } from '../../model/reducer/productFilterReducer';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
@@ -25,9 +25,19 @@ const HorizontalProductContainer = ({ section }) => {
 
 
 
-
-
-
+    const handleViewMore = () => {
+        dispatch(setFilterCategory({ data: section?.category_ids }));
+        if (section?.product_type == "most_selling_products") {
+            dispatch(setFilterSort({ data: "popular" }))
+        } else if (section?.product_type == "all_products") {
+            dispatch(setFilterSort({ data: "" }))
+        } else if (section?.product_type == "new_added_products") {
+            dispatch(setFilterSort({ data: "new" }))
+        } else {
+            dispatch(setFilterSort({ data: "" }))
+        }
+        navigate("/products")
+    }
     return (
         <>
             {section?.products?.length > 0 ?
@@ -44,12 +54,12 @@ const HorizontalProductContainer = ({ section }) => {
                         <div>
                             <div className='product-container-header'>
                                 <div>
-                                    <h2>{section?.title}</h2>
-                                    <p className="d-none d-md-block">{section?.short_description}</p>
+                                    <h2>{section.title?.length > 50 ? section.title?.substring(0, 50) + "..." : section.title}</h2>
+                                    <p className=' d-md-block'>{section.short_description?.lenght > 70 ? section.short_description?.substring(0, 70) + "..." : section.short_description}</p>
 
                                 </div>
                                 <div className='d-flex' >
-                                    <Link to="/products" >View all</Link>
+                                    <span onClick={() => handleViewMore()} >View all</span>
                                 </div>
                             </div>
                             <div className='horizontal-products row '>

@@ -19,7 +19,7 @@
     font-weight: 500;
 }
 
-.container .product-container-header a {
+.container .product-container-header span {
 
     font-size: 16px;
     cursor: pointer;
@@ -28,7 +28,7 @@
     color: var(--font-color);
 }
 
-.container .product-container-header a:hover {
+.container .product-container-header span:hover {
     cursor: pointer;
     color: var(--secondary-color);
 }

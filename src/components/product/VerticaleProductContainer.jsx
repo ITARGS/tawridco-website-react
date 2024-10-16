@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ProductCard from './ProductCard';
 import "./productContainer.css"
 import { Link, useNavigate } from 'react-router-dom';
-import { setFilterCategory } from '../../model/reducer/productFilterReducer';
+import { setFilterCategory, setFilterSort } from '../../model/reducer/productFilterReducer';
 
 const VerticaleProductContainer = ({ section }) => {
     const navigate = useNavigate();
@@ -20,6 +20,20 @@ const VerticaleProductContainer = ({ section }) => {
         setPromotionImage(image)
     }, [section])
 
+    const handleViewMore = () => {
+        dispatch(setFilterCategory({ data: section?.category_ids }));
+        if (section?.product_type == "most_selling_products") {
+            dispatch(setFilterSort({ data: "popular" }))
+        } else if (section?.product_type == "all_products") {
+            dispatch(setFilterSort({ data: "" }))
+        } else if (section?.product_type == "new_added_products") {
+            dispatch(setFilterSort({ data: "new" }))
+        } else {
+            dispatch(setFilterSort({ data: "" }))
+        }
+        navigate("/products")
+    }
+
     return (
         <>
             {section?.products?.length > 0 ? <section className='products-container-section' style={cssmode == "dark" ?
@@ -34,17 +48,17 @@ const VerticaleProductContainer = ({ section }) => {
                     <div>
                         <div className='product-container-header'>
                             <div>
-                                <h2>{section?.title}</h2>
-                                <p className="d-none d-md-block">{section?.short_description}</p>
+                                <h2>{section.title?.length > 50 ? section.title?.substring(0, 50) + "..." : section.title}</h2>
+                                <p className=' d-md-block'>{section.short_description?.lenght > 70 ? section.short_description?.substring(0, 70) + "..." : section.short_description}</p>
                             </div>
                             <div className='d-flex'>
-                                <Link to="/products" >View all</Link>
+                                <span onClick={() => handleViewMore()}>View all</span>
                             </div>
                         </div>
                         <div className='product-containers row my-4'>
                             {section?.products?.length > 0 && section?.products?.slice(0, 8)?.map((prdct) => {
                                 return (
-                                    <div className='col-md-4 col-xs-6  col-sm-6 col-lg-3 col-12 m-0 p-0 custom-col'>
+                                    <div className='col-md-4 col-xs-6  col-sm-6 col-lg-3 col-6 m-0 p-0 custom-col'>
                                         <ProductCard product={prdct} />
                                     </div>
                                 )

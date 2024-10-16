@@ -357,5 +357,6 @@
   "default": "Default",
   "showMore": "Show More",
   "goto": "Go to",
-  "livetracking": "Live Tracking"
+  "livetracking": "Live Tracking",
+  "deliveryAddress":"Delivery Location"
 }

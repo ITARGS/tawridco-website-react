@@ -67,7 +67,7 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
 
     const handleClose = () => setShowLiveLocationModal(false);
     const containerStyle = {
-        width: '558px',
+        width: '735px',
         height: '410px'
     };
 
@@ -119,13 +119,13 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
     // console.log("selected order", selectedOrder)
     return (
         <>
-            <Modal show={showLiveLocationModal} onHide={handleClose} size='xl' centered>
+            <Modal show={showLiveLocationModal} onHide={handleClose} size='lg' centered>
                 <Modal.Header closeButton>
                     <Modal.Title>{t("livetracking")}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <div className='d-flex live-location-container flex-column flex-lg-row flex'>
-                        <div className='col-12 location col-lg-6 '>
+                    <div className='d-flex live-location-container flex-column  flex'>
+                        <div className='col-12 location  '>
                             {isLoaded ?
                                 <div style={{ position: 'relative' }}>
 
@@ -158,7 +158,7 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
 
                                 </div> : null}
                         </div>
-                        <div className='col-12 col-lg-6  order-detail pt-3 pt-md-0 pt-lg-0'>
+                        <div className='col-12   order-detail pt-3 pt-md-0 pt-lg-0'>
 
                             <div className='d-flex justify-content-between order-detail-header'>
                                 <h1>Order Detail</h1>
@@ -166,11 +166,12 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
                             </div>
                             <div className='order-status d-flex align-items-center '>
                                 <div className='gift-pack-svg'>
-                                    <BiGift size={30} />
+                                    <IoLocationOutline size={30} />
                                 </div>
                                 <div className=''>
-                                    <h3>Order Placed Successfully</h3>
-                                    <p>{formatDate(selectedOrder?.date)}</p>
+
+                                    <h3>{t("deliveryAddress")}</h3>
+                                    <p className='m-0'>{selectedOrder?.address}</p>
                                 </div>
 
                             </div>
@@ -197,6 +198,7 @@ const LiveTrackingModal = ({ showLiveLocationModal, setShowLiveLocationModal, se
                                     </div>
                                 </div>
                             </div> */}
+
                             {selectedOrder?.delivery_boy_name == null ? null : <div className='partner-detail d-flex flex-column'>
                                 <p>Delivery Partner Details </p>
                                 <div className='d-flex justify-content-between partner-container align-items-center'>

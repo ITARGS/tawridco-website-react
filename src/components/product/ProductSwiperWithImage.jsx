@@ -10,13 +10,13 @@ import api from '../../api/api';
 import ProductCard from './ProductCard';
 import { IoMdArrowBack, IoMdArrowForward } from 'react-icons/io';
 import { Link, useNavigate } from 'react-router-dom';
-import { setFilterCategory } from '../../model/reducer/productFilterReducer';
+import { setFilterCategory, setFilterSort } from '../../model/reducer/productFilterReducer';
 
 
 const ProductSwiperWithImage = ({ section, index }) => {
+
     const dispatch = useDispatch();
     const navigate = useNavigate()
-    const imageUrl = "https://images.pexels.com/photos/2255935/pexels-photo-2255935.jpeg?auto=compress&cs=tinysrgb&w=600";
     const { cssmode } = useSelector(state => state.cssmode)
     const shop = useSelector((state) => state.shop);
     const [promotionImage, setPromotionImage] = useState(null)
@@ -27,6 +27,20 @@ const ProductSwiperWithImage = ({ section, index }) => {
         })
         setPromotionImage(image)
     }, [section])
+
+    const handleViewMore = () => {
+        dispatch(setFilterCategory({ data: section?.category_ids }));
+        if (section?.product_type == "most_selling_products") {
+            dispatch(setFilterSort({ data: "popular" }))
+        } else if (section?.product_type == "all_products") {
+            dispatch(setFilterSort({ data: "" }))
+        } else if (section?.product_type == "new_added_products") {
+            dispatch(setFilterSort({ data: "new" }))
+        } else {
+            dispatch(setFilterSort({ data: "" }))
+        }
+        navigate("/products")
+    }
 
 
     return (
@@ -44,12 +58,12 @@ const ProductSwiperWithImage = ({ section, index }) => {
                         <div>
                             <div className='product-container-header'>
                                 <div>
-                                    <h2>{section?.title}</h2>
-                                    <p>{section?.short_description}</p>
+                                    <h2>{section.title?.length > 50 ? section.title?.substring(0, 50) + "..." : section.title}</h2>
+                                    <p className=' d-md-block'>{section.short_description?.lenght > 70 ? section.short_description?.substring(0, 70) + "..." : section.short_description}</p>
                                 </div>
                                 {section?.products?.length > 3 ? <div className='d-flex align-items-center'>
-                                    <Link to='/products'>View all</Link>
-                                    <div>
+                                    <span onClick={() => handleViewMore()}>View all</span>
+                                    <div className='d-flex'>
                                         <button className={` prev-arrow-category prev-btn-${index}`}><IoMdArrowBack fill='black' size={20} /></button>
                                         <button className={` next-arrow-category next-btn-${index}`}><IoMdArrowForward fill='black' size={20} /></button>
                                     </div>

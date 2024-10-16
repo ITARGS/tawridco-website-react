@@ -59,6 +59,19 @@
     z-index: 10;
 }
 
+.list-view-product-grid .product-vegen-type {
+
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    z-index: 10;
+}
+
+.list-view-product-grid .product-vegen-type img {
+    object-fit: contain !important;
+
+}
+
 .list-view-product-grid .product-image .image-container {
     position: relative;
 }

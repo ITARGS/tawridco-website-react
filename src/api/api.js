@@ -851,7 +851,6 @@ const api = {
     getFaq(limit, offset) {
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
-
         var requestOptions = {
             method: 'GET',
             headers: myHeaders,
