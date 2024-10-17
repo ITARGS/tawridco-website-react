@@ -52,13 +52,13 @@ const HorizontalProductContainer = ({ section }) => {
                     <div className='container '>
 
                         <div>
-                            <div className='product-container-header'>
-                                <div>
+                            <div className='product-container-header row d-flex'>
+                                <div className='col-11'>
                                     <h2>{section.title?.length > 50 ? section.title?.substring(0, 50) + "..." : section.title}</h2>
                                     <p className=' d-md-block'>{section.short_description?.lenght > 70 ? section.short_description?.substring(0, 70) + "..." : section.short_description}</p>
 
                                 </div>
-                                <div className='d-flex' >
+                                <div className='d-flex col-1' >
                                     <span onClick={() => handleViewMore()} >View all</span>
                                 </div>
                             </div>

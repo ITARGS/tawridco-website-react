@@ -91,20 +91,18 @@ const Checkout = () => {
     const [isNetworkError, setIsNetworkError] = useState(false);
     const [orderNote, setOrderNote] = useState("");
     const [cartError, setCartError] = useState("")
-    const [isLocationPresent, setisLocationPresent] = useState(false);
     const [locModal, setLocModal] = useState(false);
     const [bodyScroll, setBodyScroll] = useState(false)
     const [deliveryCharge, setDeliveryCharge] = useState(null)
 
 
     const stripePromise = loadStripe(setting?.payment_setting && setting?.payment_setting?.stripe_publishable_key);
-
-
-
     useEffect(() => {
         fetchCart();
         let latitude;
         let longitude;
+        const currentDate = new Date();
+        setexpectedDate(currentDate);
         if (address.address !== null) {
             latitude = address.selected_address.latitude
             longitude = address.selected_address.longitude
@@ -206,11 +204,6 @@ const Checkout = () => {
                 })
                 .catch(error => console.log(error));
     }, [address?.selected_address, promoCode]);
-
-
-
-
-
     const fetchTimeSlot = () => {
         api.fetchTimeSlot()
             .then(response => response.json())
@@ -226,6 +219,14 @@ const Checkout = () => {
             .catch(error => console.log(error));
 
     };
+
+    const formatDate = (date) => {
+        const day = date.getDate().toString().padStart(2, '0'); // Pad day with 0 if needed
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Pad month with 0 if needed
+        const year = date.getFullYear().toString().slice(-2); // Get last two digits of the year
+        return `${day}-${month}-${year}`;
+    };
+
 
     const checkLastOrderTime = (lastTime) => {
         const currentTime = expectedDate == "Invalid Date" ? new Date() : expectedDate;
@@ -246,7 +247,7 @@ const Checkout = () => {
     // Filter the time slots based on last_order_time
     useEffect(() => {
         const currentDateTime = new Date();
-        setexpectedDate(new Date(currentDateTime.setDate(currentDateTime.getDate() + (Number(timeslots?.time_slots_delivery_starts_from) - 1))));
+        setexpectedDate(new Date(currentDateTime.setDate(currentDateTime.getDate())));
     }, [timeslots]);
 
     useEffect(() => {
@@ -516,6 +517,7 @@ const Checkout = () => {
                                     }));
                                 })
                                 .catch(error => {
+
                                     console.error(error);
                                 });
 
@@ -545,6 +547,7 @@ const Checkout = () => {
                             } else {
                                 toast.error(res.message);
                                 setloadingPlaceOrder(false);
+                                api.deleteOrder(user?.jwtToken, result.data.order_id);
                             }
                             dispatch(setPromoCode({
                                 code: null,
@@ -580,6 +583,7 @@ const Checkout = () => {
                             toast.error(result.message);
                             setloadingPlaceOrder(false);
                             setOrderNote("");
+                            api.deleteOrder(user?.jwtToken, result.data.order_id);
                         }
                         dispatch(setPromoCode({
                             code: null,
@@ -599,7 +603,7 @@ const Checkout = () => {
                             await api.initiate_transaction(user?.jwtToken, result.data.order_id, 'Stripe', "order")
                                 .then(resp => resp.json())
                                 .then(res => {
-                                    if (res.status) {
+                                    if (res.status === 1) {
                                         // dispatch(deductUserBalance({ data: walletDeductionAmt }));
                                         dispatch(setCartPromo({ data: null }));
                                         setstripeOrderId(result.data.order_id);
@@ -654,6 +658,7 @@ const Checkout = () => {
                                     } else {
                                         toast.error(res.message);
                                         setloadingPlaceOrder(false);
+                                        api.deleteOrder(user?.jwtToken, result.data.order_id);
                                     }
                                     dispatch(setPromoCode({
                                         code: null,
@@ -693,6 +698,7 @@ const Checkout = () => {
                             toast.error(result.message);
                             setloadingPlaceOrder(false);
                             setOrderNote("");
+                            api.deleteOrder(user?.jwtToken, result.data.order_id);
                         }
                         dispatch(setPromoCode({
                             code: null,
@@ -739,6 +745,7 @@ const Checkout = () => {
                                     } else {
                                         toast.error(res.message);
                                         setloadingPlaceOrder(false);
+                                        api.deleteOrder(user?.jwtToken, result.data.order_id);
                                     }
                                 })
                                 .catch(error => console.error(error));
@@ -777,6 +784,7 @@ const Checkout = () => {
                                     } else {
                                         toast.error(res.message);
                                         setloadingPlaceOrder(false);
+                                        api.deleteOrder(user?.jwtToken, result.data.order_id);
                                     }
                                     dispatch(setPromoCode({
                                         code: null,
@@ -812,6 +820,7 @@ const Checkout = () => {
                             } else {
                                 toast.error(res.message);
                                 setloadingPlaceOrder(false);
+                                api.deleteOrder(user?.jwtToken, result.data.order_id);
                             }
                             dispatch(setPromoCode({
                                 code: null,
@@ -1302,7 +1311,7 @@ const Checkout = () => {
                         <Location isLocationPresent={isLocationPresent} setisLocationPresent={setisLocationPresent}
                             showModal={locModal} setLocModal={setLocModal} bodyScroll={setBodyScroll} />
                     </Modal> */}
-                    <Modal id="stripeModal" size='lg' centered show={stripeModalShow}>
+                    <Modal id="stripeModal" size='lg' centered show={stripeModalShow}  >
                         <Modal.Header onClick={() => setStripeModalShow(false)
 
                         } className='header justify-content-between'>

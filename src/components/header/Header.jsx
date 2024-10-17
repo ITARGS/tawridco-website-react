@@ -255,7 +255,6 @@ const Header = () => {
 
     useEffect(() => {
         if (curr_url.pathname != "/products") {
-
             dispatch(setFilterSearch({ data: null }));
         }
     }, [curr_url]);
@@ -370,13 +369,14 @@ const Header = () => {
 
     const handleQueryChange = (e) => {
         const value = e.target.value;
+
         if (value.trim() === "") {
             dispatch(setFilterSearch({ data: "" }))
             // dispatch(setFilterCategory({ data: value }))
             clearTimeout(typingTimeout)
             return
         }
-        setQuery(value);
+        setQuery(e.target.value);
         dispatch(setFilterSearch({ data: e.target.value }))
         dispatch(setFilterCategory({ data: selectedCategoryId }))
 
@@ -804,7 +804,7 @@ const Header = () => {
                                         navigate("/products")
                                     }}><FaSearch size={20} />Search</button>
                                 </div>
-                                {filter?.search_product?.length > 0 ? <div className='col-lg-6 col-md-8 col-sm-8  column-left d-flex flex-column search-result '>
+                                {(filter?.search_product?.length > 0 && curr_url.pathname !== '/products' && query?.length > 2) ? <div className='col-lg-6 col-md-8 col-sm-8  column-left d-flex flex-column search-result '>
 
                                     {filter?.search_product?.map((prdct) => {
                                         return (

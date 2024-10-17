@@ -113,7 +113,8 @@ const ProductDetails = () => {
                         setVariantIndex(result.data.variants[0]?.id);
                         setSelectedVariant(result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index) ? result.data.variants.find((element) => element.id == variant_index) : result.data.variants[0]);
                         setmainimage(result.data.image_url);
-                        setimages(result.data.images);
+                        // setimages(result.data.images);
+                        setimages([result.data.image_url, ...result.data.images]);
                         setproductbrand(shop?.shop?.brands?.find((brand) => brand?.id == result?.data?.brand_id));
                     };
                 })
@@ -477,10 +478,17 @@ const ProductDetails = () => {
     };
 
     const handleAddNewProductGuest = (productQuantity, product) => {
-        if ((productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty || 0) < Number(product.total_allowed_quantity)) {
+        const productQty = productQuantity?.find(prdct => prdct?.product_id == product?.id)?.qty
+        if ((productQty || 0) >= Number(productdata?.total_allowed_quantity)) {
+            toast.error(t("limited_product_stock_error"));
+        } else if (Number(productdata.is_unlimited_stock)) {
             AddToGuestCart(product.id, selectedVariant.id, 1, 0);
         } else {
-            toast.error(t("max_cart_limit_error"));
+            if (selectedVariant.status) {
+                AddToGuestCart(product.id, selectedVariant.id, 1, 0);
+            } else {
+                toast.error(t("limited_product_stock_error"));
+            }
         }
     };
 

@@ -46,6 +46,7 @@ const QuickViewModal = (props) => {
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [quantity, setQuantity] = useState(0);
     const [thumbsSwiper, setThumbsSwiper] = useState(null);
+    const [images, setimages] = useState([]);
 
     useEffect(() => {
         if (Object.keys(props.selectedProduct).length > 0 && city.city !== null && Object.keys(product).length === 0 && props.showModal === true) {
@@ -69,6 +70,7 @@ const QuickViewModal = (props) => {
                     setproduct(result.data);
                     setVariantIndex(result.data.variants?.length > 0 && result.data.variants[0]?.id);
                     setmainimage(result.data.image_url);
+                    setimages([result.data.image_url, ...result.data.images]);
                     setSelectedVariant((result.data.variants?.length > 0 && result.data.variants.find((element) => element.id == variant_index)) || result.data.variants?.[0]);
                 }
             })
@@ -110,37 +112,6 @@ const QuickViewModal = (props) => {
     }, [city, sizes]);
 
 
-
-
-    // const getCategoryDetails = () => {
-    //     api.getCategory()
-    //         .then(response => response.json())
-    //         .then(result => {
-    //             if (result.status === 1) {
-    //                 result.data.forEach(ctg => {
-    //                     if (ctg.id === props.selectedProduct.category_id) {
-    //                         setproductcategory(ctg);
-    //                     }
-    //                 });
-    //             }
-    //         })
-    //         .catch((error) => console.log(error));
-    // };
-
-    // const getBrandDetails = () => {
-    //     api.getBrands()
-    //         .then(response => response.json())
-    //         .then(result => {
-    //             if (result.status === 1) {
-    //                 result.data.forEach(brnd => {
-    //                     if (brnd.id === props.selectedProduct.brand_id) {
-    //                         setproductbrand(brnd);
-    //                     }
-    //                 });
-    //             }
-    //         })
-    //         .catch((error) => console.log(error));
-    // };
 
 
     //Add to Cart
@@ -406,7 +377,7 @@ const QuickViewModal = (props) => {
 
 
                                                 <div className='sub-images-container row'>
-                                                    {product.images.length >= 1 ?
+                                                    {images?.length >= 1 ?
                                                         <Swiper style={{
                                                             '--swiper-navigation-color': '#fff',
                                                             '--swiper-pagination-color': '#fff',
@@ -431,7 +402,7 @@ const QuickViewModal = (props) => {
                                                             modules={[Navigation, Thumbs, Mousewheel, Autoplay, Pagination]}
                                                             className="mySwiper2">
 
-                                                            {product?.images?.map((image, index) => {
+                                                            {images?.map((image, index) => {
                                                                 return (
                                                                     <SwiperSlide className='swiper-slide'>
                                                                         <div key={index} className={`sub-image ${mainimage == image ? 'active' : ''}`}>
@@ -445,15 +416,6 @@ const QuickViewModal = (props) => {
                                                             })}
 
                                                         </Swiper>
-                                                        // <Slider  {...settings_subImage}>
-                                                        //     {product.images.map((image, index) => (
-                                                        //         <div key={index} className={`sub-image border ${mainimage === image ? 'active' : ''}`}>
-                                                        //             <img onError={placeHolderImage} src={image} className='col-12 w-100' alt="product" onClick={() => {
-                                                        //                 setmainimage(image);
-                                                        //             }}></img>
-                                                        //         </div>
-                                                        //     ))}
-                                                        // </Slider>
                                                         :
                                                         <>
                                                             {product.images.map((image, index) => (

@@ -115,11 +115,19 @@ const ProductList2 = React.memo(() => {
             setisLoader(true);
             const result = await newApi.productByFilter({ latitude: city?.city?.latitude, longitude: city?.city?.longitude, filters: filter })
             if (result.status === 1) {
+                if (filter.category_ids || filter.brand_ids || filter.price_filter?.min_price || filter.price_filter?.max_price || filter?.search) {
+                    setoffset(0);
+                }
                 handlePrices(result)
-                if ((filter.category_ids || filter.brand_ids || filter.price_filter?.min_price || filter.price_filter?.max_price) && (offset == 0)) {
+                if ((filter.category_ids || filter.brand_ids || filter.price_filter?.min_price || filter.price_filter?.max_price || filter?.search) && (offset == 0)) {
                     setproductresult(result.data);
                 } else {
-                    setproductresult((prevProduct) => [...prevProduct, ...result.data]);
+                    if (offset === 0) {
+                        setproductresult(result.data);
+                    } else {
+                        setproductresult((prevProduct) => [...prevProduct, ...result.data]);
+                    }
+                    // setproductresult((prevProduct) => [...prevProduct, ...result.data]);
                 }
                 setSizes(result.sizes);
                 settotalProducts(result.total);
