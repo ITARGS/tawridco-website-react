@@ -37,6 +37,7 @@ const ProductContainer = React.memo(({ section, index }) => {
 
     const handleViewMore = () => {
         dispatch(setFilterCategory({ data: section?.category_ids }));
+        dispatch(setFilterSection({ data: section?.id }))
         if (section?.product_type == "most_selling_products") {
             dispatch(setFilterSort({ data: "popular" }))
         } else if (section?.product_type == "all_products") {
@@ -87,7 +88,6 @@ const ProductContainer = React.memo(({ section, index }) => {
                                     </div>
 
                                     <div className="product_section_content ">
-
                                         <Swiper
                                             modules={[Navigation, Pagination]}
                                             navigation={{

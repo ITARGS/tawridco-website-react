@@ -115,7 +115,7 @@ const ProductList2 = React.memo(() => {
             setisLoader(true);
             const result = await newApi.productByFilter({ latitude: city?.city?.latitude, longitude: city?.city?.longitude, filters: filter })
             if (result.status === 1) {
-                if (filter.category_ids || filter.brand_ids || filter.price_filter?.min_price || filter.price_filter?.max_price || filter?.search) {
+                if (filter?.search) {
                     setoffset(0);
                 }
                 handlePrices(result)

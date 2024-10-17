@@ -26,24 +26,12 @@ export const productFilterReducer = createSlice({
         },
         setFilterSection: (state, action) => {
             state.section_id = action.payload.data;
-            // state.category_id = null;
-            // state.country_id = "";
-            // state.seller_id = "";
-            // state.brand_ids = [];
         },
         setFilterBrands: (state, action) => {
             state.brand_ids = action.payload.data;
-            // state.category_id = null;
-            // state.country_id = "";
-            // state.seller_id = "";
-            // state.section_id = null;
         },
         setFilterCategory: (state, action) => {
             state.category_id = action.payload.data;
-            // state.brand_ids = [];
-            // state.country_id = "";
-            // state.seller_id = "";
-            // state.section_id = null;
         },
         setFilterView: (state, action) => {
             state.grid_view = action.payload.data;
