@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ProductCard from './ProductCard';
 import "./productContainer.css"
 import { Link, useNavigate } from 'react-router-dom';
-import { setFilterCategory, setFilterSort } from '../../model/reducer/productFilterReducer';
+import { setFilterCategory, setFilterSection, setFilterSort } from '../../model/reducer/productFilterReducer';
 
 const VerticaleProductContainer = ({ section }) => {
     const navigate = useNavigate();
@@ -22,15 +22,7 @@ const VerticaleProductContainer = ({ section }) => {
 
     const handleViewMore = () => {
         dispatch(setFilterCategory({ data: section?.category_ids }));
-        if (section?.product_type == "most_selling_products") {
-            dispatch(setFilterSort({ data: "popular" }))
-        } else if (section?.product_type == "all_products") {
-            dispatch(setFilterSort({ data: "" }))
-        } else if (section?.product_type == "new_added_products") {
-            dispatch(setFilterSort({ data: "new" }))
-        } else {
-            dispatch(setFilterSort({ data: "" }))
-        }
+        dispatch(setFilterSection({ data: section?.id }))
         navigate("/products")
     }
 

@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import api from '../../api/api';
 import HorizontalProductcard from "./HorizontalProductCard"
 import { Link } from 'react-router-dom';
-import { setFilterCategory, setFilterSort } from '../../model/reducer/productFilterReducer';
+import { setFilterCategory, setFilterSection, setFilterSort } from '../../model/reducer/productFilterReducer';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
@@ -27,15 +27,7 @@ const HorizontalProductContainer = ({ section }) => {
 
     const handleViewMore = () => {
         dispatch(setFilterCategory({ data: section?.category_ids }));
-        if (section?.product_type == "most_selling_products") {
-            dispatch(setFilterSort({ data: "popular" }))
-        } else if (section?.product_type == "all_products") {
-            dispatch(setFilterSort({ data: "" }))
-        } else if (section?.product_type == "new_added_products") {
-            dispatch(setFilterSort({ data: "new" }))
-        } else {
-            dispatch(setFilterSort({ data: "" }))
-        }
+        dispatch(setFilterSection({ data: section?.id }))
         navigate("/products")
     }
     return (

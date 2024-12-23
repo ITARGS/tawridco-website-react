@@ -10,7 +10,7 @@ import api from '../../api/api';
 import ProductCard from './ProductCard';
 import { IoMdArrowBack, IoMdArrowForward } from 'react-icons/io';
 import { Link, useNavigate } from 'react-router-dom';
-import { setFilterCategory, setFilterSort } from '../../model/reducer/productFilterReducer';
+import { setFilterCategory, setFilterSection, setFilterSort } from '../../model/reducer/productFilterReducer';
 
 
 const ProductSwiperWithImage = ({ section, index }) => {
@@ -30,15 +30,7 @@ const ProductSwiperWithImage = ({ section, index }) => {
 
     const handleViewMore = () => {
         dispatch(setFilterCategory({ data: section?.category_ids }));
-        if (section?.product_type == "most_selling_products") {
-            dispatch(setFilterSort({ data: "popular" }))
-        } else if (section?.product_type == "all_products") {
-            dispatch(setFilterSort({ data: "" }))
-        } else if (section?.product_type == "new_added_products") {
-            dispatch(setFilterSort({ data: "new" }))
-        } else {
-            dispatch(setFilterSort({ data: "" }))
-        }
+        dispatch(setFilterSection({ data: section?.id }))
         navigate("/products")
     }
 

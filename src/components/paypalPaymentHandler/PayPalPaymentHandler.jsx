@@ -27,7 +27,7 @@ const PayPalPaymentHandler = () => {
     const [timer, setTimer] = useState(5);
     const interval = useRef();
     const timeout = useRef();
-
+    // https://devegrocer.thewrteam.in/web-payment-status?status=&type=order&payment_method=Paytabs&order_id=2429
 
     useEffect(() => {
         let intervalId;
@@ -43,7 +43,6 @@ const PayPalPaymentHandler = () => {
             }
         } else {
             const orderId = queryParamsObj?.payment_method == "Paytabs" ? queryParamsObj?.order_id : queryParamsObj?.order_id?.split("-")[1]
-
             if (queryParamsObj.status == "failed") {
                 toast.error("Payment failed");
                 api.deleteOrder(user?.jwtToken, orderId).then((res) => (res.json()).then((result) => {
