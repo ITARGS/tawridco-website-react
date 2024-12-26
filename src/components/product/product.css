@@ -187,10 +187,9 @@
 
 .product_title_content p {
   font-size: 14px;
-
   font-weight: 400 !important;
   letter-spacing: 1px;
-  color: var(--font-color);
+  color: var(--font-new);
 }
 
 .variant_value {
@@ -208,7 +207,7 @@
 .product_title_content h2 {
   font-size: 24px;
   line-height: 29px;
-  color: var(--font-color);
+  color: var(--font-new);
   letter-spacing: 2px;
   font-weight: 700 !important;
   margin: 0;
@@ -222,13 +221,12 @@
   font-size: 16px;
   padding: 8px 16px;
   text-decoration: none;
-  color: var(--font-color);
+  color: var(--font-new);
   text-align: center;
 }
 
 .product_title_content span:hover {
   /* background: var(--secondary-color); */
-  color: var(--secondary-color);
   cursor: pointer;
 }
 
@@ -616,6 +614,9 @@ input::placeholder {
   font-size: 20px;
   font-weight: 700;
 }
+.category-node{
+  color: var(--news-color);
+}
 
 .category-node svg {
   margin-left: 10px;
@@ -702,6 +703,7 @@ input::placeholder {
 
 .filter-row .brand-name {
   padding: 0px 8px;
+  color: var(--news-color);
 }
 
 .filter-row .brand-view-more {

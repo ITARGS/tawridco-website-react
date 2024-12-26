@@ -229,17 +229,19 @@ const App = () => {
       link.rel = 'icon';
       document.head.appendChild(link);
     }
-    link.href = setting.setting && setting.setting.web_settings.favicon;
+    link.href = "/favicon.ico";
   });
 
 
   const RootCss = `
   :root {
     --body-background: #fff;
-    --buttons-background-color:#f3f5f7;
+    --buttons-background-color:#79c449;
     --container-bg: #f2f3f9;
     --primary-color: #141a1f;
-    --secondary-color: ${setting?.setting && setting?.setting?.web_settings?.color}; 
+    --primary-new: #890915;
+    --primarys-color: #2c7c33;
+    --secondary-color: #79c449;
     --secondary-color-light: ${setting?.setting && setting?.setting?.web_settings?.light_color};
     --secondary-color-dark:${setting?.setting && setting?.setting?.web_settings?.dark_color};
     --sub-text-color: #8b8b8b;
@@ -250,7 +252,7 @@ const App = () => {
     --primary-color-dark: #e5e5e5;
     --gray-hover-color: #dcdcdc;
     --bg-danger: rgba(209, 31, 31, 0.3);
-    --font-color: black;
+    --font-color: #141414;
     --bd-radius-8: 8px;
     --bd-radius-5: 5px;
     --bd-radius-10: 10px;
@@ -258,24 +260,37 @@ const App = () => {
     --skeleton-highlight-color: #f5f5f5;
     --skeleton-base-color: #ebebeb;
     --border-color:#d8e0e6;
+    --new-color :#79c449;
+    --neww-color :#79c449;
+     --news-color :#79c449;
+      --top-div : #ffbb1c;
+      --button-new : #890915;
+      --font-new : #fff;
   }
   [data-bs-theme="dark"]{
     --body-background: #141414;
     --buttons-background-color:#141414;
     --primary-color: #202934;
-    --secondary-color:${setting.setting && setting.setting.web_settings.dark_color};
+    --primarys-color: #202934;
+    --secondary-color:#2c7c33;
     --sub-text-color: #8b8b8b;
+    --primary-new: #fff;
     --second-cards-color: #202934;
     --text-field-color: white;
     --gray-hover-color: #dcdcdc;
     --container-bg: #f2f3f9;
     --font-color: white;
-    
+    --new-color :#202934;
+    --news-color :#fff;
     --font-heading: #141A1F;
     --loader-bg: transparent;
     --skeleton-highlight-color: #3a4a5a;
     --skeleton-base-color: #2e3a47;
     --border-color:#4A4949;
+     --top-div : #79c449;
+     --neww-color :#141a1f;
+     --button-new : #E61925;
+     -font-new : #890915;
   }
   input[type="radio"]:checked {
     background-color: var(--secondary-color); /* Change background color when checked */

@@ -64,7 +64,7 @@
 .site-header .header-top {
   font-size: 14px;
   position: relative;
-  background-color: var(--secondary-color);
+  background-color:var(--secondary-color)
   /* border-bottom: 1px solid var(--font-color); */
   /* -webkit-transition: all 0.5s;
   -moz-transition: all 0.5s;
@@ -185,9 +185,9 @@
 
 .site-header .header-main .site-brand .desktop-logo,
 .site-header .header-main .site-brand .mobile-logo {
-  width: 170px;
-  height: 45px;
-  object-fit: contain;
+  width: 20rem;
+  height: 9rem;
+  object-fit: cover;
 }
 
 .site-location {
@@ -1301,8 +1301,7 @@
 
 .site-header .header-main .container .bottom-header .search .dropdown-toggle {
   background-color: var(--buttons-background-color) !important;
-  ;
-  color: var(--font-color);
+  color: #fff;
   border: none;
   width: 152px;
   height: 50px;
@@ -1358,7 +1357,7 @@
   align-items: center;
   font-size: 20px;
   padding: 20px;
-  background-color: #29363F;
+  background-color: var(--button-new); /* dark red */ 
   color: #fff;
   font-weight: 400;
   border-radius: 5px;
@@ -1430,13 +1429,13 @@
 
   .site-header .header-main {
     padding: 0px;
+    height: 170px;
   }
 
   .site-header .header-main .site-brand .desktop-logo,
   .site-header .header-main .site-brand .mobile-logo {
-    width: 140px;
-    height: 38px;
-    object-fit: contain;
+    height: 11rem;
+    margin-top: 1rem;
   }
 
 

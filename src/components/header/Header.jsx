@@ -579,7 +579,7 @@ const Header = () => {
 
 
                                 <Link to='/' className='site-brand hide-mobile'>
-                                    <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='desktop-logo ' />
+                                    <img src="/logo.png" alt="logo" className='desktop-logo ' />
                                     {/* <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='mobile-logo hide-desktop' /> */}
                                 </Link>
 
@@ -591,7 +591,7 @@ const Header = () => {
 
                             <div className='hide-desktop'>
                                 <Link to='/' className='site-brand'>
-                                    <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='desktop-logo ' />
+                                    <img src="/logo.png" alt="logo" className='desktop-logo ' />
                                     {/* <img src={setting.setting && setting.setting.web_settings.web_logo} alt="logo" className='mobile-logo hide-desktop' /> */}
                                 </Link>
                             </div>

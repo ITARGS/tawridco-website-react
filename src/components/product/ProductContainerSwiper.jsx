@@ -44,14 +44,7 @@ const ProductContainer = React.memo(({ section, index }) => {
     return (
         <>
             {section?.products?.length > 0 ?
-                <section id="products" style={cssmode == "dark" ?
-                    section?.background_color_for_dark_theme != "" ? { backgroundColor: section?.background_color_for_dark_theme } :
-                        { backgroundColor: "var(--body-background-color)" }
-                    :
-                    section?.background_color_for_light_theme != "" ?
-                        { backgroundColor: section?.background_color_for_light_theme } :
-                        { backgroundColor: "var(--body-background-color)" }
-                }>
+                <section id="products">
                     <div className="container">
                         <>
                             <div >

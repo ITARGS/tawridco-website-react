@@ -101,6 +101,7 @@
   min-width: 250px;
   overflow: auto;
   color: var(--font-color);
+  box-shadow: 0px 0px 5px silver;
 }
 
 #profile .bar {
@@ -245,7 +246,7 @@ input[type="file"] {
   background: rgba(155, 151, 151, 0.205);
   border-radius: 10px;
   margin: 0 15px;
-
+  border: 1px solid silver;
   background-color: var(--body-background);
   height: 56px;
   transition: all 0.3s;

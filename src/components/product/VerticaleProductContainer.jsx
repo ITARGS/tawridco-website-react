@@ -28,17 +28,10 @@ const VerticaleProductContainer = ({ section }) => {
 
     return (
         <>
-            {section?.products?.length > 0 ? <section className='products-container-section' style={cssmode == "dark" ?
-                section?.background_color_for_dark_theme != "" ? { backgroundColor: section?.background_color_for_dark_theme } :
-                    { backgroundColor: "var(--body-background-color)" }
-                :
-                section?.background_color_for_light_theme != "" ?
-                    { backgroundColor: section?.background_color_for_light_theme } :
-                    { backgroundColor: "var(--body-background-color)" }
-            }>
+            {section?.products?.length > 0 ? <section className='products-container-section'>
                 <div className='container'>
                     <div>
-                        <div className='product-container-header'>
+                        <div className='product-container-header colo-new'>
                             <div>
                                 <h2>{section.title?.length > 50 ? section.title?.substring(0, 50) + "..." : section.title}</h2>
                                 <p className=' d-md-block'>{section.short_description?.lenght > 70 ? section.short_description?.substring(0, 70) + "..." : section.short_description}</p>
