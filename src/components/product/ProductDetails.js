@@ -96,9 +96,11 @@ const ProductDetails = () => {
 
     const getProductDatafromApi = (slug) => {
         if (slug !== null || slug !== undefined) {
+
             api.getProductbyId(city.city?.latitude ? city.city?.latitude : setting?.setting?.default_city?.latitude, city.city?.longitude ? city.city?.longitude : setting?.setting?.default_city?.longitude, -1, user?.jwtToken, slug)
                 .then(response => response.json())
                 .then(result => {
+
                     if (result.status === 1) {
                         const filter = {
                             limit: productLimit,
@@ -119,6 +121,7 @@ const ProductDetails = () => {
                     };
                 })
                 .catch(error => {
+
                     console.log(error);
                     const isNoInternet = ValidateNoInternet(error);
                     if (isNoInternet) {
@@ -548,7 +551,7 @@ const ProductDetails = () => {
 
                                                             {images?.map((image, index) => {
                                                                 return (
-                                                                    <SwiperSlide>
+                                                                    <SwiperSlide key={index}>
                                                                         <div key={index} className={`sub-image border ${mainimage == image ? 'active' : ''}`}>
                                                                             <img onError={placeHolderImage} src={image} className='col-12' alt="product" onClick={() => {
                                                                                 setmainimage(image);

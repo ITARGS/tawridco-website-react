@@ -752,7 +752,7 @@ const Header = () => {
                                             }
                                         </Dropdown.Menu>
                                     </Dropdown>
-                                    <input type='text' placeholder='I am looking for...' value={filter?.search} onChange={handleQueryChange} />
+                                    {/* <input type='text' placeholder='I am looking for...' value={filter?.search} onChange={handleQueryChange} /> */}
                                     <button className='mobile-search-btn' onClick={() => {
                                         dispatch(setProductBySearch({ data: "" }))
                                         navigate("/products")

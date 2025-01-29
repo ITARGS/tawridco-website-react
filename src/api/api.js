@@ -339,6 +339,7 @@ const api = {
         return fetch(appUrl + appSubUrl + "/products", requestOptions);
     },
     getProductbyId(latitude, longitude, id, token, slug) {
+
         var myHeaders = new Headers();
         myHeaders.append(access_key_param, access_key);
         myHeaders.append("Authorization", token_prefix + token);
