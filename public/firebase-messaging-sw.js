@@ -3,13 +3,14 @@ importScripts('https://www.gstatic.com/firebasejs/8.10.0/firebase-messaging.js')
 
 
 firebase.initializeApp({
-    apiKey: 'FIREBASE_API_KEY',
-    authDomain: 'FIREBASE_AUTH_DOMAIN',
-    projectId: 'FIREBASE_PROJECT_ID',
-    storageBucket: 'FIREBASE_STORAGE_BUCKET',
-    messagingSenderId: 'FIREBASE_MESSAGING_SENDER_ID',
-    appId: 'FIREBASE_APP_ID',
-    measurementId: 'FIREBASE_MEASUREMENT_ID',
+    // EDITME:
+    apiKey: 'AIzaSyClJABJ53vLdeftattdyVCDrkMMnJyp3LU',
+    authDomain: 'tawridco-86b74.firebaseapp.com',
+    projectId: 'tawridco-86b74',
+    storageBucket: '917028456112',
+    messagingSenderId: 'tawridco-86b74.firebasestorage.app',
+    appId: '1:917028456112:web:05b5105eab8d8ea9b21d75',
+    measurementId: 'G-ZFJJGLKP4Z',
 });
 
 const messaging = firebase.messaging();
