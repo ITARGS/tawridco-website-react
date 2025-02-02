@@ -581,22 +581,22 @@ const ProductDetails = () => {
                                             <div className='detail-wrapper'>
                                                 <div className='top-section'>
                                                     <p className='product_name'>{productdata.name}</p>
-
-                                                    <div className='d-flex flex-column gap-2 align-items-start my-1'>
-                                                        <div id="price-section" className='d-flex flex-row gap-2 align-items-center my-1'>
-                                                            {setting.setting && setting.setting.currency}<p id='fa-rupee' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price == 0 ? selectedVariant.price.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price.toFixed(setting.setting && setting.setting.decimal_point)) : (productdata.variants[0].discounted_price === 0 ? productdata.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : productdata.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point))}</p>
-                                                        </div>
-                                                        {(selectedVariant?.price && (selectedVariant?.discounted_price !== 0)) && (selectedVariant?.price !== selectedVariant?.discounted_price) ?
-                                                            <div>
-                                                                <p className='fw-normal text-decoration-line-through' style={{ color: "var(--sub-text-color)", fontSize: "16px" }}>
-                                                                    {setting.setting && setting.setting.currency}
-                                                                    {selectedVariant?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
-                                                                </p>
+                                                    {selectedVariant.discounted_price ?
+                                                        <div className='d-flex flex-column gap-2 align-items-start my-1'>
+                                                            <div id="price-section" className='d-flex flex-row gap-2 align-items-center my-1'>
+                                                                {setting.setting && setting.setting.currency}<p id='fa-rupee' className='m-0'>{selectedVariant ? (selectedVariant.discounted_price == 0 ? selectedVariant.price.toFixed(setting.setting && setting.setting.decimal_point) : selectedVariant.discounted_price.toFixed(setting.setting && setting.setting.decimal_point)) : (productdata.variants[0].discounted_price === 0 ? productdata.variants[0].price.toFixed(setting.setting && setting.setting.decimal_point) : productdata.variants[0].discounted_price.toFixed(setting.setting && setting.setting.decimal_point))}</p>
                                                             </div>
-                                                            : null}
-                                                        <input type="hidden" id="productdetail-selected-variant-id" name="variant" value={selectedVariant ? selectedVariant.id : productdata.variants[0].id} />
-                                                    </div>
-
+                                                            {(selectedVariant?.price && (selectedVariant?.discounted_price !== 0)) && (selectedVariant?.price !== selectedVariant?.discounted_price) ?
+                                                                <div>
+                                                                    <p className='fw-normal text-decoration-line-through' style={{ color: "var(--sub-text-color)", fontSize: "16px" }}>
+                                                                        {setting.setting && setting.setting.currency}
+                                                                        {selectedVariant?.price?.toFixed(setting.setting && setting.setting.decimal_point)}
+                                                                    </p>
+                                                                </div>
+                                                                : null}
+                                                            <input type="hidden" id="productdetail-selected-variant-id" name="variant" value={selectedVariant ? selectedVariant.id : productdata.variants[0].id} />
+                                                        </div>
+                                                        : <span />}
                                                 </div>
                                                 <div className='bottom-section'>
                                                     <div className='d-flex gap-3 bottom-section-content'>
@@ -632,6 +632,7 @@ const ProductDetails = () => {
                                                                                 type='button'
                                                                                 onClick={() => {
                                                                                     if (cart?.isGuest) {
+
                                                                                         AddToGuestCart(
                                                                                             productdata?.id,
                                                                                             selectedVariant?.id,
@@ -685,8 +686,9 @@ const ProductDetails = () => {
                                                                         <button type='button' id={`Add-to-cart-quickview`} className='add-to-cart'
                                                                             onClick={() => {
                                                                                 if (cart?.isGuest) {
-                                                                                    const productQuantity = getProductQuantities(cart?.guestCart);
-                                                                                    handleAddNewProductGuest(productQuantity, productdata);
+                                                                                    return toast.error(t("required_login_message_for_cart"));
+                                                                                    // const productQuantity = getProductQuantities(cart?.guestCart);
+                                                                                    // handleAddNewProductGuest(productQuantity, productdata);
                                                                                 }
                                                                                 else {
                                                                                     if (user?.user === null) {

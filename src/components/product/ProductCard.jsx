@@ -28,6 +28,7 @@ const ProductCard = ({ product }) => {
     const { t } = useTranslation();
     // reducer imports
     const setting = useSelector(state => (state.setting));
+
     const cart = useSelector(state => (state.cart))
     const user = useSelector(state => (state.user))
     const favoriteProducts = useSelector(state => (state.favourite))
@@ -292,8 +293,10 @@ const ProductCard = ({ product }) => {
 
     const handleIntialAddToCart = () => {
         if (cart?.isGuest) {
-            const quantity = getProductQuantities(cart?.cartProducts)
-            handleAddNewProductGuest(quantity, product)
+            // const quantity = getProductQuantities(cart?.cartProducts)
+            // handleAddNewProductGuest(quantity, product)
+            return toast.error(t("required_login_message_for_cart"));
+
         } else {
             const quantity = getProductQuantities(cart?.cartProducts)
             handleValidateAddNewProduct(quantity, product)
@@ -325,7 +328,7 @@ const ProductCard = ({ product }) => {
                                 : null}
 
                         </a>
-                        {selectedVariant?.discounted_price !== 0 ? <span className="product-discount-label">{calculateDiscount(selectedVariant?.discounted_price, selectedVariant?.price).toFixed(0)}% OFF</span> : <></>}
+                        {selectedVariant?.discounted_price ? (selectedVariant?.discounted_price !== 0 ? <span className="product-discount-label">{calculateDiscount(selectedVariant?.discounted_price, selectedVariant?.price).toFixed(0)}% OFF</span> : <></>) : <span />}
 
                         <ul className="product-links">
                             <li onClick={() => addToFavorite(product?.id)}><a data-tip="Add to Wishlist">
@@ -360,16 +363,17 @@ const ProductCard = ({ product }) => {
 
                         </div>
 
-                        <div className="price">{setting.setting.currency}{selectedVariant?.
+                        {user.user != null ? <div className="price">{setting.setting.currency}{selectedVariant?.
                             discounted_price !== 0 ? selectedVariant?.
                             discounted_price : selectedVariant?.
-                            price}<span>{selectedVariant?.
+                            price}<span>{(selectedVariant?.
                                 discounted_price !== 0 && <>
+
                                     {setting.setting.currency}
                                     {selectedVariant?.
                                         price}
-                                </>}</span>
-                        </div>
+                                </>)}</span>
+                        </div> : <span />}
                     </div>
                 </div>
 
@@ -382,11 +386,13 @@ const ProductCard = ({ product }) => {
 
                             {
                                 isProductAlreadyAdded ?
-                                    <div className='cart-count-btn'><button
-                                        onClick={() => {
-                                            handleQuantityDecrease()
-                                        }}
-                                    ><FaMinus /></button>
+                                    <div className='cart-count-btn'>
+                                        <button
+                                            onClick={() => {
+                                                handleQuantityDecrease()
+                                            }}
+                                        ><FaMinus />
+                                        </button>
                                         <input value={addedQuantity} disabled min='1' type='number' max={selectedVariant?.stock} />
                                         <button onClick={() => {
                                             handleQuantityIncrease()

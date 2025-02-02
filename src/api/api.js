@@ -94,6 +94,7 @@ const api = {
         var params = {
             is_web_setting: 1
         };
+
         var url = new URL(appUrl + appSubUrl + "/settings");
         for (let k in params) {
             url.searchParams.append(k, params[k]);
