@@ -1,5 +1,5 @@
 {
-  "name": "egrocer",
+  "name": "tawridco",
   "version": "2.0.5",
   "private": true,
   "homepage": "",
@@ -55,7 +55,7 @@
   },
   "scripts": {
     "start": "node generator.js && react-scripts start",
-    "build": "node generator.js && react-scripts build --openssl-legacy-provider && node ftp.js",
+    "build": "node generator.js && react-scripts build --openssl-legacy-provider ",
     "vercel-build": "react-scripts build --openssl-legacy-provider",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -79,8 +79,7 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@babel/plugin-transform-private-property-in-object": "^7.23.4",
+    "@babel/plugin-transform-private-property-in-object": "^7.25.9",
     "dotenv": "^16.4.5",
     "ftp-deploy": "^2.4.5"
   }
