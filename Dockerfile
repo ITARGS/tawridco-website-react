@@ -9,7 +9,7 @@ WORKDIR /
 COPY . .
 
 # # Build the React app for production
-RUN npm install
+RUN npm install  --verbose
 
 
 RUN npm run build
